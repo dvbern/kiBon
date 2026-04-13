@@ -13,8 +13,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSKind} from '@kibon/kind/model/entity';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSKind} from './entity/TSKind';
 import {TSBetreuung} from './TSBetreuung';
 
 export class TSKindContainer extends TSAbstractMutableEntity {

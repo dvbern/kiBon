@@ -20,9 +20,9 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {MANDANTS} from '@kibon/shared-model-mandant';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MANDANTS} from '@models/mandant';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {OnboardingHelpDialogComponent} from '../onboarding-help-dialog/onboarding-help-dialog.component';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
 
@@ -34,7 +34,7 @@ import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.se
 })
 export class OnboardingComponent implements OnInit, OnDestroy {
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly onboardingPlaceholderService = inject(
         OnboardingPlaceholderService

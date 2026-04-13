@@ -13,10 +13,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-    TSAbstractMutableEntity,
-    TSFachstelle
-} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSFachstelle} from './entity/TSFachstelle';
 
 export class TSErweiterteBetreuung extends TSAbstractMutableEntity {
     private _erweiterteBeduerfnisse: boolean;

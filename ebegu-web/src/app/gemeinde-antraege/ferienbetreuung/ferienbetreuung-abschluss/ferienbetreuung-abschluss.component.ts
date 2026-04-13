@@ -36,7 +36,8 @@ import {
 import {filter, first, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {FerienbetreuungAngabenStatus} from '../../../../models/enums/FerienbetreuungAngabenStatus';
-import {TSRole, TSSprache} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
+import {TSSprache} from '../../../../models/enums/TSSprache';
 import {TSWizardStepXTyp} from '../../../../models/enums/TSWizardStepXTyp';
 import {TSFerienbetreuungAngaben} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngaben';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
@@ -44,7 +45,7 @@ import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
 import {DvNgOkDialogComponent} from '../../../core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {FerienbetreuungDokumentService} from '../services/ferienbetreuung-dokument.service';

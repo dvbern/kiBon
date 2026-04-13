@@ -1,7 +1,7 @@
 import {Component, OnInit, inject} from '@angular/core';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
 import {TSFamilienstatus} from '../../../../models/enums/TSFamilienstatus';

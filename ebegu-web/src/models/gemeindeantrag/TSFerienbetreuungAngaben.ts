@@ -17,7 +17,7 @@
 
 import {TSFerienbetreuungBerechnung} from '../../app/gemeinde-antraege/ferienbetreuung/ferienbetreuung-kosten-einnahmen/TSFerienbetreuungBerechnung';
 import {EbeguUtil} from '../../utils/EbeguUtil';
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from '../entity/TSAbstractEntity';
 import {TSFerienbetreuungAngabenAngebot} from './TSFerienbetreuungAngabenAngebot';
 import {TSFerienbetreuungAngabenKostenEinnahmen} from './TSFerienbetreuungAngabenKostenEinnahmen';
 import {TSFerienbetreuungAngabenNutzung} from './TSFerienbetreuungAngabenNutzung';

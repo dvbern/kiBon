@@ -17,10 +17,10 @@
 
 import {Component, inject, OnInit} from '@angular/core';
 import {map} from 'rxjs/operators';
-import {MandantLogoWhiteNameVisitor} from '@kibon/shared-model-mandant';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantLogoWhiteNameVisitor} from '@models/mandant';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
 
 const LOG = LogFactory.createLog('OnboardingMainComponent');
@@ -39,7 +39,7 @@ export class OnboardingMainComponent implements OnInit {
     public splittedScreen: boolean = true;
 
     mandantService = inject(MandantService);
-    applicationPropertyRS = inject(SharedUtilApplicationPropertyRsService);
+    applicationPropertyRS = inject(ApplicationPropertyRsService);
     onboardingPlaceholderService = inject(OnboardingPlaceholderService);
 
     logoFileNameWhite$ = this.mandantService.mandant$.pipe(

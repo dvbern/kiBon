@@ -18,7 +18,8 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {TSEinkommensverschlechterungContainer} from '../../../../../models/TSEinkommensverschlechterungContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';

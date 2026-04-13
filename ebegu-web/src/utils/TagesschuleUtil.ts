@@ -15,19 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {AdminModelEinstellungTagesschuleHasAnmeldung} from '@kibon/admin/model/institution-tagesschule-einstellungen';
-import {
-    TSEinstellungenTagesschule,
-    TSGesuchsperiode,
-    TSInstitutionStammdatenSummary,
-    TSModulTagesschule,
-    TSModulTagesschuleGroup
-} from '@kibon/shared/model/entity';
-import {
-    getWeekdaysValues,
-    TSDayOfWeek,
-    TSModulTagesschuleName
-} from '@kibon/shared/model/enums';
+import {AdminModelEinstellungTagesschuleHasAnmeldung} from '../models/entity/institution-tagesschule-einstellungen/admin-model-einstellung-tagesschule-has-anmeldung';
+import {TSEinstellungenTagesschule} from '../models/entity/TSEinstellungenTagesschule';
+import {TSGesuchsperiode} from '../models/entity/TSGesuchsperiode';
+import {TSInstitutionStammdatenSummary} from '../models/entity/TSInstitutionStammdatenSummary';
+import {TSModulTagesschule} from '../models/entity/TSModulTagesschule';
+import {TSModulTagesschuleGroup} from '../models/entity/TSModulTagesschuleGroup';
+import {getWeekdaysValues, TSDayOfWeek} from '../models/enums/TSDayOfWeek';
+import {TSModulTagesschuleName} from '../models/enums/TSModulTagesschuleName';
 import {TSBelegungTagesschuleModul} from '../models/TSBelegungTagesschuleModul';
 import {TSBelegungTagesschuleModulGroup} from '../models/TSBelegungTagesschuleModulGroup';
 import {TSBetreuung} from '../models/TSBetreuung';

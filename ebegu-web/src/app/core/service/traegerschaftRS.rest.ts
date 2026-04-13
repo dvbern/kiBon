@@ -14,7 +14,7 @@
  */
 
 import {IHttpPromise, IHttpService, ILogService, IPromise} from 'angular';
-import {TSTraegerschaft} from '@kibon/shared/model/entity';
+import {TSTraegerschaft} from '../../../models/entity/TSTraegerschaft';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 
 export class TraegerschaftRS {

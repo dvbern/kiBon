@@ -98,6 +98,7 @@ import ch.dvbern.ebegu.services.InstitutionStammdatenService;
 import ch.dvbern.ebegu.services.gemeindeantrag.FerienbetreuungService;
 import ch.dvbern.ebegu.services.gemeindeantrag.GemeindeAntragService;
 import ch.dvbern.ebegu.services.gemeindeantrag.GemeindeKennzahlenService;
+import ch.dvbern.ebegu.util.MitteilungUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static ch.dvbern.ebegu.enums.UserRole.ADMIN_BG;
@@ -1510,6 +1511,11 @@ public class AuthorizerImpl implements Authorizer, BooleanAuthorizer {
 		return isReadAuthorized(gesuch);
 	}
 
+	/**
+	 * Uses the {@link PrincipalBean} to check if the current user is allowed to write a {@link Mitteilung}
+	 *
+	 * @param mitteilung the {@link Mitteilung} to check
+	 */
 	@Override
 	public void checkWriteAuthorizationMitteilung(
 		@Nullable Mitteilung mitteilung
@@ -1558,6 +1564,13 @@ public class AuthorizerImpl implements Authorizer, BooleanAuthorizer {
 				)) {
 					throwViolation(mitteilung);
 				}
+				break;
+			case SACHBEARBEITER_MANDANT:
+			case ADMIN_MANDANT:
+				if (!MitteilungUtil.isSchliessungsmitteilung(mitteilung)) {
+					throwViolation(mitteilung);
+				}
+				checkMandantMatches(mitteilung.getFall());
 				break;
 			case SUPER_ADMIN: {
 				// Superadmin darf alles!

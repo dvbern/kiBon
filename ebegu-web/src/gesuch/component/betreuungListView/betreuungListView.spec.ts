@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {StateService} from '@uirouter/core';
 import angular from 'angular';
 import {CORE_JS_MODULE} from '../../../app/core/core.angularjs.module';
@@ -55,8 +55,8 @@ xdescribe('betreuungListViewTest', () => {
             const errorService: ErrorService = $injector.get('ErrorService');
             const $timeout = $injector.get('$timeout');
             const authServiceRS: AuthServiceRS = $injector.get('AuthServiceRS');
-            const applicationPropertyRS: SharedUtilApplicationPropertyRsService =
-                $injector.get('SharedUtilApplicationPropertyRsService');
+            const applicationPropertyRS: ApplicationPropertyRsService =
+                $injector.get('ApplicationPropertyRsService');
 
             betreuungListView = new BetreuungListViewController(
                 $state,

@@ -15,14 +15,13 @@
 
 import angular from 'angular';
 import moment from 'moment';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
-import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
-
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {TSDateRange} from '@kibon/shared/model/entity';
 import {quicksearchFilter} from './quicksearchFilter';
 import IProvideService = angular.auto.IProvideService;
 

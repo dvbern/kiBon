@@ -19,7 +19,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSVersendeteMail} from '../../../models/TSVersendeteMail';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {SortDirection} from '@angular/material/sort';
 
 @Injectable({

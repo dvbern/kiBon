@@ -13,8 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {EbeguUtil} from '../utils/EbeguUtil';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSFamiliensituation} from './TSFamiliensituation';
 import {TSSozialhilfeZeitraumContainer} from './TSSozialhilfeZeitraumContainer';
 
@@ -69,19 +68,26 @@ export class TSFamiliensituationContainer extends TSAbstractMutableEntity {
         target.familiensituationJA = this._familiensituationJA.deepCopyTo(
             new TSFamiliensituation()
         );
-        if (EbeguUtil.isNotNullOrUndefined(this._familiensituationGS)) {
+        if (
+            this._familiensituationGS !== null &&
+            this._familiensituationGS !== undefined
+        ) {
             target.familiensituationGS = this._familiensituationGS.deepCopyTo(
                 new TSFamiliensituation()
             );
         }
-        if (EbeguUtil.isNotNullOrUndefined(this._familiensituationErstgesuch)) {
+        if (
+            this._familiensituationErstgesuch !== null &&
+            this._familiensituationErstgesuch !== undefined
+        ) {
             target.familiensituationErstgesuch =
                 this._familiensituationErstgesuch.deepCopyTo(
                     new TSFamiliensituation()
                 );
         }
         if (
-            EbeguUtil.isNotNullOrUndefined(this.sozialhilfeZeitraumContainers)
+            this.sozialhilfeZeitraumContainers !== null &&
+            this.sozialhilfeZeitraumContainers !== undefined
         ) {
             target.sozialhilfeZeitraumContainers =
                 this._sozialhilfeZeitraumContainers.map(value =>

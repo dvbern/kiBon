@@ -52,7 +52,7 @@ import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS
 import {TSEinstellungKey} from '../../../../../admin/einstellungen/TSEinstellungKey';
 import {TSLastenausgleichTagesschuleAngabenGemeindeFormularStatus} from '../../../../../models/enums/TSLastenausgleichTagesschuleAngabenGemeindeFormularStatus';
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../../../../../models/enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../../models/enums/TSRole';
 import {TSWizardStepXTyp} from '../../../../../models/enums/TSWizardStepXTyp';
 import {TSLastenausgleichTagesschuleAngabenGemeinde} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeinde';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
@@ -60,13 +60,13 @@ import {TSBenutzer} from '../../../../../models/TSBenutzer';
 import {TSEinstellung} from '../../../../../admin/einstellungen/TSEinstellung';
 import {TSExceptionReport} from '../../../../../models/TSExceptionReport';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
-import {MathUtil} from '@kibon/shared/util-fn/math-util';
+import {MathUtil} from '../../../../../utils/math-util/MathUtil';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
 import {DvNgOkDialogComponent} from '../../../../core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {ErrorService} from '../../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {WizardStepXRS} from '../../../../core/service/wizardStepXRS.rest';
 import {
     numberValidator,

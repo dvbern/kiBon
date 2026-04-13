@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {Log, LogFactory} from '@utils/log';
 import {IComponentOptions, IController} from 'angular';
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
 import {TSPensumUnits} from '../../../models/enums/TSPensumUnits';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
 import {TSBetreuungspensumContainer} from '../../../models/TSBetreuungspensumContainer';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {GesuchModelManager} from '../../service/gesuchModelManager';

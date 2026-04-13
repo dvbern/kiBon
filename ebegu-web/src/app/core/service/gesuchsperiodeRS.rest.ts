@@ -23,10 +23,10 @@ import {
 } from 'angular';
 import {DossierRS} from '../../../gesuch/service/dossierRS.rest';
 import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
-import {TSCacheTyp} from '@kibon/shared/model/enums';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
-import {TSSprache} from '@kibon/shared/model/enums';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSSprache} from '../../../models/enums/TSSprache';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 
 export class GesuchsperiodeRS {

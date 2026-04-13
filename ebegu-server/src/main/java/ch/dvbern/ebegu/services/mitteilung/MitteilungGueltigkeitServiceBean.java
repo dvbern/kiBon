@@ -49,7 +49,6 @@ import ch.dvbern.ebegu.entities.InstitutionStammdaten;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten_;
 import ch.dvbern.ebegu.entities.Mitteilung_;
 import ch.dvbern.ebegu.enums.MitteilungStatus;
-import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.BetreuungService;
 import ch.dvbern.ebegu.services.GemeindeService;
@@ -226,9 +225,6 @@ public class MitteilungGueltigkeitServiceBean implements
 		Betreuungsmitteilung betreuungsmitteilung = new Betreuungsmitteilung();
 		betreuungsmitteilung.setSchliessungMitteilung(true);
 		betreuungsmitteilung.setBetreuung(betreuung);
-		betreuungsmitteilung.setEmpfaengerTyp(
-			MitteilungTeilnehmerTyp.JUGENDAMT
-		);
 		betreuungsmitteilung.setMitteilungStatus(MitteilungStatus.NEU);
 		betreuungsmitteilung.setSentDatum(LocalDateTime.now());
 		betreuungsmitteilung.setDossier(betreuung.extractGesuch().getDossier());

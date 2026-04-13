@@ -15,7 +15,7 @@
 
 import {IHttpInterceptor, ILogService, IRootScopeService} from 'angular';
 import {VERSION} from '../../../../environments/version';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {TSVersionCheckEvent} from '../../events/TSVersionCheckEvent';
 
 /**

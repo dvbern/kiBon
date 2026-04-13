@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../models/enums/TSRole';
 import {Permission} from './Permission';
 
 export const PERMISSIONS: {[k in Permission]: ReadonlyArray<TSRole>} = {

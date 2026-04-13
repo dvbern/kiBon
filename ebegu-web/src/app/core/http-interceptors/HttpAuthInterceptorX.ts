@@ -23,7 +23,7 @@ import {
     HttpRequest
 } from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
-import {CONSTANTS, HTTP_CODES} from '@kibon/shared/model/constants';
+import {CONSTANTS, HTTP_CODES} from '@models/constants';
 import {Observable, Subject} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {AuthLifeCycleService} from '../../../authentication/service/authLifeCycle.service';

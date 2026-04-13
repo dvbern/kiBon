@@ -14,13 +14,13 @@
  */
 
 import {IComponentOptions, IController, IRootScopeService} from 'angular';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
+import {LogFactory} from '@utils/log';
+import {MandantService} from '@utils/mandant';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {BUILDTSTAMP, VERSION} from '../../../../environments/version';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {TSVersionCheckEvent} from '../../events/TSVersionCheckEvent';
 import {HttpVersionInterceptor} from '../../service/version/HttpVersionInterceptor';
@@ -43,7 +43,7 @@ export class DVVersionController implements IController {
         '$rootScope',
         'HttpVersionInterceptor',
         '$window',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         '$translate',
         'AuthServiceRS',
         'VersionService',
@@ -67,7 +67,7 @@ export class DVVersionController implements IController {
         private readonly $rootScope: IRootScopeService,
         private readonly httpVersionInterceptor: HttpVersionInterceptor,
         private readonly $window: IWindowService,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly applicationPropertyRS: ApplicationPropertyRsService,
         private readonly $translate: ITranslateService,
         private readonly authServiceRS: AuthServiceRS,
         private readonly versionService: VersionService,

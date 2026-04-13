@@ -13,27 +13,25 @@ import {
     ViewChild
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {
-    TSFachstelle,
-    TSFachstelleName,
-    TSFachstellenTyp,
-    TSGruendeZusatzleistung,
-    TSIntegrationTyp,
-    TSPensumFachstelle
-} from '@kibon/shared/model/entity';
-import {TSRole} from '@kibon/shared/model/enums';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {CONSTANTS} from '@models/constants';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
 import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
+import {TSFachstelle} from '../../../../models/entity/TSFachstelle';
+import {TSPensumFachstelle} from '../../../../models/entity/TSPensumFachstelle';
+import {TSFachstelleName} from '../../../../models/enums/TSFachstelleName';
+import {TSFachstellenTyp} from '../../../../models/enums/TSFachstellenTyp';
+import {TSGruendeZusatzleistung} from '../../../../models/enums/TSGruendeZusatzleistung';
+import {TSIntegrationTyp} from '../../../../models/enums/TSIntegrationTyp';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {EnumEx} from '../../../../utils/EnumEx';
+import {HybridFormBridgeService} from '../../../../utils/hybrid-form-bridge/hybrid-form-bridge.service';
+import {LogFactory} from '../../../../utils/log-factory/LogFactory';
 import {isNotNullOrUndefined} from '../../../../utils/rxjs-operators';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';

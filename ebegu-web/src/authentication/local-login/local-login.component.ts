@@ -21,10 +21,10 @@ import {
     OnInit,
     inject
 } from '@angular/core';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {TargetState} from '@uirouter/core';
 import {Observable} from 'rxjs';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../models/enums/TSRole';
 import {AuthServiceRS} from '../service/AuthServiceRS.rest';
 
 type LocalLoginUser = {

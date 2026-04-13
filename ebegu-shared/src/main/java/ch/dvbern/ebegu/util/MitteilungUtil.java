@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Betreuungsmitteilung;
+import ch.dvbern.ebegu.entities.Mitteilung;
 import ch.dvbern.ebegu.entities.containers.PensumUtil;
 import ch.dvbern.ebegu.enums.MitteilungStatus;
 import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
@@ -33,6 +34,20 @@ public final class MitteilungUtil {
 
 	private MitteilungUtil() {
 		// Should not be initialized
+	}
+
+	/**
+	 * Takes a {@link Mitteilung} and checks if it is a {@link Betreuungsmitteilung} with the flag for
+	 * {@code schliessungMitteilung} set
+	 *
+	 * @param mitteilung the {@link Mitteilung} to check
+	 * @return whether the {@link Mitteilung} is an Institution-Schliessung-Mitteilung
+	 */
+	public static boolean isSchliessungsmitteilung(
+		@Nonnull Mitteilung mitteilung
+	) {
+		return mitteilung instanceof Betreuungsmitteilung
+			&& ((Betreuungsmitteilung) mitteilung).isSchliessungMitteilung();
 	}
 
 	public static void initializeBetreuungsmitteilung(

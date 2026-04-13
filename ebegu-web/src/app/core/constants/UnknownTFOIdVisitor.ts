@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {KiBonMandant, MandantVisitor} from '@kibon/shared-model-mandant';
+import {KiBonMandant, MandantVisitor} from '@models/mandant';
 
 export class UnknownTFOIdVisitor implements MandantVisitor<string> {
     public process(mandant: KiBonMandant): string {

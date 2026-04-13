@@ -25,7 +25,7 @@ import {
 } from '@angular/core';
 import {FormBuilder, NgForm, Validators} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
 import moment from 'moment';
@@ -50,23 +50,25 @@ import {
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSPagination} from '../../../models/dto/TSPagination';
+import {TSPaginationResultDTO} from '../../../models/dto/TSPaginationResultDTO';
+import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
+import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../../../models/enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
-import {TSGemeindeStatus, TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSGemeindeAntrag} from '../../../models/gemeindeantrag/TSGemeindeAntrag';
 import {TSExceptionReport} from '../../../models/TSExceptionReport';
-import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {TSPaginationResultDTO} from '@kibon/shared/model/dto';
-import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {
     DvMultiSelectDialogItem,
     DvNgMultiSelectDialogComponent
 } from '../../core/component/dv-ng-multi-select-dialog/dv-ng-multi-select-dialog.component';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {ErrorServiceX} from '../../core/errors/service/ErrorServiceX';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DVAntragListColumns} from '../../core/new-antrag-list/new-antrag-list.types';
 import {GesuchsperiodeRS} from '../../core/service/gesuchsperiodeRS.rest';
 import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
@@ -97,7 +99,7 @@ export class GemeindeAntraegeComponent implements OnInit {
     private readonly gemeindeRS = inject(GemeindeRS);
     private readonly authService = inject(AuthServiceRS);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly dialog = inject(MatDialog);
 

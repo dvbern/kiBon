@@ -13,22 +13,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import moment from 'moment';
 import {
     getBgInstitutionenBetreuungsangebote,
     getSchulamtBetreuungsangebotTypValues,
     isJugendamt,
     isOfAnyBetreuungsangebotTyp
-} from '@kibon/shared/util-fn/betreuungsangebot-typ';
-import moment from 'moment';
-import {EbeguUtil} from '../utils/EbeguUtil';
-import {
-    TSBetreuungsangebotTyp,
-    TSBetreuungsstatus
-} from '@kibon/shared/model/enums';
+} from '../utils/betreuungsangebot-typ/betreuungsangebot-typ';
+import {TSBetreuungsstatus} from './enums/betreuung/TSBetreuungsstatus';
 import {isAtLeastFreigegeben, TSAntragStatus} from './enums/TSAntragStatus';
 import {TSAntragTyp} from './enums/TSAntragTyp';
+import {TSBetreuungsangebotTyp} from './enums/TSBetreuungsangebotTyp';
 import {TSEingangsart} from './enums/TSEingangsart';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
+import {TSFinanzielleSituationTyp} from './enums/TSFinanzielleSituationTyp';
 import {TSFinSitStatus} from './enums/TSFinSitStatus';
 import {TSGesuchBetreuungenStatus} from './enums/TSGesuchBetreuungenStatus';
 import {TSAbstractAntragEntity} from './TSAbstractAntragEntity';
@@ -520,12 +517,15 @@ export class TSGesuch extends TSAbstractAntragEntity {
     }
 
     public getRegelStartDatum(): moment.Moment {
-        if (EbeguUtil.isNotNullOrUndefined(this.regelnGueltigAb)) {
+        if (
+            this.regelnGueltigAb !== null &&
+            this.regelnGueltigAb !== undefined
+        ) {
             return this.regelnGueltigAb;
         }
 
         if (
-            EbeguUtil.isNullOrUndefined(this.eingangsdatum) &&
+            (this.eingangsdatum === null || this.eingangsdatum === undefined) &&
             this.eingangsart === TSEingangsart.ONLINE
         ) {
             return moment();

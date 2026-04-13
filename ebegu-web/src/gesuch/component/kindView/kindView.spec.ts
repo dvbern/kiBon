@@ -16,28 +16,26 @@
 import angular from 'angular';
 import {BehaviorSubject, of} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {MANDANTS} from '@kibon/shared-model-mandant';
 import {CORE_JS_MODULE} from '../../../app/core/core.angularjs.module';
-import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
-import {TSAusserordentlicherAnspruchTyp} from '@kibon/shared/model/enums';
-import {TSEinschulungTyp} from '@kibon/shared/model/enums';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {
-    TSFachstellenTyp,
-    TSIntegrationTyp,
-    TSPensumFachstelle
-} from '@kibon/shared/model/entity';
-import {TSKinderabzugTyp} from '@kibon/shared/model/enums';
+import {MANDANTS} from '@models/mandant';
+import {TSKind} from '../../../models/entity/TSKind';
+import {TSPensumFachstelle} from '../../../models/entity/TSPensumFachstelle';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
+import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
+import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
+import {TSFachstellenTyp} from '../../../models/enums/TSFachstellenTyp';
+import {TSIntegrationTyp} from '../../../models/enums/TSIntegrationTyp';
+import {TSKinderabzugTyp} from '../../../models/enums/TSKinderabzugTyp';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSKind} from '@kibon/kind/model/entity';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {IKindStateParams} from '../../gesuch.route';
 import {BerechnungsManager} from '../../service/berechnungsManager';

@@ -13,13 +13,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {copy, IComponentOptions, IController, IPromise} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {GesuchRS} from '../../../../gesuch/service/gesuchRS.rest';
 import {SearchRS} from '../../../../gesuch/service/searchRS.rest';
+import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
 import {
     IN_BEARBEITUNG_BASE_NAME,
     isAnyStatusForGSMutation,
@@ -34,8 +34,8 @@ import {TSAntragDTO} from '../../../../models/TSAntragDTO';
 import {TSDossier} from '../../../../models/TSDossier';
 import {TSGemeindeKonfiguration} from '../../../../models/TSGemeindeKonfiguration';
 import {TSGemeindeStammdaten} from '../../../../models/TSGemeindeStammdaten';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {ApplicationPropertyRsService} from '../../../../utils/application-property-rs/application-property-rs.service';
+import {MomentUtil} from '../../../../utils/date/MomentUtil';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
@@ -68,7 +68,7 @@ export class GesuchstellerDashboardViewController implements IController {
         'GesuchRS',
         'ErrorService',
         'GemeindeRS',
-        'SharedUtilApplicationPropertyRsService'
+        'ApplicationPropertyRsService'
     ];
 
     private antragList: Array<TSAntragDTO> = [];
@@ -95,7 +95,7 @@ export class GesuchstellerDashboardViewController implements IController {
         private readonly gesuchRS: GesuchRS,
         private readonly errorService: ErrorService,
         private readonly gemeindeRS: GemeindeRS,
-        private readonly appplicationPropertyRS: SharedUtilApplicationPropertyRsService
+        private readonly appplicationPropertyRS: ApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {
@@ -113,7 +113,7 @@ export class GesuchstellerDashboardViewController implements IController {
         this.loadGemeindeStammdaten();
         this.appplicationPropertyRS
             .getPublicPropertiesCached()
-            .subscribe(res => {
+            .subscribe((res: any) => {
                 this.anmeldungTSEnabled = res.angebotTSActivated;
                 this.anmeldungFIEnabled = res.angebotFIActivated;
             });

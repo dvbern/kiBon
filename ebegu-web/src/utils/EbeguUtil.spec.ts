@@ -15,19 +15,15 @@
 
 import angular from 'angular';
 import moment from 'moment';
-import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
-
-import {
-    TSAbstractEntity,
-    TSDateRange,
-    TSIntegrationTyp,
-    TSPensumFachstelle
-} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from '../models/entity/TSAbstractEntity';
+import {TSDateRange} from '../models/entity/TSDateRange';
+import {TSGemeinde} from '../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../models/entity/TSGesuchsperiode';
+import {TSKind} from '../models/entity/TSKind';
+import {TSPensumFachstelle} from '../models/entity/TSPensumFachstelle';
+import {TSGesuchsperiodeStatus} from '../models/enums/TSGesuchsperiodeStatus';
+import {TSIntegrationTyp} from '../models/enums/TSIntegrationTyp';
 import {TSFall} from '../models/TSFall';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {TSKind} from '@kibon/kind/model/entity';
 import {TSKindContainer} from '../models/TSKindContainer';
 import {EbeguUtil} from './EbeguUtil';
 import {TestDataUtil} from './TestDataUtil.spec';

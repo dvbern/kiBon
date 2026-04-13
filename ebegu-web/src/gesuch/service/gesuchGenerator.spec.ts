@@ -21,14 +21,14 @@ import {AntragStatusHistoryRS} from '../../app/core/service/antragStatusHistoryR
 import {GesuchsperiodeRS} from '../../app/core/service/gesuchsperiodeRS.rest';
 import {SozialdienstRS} from '../../app/core/service/SozialdienstRS.rest';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
+import {TSGemeinde} from '../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../models/entity/TSGesuchsperiode';
 import {TSAntragStatus} from '../../models/enums/TSAntragStatus';
 import {TSCreationAction} from '../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
 import {TSBenutzer} from '../../models/TSBenutzer';
 import {TSDossier} from '../../models/TSDossier';
 import {TSFall} from '../../models/TSFall';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TestDataUtil} from '../../utils/TestDataUtil.spec';
 import {DossierRS} from './dossierRS.rest';
 import {FallRS} from './fallRS.rest';

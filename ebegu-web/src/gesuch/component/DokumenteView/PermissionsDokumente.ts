@@ -1,4 +1,4 @@
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 
 export enum PermissionDokumente {

@@ -30,12 +30,14 @@ import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EingewoehnungTyp;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
 import ch.dvbern.ebegu.rechner.BGRechnerFactory;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
 import ch.dvbern.ebegu.rechner.rules.RechnerRule;
 import ch.dvbern.ebegu.rules.initalizer.RestanspruchInitializer;
 import ch.dvbern.ebegu.rules.initalizer.RestanspruchInitializerDefaultVisitor;
 import ch.dvbern.ebegu.rules.mutationsmerger.MutationsMerger;
+import ch.dvbern.ebegu.rules.mutationsmerger.MutationsMergerParameter;
 import ch.dvbern.ebegu.rules.mutationsmerger.OneVorgaengerEnsurer;
 import ch.dvbern.ebegu.util.EinschulungstypBgStundenFaktorDefaultVisitor;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
@@ -125,10 +127,20 @@ public class BetreuungsgutscheinExecutor {
 		Boolean pauschaleRueckwirkendAuszahlen = kibonAbschlussRulesParameters
 			.get(EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND)
 			.getValueAsBoolean();
+		GeschwisterbonusTyp geschwisterbonusTyp = GeschwisterbonusTyp
+			.getEnumValue(
+				kibonAbschlussRulesParameters.get(
+					EinstellungKey.GESCHWISTERNBONUS_TYP
+				)
+			);
+
 		MutationsMerger mutationsMerger = new MutationsMerger(
 			locale,
 			isDebug,
-			pauschaleRueckwirkendAuszahlen
+			new MutationsMergerParameter(
+				pauschaleRueckwirkendAuszahlen,
+				geschwisterbonusTyp
+			)
 		);
 		OneVorgaengerEnsurer oneVorgaengerEnsurer = new OneVorgaengerEnsurer(
 			isDebug

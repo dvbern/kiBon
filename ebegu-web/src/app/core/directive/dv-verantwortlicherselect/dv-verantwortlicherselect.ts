@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {IController, IDirective, IDirectiveFactory} from 'angular';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
@@ -46,7 +46,7 @@ export class VerantwortlicherselectController implements IController {
         'BenutzerRS',
         'GesuchModelManager',
         '$translate',
-        'SharedUtilApplicationPropertyRsService'
+        'ApplicationPropertyRsService'
     ];
 
     public readonly TSRoleUtil = TSRoleUtil;
@@ -60,7 +60,7 @@ export class VerantwortlicherselectController implements IController {
         private readonly benutzerRS: BenutzerRSX,
         private readonly gesuchModelManager: GesuchModelManager,
         private readonly $translate: ITranslateService,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
+        private readonly applicationPropertyRS: ApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {

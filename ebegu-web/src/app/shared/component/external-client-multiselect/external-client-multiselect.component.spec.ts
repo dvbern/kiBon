@@ -22,7 +22,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
 import {createClient} from '../../../../models/TSExternalClient';
 import {TSExternalClientAssignment} from '../../../../models/TSExternalClientAssignment';
-import {WindowRef} from '@kibon/shared-util-window-ref';
+import {WindowRef} from '../../../../utils/window-ref/windowRef.service';
 import {MaterialModule} from '../../material.module';
 import {SharedModule} from '../../shared.module';
 

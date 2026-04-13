@@ -13,22 +13,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {IAugmentedJQuery, IComponentOptions, IController} from 'angular';
-import {MANDANTS, MandantLogoNameVisitor} from '@kibon/shared-model-mandant';
+import {MandantLogoNameVisitor, MANDANTS} from '@models/mandant';
 import {ColorService} from './shared/services/color.service';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 
 export class AppAngularjsComponent implements IController {
     public static $inject: string[] = [
         '$element',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         'MandantService'
     ];
 
     public constructor(
         private readonly $element: IAugmentedJQuery,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly applicationPropertyRS: ApplicationPropertyRsService,
         private readonly mandantService: MandantService
     ) {}
 

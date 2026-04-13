@@ -17,10 +17,10 @@ import {IComponentOptions, IController} from 'angular';
 import moment from 'moment';
 import {Moment} from 'moment';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {TSAbstractMutableEntity} from '../../../../models/entity/TSAbstractMutableEntity';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import ITranslateService = angular.translate.ITranslateService;
 

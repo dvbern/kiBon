@@ -23,14 +23,14 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {StateService} from '@uirouter/core';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSSozialdienstStatus} from '../../../models/enums/TSSozialdienstStatus';
 import {TSSozialdienst} from '../../../models/sozialdienst/TSSozialdienst';
 import {DvNgGesuchstellerDialogComponent} from '../../core/component/dv-ng-gesuchsteller-dialog/dv-ng-gesuchsteller-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {Log, LogFactory} from '@utils/log';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
 

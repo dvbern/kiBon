@@ -23,15 +23,14 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
 import {firstValueFrom, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {DvNgCancelDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-cancel-dialog.component';
 import {OnboardingHelpDialogComponent} from '../onboarding-help-dialog/onboarding-help-dialog.component';
@@ -51,7 +50,7 @@ export class OnboardingNeuBenutzerComponent {
     private readonly stateService = inject(StateService);
     private readonly authServiceRS = inject(AuthServiceRS);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly cd = inject(ChangeDetectorRef);
     private readonly dialog = inject(MatDialog);

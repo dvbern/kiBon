@@ -56,6 +56,11 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 	private static final LocalDate GP_START = Constants.GESUCHSPERIODE_17_18_AB;
 	private static final LocalDate GP_END = Constants.GESUCHSPERIODE_17_18_BIS;
 
+	private record BetreuungspensumData(LocalDate gueltigAb,
+										LocalDate gueltigBis, int pensum,
+										int kosten) {
+	}
+
 	@BeforeEach
 	public void setUp() {
 		DateRange validity = new DateRange(
@@ -91,6 +96,30 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 
 		}
 
+		@Test
+		void oneOtherKindUnder18With0Pensum0Cost_shouldCreateNoZeitabschnitte() {
+			final LocalDate geburtsdatumGeschwister = GP_START.minusYears(5);
+			final var geschwister = addGeschwisterWithBetreuungEntirePeriode(
+				geburtsdatumGeschwister
+			);
+			geschwister.getBetreuungen()
+				.forEach(
+					geschwisterBetreuung -> geschwisterBetreuung
+						.getBetreuungspensumContainers()
+						.forEach(container -> {
+							container.getBetreuungspensumJA()
+								.setPensum(BigDecimal.ZERO);
+							container.getBetreuungspensumJA()
+								.setPensum(BigDecimal.ZERO);
+						})
+				);
+
+			final List<VerfuegungZeitabschnitt> verfuegungZeitabschnitte =
+				executeRule(betreuung);
+			assertThat(verfuegungZeitabschnitte.isEmpty(), is(true));
+
+		}
+
 		@Nested
 		class ZeitabschnittGueltigkeitTest {
 			@Test
@@ -117,7 +146,7 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 
 			@Test
 			void oneOtherKindU18ganzePeriodeBetreuungEndOfTime_shouldCreateOneZeitabschnittForEntirePeriode() {
-				addGeschwisterWithBetreuungspensen(
+				addGeschwisterWithDefaultBetreuungspensen(
 					GP_START.minusYears(5).plusMonths(2),
 					Set.of(new DateRange(GP_START, Constants.END_OF_TIME))
 				);
@@ -131,6 +160,42 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 						.getGueltigkeit()
 						.getGueltigAb(),
 					equalTo(GP_START)
+				);
+				assertThat(
+					verfuegungZeitabschnitte.get(0)
+						.getGueltigkeit()
+						.getGueltigBis(),
+					equalTo(GP_END)
+				);
+			}
+
+			@Test
+			void oneOtherKindU18One0BetreuungspensumOneNot0Betreuungspensum_shouldCreateOneZeitabschnittForNonZeroPensumGueltigkeit() {
+				var pensum1End = GP_START.plusMonths(2).minusDays(1);
+				var pensum2Start = GP_START.plusMonths(2);
+
+				addGeschwisterWithBetreuungspensen(
+					GP_START.minusYears(5).plusMonths(2),
+					Set.of(
+						new BetreuungspensumData(GP_START, pensum1End, 0, 0),
+						new BetreuungspensumData(
+							pensum2Start,
+							GP_END,
+							50,
+							500
+						)
+					)
+				);
+
+				final List<VerfuegungZeitabschnitt> verfuegungZeitabschnitte =
+					executeRule(betreuung);
+
+				assertThat(verfuegungZeitabschnitte.size(), is(1));
+				assertThat(
+					verfuegungZeitabschnitte.get(0)
+						.getGueltigkeit()
+						.getGueltigAb(),
+					equalTo(pensum2Start)
 				);
 				assertThat(
 					verfuegungZeitabschnitte.get(0)
@@ -213,7 +278,7 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 					geburtsdatumGeschwister.getMonth(),
 					geburtsdatumGeschwister.getDayOfMonth()
 				);
-				addGeschwisterWithBetreuungspensen(
+				addGeschwisterWithDefaultBetreuungspensen(
 					geburtsdatumGeschwister,
 					Set.of(
 						new DateRange(GP_START, GP_START.plusMonths(4)),
@@ -259,7 +324,7 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 					5
 				);
 				final LocalDate betreuungEnde = GP_START.plusMonths(3);
-				addGeschwisterWithBetreuungspensen(
+				addGeschwisterWithDefaultBetreuungspensen(
 					geburtsdatumGeschwister,
 					Set.of(new DateRange(GP_START, betreuungEnde))
 				);
@@ -288,7 +353,7 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 				);
 				final LocalDate betreuungStart = GP_START.plusMonths(1);
 				final LocalDate betreuungEnde = GP_START.plusMonths(3);
-				addGeschwisterWithBetreuungspensen(
+				addGeschwisterWithDefaultBetreuungspensen(
 					geburtsdatumGeschwister,
 					Set.of(new DateRange(betreuungStart, betreuungEnde))
 				);
@@ -319,7 +384,7 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 					geburtsdatumGeschwister.plusYears(18);
 				final LocalDate betreuungStart = GP_START.plusMonths(1);
 				final LocalDate betreuungEnde = GP_START.plusMonths(3);
-				addGeschwisterWithBetreuungspensen(
+				addGeschwisterWithDefaultBetreuungspensen(
 					geburtsdatumGeschwister,
 					Set.of(new DateRange(betreuungStart, betreuungEnde))
 				);
@@ -355,7 +420,7 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 					.setGueltigkeitTerminiertPer(terminiertPer);
 				terminiertesGeschwister.getBetreuungen()
 					.add(
-						createBetreuungWithPensen(
+						createBetreuungWithDefaultPensen(
 							terminiertesGeschwister,
 							Set.of(GESUCHSPERIODE_17_18)
 						)
@@ -383,9 +448,25 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 				);
 			}
 
-			private void addGeschwisterWithBetreuungspensen(
+			private void addGeschwisterWithDefaultBetreuungspensen(
 				LocalDate geburtsdatum,
 				Set<DateRange> pensenGueltigkeiten
+			) {
+				KindContainer kind2 = TestDataUtil.createDefaultKindContainer();
+				kind2.getKindJA().setGeburtsdatum(geburtsdatum);
+				kind2.getBetreuungen()
+					.add(
+						createBetreuungWithDefaultPensen(
+							kind2,
+							pensenGueltigkeiten
+						)
+					);
+				gesuch.getKindContainers().add(kind2);
+			}
+
+			private void addGeschwisterWithBetreuungspensen(
+				LocalDate geburtsdatum,
+				Set<BetreuungspensumData> pensenGueltigkeiten
 			) {
 				KindContainer kind2 = TestDataUtil.createDefaultKindContainer();
 				kind2.getKindJA().setGeburtsdatum(geburtsdatum);
@@ -465,7 +546,7 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 
 				kind2.getBetreuungen()
 					.add(
-						createBetreuungWithPensen(
+						createBetreuungWithDefaultPensen(
 							kind2,
 							Set.of(
 								new DateRange(
@@ -495,6 +576,46 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 			final LocalDate geburtsdatumGeschwister = GP_START.minusYears(20);
 			addGeschwisterWithBetreuungEntirePeriode(geburtsdatumGeschwister);
 			addGeschwisterWithBetreuungEntirePeriode(geburtsdatumGeschwister);
+
+			final List<VerfuegungZeitabschnitt> verfuegungZeitabschnitte =
+				executeRule(betreuung);
+			assertThat(verfuegungZeitabschnitte.isEmpty(), is(true));
+
+		}
+
+		@Test
+		void twoOtherKindUnder18AndZeroPensumZeroCost_shouldCreateNoZeitabschnitte() {
+			final LocalDate geburtsdatumGeschwister = GP_START.minusYears(5);
+			var geschwister1 = addGeschwisterWithBetreuungEntirePeriode(
+				geburtsdatumGeschwister
+			);
+			var geschwister2 = addGeschwisterWithBetreuungEntirePeriode(
+				geburtsdatumGeschwister
+			);
+
+			geschwister1.getBetreuungen()
+				.forEach(
+					geschwisterBetreuung -> geschwisterBetreuung
+						.getBetreuungspensumContainers()
+						.forEach(container -> {
+							container.getBetreuungspensumJA()
+								.setPensum(BigDecimal.ZERO);
+							container.getBetreuungspensumJA()
+								.setPensum(BigDecimal.ZERO);
+						})
+				);
+
+			geschwister2.getBetreuungen()
+				.forEach(
+					geschwisterBetreuung -> geschwisterBetreuung
+						.getBetreuungspensumContainers()
+						.forEach(container -> {
+							container.getBetreuungspensumJA()
+								.setPensum(BigDecimal.ZERO);
+							container.getBetreuungspensumJA()
+								.setPensum(BigDecimal.ZERO);
+						})
+				);
 
 			final List<VerfuegungZeitabschnitt> verfuegungZeitabschnitte =
 				executeRule(betreuung);
@@ -736,9 +857,30 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 		);
 	}
 
-	private Betreuung createBetreuungWithPensen(
+	private Betreuung createBetreuungWithDefaultPensen(
 		KindContainer kindContainer,
 		Set<DateRange> betreuungspensen
+	) {
+		return createBetreuungWithPensen(
+			kindContainer,
+			betreuungspensen.stream()
+				.map(
+					dateRange -> new BetreuungspensumData(
+						dateRange.getGueltigAb(),
+						dateRange.getGueltigBis(),
+						50,
+						500
+					)
+				)
+				.collect(
+					Collectors.toSet()
+				)
+		);
+	}
+
+	private Betreuung createBetreuungWithPensen(
+		KindContainer kindContainer,
+		Set<BetreuungspensumData> betreuungspensen
 	) {
 		Mandant schwyz = new Mandant();
 		schwyz.setMandantIdentifier(MandantIdentifier.SCHWYZ);
@@ -746,14 +888,16 @@ class GeschwisterbonusSchwyzAbschnittRuleTest {
 		Betreuung toCreate = TestDataUtil
 			.createDefaultBetreuungOhneBetreuungPensum(kindContainer);
 		toCreate.setBetreuungspensumContainers(
-			betreuungspensen.stream().map(gueltigkeit -> {
+			betreuungspensen.stream().map(data -> {
 				BetreuungspensumContainer container =
 					new BetreuungspensumContainer();
 				final Betreuungspensum betreuungspensumJA =
-					new Betreuungspensum(gueltigkeit);
-				betreuungspensumJA.setPensum(BigDecimal.valueOf(50));
+					new Betreuungspensum(
+						new DateRange(data.gueltigAb, data.gueltigBis)
+					);
+				betreuungspensumJA.setPensum(BigDecimal.valueOf(data.pensum));
 				betreuungspensumJA.setMonatlicheBetreuungskosten(
-					BigDecimal.valueOf(500)
+					BigDecimal.valueOf(data.kosten)
 				);
 				container.setBetreuungspensumJA(betreuungspensumJA);
 				return container;

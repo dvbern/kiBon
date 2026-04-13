@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {NgForm} from '@angular/forms';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
-import {WindowRef} from '@kibon/shared-util-window-ref';
+import {WindowRef} from '../../../../utils/window-ref/windowRef.service';
 import {SharedModule} from '../../shared.module';
 
 import {DvMonthPickerComponent} from './dv-month-picker.component';

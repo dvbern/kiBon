@@ -25,13 +25,13 @@ import {
 import {TranslateService} from '@ngx-translate/core';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
-import {TSSprache} from '@kibon/shared/model/enums';
+import {TSSprache} from '../../../../../models/enums/TSSprache';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {TSBenutzer} from '../../../../../models/TSBenutzer';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DownloadRS} from '../../../../core/service/downloadRS.rest';
 import {LastenausgleichTSService} from '../../services/lastenausgleich-ts.service';
 

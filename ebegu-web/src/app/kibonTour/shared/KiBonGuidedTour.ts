@@ -23,7 +23,8 @@ import {
     OrientationConfiguration,
     TourStep
 } from 'ngx-guided-tour';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
+
 const SELECTOR_HELP_ICON = 'dv-helpmenu';
 const SELECTOR_PENDENZEN_LIST = 'a[uisref="pendenzen.list-view"]';
 const SELECTOR_PENDENZEN_BETREUUNGEN_LIST =

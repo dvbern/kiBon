@@ -16,7 +16,7 @@
 import angular, {IHttpBackendService} from 'angular';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSTraegerschaft} from '@kibon/shared/model/entity';
+import {TSTraegerschaft} from '../../../models/entity/TSTraegerschaft';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';

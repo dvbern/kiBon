@@ -22,7 +22,7 @@ import {
 } from '@uirouter/angular-hybrid';
 import {IPromise} from 'angular';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {ignoreNullAndUndefined} from '../../../utils/rxjs-operators';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';

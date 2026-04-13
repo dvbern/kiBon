@@ -18,7 +18,7 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import moment from 'moment';
 import {isMoment} from 'moment';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 @Pipe({
     name: 'ebeguDateTime',
     standalone: false

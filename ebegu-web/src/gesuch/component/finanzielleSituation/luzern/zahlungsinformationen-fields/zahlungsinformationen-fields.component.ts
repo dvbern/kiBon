@@ -25,8 +25,8 @@ import {
 import {ControlContainer, NgForm} from '@angular/forms';
 import {ListResourceRS} from '../../../../../app/core/service/listResourceRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
+import {TSAdresse} from '../../../../../models/entity/TSAdresse';
 import {isAtLeastFreigegeben} from '../../../../../models/enums/TSAntragStatus';
-import {TSAdresse} from '@kibon/shared/model/entity';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {TSLand} from '../../../../../models/types/TSLand';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';

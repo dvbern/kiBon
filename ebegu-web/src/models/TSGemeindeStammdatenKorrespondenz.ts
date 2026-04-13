@@ -15,7 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from './entity/TSAbstractEntity';
+
 export class TSGemeindeStammdatenKorrespondenz extends TSAbstractEntity {
     public senderAddressSpacingLeft: number;
     public senderAddressSpacingTop: number;

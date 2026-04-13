@@ -5,9 +5,9 @@ import {
     ValidationErrors,
     Validator
 } from '@angular/forms';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import moment from 'moment';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 
 @Directive({
     selector: '[dateInPeriode]',

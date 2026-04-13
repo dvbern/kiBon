@@ -24,19 +24,29 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.Dossier;
+import ch.dvbern.ebegu.entities.Fall;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Kind;
+import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragTyp;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
+import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
 import ch.dvbern.ebegu.rules.MonatsRule;
 import ch.dvbern.ebegu.test.TestDataUtil;
+import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -70,13 +80,160 @@ class MutationsMergerSchwyzTest {
 	private static final MutationsMerger MUTATIONS_MERGER = new MutationsMerger(
 		Locale.GERMAN,
 		false,
-		false
+		new MutationsMergerParameter(false, GeschwisterbonusTyp.SCHWYZ_2)
 	);
 
 	private static final BigDecimal DEFAULT_MASGEBENDES_EINKOMMEN = Objects
 		.requireNonNull(MathUtil.DEFAULT.from(50000));
 	private static final BigDecimal ZWEI_HUNDERT_TAUSEND = Objects
 		.requireNonNull(MathUtil.DEFAULT.from(200000));
+
+	@Nested
+	class GeschwisterBonusTest {
+
+		private final LocalDate GP_START = LocalDate.of(2025, 8, 1);
+		private final LocalDate OCT_15 = LocalDate.of(2026, 10, 15);
+		private final LocalDate NOV_30 = LocalDate.of(2025, 11, 30);
+		private final LocalDate GP_END = LocalDate.of(2026, 7, 31);
+
+		private record BetreuungPensumTestData(int pensum, LocalDate gueltigAb,
+											   LocalDate gueltigBis) {
+		}
+
+		@Test
+		void geschwisterbonus_ShouldHaveAnzahlGeschwisterFromMutation_WhenZeitabschnittBeforeMutationsdatumAndAnzahlGeschwisterSinks() {
+			final int ANZAHL_GESCHWISTER_IN_MUTATION = 0;
+			var mutation = this.createMutation(OCT_15);
+			var tamaraContainer = createKind("Tamara", "Feutz");
+			tamaraContainer.setGesuch(mutation);
+			var betreuungTamara = createBetreuungForKind(
+				new BetreuungPensumTestData(40, GP_START, GP_END),
+				tamaraContainer
+			);
+
+			Verfuegung verfuegungErstantrag =
+				createVerfuegungWithOneAbschnittAndGeschwisterBonus(1);
+			betreuungTamara.initVorgaengerVerfuegungen(
+				verfuegungErstantrag,
+				null
+			);
+
+			VerfuegungZeitabschnitt zeitabschnittBeforeMutationsDatum =
+				new VerfuegungZeitabschnitt(new DateRange(GP_START, NOV_30));
+			zeitabschnittBeforeMutationsDatum.setAnzahlGeschwister(
+				ANZAHL_GESCHWISTER_IN_MUTATION
+			);
+
+			List<VerfuegungZeitabschnitt> zeitabschnitte = MUTATIONS_MERGER
+				.execute(
+					betreuungTamara,
+					List.of(
+						zeitabschnittBeforeMutationsDatum
+					)
+				);
+
+			assertThat(
+				zeitabschnitte.get(0)
+					.getBgCalculationInputAsiv()
+					.getAnzahlGeschwister(),
+				is(ANZAHL_GESCHWISTER_IN_MUTATION)
+			);
+		}
+
+		@Test
+		void geschwisterbonus_ShouldHaveAnzahlGeschwisterFromMutation_WhenZeitabschnittBeforeMutationsdatumAndAnzahlGeschwisterIncreases() {
+			final int ANZAHL_GESCHWISTER_IN_MUTATION = 1;
+			var mutation = this.createMutation(OCT_15);
+			var tamaraContainer = createKind("Tamara", "Feutz");
+			tamaraContainer.setGesuch(mutation);
+			var betreuungTamara = createBetreuungForKind(
+				new BetreuungPensumTestData(40, GP_START, GP_END),
+				tamaraContainer
+			);
+
+			Verfuegung verfuegungErstantrag =
+				createVerfuegungWithOneAbschnittAndGeschwisterBonus(0);
+			betreuungTamara.initVorgaengerVerfuegungen(
+				verfuegungErstantrag,
+				null
+			);
+
+			VerfuegungZeitabschnitt zeitabschnittBeforeMutationsDatum =
+				new VerfuegungZeitabschnitt(new DateRange(GP_START, GP_END));
+			zeitabschnittBeforeMutationsDatum.setAnzahlGeschwister(
+				ANZAHL_GESCHWISTER_IN_MUTATION
+			);
+
+			List<VerfuegungZeitabschnitt> zeitabschnitte = MUTATIONS_MERGER
+				.execute(
+					betreuungTamara,
+					List.of(zeitabschnittBeforeMutationsDatum)
+				);
+
+			assertThat(
+				zeitabschnitte.get(0)
+					.getBgCalculationInputAsiv()
+					.getAnzahlGeschwister(),
+				is(ANZAHL_GESCHWISTER_IN_MUTATION)
+			);
+		}
+
+		private Verfuegung createVerfuegungWithOneAbschnittAndGeschwisterBonus(
+			int anzahlGeschwister
+		) {
+			VerfuegungZeitabschnitt zeitabschnittErstantrag =
+				new VerfuegungZeitabschnitt(new DateRange(GP_START, GP_END));
+			BGCalculationResult bgCalculationResult = new BGCalculationResult();
+			bgCalculationResult.setAnzahlGeschwisterFuerBonusSchwyz(
+				anzahlGeschwister
+			);
+			zeitabschnittErstantrag.setBgCalculationResultAsiv(
+				bgCalculationResult
+			);
+			Verfuegung verfuegung = new Verfuegung();
+			verfuegung.setZeitabschnitte(List.of(zeitabschnittErstantrag));
+			return verfuegung;
+		}
+
+		private Gesuch createMutation(LocalDate mutationsDatum) {
+			Fall fall = new Fall();
+			fall.setMandant(TestDataUtil.getMandantSchwyz());
+
+			Dossier dossier = new Dossier();
+			dossier.setFall(fall);
+
+			var mutation = new Gesuch();
+			mutation.setEingangsdatum(mutationsDatum);
+			mutation.setTyp(AntragTyp.MUTATION);
+			mutation.setDossier(dossier);
+			return mutation;
+		}
+
+		private KindContainer createKind(String vorname, String nachname) {
+			var container = new KindContainer();
+			var kindJa = new Kind();
+			kindJa.setVorname(vorname);
+			kindJa.setNachname(nachname);
+
+			container.setKindJA(kindJa);
+			return container;
+		}
+
+		private Betreuung createBetreuungForKind(
+			BetreuungPensumTestData pensumData,
+			KindContainer kindContainer
+		) {
+			var betreuung = EbeguRuleTestsHelper.createBetreuungWithPensum(
+				pensumData.gueltigAb,
+				pensumData.gueltigBis,
+				BetreuungsangebotTyp.KITA,
+				pensumData.pensum,
+				BigDecimal.valueOf(1000)
+			);
+			betreuung.setKind(kindContainer);
+			return betreuung;
+		}
+	}
 
 	@Test
 	void test_hoereMassgegebeneseinkommens_steigtFolgeMonatNachMutation() {

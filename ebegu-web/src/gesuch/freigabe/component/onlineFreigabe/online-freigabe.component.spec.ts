@@ -16,12 +16,12 @@
  *
  */
 
+import {TSWizardStep} from '../../../../models/entity/TSWizardStep';
 import {TSAntragStatus} from '../../../../models/enums/TSAntragStatus';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
 import {TSFreigabe} from '../../../../models/TSFreigabe';
 import {TSGesuch} from '../../../../models/TSGesuch';
-import {TSWizardStep} from '@kibon/shared/model/entity';
-
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../service/wizardStepManager';
 import {FreigabeService} from '../../freigabe.service';

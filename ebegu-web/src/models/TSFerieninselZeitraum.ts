@@ -13,6 +13,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractDateRangedEntity} from '@kibon/shared/model/entity';
+import {TSAbstractDateRangedEntity} from './entity/TSAbstractDateRangedEntity';
 
 export class TSFerieninselZeitraum extends TSAbstractDateRangedEntity {}

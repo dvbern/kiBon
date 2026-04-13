@@ -17,6 +17,7 @@
 
 package ch.dvbern.ebegu.rules;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -31,11 +32,14 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.Betreuungspensum;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
@@ -46,6 +50,15 @@ import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.DateUtil;
 import lombok.Getter;
 
+/**
+ * Erstellt die {@link VerfuegungZeitabschnitt}e, in welchen ein Geschwisterbonus des Typs "Schwyz" gilt.
+ * Die Rule ist nur dann relevant, wenn die {@link Einstellung} "GESCHWISTERNBONUS_TYP" entsprechend gesetzt ist.
+ *
+ * Siehe {@link #createVerfuegungsZeitabschnitte} for more information about how these {@link VerfuegungZeitabschnitt}e
+ * are
+ * created.
+ *
+ */
 public class GeschwisterbonusSchwyzAbschnittRule extends AbstractAbschnittRule {
 
 	protected GeschwisterbonusSchwyzAbschnittRule(
@@ -79,6 +92,19 @@ public class GeschwisterbonusSchwyzAbschnittRule extends AbstractAbschnittRule {
 		return BetreuungsangebotTyp.getBetreuungsgutscheinTypes();
 	}
 
+	/**
+	 * Creates the {@link VerfuegungZeitabschnitt}e according to the Geschwisterbonus-Schwyz-Rules.
+	 *
+	 * 1. Filter all other Kinder, which have no {@link Betreuung}en
+	 * 2. Filter all Kinder which do not contribute to the geschwisterbonus according to their age
+	 * 3. Create {@link VerfuegungZeitabschnitt}e for the times when the Kinder are in Betreuung
+	 * 4. Terminate {@link VerfuegungZeitabschnitt} when contribution to geschwisterbonus ends
+	 * 5. Set {@link BGCalculationInput} values
+	 * 6. Remove invalid {@link VerfuegungZeitabschnitt}e
+	 *
+	 * @param platz the {@link Betreuung} for which the Abschnitte should be created
+	 * @return the {@link VerfuegungZeitabschnitt}e which have a Geschwisterbonus with set values and bemerkungen
+	 */
 	@Nonnull
 	@Override
 	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
@@ -148,6 +174,15 @@ public class GeschwisterbonusSchwyzAbschnittRule extends AbstractAbschnittRule {
 		return Stream.of(verfuegungZeitabschnittKindTuple);
 	}
 
+	/**
+	 * A {@link KindContainer} can contribute to the Geschwisterbonus when the Kind is
+	 * born before the gesuchsperiode ends and is not yet 18 years old at any point during
+	 * the gesuchsperiode.
+	 *
+	 * @param kindContainer the {@link KindContainer} to check for contribution to the geschwisterbonus
+	 * @param gpGueltigkeit the {@link DateRange} of the {@link Gesuchsperiode}
+	 * @return whether the Kind contributes to the geschwisterbonus by age
+	 */
 	private static boolean contributesToGeschwisterbonus(
 		KindContainer kindContainer,
 		DateRange gpGueltigkeit
@@ -163,6 +198,16 @@ public class GeschwisterbonusSchwyzAbschnittRule extends AbstractAbschnittRule {
 			);
 	}
 
+	/**
+	 * Creates {@link VerfuegungZeitabschnittKindTuple} for the times where the kind is in betreuung.
+	 * A Kind is only then considered in Betreuung when it has a {@link Betreuungspensum} that has not
+	 * a 0-Pensum and 0-Kosten.
+	 *
+	 * @param kindContainer The Kind for which to create the abschnitte
+	 * @param platz the Betreuung of the Kind
+	 * @param gpGueltigkeit the {@link DateRange} of the {@link Gesuchsperiode}
+	 * @return {@link VerfuegungZeitabschnittKindTuple} for the abschnitte where the kind is in Betreuung
+	 */
 	@Nonnull
 	private Stream<VerfuegungZeitabschnittKindTuple> createAbschnittGeburtstagTuplesForBetreuungen(
 		KindContainer kindContainer,
@@ -176,6 +221,13 @@ public class GeschwisterbonusSchwyzAbschnittRule extends AbstractAbschnittRule {
 				betreuung -> betreuung.getBetreuungspensumContainers()
 					.stream()
 			)
+			.filter(betreuungspensumContainer -> {
+				var ja = betreuungspensumContainer.getBetreuungspensumJA();
+				return ja.getPensum().compareTo(BigDecimal.ZERO) > 0
+					&& ja.getMonatlicheBetreuungskosten()
+						.compareTo(BigDecimal.ZERO)
+						> 0;
+			})
 			.map(
 				betreuungspensumContainer -> {
 					VerfuegungZeitabschnitt zeitabschnitt =

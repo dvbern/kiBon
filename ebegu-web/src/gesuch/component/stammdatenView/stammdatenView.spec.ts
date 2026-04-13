@@ -14,8 +14,8 @@
  */
 
 import {waitForAsync} from '@angular/core/testing';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
+import {HybridFormBridgeService} from '@utils/hybrid-form-bridge';
 import angular, {IQService, IScope, ITimeoutService} from 'angular';
 import moment from 'moment/moment';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
@@ -23,8 +23,10 @@ import {DemoFeatureRS} from '../../../app/core/service/demoFeatureRS.rest';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {EwkRS} from '../../../app/core/service/ewkRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
 import {TSCreationAction} from '../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../models/enums/TSEingangsart';
@@ -33,10 +35,8 @@ import {TSGesuchstellerKardinalitaet} from '../../../models/enums/TSGesuchstelle
 import {TSUnterhaltsvereinbarungAnswer} from '../../../models/enums/TSUnterhaltsvereinbarungAnswer';
 import {TSFamiliensituation} from '../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../models/TSFamiliensituationContainer';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSGesuchsteller} from '../../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../../models/TSGesuchstellerContainer';
-import {TSDateRange} from '@kibon/shared/model/entity';
 import {GESUCH_JS_MODULE} from '../../gesuch.module';
 import {IStammdatenStateParams} from '../../gesuch.route';
 import {DokumenteRS} from '../../service/dokumenteRS.rest';
@@ -55,7 +55,7 @@ xdescribe('stammdatenView', () => {
     let ewkRS: EwkRS;
     let $timeout: ITimeoutService;
     let einstellungRS: EinstellungRS;
-    let applicationPropertyRS: SharedUtilApplicationPropertyRsService;
+    let applicationPropertyRS: ApplicationPropertyRsService;
     let uploadRS: UploadRS;
     let downloadRS: DownloadRS;
     let dokumentRS: DokumenteRS;
@@ -87,7 +87,7 @@ xdescribe('stammdatenView', () => {
             $timeout = $injector.get('$timeout');
             einstellungRS = $injector.get('EinstellungRS');
             applicationPropertyRS = $injector.get(
-                'SharedUtilApplicationPropertyRsService'
+                'ApplicationPropertyRsService'
             );
             uploadRS = $injector.get('UploadRS');
             downloadRS = $injector.get('DownloadRS');

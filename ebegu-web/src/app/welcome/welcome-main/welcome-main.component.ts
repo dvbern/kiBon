@@ -18,10 +18,10 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {StateService} from '@uirouter/core';
 import {map} from 'rxjs/operators';
-import {MandantLogoNameVisitor} from '@kibon/shared-model-mandant';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ITourParams} from '../../../gesuch/gesuch.route';
+import {MandantLogoNameVisitor} from '@models/mandant';
 import {
     navigateToStartPageForRole,
     navigateToStartPageForRoleWithParams

@@ -19,5 +19,5 @@
 package ch.dvbern.ebegu.einstellung;
 
 public enum KeyGroup {
-	ABGELOESTE_VIEW
+	ABGELOESTE_VIEW, QUARKUS_STATISTIK
 }

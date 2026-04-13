@@ -27,7 +27,7 @@ import {
     VerfuegungPO
 } from '@dv-e2e/page-objects';
 import {GemeindeTestFall, getUser, TestGesuchstellende} from '@dv-e2e/types';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MANDANTS} from '@models/mandant';
 
 describe('Mittagstisch Anmeldung', () => {
     const besitzerin: TestGesuchstellende = '[5-GS] Heinrich Müller';

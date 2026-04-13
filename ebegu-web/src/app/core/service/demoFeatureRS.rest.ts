@@ -16,16 +16,16 @@
  */
 
 import {Injectable, inject} from '@angular/core';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {map} from 'rxjs/operators';
-import {TSDemoFeature} from '@kibon/shared/model/enums';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
 
 @Injectable({
     providedIn: 'root'
 })
 export class DemoFeatureRS {
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
 
     public isDemoFeatureAllowed(dvDemoFeature: TSDemoFeature) {

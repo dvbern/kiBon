@@ -26,33 +26,30 @@ import {
 import {NgForm, NgModel} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {InstitutionNameStammdatenIdDto} from '@kibon/shared/model/dto';
-import {
-    TSGemeinde,
-    TSGesuchsperiode,
-    TSInstitution,
-    TSInstitutionStammdaten
-} from '@kibon/shared/model/entity';
-import {
-    TSBetreuungsangebotTyp,
-    TSDemoFeature,
-    TSRole
-} from '@kibon/shared/model/enums';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {MomentUtil} from '@utils/moment';
+import {Observable} from 'rxjs';
+import {CONSTANTS} from '@models/constants';
+import {LogFactory} from '@utils/log';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import moment from 'moment';
-import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {InstitutionNameStammdatenIdDto} from '../../../models/dto/InstitutionNameStammdatenIdDto.interface';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
+import {TSRole} from '../../../models/enums/TSRole';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
 import {TSStatistikParameterType} from '../../../models/enums/TSStatistikParameterType';
 import {TSStatistikParameter} from '../../../models/TSStatistikParameter';
 import {TSWorkJob} from '../../../models/TSWorkJob';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BatchJobRS} from '../../core/service/batchRS.rest';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
@@ -85,9 +82,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
     private readonly gemeindeRS = inject(GemeindeRS);
     private readonly cd = inject(ChangeDetectorRef);
     private readonly lastenausgleichRS = inject(LastenausgleichRS);
-    readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
-    );
+    readonly applicationPropertyRS = inject(ApplicationPropertyRsService);
 
     public readonly TSStatistikParameterType = TSStatistikParameterType;
     public readonly TSRole = TSRole;
@@ -116,6 +111,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
     public tagesschulenStammdatenFilterList: InstitutionNameStammdatenIdDto[] =
         [];
     public bgInstitutionen: TSInstitution[];
+    public hasBgInstitutionen$: Observable<boolean>;
     public gemeinden: TSGemeinde[];
     public gemeindenMahlzeitenverguenstigungen: TSGemeinde[];
     public flagShowErrorNoGesuchSelected: boolean = false;
@@ -158,8 +154,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
                 this.cd.markForCheck();
             });
 
-        this.loadBGInstitutionen();
-
         this.gemeindeRS.getGemeindenForPrincipal$().subscribe(gemeinden => {
             this.gemeinden = gemeinden;
             this.cd.markForCheck();
@@ -198,6 +192,17 @@ export class StatistikComponent implements OnInit, OnDestroy {
                 this.updateShowKantonStatistik();
                 this.tagesschulenActive = res.angebotTSActivated;
             });
+
+        // observable is prefered here over signal
+        // for auto unsubscribe + async pipe in template call
+        this.hasBgInstitutionen$ = this.getInstitutionen().pipe(
+            map(institutionen => {
+                this.bgInstitutionen =
+                    StatistikComponent.sortByName(institutionen);
+                return this.bgInstitutionen.length > 0;
+            }),
+            startWith(false) // renders immediately as false to show in template
+        );
     }
 
     public ngOnDestroy(): void {
@@ -205,6 +210,17 @@ export class StatistikComponent implements OnInit, OnDestroy {
             clearInterval(this.polling);
             LOG.debug('canceled job polling');
         }
+    }
+
+    private getInstitutionen(): Observable<TSInstitution[]> {
+        if (
+            this.authServiceRS.isOneOfRoles(
+                TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
+            )
+        ) {
+            return this.institutionRS.getAllBgInstitutionenEditableForCurrentBenutzer();
+        }
+        return this.institutionRS.getAllBgInstitutionenReadableForCurrentBenutzer();
     }
 
     private initBatchJobPolling(): void {
@@ -553,30 +569,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
         const startmsg = this.translate.instant('STARTED_GENERATION');
         this.errorService.addMesageAsInfo(startmsg);
         this.refreshUserJobs();
-    }
-
-    private loadBGInstitutionen(): void {
-        // bei trägerschaften und Institutionen laden wir nur die Institutionen, für die sie berechtigt sind.
-        if (
-            this.authServiceRS.isOneOfRoles(
-                TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
-            )
-        ) {
-            this.institutionRS
-                .getAllBgInstitutionenEditableForCurrentBenutzer()
-                .subscribe(institutionen => {
-                    this.bgInstitutionen =
-                        StatistikComponent.sortByName(institutionen);
-                });
-            return;
-        }
-        // mandanten und gemeinden sollen grundsätzlich alle Institutionen sehen.
-        this.institutionRS
-            .getAllBgInstitutionenReadableForCurrentBenutzer()
-            .subscribe(institutionen => {
-                this.bgInstitutionen =
-                    StatistikComponent.sortByName(institutionen);
-            });
     }
 
     public downloadStatistik(row: TSWorkJob): void {
@@ -929,23 +921,13 @@ export class StatistikComponent implements OnInit, OnDestroy {
         );
     }
 
-    public showZahlungenStatistik(): boolean {
+    public showZahlungenStatistikAllowedForRoles() {
         // die Statistik wird nur gezeigt, falls der User für mindestens eine BG Institution berechtigt ist.
         // ansonsten handelt es sich allenfalls um einen TS Institution User
-        return (
-            this.authServiceRS.isOneOfRoles(
-                TSRoleUtil.getGemeindeOrBGRoles()
-                    .concat(TSRoleUtil.getMandantRoles())
-                    .concat(TSRoleUtil.getTraegerschaftInstitutionOnlyRoles())
-            ) && this.bgInstitutionen?.length > 0
-        );
-    }
-
-    public showZahlungenStatistikAllowedForRoles() {
         return this.authServiceRS.isOneOfRoles(
-            TSRoleUtil.getGemeindeRoles()
+            TSRoleUtil.getGemeindeOrBGRoles()
+                .concat(TSRoleUtil.getMandantRoles())
                 .concat(TSRoleUtil.getTraegerschaftInstitutionOnlyRoles())
-                .concat(TSRoleUtil.getMandantOnlyRoles())
         );
     }
 
@@ -962,11 +944,17 @@ export class StatistikComponent implements OnInit, OnDestroy {
     }
 
     public requiredIfAlleGemeinden(): boolean {
-        return EbeguUtil.isNullOrUndefined(this.statistikParameter.gemeinde);
+        return (
+            EbeguUtil.isNullOrUndefined(this.statistikParameter.gemeinde) ||
+            this.statistikParameter.gemeinde === ('ALLE' as any)
+        );
     }
 
     public requiredIfAlleInstitutionen(): boolean {
-        return EbeguUtil.isNullOrUndefined(this.statistikParameter.institution);
+        return (
+            EbeguUtil.isNullOrUndefined(this.statistikParameter.institution) ||
+            this.statistikParameter.institution === ('ALLE' as any)
+        );
     }
 
     public getActiveGesuchsperioden(): TSGesuchsperiode[] {
@@ -1022,6 +1010,15 @@ export class StatistikComponent implements OnInit, OnDestroy {
         }
     }
 
-    protected readonly SharedUtilApplicationPropertyRsService =
-        SharedUtilApplicationPropertyRsService;
+    protected readonly ApplicationPropertyRsService =
+        ApplicationPropertyRsService;
+
+    public bgZahlungenStatistikGemeindeAndInstitutionAlleSelected(): any {
+        return (
+            (EbeguUtil.isNullOrUndefined(this.statistikParameter.gemeinde) ||
+                this.statistikParameter.gemeinde === ('ALLE' as any)) &&
+            (EbeguUtil.isNullOrUndefined(this.statistikParameter.institution) ||
+                this.statistikParameter.institution === ('ALLE' as any))
+        );
+    }
 }

@@ -17,48 +17,9 @@
 
 import {Injectable} from '@angular/core';
 import moment from 'moment';
-import {TSAnmeldungDTO} from '@kibon/shared/model/dto';
-import {
-    ferienInselNameOrder,
-    TSAdressetyp,
-    TSEinschulungTyp
-} from '@kibon/shared/model/enums';
-import {
-    TSAbstractDateRangedEntity,
-    TSAbstractIntegerPensumEntity,
-    TSAbstractPersonEntity,
-    TSDateRange,
-    TSFachstellenTyp,
-    TSPensumAusserordentlicherAnspruch,
-    TSPensumFachstelle,
-    TSAbstractEntity,
-    TSAbstractMutableEntity,
-    TSWizardStep,
-    TSFachstelle,
-    TSEinstellungenFerieninsel,
-    TSInstitutionStammdaten,
-    TSInstitutionStammdatenTagesschule,
-    TSInstitutionStammdatenSummary,
-    TSInstitutionStammdatenFerieninsel,
-    TSEinstellungenTagesschule,
-    TSTextRessource,
-    TSModulTagesschule,
-    TSModulTagesschuleGroup,
-    TSMandant,
-    TSAdresse,
-    TSGemeinde,
-    TSInstitution,
-    TSInstitutionStammdatenBetreuungsgutscheine,
-    TSGesuchsperiode,
-    TSTraegerschaft
-} from '@kibon/shared/model/entity';
-import {TSKind} from '@kibon/kind/model/entity';
-import {
-    TSApplicationProperty,
-    TSPublicAppConfig
-} from '@kibon/shared/model/einstellung';
 import {BenutzerListFilter} from '../admin/component/benutzerListView/dv-benutzer-list/BenutzerListFilter';
 import {TSFerienbetreuungBerechnung} from '../app/gemeinde-antraege/ferienbetreuung/ferienbetreuung-kosten-einnahmen/TSFerienbetreuungBerechnung';
+import {TSAnmeldungDTO} from '../models/dto/TSAnmeldungDTO';
 import {TSBenutzerTableFilterDTO} from '../models/dto/TSBenutzerTableFilterDTO';
 import {TSDokumenteDTO} from '../models/dto/TSDokumenteDTO';
 import {TSFinanzielleSituationAufteilungDTO} from '../models/dto/TSFinanzielleSituationAufteilungDTO';
@@ -66,12 +27,35 @@ import {TSFinanzielleSituationResultateDTO} from '../models/dto/TSFinanzielleSit
 import {TSKitaxResponse} from '../models/dto/TSKitaxResponse';
 import {TSQuickSearchResult} from '../models/dto/TSQuickSearchResult';
 import {TSSearchResultEntry} from '../models/dto/TSSearchResultEntry';
+import {TSPublicAppConfig} from '../models/einstellung/TSPublicAppConfig';
+import {TSAbstractIntegerPensumEntity} from '../models/entity/TSAbstractIntegerPensumEntity';
+import {TSEinstellungenFerieninsel} from '../models/entity/TSEinstellungenFerieninsel';
+import {TSEinstellungenTagesschule} from '../models/entity/TSEinstellungenTagesschule';
+import {TSFachstelle} from '../models/entity/TSFachstelle';
+import {TSInstitution} from '../models/entity/TSInstitution';
+import {TSInstitutionStammdaten} from '../models/entity/TSInstitutionStammdaten';
+import {TSInstitutionStammdatenBetreuungsgutscheine} from '../models/entity/TSInstitutionStammdatenBetreuungsgutscheine';
+import {TSInstitutionStammdatenFerieninsel} from '../models/entity/TSInstitutionStammdatenFerieninsel';
+import {TSInstitutionStammdatenSummary} from '../models/entity/TSInstitutionStammdatenSummary';
+import {TSInstitutionStammdatenTagesschule} from '../models/entity/TSInstitutionStammdatenTagesschule';
+import {TSKind} from '../models/entity/TSKind';
+import {TSMandant} from '../models/entity/TSMandant';
+import {TSModulTagesschule} from '../models/entity/TSModulTagesschule';
+import {TSModulTagesschuleGroup} from '../models/entity/TSModulTagesschuleGroup';
+import {TSPensumAusserordentlicherAnspruch} from '../models/entity/TSPensumAusserordentlicherAnspruch';
+import {TSPensumFachstelle} from '../models/entity/TSPensumFachstelle';
+import {TSTextRessource} from '../models/entity/TSTextRessource';
+import {TSTraegerschaft} from '../models/entity/TSTraegerschaft';
+import {TSWizardStep} from '../models/entity/TSWizardStep';
 import {TSBetreuungspensumAbweichungStatus} from '../models/enums/betreuung/TSBetreuungspensumAbweichungStatus';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
-import {TSAusserordentlicherAnspruchTyp} from '@kibon/shared/model/enums';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
-import {TSKinderabzugTyp} from '@kibon/shared/model/enums';
-import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
+import {TSAusserordentlicherAnspruchTyp} from '../models/enums/TSAusserordentlicherAnspruchTyp';
+import {TSEinschulungTyp} from '../models/enums/TSEinschulungTyp';
+import {TSFachstellenTyp} from '../models/enums/TSFachstellenTyp';
+import {ferienInselNameOrder} from '../models/enums/TSFerienname';
+import {TSFinanzielleSituationTyp} from '../models/enums/TSFinanzielleSituationTyp';
+import {TSKinderabzugTyp} from '../models/enums/TSKinderabzugTyp';
+import {TSPensumAnzeigeTyp} from '../models/enums/TSPensumAnzeigeTyp';
 import {TSGemeindeKennzahlen} from '../models/gemeindeantrag/gemeindekennzahlen/TSGemeindeKennzahlen';
 import {TSAnzahlEingeschriebeneKinder} from '../models/gemeindeantrag/TSAnzahlEingeschriebeneKinder';
 import {TSDurchschnittKinderProTag} from '../models/gemeindeantrag/TSDurchschnittKinderProTag';
@@ -183,10 +167,20 @@ import {TSVerfuegungZeitabschnittBemerkung} from '../models/TSVerfuegungZeitabsc
 import {TSVersendeteMail} from '../models/TSVersendeteMail';
 import {TSWizardStepX} from '../models/TSWizardStepX';
 import {TSWorkJob} from '../models/TSWorkJob';
-import {TSZahlung, TSZahlungsauftrag} from '@kibon/zahlung/model/entity';
+import {TSZahlung, TSZahlungsauftrag} from '@models/zahlung';
 import {TSLand} from '../models/types/TSLand';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from './EbeguUtil';
+import {TSApplicationProperty} from '../models/einstellung/TSApplicationProperty';
+import {TSAbstractEntity} from '../models/entity/TSAbstractEntity';
+import {MomentUtil} from './date/MomentUtil';
+import {TSAbstractMutableEntity} from '../models/entity/TSAbstractMutableEntity';
+import {TSAbstractPersonEntity} from '../models/entity/TSAbstractPersonEntity';
+import {TSAbstractDateRangedEntity} from '../models/entity/TSAbstractDateRangedEntity';
+import {TSDateRange} from '../models/entity/TSDateRange';
+import {TSGesuchsperiode} from '../models/entity/TSGesuchsperiode';
+import {TSAdresse} from '../models/entity/TSAdresse';
+import {TSAdressetyp} from '../models/enums/TSAdressetyp';
+import {TSGemeinde} from '../models/entity/TSGemeinde';
 
 @Injectable({
     providedIn: 'root'

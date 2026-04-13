@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from '../../../../models/entity/TSAbstractEntity';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 
 export class TSFerienbetreuungBerechnung extends TSAbstractEntity {

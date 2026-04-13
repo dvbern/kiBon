@@ -17,14 +17,14 @@
 
 import {CurrencyPipe} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {ZahlungslaufErstellenComponent} from '@app/zahlung/zahlungslauf-erstellen';
 import {NgGesuchModule} from '../../gesuch/ng-gesuch.module';
 import {CoreModule} from '../core/core.module';
 import {SharedModule} from '../shared/shared.module';
 import {ZahlungRoutingModule} from './zahlung-routing/zahlung-routing.module';
 import {ZahlungsauftragViewXComponent} from './zahlungsauftrag-view-x/zahlungsauftrag-view-x.component';
 import {ZahlungviewXComponent} from './zahlungview-x/zahlungview-x.component';
-import {ZahlungUiZahlungslaufErstellenComponent} from '@kibon/zahlung/ui/zahlungslauf-erstellen';
-import {ZahlungUtilZahlungService} from '@kibon/zahlung/util/zahlung-service';
+import {ZahlungService} from '@app/zahlung/service';
 
 @NgModule({
     imports: [
@@ -32,9 +32,9 @@ import {ZahlungUtilZahlungService} from '@kibon/zahlung/util/zahlung-service';
         NgGesuchModule,
         CoreModule,
         ZahlungRoutingModule,
-        ZahlungUiZahlungslaufErstellenComponent
+        ZahlungslaufErstellenComponent
     ],
     declarations: [ZahlungsauftragViewXComponent, ZahlungviewXComponent],
-    providers: [CurrencyPipe, ZahlungUtilZahlungService]
+    providers: [CurrencyPipe, ZahlungService]
 })
 export class ZahlungXModule {}

@@ -15,28 +15,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    getAllWizardStepsWithoutFinSitSteps,
-    isBetreuungsstatusStorniert,
-    TSBetreuungsstatus,
-    TSWizardStepName,
-    TSWizardStepStatus,
-    TSRole,
-    TSSprache,
-    TSBetreuungsangebotTyp
-} from '@kibon/shared/model/enums';
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, IPromise} from 'angular';
 import moment from 'moment';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {TSDemoFeature} from '@kibon/shared/model/enums';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSBedarfsstufe} from '../../../models/enums/betreuung/TSBedarfsstufe';
+import {
+    isBetreuungsstatusStorniert,
+    TSBetreuungsstatus
+} from '../../../models/enums/betreuung/TSBetreuungsstatus';
 import {
     isAnyStatusOfMahnung,
     isAnyStatusOfVerfuegt,
@@ -45,16 +38,25 @@ import {
     TSAntragStatus
 } from '../../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {TSFinSitStatus} from '../../../models/enums/TSFinSitStatus';
 import {TSMahnungTyp} from '../../../models/enums/TSMahnungTyp';
+import {TSRole} from '../../../models/enums/TSRole';
+import {TSSprache} from '../../../models/enums/TSSprache';
+import {
+    getAllWizardStepsWithoutFinSitSteps,
+    TSWizardStepName
+} from '../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
 import {TSFall} from '../../../models/TSFall';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {TSMahnung} from '../../../models/TSMahnung';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {navigateToStartPageForRole} from '../../../utils/AuthenticationUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {EnumEx} from '../../../utils/EnumEx';
@@ -69,8 +71,8 @@ import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
 import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {firstValueFrom} from 'rxjs';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
 
 const removeDialogTempl = require('../../dialog/removeDialogTemplate.html');
 const bemerkungDialogTempl = require('../../dialog/bemerkungenDialogTemplate.html');
@@ -105,7 +107,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         'EinstellungRS',
         'GesuchsperiodeRS',
         'EbeguUtil',
-        'SharedUtilApplicationPropertyRsService'
+        'ApplicationPropertyRsService'
     ];
     public hasAnyNewOrStornierteBetreuung: boolean = false;
     public veraenderungBG: number;
@@ -145,7 +147,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         private readonly einstellungRS: EinstellungRS,
         private readonly gesuchsperiodeRS: GesuchsperiodeRS,
         ebeguUtil: EbeguUtil,
-        private readonly applicationPropertService: SharedUtilApplicationPropertyRsService
+        private readonly applicationPropertService: ApplicationPropertyRsService
     ) {
         super(
             gesuchModelManager,

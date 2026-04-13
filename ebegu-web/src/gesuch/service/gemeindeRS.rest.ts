@@ -25,13 +25,15 @@ import {
 } from 'angular';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
-import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {TSRole, TSSprache} from '@kibon/shared/model/enums';
 import {IEntityRS} from '../../app/core/service/iEntityRS.rest';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
-import {TSCacheTyp} from '@kibon/shared/model/enums';
+import {TSGemeinde} from '../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../models/entity/TSGesuchsperiode';
+import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
 import {TSDokumentTyp} from '../../models/enums/TSDokumentTyp';
 import {TSMusterDokumentTyp} from '../../models/enums/TSMusterDokumentTyp';
+import {TSRole} from '../../models/enums/TSRole';
+import {TSSprache} from '../../models/enums/TSSprache';
 import {TSBenutzer} from '../../models/TSBenutzer';
 import {TSBfsGemeinde} from '../../models/TSBfsGemeinde';
 import {TSExternalClientAssignment} from '../../models/TSExternalClientAssignment';

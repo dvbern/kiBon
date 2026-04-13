@@ -1,0 +1,19 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "out-tsc/app",
+        "types": ["webpack-env"],
+        "moduleResolution": "bundler"
+    },
+    "include": ["src/**/*.ts", "src/**/*.html"],
+    "exclude": [
+        "test.ts",
+        "**/*.spec.ts",
+        "src/hybridTools/*.ts",
+        "src/gesuch/component/finanzielleSituation/solothurn/SolothurnFinSitTestHelpers.ts",
+        "src/environments/environment.prod.ts",
+        "src/environments/environment.test.ts",
+        "src/test.ts",
+        "src/hybrid/gesuch/betreuung/tabellarische-maske/util/test/TestUtils.ts"
+    ]
+}

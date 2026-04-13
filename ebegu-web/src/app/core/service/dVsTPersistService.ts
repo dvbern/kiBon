@@ -15,7 +15,7 @@
 
 import {AuthLifeCycleService} from '../../../authentication/service/authLifeCycle.service';
 import {TSAuthEvent} from '../../../models/enums/TSAuthEvent';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 
 const LOG = LogFactory.createLog('DVsTPersistService');
 

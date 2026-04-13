@@ -29,7 +29,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import moment from 'moment';
 import {UebersichtVersendeteMailsRS} from '../../../app/core/service/uebersichtVersendeteMailsRS';
 import {rxResource, takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {debounceSignal} from '@kibon/shared-util-signal-helpers';
+import {debounceSignal} from '../../../utils/signal-helpers/debounce-signal';
 
 const initialSort: Sort = {active: 'zeitpunktVersand', direction: 'desc'};
 

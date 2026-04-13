@@ -13,10 +13,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {getTSRoleValues, TSRole} from '@kibon/shared/model/enums';
 import {Ng1StateDeclaration} from '@uirouter/angularjs';
 import {TargetState, Transition} from '@uirouter/core';
 import {RouterHelper} from '../dvbModules/router/route-helper-provider';
+import {getTSRoleValues, TSRole} from '../models/enums/TSRole';
 import {getRoleBasedTargetState} from '../utils/AuthenticationUtil';
 
 authenticationRoutes.$inject = ['RouterHelper'];

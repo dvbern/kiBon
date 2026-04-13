@@ -20,30 +20,28 @@ import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {IDVFocusableController} from '../../../app/core/component/IDVFocusableController';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
 import {TSFamilienstatus} from '../../../models/enums/TSFamilienstatus';
-import {
-    TSRole,
-    TSWizardStepName,
-    TSWizardStepStatus
-} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSUnterhaltsvereinbarungAnswer} from '../../../models/enums/TSUnterhaltsvereinbarungAnswer';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+import {KiBonMandant} from '@models/mandant';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSErwerbspensumContainer} from '../../../models/TSErwerbspensumContainer';
 import {TSFamiliensituation} from '../../../models/TSFamiliensituation';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '../../../utils/dv-show-warning-angaben-vervollstaendingen/shared-util-dv-show-warning-angaben-vervollstaendingen.service';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
 import {BerechnungsManager} from '../../service/berechnungsManager';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
-import {KiBonMandant} from '@kibon/shared-model-mandant';
-import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;

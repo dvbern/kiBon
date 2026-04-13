@@ -16,7 +16,7 @@
  */
 
 import {TSSteuerdatenAnfrageStatus} from './enums/TSSteuerdatenAnfrageStatus';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSFinanzielleSituationSelbstdeklaration} from './TSFinanzielleSituationSelbstdeklaration';
 import {TSFinSitZusatzangabenAppenzell} from './TSFinSitZusatzangabenAppenzell';
 

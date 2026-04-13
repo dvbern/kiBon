@@ -38,10 +38,10 @@ import {ChangeDetectionStrategy, Component, Input, inject} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import moment from 'moment';
 import {Moment} from 'moment';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {TSAbstractMutableEntity} from '../../../../models/entity/TSAbstractMutableEntity';
+import {MomentUtil} from '../../../../utils/date/MomentUtil';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 @Component({
     selector: 'dv-bisher-x',
     templateUrl: './dv-bisher-x.component.html',

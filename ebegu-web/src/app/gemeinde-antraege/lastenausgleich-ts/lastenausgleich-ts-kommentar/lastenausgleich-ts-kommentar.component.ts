@@ -31,7 +31,7 @@ import {ReplaySubject, Subscription} from 'rxjs';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {BenutzerRSX} from '../../../core/service/benutzerRSX.rest';
 import {LastenausgleichTSService} from '../services/lastenausgleich-ts.service';
 

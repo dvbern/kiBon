@@ -20,8 +20,8 @@ import {StateService} from '@uirouter/core';
 import {of} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
+import {WindowRef} from '../../../utils/window-ref/windowRef.service';
 import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 import {MaterialModule} from '../../shared/material.module';
 import {SharedModule} from '../../shared/shared.module';
 

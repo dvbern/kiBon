@@ -22,8 +22,8 @@ import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest'
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
+import {WindowRef} from '../../../utils/window-ref/windowRef.service';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 import {I18nServiceRSRest} from '../../i18n/services/i18nServiceRS.rest';
 import {SharedModule} from '../../shared/shared.module';
 import {GemeindeListComponent} from './gemeinde-list.component';

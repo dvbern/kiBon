@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
+import {BetreuungRS} from '@hybrid/gesuch/betreuung';
 import * as angular from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {DossierRS} from '../../../../gesuch/service/dossierRS.rest';
@@ -23,14 +23,13 @@ import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {GesuchRS} from '../../../../gesuch/service/gesuchRS.rest';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
+import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
 import {TSMitteilungStatus} from '../../../../models/enums/TSMitteilungStatus';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
 import {TSDossier} from '../../../../models/TSDossier';
 import {TSFall} from '../../../../models/TSFall';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-
 import {TSGemeindeStammdaten} from '../../../../models/TSGemeindeStammdaten';
 import {TSMitteilung} from '../../../../models/TSMitteilung';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';

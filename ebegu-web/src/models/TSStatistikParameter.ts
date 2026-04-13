@@ -16,13 +16,11 @@
  */
 
 import moment from 'moment';
+import {InstitutionNameStammdatenIdDto} from './dto/InstitutionNameStammdatenIdDto.interface';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSGemeinde} from './entity/TSGemeinde';
+import {TSInstitution} from './entity/TSInstitution';
 import {TSDatumTyp} from './enums/TSDatumTyp';
-import {
-    TSAbstractMutableEntity,
-    TSGemeinde,
-    TSInstitution
-} from '@kibon/shared/model/entity';
-import {InstitutionNameStammdatenIdDto} from '@kibon/shared/model/dto';
 
 export class TSStatistikParameter extends TSAbstractMutableEntity {
     private _jahr: number;

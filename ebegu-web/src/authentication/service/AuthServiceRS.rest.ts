@@ -13,18 +13,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {TSRole} from '@kibon/shared/model/enums';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {CONSTANTS} from '@models/constants';
+
+import {LogFactory} from '@utils/log';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import * as Sentry from '@sentry/browser';
 import {StateService, TargetState} from '@uirouter/core';
 import * as angular from 'angular';
-
 import {Observable, ReplaySubject} from 'rxjs';
 import {Permission} from '../../app/authorisation/Permission';
 import {PERMISSIONS} from '../../app/authorisation/Permissions';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
+import {TSRole} from '../../models/enums/TSRole';
 import {TSBenutzer} from '../../models/TSBenutzer';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../utils/EbeguUtil';
@@ -44,7 +44,7 @@ export class AuthServiceRS {
         '$state',
         'EbeguRestUtil',
         'AuthLifeCycleService',
-        'SharedUtilApplicationPropertyRsService'
+        'ApplicationPropertyRsService'
     ];
 
     private principal?: TSBenutzer;
@@ -66,7 +66,7 @@ export class AuthServiceRS {
         private readonly $state: StateService,
         private readonly ebeguRestUtil: EbeguRestUtil,
         private readonly authLifeCycleService: AuthLifeCycleService,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
+        private readonly applicationPropertyRS: ApplicationPropertyRsService
     ) {
         this.applicationPropertyRS
             .getPublicPropertiesCached()

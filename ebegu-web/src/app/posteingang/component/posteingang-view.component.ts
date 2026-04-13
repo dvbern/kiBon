@@ -20,45 +20,45 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnDestroy,
-    OnInit,
-    ViewChild,
-    inject,
-    signal,
     computed,
     effect,
-    linkedSignal
+    inject,
+    linkedSignal,
+    OnDestroy,
+    OnInit,
+    signal,
+    ViewChild
 } from '@angular/core';
 import {rxResource, toSignal} from '@angular/core/rxjs-interop';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-import {TSRole} from '@kibon/shared/model/enums';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {from, Subject} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSPagination} from '../../../models/dto/TSPagination';
 import {DVErrorMessageCallback} from '../../../models/DVErrorMessageCallback';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
 import {
     getTSMitteilungsStatusForFilter,
     TSMitteilungStatus
 } from '../../../models/enums/TSMitteilungStatus';
 import {TSMitteilungTyp} from '../../../models/enums/TSMitteilungTyp';
 import {TSMitteilungTypes} from '../../../models/enums/TSMitteilungTypes';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSVerantwortung} from '../../../models/enums/TSVerantwortung';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
 import {TSBetreuungsmitteilung} from '../../../models/TSBetreuungsmitteilung';
-
 import {TSMitteilung} from '../../../models/TSMitteilung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
 import {DvNgMitteilungResultDialogComponent} from '../../core/component/dv-ng-mitteilung-result-dialog/dv-ng-mitteilung-result-dialog.component';
-import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorServiceX} from '../../core/errors/service/ErrorServiceX';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 import {MitteilungRS} from '../../core/service/mitteilungRS.rest';
@@ -87,6 +87,9 @@ export class PosteingangViewComponent
     private readonly dialog = inject(MatDialog);
     private readonly translate = inject(TranslateService);
     private readonly errorService = inject(ErrorServiceX);
+    private readonly applicationPropertyService = inject(
+        ApplicationPropertyRsService
+    );
 
     @ViewChild(MatSort) private readonly matSort: MatSort;
 
@@ -150,6 +153,12 @@ export class PosteingangViewComponent
             )
     });
 
+    applicationProperties = rxResource({
+        params: () => ({}),
+        stream: () =>
+            this.applicationPropertyService.getPublicPropertiesCached()
+    });
+
     private principal = toSignal(this.authServiceRS.principal$, {
         initialValue: null
     });
@@ -182,6 +191,15 @@ export class PosteingangViewComponent
         return [...this.gemeindenList()].sort((a, b) =>
             a.name.localeCompare(b.name)
         );
+    });
+
+    public verantwortungList = computed(() => {
+        const verantwortungen = [TSVerantwortung.VERANTWORTUNG_BG];
+        const appProps = this.applicationProperties.value();
+        if (appProps.angebotTSActivated) {
+            verantwortungen.push(TSVerantwortung.VERANTWORTUNG_TS);
+        }
+        return verantwortungen;
     });
 
     private readonly timeoutMS = 700;
@@ -224,7 +242,6 @@ export class PosteingangViewComponent
 
     public totalResultCount: number = 0;
 
-    public numberOfPages: number = 1;
     public paginationItems: number[];
     public initialEmpfaenger: TSBenutzerNoDetails;
 
@@ -310,13 +327,6 @@ export class PosteingangViewComponent
             dossierId: mitteilung.dossier.id,
             fallId: mitteilung.dossier.fall.id
         });
-    }
-
-    public getVerantwortungList(): Array<string> {
-        return [
-            TSVerantwortung.VERANTWORTUNG_BG,
-            TSVerantwortung.VERANTWORTUNG_TS
-        ];
     }
 
     public getMitteilungsStatus(): Array<TSMitteilungStatus> {
@@ -520,12 +530,12 @@ export class PosteingangViewComponent
                 this.dialog
                     .open(DvNgMitteilungResultDialogComponent, dialogConfig)
                     .afterClosed()
-                    .subscribe(
-                        () => {
+                    .subscribe({
+                        next: () => {
                             this.getMitteilungenCount();
                         },
-                        () => {}
-                    );
+                        error: () => {}
+                    });
             });
     }
 

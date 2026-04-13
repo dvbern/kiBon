@@ -23,8 +23,8 @@ import {
 } from '@uirouter/core';
 import {combineLatest, firstValueFrom} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {TSRole} from '@kibon/shared/model/enums';
+import {LogFactory} from '@utils/log';
+import {TSRole} from '../../../models/enums/TSRole';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
 import {OnBeforePriorities} from './onBeforePriorities';
 

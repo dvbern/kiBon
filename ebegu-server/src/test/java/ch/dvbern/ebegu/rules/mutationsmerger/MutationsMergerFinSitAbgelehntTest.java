@@ -35,6 +35,7 @@ import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragTyp;
 import ch.dvbern.ebegu.enums.FinSitStatus;
+import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationBernRechner;
 import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
@@ -54,7 +55,7 @@ public class MutationsMergerFinSitAbgelehntTest {
 	private final MutationsMerger mutationsMerger = new MutationsMerger(
 		Locale.GERMAN,
 		IS_DEBUG,
-		false
+		new MutationsMergerParameter(false, GeschwisterbonusTyp.NONE)
 	);
 
 	private static final BigDecimal EINKOMMEN_HOEHER = MathUtil.DEFAULT

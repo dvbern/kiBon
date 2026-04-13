@@ -24,13 +24,13 @@ import {
 } from '@angular/core';
 import {TranslateModule} from '@ngx-translate/core';
 import {Observable, of} from 'rxjs';
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
+import {MandantService} from '@utils/mandant';
 import {NewUserSelectDirective} from '../app/core/new-antrag-list/new-user-select.directive';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 import {LoadingButtonDirective} from '../app/shared/directive/loading-button.directive';
 import {TooltipDirective} from '../app/shared/directive/TooltipDirective';
 import {TSBenutzerNoDetails} from '../models/TSBenutzerNoDetails';
+import {WindowRef} from '../utils/window-ref/windowRef.service';
 
 /**
  * This mock should be used when testing an angular component that uses LoadingButtonDirective

@@ -17,7 +17,7 @@
 
 import {copy} from 'angular';
 import {EbeguUtil} from '../utils/EbeguUtil';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
+import {TSFinanzielleSituationTyp} from './enums/TSFinanzielleSituationTyp';
 import {TSEinkommensverschlechterung} from './TSEinkommensverschlechterung';
 import {TSEinkommensverschlechterungContainer} from './TSEinkommensverschlechterungContainer';
 import {TSEinkommensverschlechterungInfoContainer} from './TSEinkommensverschlechterungInfoContainer';

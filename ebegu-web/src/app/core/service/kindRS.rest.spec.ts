@@ -17,7 +17,7 @@ import angular, {IHttpBackendService, IQService} from 'angular';
 import {WizardStepManager} from '../../../gesuch/service/wizardStepManager';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSKind} from '@kibon/kind/model/entity';
+import {TSKind} from '../../../models/entity/TSKind';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';

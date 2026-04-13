@@ -20,9 +20,9 @@ import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {TranslateService} from '@ngx-translate/core';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
+import {WindowRef} from '../../../../utils/window-ref/windowRef.service';
 import {MaterialModule} from '../../../shared/material.module';
 import {SharedModule} from '../../../shared/shared.module';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 
 import {DvBisherXComponent} from './dv-bisher-x.component';
 

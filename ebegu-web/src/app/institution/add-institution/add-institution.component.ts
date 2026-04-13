@@ -25,27 +25,23 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {CONSTANTS} from '@models/constants';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
 import moment from 'moment';
 import {take} from 'rxjs/operators';
-import {
-    TSInstitutionStatus,
-    TSRole,
-    TSBetreuungsangebotTyp
-} from '@kibon/shared/model/enums';
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {
-    TSGemeinde,
-    TSInstitution,
-    TSMandant,
-    TSTraegerschaft
-} from '@kibon/shared/model/entity';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSMandant} from '../../../models/entity/TSMandant';
+import {TSTraegerschaft} from '../../../models/entity/TSTraegerschaft';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSInstitutionStatus} from '../../../models/enums/TSInstitutionStatus';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSExceptionReport} from '../../../models/TSExceptionReport';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
+import {Log, LogFactory} from '../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DvNgGesuchstellerDialogComponent} from '../../core/component/dv-ng-gesuchsteller-dialog/dv-ng-gesuchsteller-dialog.component';
 import {DvNgSelectTraegerschaftEmailDialogComponent} from '../../core/component/dv-ng-select-traegerschaft-email-dialog/dv-ng-select-traegerschaft-email-dialog.component';
@@ -53,8 +49,6 @@ import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
-
-const LOG = LogFactory.createLog('AddInstitutionComponent');
 
 @Component({
     selector: 'dv-add-institution',
@@ -73,7 +67,7 @@ export class AddInstitutionComponent implements OnInit {
     private readonly benutzerRS = inject(BenutzerRSX);
     private readonly dialog = inject(MatDialog);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly authServiceRS = inject(AuthServiceRS);
     private readonly cd = inject(ChangeDetectorRef);
@@ -243,7 +237,7 @@ export class AddInstitutionComponent implements OnInit {
                     this.institution = neueinstitution;
                     this.goToNextView();
                 },
-                error => LOG.error(error)
+                error => this.log.error(error)
             );
     }
 
@@ -306,7 +300,7 @@ export class AddInstitutionComponent implements OnInit {
                     : gemeinden.filter(gemeinde => !gemeinde.nurLats);
                 this.gemeinden.sort((a, b) => a.name.localeCompare(b.name));
             },
-            err => LOG.error(err)
+            err => this.log.error(err)
         );
     }
 

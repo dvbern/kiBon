@@ -15,11 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {HookResult, TransitionService} from '@uirouter/core';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
-import {TSBrowserLanguage} from '@kibon/shared/model/enums';
 import {firstValueFrom} from 'rxjs';
+import {TSBrowserLanguage} from '../../../models/enums/TSBrowserLanguage';
 
 /**
  * This file contains a Transition Hook which protects a
@@ -32,7 +32,7 @@ import {firstValueFrom} from 'rxjs';
 
 export function languageEnabledHookRunBlockX(
     $transitions: TransitionService,
-    applicationPropertyService: SharedUtilApplicationPropertyRsService,
+    applicationPropertyService: ApplicationPropertyRsService,
     i18nService: I18nServiceRSRest
 ): void {
     // Register the "requires authentication" hook with the TransitionsService
@@ -42,7 +42,7 @@ export function languageEnabledHookRunBlockX(
 }
 
 async function changeLanguageIfNotEnabled(
-    applicationPropertyService: SharedUtilApplicationPropertyRsService,
+    applicationPropertyService: ApplicationPropertyRsService,
     i18nService: I18nServiceRSRest
 ): Promise<HookResult> {
     firstValueFrom(applicationPropertyService.getFrenchEnabled()).then(

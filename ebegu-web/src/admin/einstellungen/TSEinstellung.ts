@@ -15,10 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    TSAbstractDateRangedEntity,
-    TSDateRange
-} from '@kibon/shared/model/entity';
+import {TSAbstractDateRangedEntity} from '../../models/entity/TSAbstractDateRangedEntity';
+import {TSDateRange} from '../../models/entity/TSDateRange';
 import {TSEinstellungKey} from './TSEinstellungKey';
 
 export class TSEinstellung extends TSAbstractDateRangedEntity {

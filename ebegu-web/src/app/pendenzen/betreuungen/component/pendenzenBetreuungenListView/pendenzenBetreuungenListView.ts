@@ -17,19 +17,17 @@ import {StateService} from '@uirouter/core';
 import {IComponentOptions, IController} from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {
-    TSGemeinde,
-    TSGesuchsperiode,
-    TSInstitution
-} from '@kibon/shared/model/entity';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {BerechnungsManager} from '../../../../../gesuch/service/berechnungsManager';
 import {GemeindeRS} from '../../../../../gesuch/service/gemeindeRS.rest';
 import {GesuchModelManager} from '../../../../../gesuch/service/gesuchModelManager';
+import {TSGemeinde} from '../../../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../../../models/entity/TSGesuchsperiode';
+import {TSInstitution} from '../../../../../models/entity/TSInstitution';
+import {TSBetreuungsangebotTyp} from '../../../../../models/enums/TSBetreuungsangebotTyp';
 import {TSPendenzBetreuung} from '../../../../../models/TSPendenzBetreuung';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {GesuchsperiodeRS} from '../../../../core/service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../../../../core/service/institutionRS.rest';

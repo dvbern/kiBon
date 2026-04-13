@@ -15,7 +15,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {copy, IComponentOptions} from 'angular';
 import {electronicFormatIBAN} from 'ibantools';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
@@ -23,13 +22,16 @@ import {DvDialog} from '../../../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {ListResourceRS} from '../../../../../app/core/service/listResourceRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
+import {TSAdresse} from '../../../../../models/entity/TSAdresse';
 import {isSteuerdatenAnfrageStatusErfolgreich} from '../../../../../models/enums/TSSteuerdatenAnfrageStatus';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
-import {TSAdresse} from '@kibon/shared/model/entity';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {TSGesuch} from '../../../../../models/TSGesuch';
 import {TSLand} from '../../../../../models/types/TSLand';
+import {ApplicationPropertyRsService} from '../../../../../utils/application-property-rs/application-property-rs.service';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '../../../../../utils/dv-show-warning-angaben-vervollstaendingen/shared-util-dv-show-warning-angaben-vervollstaendingen.service';
 import {EbeguRestUtil} from '../../../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
@@ -42,7 +44,6 @@ import IPromise = angular.IPromise;
 import IQService = angular.IQService;
 import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
-import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 const removeDialogTemplate = require('../../../../dialog/removeDialogTemplate.html');
 
@@ -69,7 +70,7 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
         'EbeguRestUtil',
         'ListResourceRS',
         'EinstellungRS',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         'SharedUtilDvShowWarningAngabenVervollstaendingenService'
     ];
 
@@ -94,7 +95,7 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
         private readonly ebeguRestUtil: EbeguRestUtil,
         listResourceRS: ListResourceRS,
         einstellungRS: EinstellungRS,
-        applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        applicationPropertyRS: ApplicationPropertyRsService,
         private readonly showWarningAngabenVervollstaendingenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
     ) {
         super(

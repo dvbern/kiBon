@@ -26,22 +26,20 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
 import {StateDeclaration} from '@uirouter/core/lib/state/interface';
 import {IPromise} from 'angular';
 import {Moment} from 'moment';
 import {firstValueFrom, from, Observable} from 'rxjs';
-import {
-    TSAdresse,
-    TSGemeinde,
-    TSTextRessource
-} from '@kibon/shared/model/entity';
-import {TSRole} from '@kibon/shared/model/enums';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {TSAdresse} from '../../../models/entity/TSAdresse';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSTextRessource} from '../../../models/entity/TSTextRessource';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSExternalClient} from '../../../models/TSExternalClient';
 import {TSExternalClientAssignment} from '../../../models/TSExternalClientAssignment';
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
@@ -74,7 +72,7 @@ export class EditGemeindeComponent implements OnInit {
     private readonly changeDetectorRef = inject(ChangeDetectorRef);
     private readonly gemeindeWarningService = inject(GemeindeWarningService);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
 
     @ViewChildren(NgForm) public forms: QueryList<NgForm>;

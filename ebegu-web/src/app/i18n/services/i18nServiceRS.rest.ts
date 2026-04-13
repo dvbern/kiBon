@@ -21,18 +21,15 @@ import {TranslateService} from '@ngx-translate/core';
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
 import ITranslateService = angular.translate.ITranslateService;
 import {takeUntil} from 'rxjs/operators';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-import {
-    CONSTANTS,
-    LOCALSTORAGE_LANGUAGE_KEY
-} from '@kibon/shared/model/constants';
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {CONSTANTS, LOCALSTORAGE_LANGUAGE_KEY} from '@models/constants';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 import {
     TSBrowserLanguage,
     tsBrowserLanguageFromString
-} from '@kibon/shared/model/enums';
-import {WindowRef} from '@kibon/shared-util-window-ref';
+} from '../../../models/enums/TSBrowserLanguage';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
+import {WindowRef} from '../../../utils/window-ref/windowRef.service';
 import {GemeindeService} from '../../shared/services/gemeinde.service';
 
 const translationsDir = './assets/translations';

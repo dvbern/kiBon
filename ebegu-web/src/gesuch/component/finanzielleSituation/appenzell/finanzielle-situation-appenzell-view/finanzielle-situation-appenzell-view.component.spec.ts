@@ -24,18 +24,17 @@ import {SharedModule} from '../../../../../app/shared/shared.module';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
+import {TSWizardStep} from '../../../../../models/entity/TSWizardStep';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {TSFamiliensituation} from '../../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../../models/TSFamiliensituationContainer';
 import {TSGesuch} from '../../../../../models/TSGesuch';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
-import {TSWizardStep} from '@kibon/shared/model/entity';
-
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
 import {FinanzielleSituationRS} from '../../../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {FinanzielleSituationAppenzellViewComponent} from './finanzielle-situation-appenzell-view.component';
-import {TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {By} from '@angular/platform-browser';
 
 describe('FinanzielleSituationAppenzellViewComponent', () => {

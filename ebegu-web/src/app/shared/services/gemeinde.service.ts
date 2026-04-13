@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {shareReplay} from 'rxjs/operators';
-import {TSGemeinde} from '@kibon/shared/model/entity';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 
 @Injectable({
     providedIn: 'root'

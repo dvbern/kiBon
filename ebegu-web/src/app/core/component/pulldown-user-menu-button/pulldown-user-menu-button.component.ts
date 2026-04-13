@@ -25,7 +25,7 @@ import {
     inject
 } from '@angular/core';
 import {StateService} from '@uirouter/core';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 
 @Component({

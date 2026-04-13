@@ -14,7 +14,7 @@
  */
 
 import moment from 'moment';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSEWKAdresse} from './TSEWKAdresse';
 
 /**

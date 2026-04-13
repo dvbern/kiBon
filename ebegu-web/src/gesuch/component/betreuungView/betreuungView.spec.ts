@@ -13,25 +13,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSIntegrationTyp, TSPensumFachstelle} from '@kibon/shared/model/entity';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {HybridFormBridgeService} from '@utils/hybrid-form-bridge';
 import {StateService} from '@uirouter/core';
 import angular from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {CORE_JS_MODULE} from '../../../app/core/core.angularjs.module';
 import {InstitutionStammdatenRS} from '../../../app/core/service/institutionStammdatenRS.rest';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSInstitutionStammdatenBetreuungsgutscheine} from '../../../models/entity/TSInstitutionStammdatenBetreuungsgutscheine';
+import {TSKind} from '../../../models/entity/TSKind';
+import {TSPensumFachstelle} from '../../../models/entity/TSPensumFachstelle';
+import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
-import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
-
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
+import {TSIntegrationTyp} from '../../../models/enums/TSIntegrationTyp';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSBetreuungspensum} from '../../../models/TSBetreuungspensum';
 import {TSBetreuungspensumContainer} from '../../../models/TSBetreuungspensumContainer';
@@ -39,12 +43,8 @@ import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSErweiterteBetreuung} from '../../../models/TSErweiterteBetreuung';
 import {TSErweiterteBetreuungContainer} from '../../../models/TSErweiterteBetreuungContainer';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
-import {TSInstitutionStammdatenBetreuungsgutscheine} from '@kibon/shared/model/entity';
-import {TSKind} from '@kibon/kind/model/entity';
 import {TSKindContainer} from '../../../models/TSKindContainer';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
@@ -199,7 +199,7 @@ xdescribe('betreuungView', () => {
                 $injector.get('GlobalCacheService'),
                 $timeout,
                 $translateMock,
-                $injector.get('SharedUtilApplicationPropertyRsService'),
+                $injector.get('ApplicationPropertyRsService'),
                 mandantService,
                 ebeguRestUtil,
                 hybridFormBridgeService,

@@ -13,31 +13,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {HybridFormBridgeService} from '@utils/hybrid-form-bridge';
 import {StateService} from '@uirouter/core';
+import {MomentUtil} from '@utils/moment';
 import {IComponentOptions, IFormController, IPromise} from 'angular';
-import {
-    getTSFeriennameValues,
-    getWeekdaysValues,
-    TSBetreuungsstatus,
-    TSFerienname
-} from '@kibon/shared/model/enums';
-import {TSEinstellungenFerieninsel} from '@kibon/shared/model/entity';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {FerieninselStammdatenRS} from '../../../admin/service/ferieninselStammdatenRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSEinstellungenFerieninsel} from '../../../models/entity/TSEinstellungenFerieninsel';
+import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
 import {TSAnmeldungMutationZustand} from '../../../models/enums/TSAnmeldungMutationZustand';
+import {getWeekdaysValues} from '../../../models/enums/TSDayOfWeek';
+import {
+    getTSFeriennameValues,
+    TSFerienname
+} from '../../../models/enums/TSFerienname';
 import {TSBelegungFerieninsel} from '../../../models/TSBelegungFerieninsel';
 import {TSBelegungFerieninselTag} from '../../../models/TSBelegungFerieninselTag';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSFerieninselStammdaten} from '../../../models/TSFerieninselStammdaten';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
@@ -90,7 +90,7 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         'GlobalCacheService',
         '$timeout',
         '$translate',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         'FerieninselStammdatenRS',
         'MandantService',
         'EbeguRestUtil',
@@ -125,7 +125,7 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         globalCacheService: GlobalCacheService,
         $timeout: ITimeoutService,
         $translate: ITranslateService,
-        applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        applicationPropertyRS: ApplicationPropertyRsService,
         private readonly ferieninselStammdatenRS: FerieninselStammdatenRS,
         mandantService: MandantService,
         ebeguRestUtil: EbeguRestUtil,

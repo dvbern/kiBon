@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSWizardStep} from '@kibon/shared/model/entity';
 import {IComponentOptions, IPromise} from 'angular';
 import {DvDialog} from '../../../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {DemoFeatureRS} from '../../../../../app/core/service/demoFeatureRS.rest';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
+import {TSWizardStep} from '../../../../../models/entity/TSWizardStep';
 import {isSteuerdatenAnfrageStatusErfolgreich} from '../../../../../models/enums/TSSteuerdatenAnfrageStatus';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';

@@ -478,7 +478,7 @@ export class EbeguErwerbspensumState implements Ng1StateDeclaration {
     public views: {[name: string]: Ng1StateDeclaration} = {
         gesuchViewPort: {
             templateProvider: [
-                'SharedUtilApplicationPropertyRsService',
+                'ApplicationPropertyRsService',
                 async (applicationService: any) => {
                     const isEnabled = await firstValueFrom(
                         applicationService.isAbgeloesteViewBeschaeftigungSingleEnabled()

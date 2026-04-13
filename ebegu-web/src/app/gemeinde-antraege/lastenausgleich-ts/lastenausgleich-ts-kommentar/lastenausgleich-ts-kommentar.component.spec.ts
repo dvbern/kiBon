@@ -24,9 +24,9 @@ import {StateService} from '@uirouter/core';
 import {of} from 'rxjs';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
+import {WindowRef} from '../../../../utils/window-ref/windowRef.service';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
 import {BenutzerRSX} from '../../../core/service/benutzerRSX.rest';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 import {SharedModule} from '../../../shared/shared.module';
 import {LastenausgleichTSService} from '../services/lastenausgleich-ts.service';
 

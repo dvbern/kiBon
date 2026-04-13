@@ -305,6 +305,15 @@ public enum ApplicationPropertyKey {
 		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.VERFUEGUNG)
 	), @BooleanEinstellung ABGELOESTE_VIEW_VERFUEGUNG_SINGLE(
 		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.VERFUEGUNG)
+	),
+
+	/**
+	 * We can switch to the newly written quarkus statistik
+	 * True => new = quarkus statistik
+	 * False => old = wildfly statistik
+	 */
+	@BooleanEinstellung QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER(
+		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
 	);
 
 	private final KeyGrouping keyGrouping;

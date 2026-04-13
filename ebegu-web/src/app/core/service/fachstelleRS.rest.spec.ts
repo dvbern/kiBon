@@ -16,11 +16,9 @@
 import angular, {IHttpBackendService, IHttpService} from 'angular';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {
-    TSFachstelle,
-    TSFachstelleName,
-    TSGesuchsperiode
-} from '@kibon/shared/model/entity';
+import {TSFachstelle} from '../../../models/entity/TSFachstelle';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSFachstelleName} from '../../../models/enums/TSFachstelleName';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';

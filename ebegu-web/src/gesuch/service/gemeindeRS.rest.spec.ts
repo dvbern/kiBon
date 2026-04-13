@@ -19,9 +19,9 @@ import angular, {IHttpBackendService} from 'angular';
 import {CORE_JS_MODULE} from '../../app/core/core.angularjs.module';
 import {ngServicesMock} from '../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../hybridTools/translationsMock';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSGemeinde} from '../../models/entity/TSGemeinde';
+import {TSRole} from '../../models/enums/TSRole';
 import {TSBenutzer} from '../../models/TSBenutzer';
-import {TSGemeinde} from '@kibon/shared/model/entity';
 import {TestDataUtil} from '../../utils/TestDataUtil.spec';
 import {GemeindeRS} from './gemeindeRS.rest';
 

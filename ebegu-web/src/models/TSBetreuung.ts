@@ -13,19 +13,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import moment from 'moment';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSGesuchsperiode} from './entity/TSGesuchsperiode';
+import {TSInstitutionStammdatenSummary} from './entity/TSInstitutionStammdatenSummary';
+import {TSBedarfsstufe} from './enums/betreuung/TSBedarfsstufe';
 import {
     isBetreuungsstatusTSAusgeloest,
-    TSBetreuungsangebotTyp,
     TSBetreuungsstatus
-} from '@kibon/shared/model/enums';
-import moment from 'moment';
-import {TSBedarfsstufe} from './enums/betreuung/TSBedarfsstufe';
+} from './enums/betreuung/TSBetreuungsstatus';
 import {TSAnmeldungMutationZustand} from './enums/TSAnmeldungMutationZustand';
-import {
-    TSAbstractMutableEntity,
-    TSGesuchsperiode,
-    TSInstitutionStammdatenSummary
-} from '@kibon/shared/model/entity';
+import {TSBetreuungsangebotTyp} from './enums/TSBetreuungsangebotTyp';
 import {TSAbwesenheitContainer} from './TSAbwesenheitContainer';
 import {TSAnmeldungTagesschuleZeitabschnitt} from './TSAnmeldungTagesschuleZeitabschnitt';
 import {TSBelegungFerieninsel} from './TSBelegungFerieninsel';

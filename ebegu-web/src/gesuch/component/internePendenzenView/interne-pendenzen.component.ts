@@ -24,9 +24,9 @@ import {
     inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSInternePendenz} from '../../../models/TSInternePendenz';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {InternePendenzDialogComponent} from './interne-pendenz-dialog/interne-pendenz-dialog.component';
 import {InternePendenzenRS} from './internePendenzenRS.rest';

@@ -15,12 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {IComponentOptions, IPromise} from 'angular';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../app/core/directive/dv-dialog/dv-dialog';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../../app/core/service/downloadRS.rest';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {
@@ -28,11 +26,14 @@ import {
     TSAntragStatus
 } from '../../../../models/enums/TSAntragStatus';
 import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {TSFreigabe} from '../../../../models/TSFreigabe';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {ApplicationPropertyRsService} from '../../../../utils/application-property-rs/application-property-rs.service';
+import {MomentUtil} from '../../../../utils/date/MomentUtil';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {LogFactory} from '../../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {AbstractGesuchViewController} from '../../../component/abstractGesuchView';
 import {BerechnungsManager} from '../../../service/berechnungsManager';
@@ -65,7 +66,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
         'DvDialog',
         'DownloadRS',
         '$scope',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         'AuthServiceRS',
         '$timeout',
         '$translate',
@@ -86,7 +87,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
         private readonly dvDialog: DvDialog,
         private readonly downloadRS: DownloadRS,
         $scope: IScope,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly applicationPropertyRS: ApplicationPropertyRsService,
         private readonly authServiceRS: AuthServiceRS,
         $timeout: ITimeoutService,
         private readonly $translate: TranslateService,

@@ -15,20 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    AdminModelEinstellungTagesschuleHasAnmeldung,
-    TSModulTagesschuleGroupHasAnmeldung
-} from '@kibon/admin/model/institution-tagesschule-einstellungen';
 import {IHttpPromise, IHttpService, ILogService, IPromise} from 'angular';
 import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {TSCacheTyp} from '@kibon/shared/model/enums';
-import {
-    TSEinstellungenTagesschule,
-    TSInstitutionStammdaten
-} from '@kibon/shared/model/entity';
+import {InstitutionNameStammdatenIdDto} from '../../../models/dto/InstitutionNameStammdatenIdDto.interface';
+import {AdminModelEinstellungTagesschuleHasAnmeldung} from '../../../models/entity/institution-tagesschule-einstellungen/admin-model-einstellung-tagesschule-has-anmeldung';
+import {TSModulTagesschuleGroupHasAnmeldung} from '../../../models/entity/institution-tagesschule-einstellungen/TSModulTagesschuleGroupHasAnmeldung';
+import {TSEinstellungenTagesschule} from '../../../models/entity/TSEinstellungenTagesschule';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
-import {InstitutionNameStammdatenIdDto} from '@kibon/shared/model/dto';
 
 export class InstitutionStammdatenRS {
     public static $inject = [

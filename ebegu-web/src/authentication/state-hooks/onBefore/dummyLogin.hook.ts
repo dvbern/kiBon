@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {
     HookMatchCriteria,
     HookResult,
@@ -45,8 +45,9 @@ export function dummyLoginHookRunBlock($transitions: TransitionService): void {
 }
 
 function checkDummyLogin(transition: Transition): HookResult {
-    const applicationPropertyRS: SharedUtilApplicationPropertyRsService =
-        transition.injector().get('SharedUtilApplicationPropertyRsService');
+    const applicationPropertyRS: ApplicationPropertyRsService = transition
+        .injector()
+        .get('ApplicationPropertyRsService');
 
     return firstValueFrom(applicationPropertyRS.isDummyMode());
 }

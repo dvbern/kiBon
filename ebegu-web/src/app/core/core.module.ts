@@ -27,7 +27,7 @@ import {
 } from '@angular/core';
 import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatPaginatorIntl} from '@angular/material/paginator';
-import {DEFAULT_LOCALE} from '@kibon/shared/model/constants';
+import {DEFAULT_LOCALE} from '@models/constants';
 import {
     TranslateModule,
     TranslatePipe,
@@ -38,16 +38,16 @@ import {CookieService} from 'ngx-cookie-service';
 import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
 import {KinderabzugExchangeService} from '../../gesuch/component/kindView/service/kinderabzug-exchange.service';
 import {SearchRS} from '../../gesuch/service/searchRS.rest';
+import {WindowRef} from '../../utils/window-ref/windowRef.service';
 import {PaginatorI18n} from '../i18n/PaginatorI18n';
 import {ColorService} from '../shared/services/color.service';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 import {HTTP_INTERCEPTOR_PROVIDERS} from './http-interceptors/interceptors';
 import {UPGRADED_HTTP_INTERCEPTOR_PROVIDERS} from './httpInterceptorProviders';
 import {configureSentry, SentryErrorHandler} from './sentry/sentryConfigurator';
 import {BroadcastService} from './service/broadcast.service';
 import {InstitutionRS} from './service/institutionRS.rest';
 import {VersionService} from './service/version/version.service';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 import {UPGRADED_PROVIDERS} from './upgraded-providers';
 
 configureSentry();

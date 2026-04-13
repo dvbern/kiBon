@@ -35,8 +35,8 @@ import {TSExternalClientAssignment} from '../../../models/TSExternalClientAssign
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
 import {TSInstitutionListDTO} from '../../../models/TSInstitutionListDTO';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {CONSTANTS} from '@models/constants';
+import {LogFactory} from '@utils/log';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 
 const LOG = LogFactory.createLog('EditGemeidneComponentTS');

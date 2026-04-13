@@ -14,10 +14,8 @@
  */
 
 import moment from 'moment';
-import {
-    TSAbstractMutableEntity,
-    TSGeschlecht
-} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSGeschlecht} from './enums/TSGeschlecht';
 import {TSEWKAdresse} from './TSEWKAdresse';
 import {TSEWKBeziehung} from './TSEWKBeziehung';
 

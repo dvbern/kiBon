@@ -30,17 +30,15 @@ import {ControlContainer, NgForm} from '@angular/forms';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import {TSInstitutionStatus} from '@kibon/shared/model/enums';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {
-    TSInstitution,
-    TSInstitutionStammdaten
-} from '@kibon/shared/model/entity';
-import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {combineLatest, from, Subject} from 'rxjs';
 import {mergeMap, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSInstitutionStatus} from '../../../models/enums/TSInstitutionStatus';
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
@@ -75,7 +73,7 @@ export class EditGemeindeInstitutionComponent implements OnInit, OnDestroy {
         InstitutionStammdatenRS
     );
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly authServiceRS = inject(AuthServiceRS);
     private readonly cd = inject(ChangeDetectorRef);

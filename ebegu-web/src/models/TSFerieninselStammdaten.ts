@@ -14,11 +14,9 @@
  */
 
 import moment from 'moment';
-import {TSFerienname} from '@kibon/shared/model/enums';
-import {
-    TSAbstractMutableEntity,
-    TSGesuchsperiode
-} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSGesuchsperiode} from './entity/TSGesuchsperiode';
+import {TSFerienname} from './enums/TSFerienname';
 import {TSBelegungFerieninselTag} from './TSBelegungFerieninselTag';
 import {TSFerieninselZeitraum} from './TSFerieninselZeitraum';
 

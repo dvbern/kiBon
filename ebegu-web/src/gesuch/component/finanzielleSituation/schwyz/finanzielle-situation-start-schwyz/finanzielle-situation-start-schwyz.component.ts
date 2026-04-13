@@ -6,19 +6,20 @@ import {
     inject
 } from '@angular/core';
 import {MatRadioChange} from '@angular/material/radio';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '../../../../../utils/dv-show-warning-angaben-vervollstaendingen/shared-util-dv-show-warning-angaben-vervollstaendingen.service';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractGesuchViewX} from '../../../abstractGesuchViewX';
 import {FinanzielleSituationSchwyzService} from '../finanzielle-situation-schwyz.service';
-import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 const LOG = LogFactory.createLog('FinanzielleSituationStartSchwyzComponent');
 

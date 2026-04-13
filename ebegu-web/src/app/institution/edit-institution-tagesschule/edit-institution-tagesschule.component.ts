@@ -28,39 +28,35 @@ import {
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {
-    AdminModelEinstellungTagesschuleHasAnmeldung,
-    TSModulTagesschuleGroupHasAnmeldung
-} from '@kibon/admin/model/institution-tagesschule-einstellungen';
-import {InfoSchnittstelleDialogComponent} from '@kibon/admin/ui/tagesschule-modul-list';
-import {stammdatenToGroupHasAnmeldung} from '@kibon/admin/util-fn/institution-tagesschule-einstellungen';
-import {
-    TSDateRange,
-    TSEinstellungenTagesschule,
-    TSGemeinde,
-    TSInstitutionStammdaten,
-    TSModulTagesschule,
-    TSModulTagesschuleGroup,
-    TSTextRessource
-} from '@kibon/shared/model/entity';
-import {
-    getTSModulTagesschuleNameValues,
-    TSDayOfWeek,
-    TSModulTagesschuleIntervall,
-    TSModulTagesschuleName,
-    TSModulTagesschuleTyp,
-    TSRole
-} from '@kibon/shared/model/enums';
+import {InfoSchnittstelleDialogComponent} from '@admin/tagesschule-modul-list';
+import {stammdatenToGroupHasAnmeldung} from '@admin/util';
 import moment from 'moment';
 import {combineLatest, firstValueFrom, from, Observable, of} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {AdminModelEinstellungTagesschuleHasAnmeldung} from '../../../models/entity/institution-tagesschule-einstellungen/admin-model-einstellung-tagesschule-has-anmeldung';
+import {TSModulTagesschuleGroupHasAnmeldung} from '../../../models/entity/institution-tagesschule-einstellungen/TSModulTagesschuleGroupHasAnmeldung';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
+import {TSEinstellungenTagesschule} from '../../../models/entity/TSEinstellungenTagesschule';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSModulTagesschule} from '../../../models/entity/TSModulTagesschule';
+import {TSModulTagesschuleGroup} from '../../../models/entity/TSModulTagesschuleGroup';
+import {TSTextRessource} from '../../../models/entity/TSTextRessource';
+import {TSDayOfWeek} from '../../../models/enums/TSDayOfWeek';
+import {TSModulTagesschuleIntervall} from '../../../models/enums/TSModulTagesschuleIntervall';
+import {
+    getTSModulTagesschuleNameValues,
+    TSModulTagesschuleName
+} from '../../../models/enums/TSModulTagesschuleName';
+import {TSModulTagesschuleTyp} from '../../../models/enums/TSModulTagesschuleTyp';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSGemeindeKonfiguration} from '../../../models/TSGemeindeKonfiguration';
 import {TSInstitutionExternalClient} from '../../../models/TSInstitutionExternalClient';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TagesschuleUtil} from '../../../utils/TagesschuleUtil';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {DvNgThreeButtonDialogComponent} from '../../core/component/dv-ng-three-button-dialog/dv-ng-three-button-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {InstitutionStammdatenRS} from '../../core/service/institutionStammdatenRS.rest';

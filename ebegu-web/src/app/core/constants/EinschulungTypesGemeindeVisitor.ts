@@ -15,16 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    AbstractMandantDefaultVisitor,
-    KiBonMandant
-} from '@kibon/shared-model-mandant';
+import {AbstractMandantDefaultVisitor, KiBonMandant} from '@models/mandant';
 import {
     getTSEinschulungTypGemeindeValues,
     getTSEinschulungTypValuesSchwyz,
     getTSEinschulungTypValuesZug,
     TSEinschulungTyp
-} from '@kibon/shared/model/enums';
+} from '../../../models/enums/TSEinschulungTyp';
 
 export class EinschulungTypesGemeindeVisitor extends AbstractMandantDefaultVisitor<
     ReadonlyArray<TSEinschulungTyp>

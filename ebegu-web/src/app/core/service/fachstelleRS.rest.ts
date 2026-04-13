@@ -14,7 +14,8 @@
  */
 
 import {IHttpService, ILogService, IPromise} from 'angular';
-import {TSGesuchsperiode, TSFachstelle} from '@kibon/shared/model/entity';
+import {TSFachstelle} from '../../../models/entity/TSFachstelle';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 
 export class FachstelleRS {

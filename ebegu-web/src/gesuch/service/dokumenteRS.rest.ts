@@ -15,7 +15,7 @@
 
 import {IHttpService} from 'angular';
 import {TSDokumenteDTO} from '../../models/dto/TSDokumenteDTO';
-import {TSDokumentGrundTyp} from '@kibon/shared/model/enums';
+import {TSDokumentGrundTyp} from '../../models/enums/TSDokumentGrundTyp';
 import {TSDokument} from '../../models/TSDokument';
 import {TSDokumentGrund} from '../../models/TSDokumentGrund';
 import {TSGesuch} from '../../models/TSGesuch';

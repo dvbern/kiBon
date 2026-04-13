@@ -13,9 +13,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import moment from 'moment';
 import {TSAntragStatus} from './enums/TSAntragStatus';
+import {TSBetreuungsangebotTyp} from './enums/TSBetreuungsangebotTyp';
 
 export class TSPendenzBetreuung {
     betreuungsNummer: string;

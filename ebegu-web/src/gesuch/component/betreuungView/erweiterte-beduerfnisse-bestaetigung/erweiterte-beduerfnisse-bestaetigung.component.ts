@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {SharedModule} from '../../../../app/shared/shared.module';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSBetreuungsangebotTyp} from '../../../../models/enums/TSBetreuungsangebotTyp';
+
 import {TSErweiterteBetreuung} from '../../../../models/TSErweiterteBetreuung';
 
 export type ErweiterteBeduerfnisseBestaetigenEinstellungen = {

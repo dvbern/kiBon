@@ -16,7 +16,7 @@
 import moment from 'moment';
 import {TSAbholungTagesschule} from './enums/TSAbholungTagesschule';
 import {TSFleischOption} from './enums/TSFleischOption';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSBelegungTagesschuleModul} from './TSBelegungTagesschuleModul';
 
 export class TSBelegungTagesschule extends TSAbstractMutableEntity {

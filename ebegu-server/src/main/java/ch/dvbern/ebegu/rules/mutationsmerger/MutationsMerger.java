@@ -36,11 +36,13 @@ import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.rules.AbstractAbschlussRule;
+import ch.dvbern.ebegu.rules.mutationsmerger.geschwisterbonus.MutationsMergerGeschwisterbonusHandlerVisitor;
 import ch.dvbern.ebegu.types.DateRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.getBerechnetesAngebotTypes;
+import static ch.dvbern.ebegu.rules.mutationsmerger.util.MutationsMergerUtil.isMeldungZuSpaet;
 
 /**
  * Sonderregel das Ergenis der aktuellen Berechnung mit der Vorhergehenden merged.
@@ -77,16 +79,16 @@ public final class MutationsMerger extends AbstractAbschlussRule {
 	);
 
 	private Locale locale;
-	private Boolean pauschaleRueckwirkendAuszahlen;
+	private MutationsMergerParameter mutationsMergerParameter;
 
 	public MutationsMerger(
 		@Nonnull Locale locale,
 		boolean isDebug,
-		Boolean pauschaleRueckwirkendAuszahlen
+		MutationsMergerParameter mutationsMergerParameter
 	) {
 		super(isDebug);
 		this.locale = locale;
-		this.pauschaleRueckwirkendAuszahlen = pauschaleRueckwirkendAuszahlen;
+		this.mutationsMergerParameter = mutationsMergerParameter;
 	}
 
 	@Override
@@ -280,43 +282,17 @@ public final class MutationsMerger extends AbstractAbschlussRule {
 		BGCalculationResult resultVorgaenger,
 		LocalDate mutationsEingansdatum
 	) {
-		if (!isMeldungZuSpaet(
-			inputAktuel.getParent().getGueltigkeit(),
-			mutationsEingansdatum
-		)) {
-			return;
-		}
 
-		inputAktuel.setGeschwisternBonusKind2(
-			resultVorgaenger.getGeschwisterBonusKind2()
-		);
-		inputAktuel.setGeschwisternBonusKind3(
-			resultVorgaenger.getGeschwisterBonusKind3()
-		);
-		inputAktuel.setAnzahlGeschwister(
-			resultVorgaenger.getAnzahlGeschwisterFuerBonusSchwyz()
-		);
-		inputAktuel.getParent()
-			.getBemerkungenDTOList()
-			.removeBemerkungByMsgKey(MsgKey.GESCHWSTERNBONUS_KIND_2);
-		inputAktuel.getParent()
-			.getBemerkungenDTOList()
-			.removeBemerkungByMsgKey(MsgKey.GESCHWSTERNBONUS_KIND_3);
-		inputAktuel.getParent()
-			.getBemerkungenDTOList()
-			.removeBemerkungByMsgKey(MsgKey.GESCHWISTERBONUS_SCHWYZ);
-		if (inputAktuel.isGeschwisternBonusKind2()) {
-			inputAktuel.addBemerkung(MsgKey.GESCHWSTERNBONUS_KIND_2, locale);
-		} else if (inputAktuel.isGeschwisternBonusKind3()) {
-			inputAktuel.addBemerkung(MsgKey.GESCHWSTERNBONUS_KIND_3, locale);
-		}
-		if (inputAktuel.getAnzahlGeschwister() > 0) {
-			inputAktuel.addBemerkung(
-				MsgKey.GESCHWISTERBONUS_SCHWYZ,
-				locale,
-				inputAktuel.getAnzahlGeschwister()
+		new MutationsMergerGeschwisterbonusHandlerVisitor()
+			.getMutationsMergerGeschwisterbonusHandler(
+				this.mutationsMergerParameter.geschwisterbonusTyp()
+			)
+			.handleGeschwisterbonus(
+				inputAktuel,
+				resultVorgaenger,
+				mutationsEingansdatum,
+				locale
 			);
-		}
 	}
 
 	private void handleAnspruch(
@@ -391,15 +367,6 @@ public final class MutationsMerger extends AbstractAbschlussRule {
 			);
 	}
 
-	private boolean isMeldungZuSpaet(
-		@Nonnull DateRange gueltigkeit,
-		@Nonnull LocalDate mutationsEingansdatum
-	) {
-		return !gueltigkeit.getGueltigAb()
-			.withDayOfMonth(1)
-			.isAfter((mutationsEingansdatum));
-	}
-
 	private void handleAnpassungErweiterteBeduerfnisse(
 		@Nonnull BGCalculationInput inputData,
 		@Nonnull BGCalculationResult resultVorangehenderAbschnitt,
@@ -414,7 +381,7 @@ public final class MutationsMerger extends AbstractAbschlussRule {
 				.getGueltigkeit()
 				.getGueltigAb()
 				.isAfter(mutationsEingansdatum)
-			&& !pauschaleRueckwirkendAuszahlen
+			&& !this.mutationsMergerParameter.pauschaleRueckwirkendAuszahlen()
 			&& inputData.hasAnspruch()
 		) {
 			inputData.setBesondereBeduerfnisseBestaetigt(false);

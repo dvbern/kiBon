@@ -15,19 +15,16 @@
 
 import angular, {copy, element} from 'angular';
 import moment from 'moment';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {
-    TSAbstractEntity,
-    TSDateRange,
-    TSIntegrationTyp,
-    TSAdresse,
-    TSGemeinde,
-    TSGesuchsperiode
-} from '@kibon/shared/model/entity';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {CONSTANTS} from '@models/constants';
 import {Displayable} from '../app/shared/interfaces/displayable';
 import {TSBetreuungsnummerParts} from '../models/dto/TSBetreuungsnummerParts';
+import {TSAbstractEntity} from '../models/entity/TSAbstractEntity';
+import {TSAdresse} from '../models/entity/TSAdresse';
+import {TSDateRange} from '../models/entity/TSDateRange';
+import {TSGemeinde} from '../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../models/entity/TSGesuchsperiode';
 import {TSAntragTyp} from '../models/enums/TSAntragTyp';
+import {TSIntegrationTyp} from '../models/enums/TSIntegrationTyp';
 import {TSAbstractGemeindeStammdaten} from '../models/TSAbstractGemeindeStammdaten';
 import {TSBenutzerNoDetails} from '../models/TSBenutzerNoDetails';
 import {TSBetreuung} from '../models/TSBetreuung';
@@ -35,7 +32,8 @@ import {TSDossier} from '../models/TSDossier';
 import {TSFall} from '../models/TSFall';
 import {TSGesuch} from '../models/TSGesuch';
 import {TSKindContainer} from '../models/TSKindContainer';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from './date/MomentUtil';
+import {LogFactory} from './log-factory/LogFactory';
 import ITranslateService = angular.translate.ITranslateService;
 
 const LOG = LogFactory.createLog('EbeguUtil');
@@ -676,7 +674,7 @@ export class EbeguUtil {
 
     public static hasSprachlicheIndikation(kind: TSKindContainer): boolean {
         const sprachlicheIntegrationen = kind?.kindJA?.pensumFachstellen.filter(
-            fachstelle =>
+            (fachstelle: any) =>
                 fachstelle.integrationTyp ===
                 TSIntegrationTyp.SPRACHLICHE_INTEGRATION
         );

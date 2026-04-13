@@ -19,15 +19,22 @@ package ch.dvbern.ebegu.rechner;
 
 import java.math.BigDecimal;
 
+import ch.dvbern.ebegu.dto.VerfuegungsBemerkungDTO;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Kapselung aller Parameter, welche für die Gemeinde Rechner benötigt werden.
  */
+@Setter
+@Getter
 public final class RechnerRuleParameterDTO {
 
 	private BigDecimal zusaetzlicherGutscheinGemeindeBetrag = BigDecimal.ZERO;
 	private BigDecimal zusaetzlicherBabyGutscheinBetrag = BigDecimal.ZERO;
 	private BigDecimal verguenstigungMahlzeitenTotal = BigDecimal.ZERO;
 	private BigDecimal minimalPauschalBetrag = BigDecimal.ZERO;
+	private VerfuegungsBemerkungDTO minimalPauschalBetragBemerkung;
 
 	public void reset() {
 		this.zusaetzlicherGutscheinGemeindeBetrag = BigDecimal.ZERO;
@@ -35,43 +42,4 @@ public final class RechnerRuleParameterDTO {
 		this.setVerguenstigungMahlzeitenTotal(BigDecimal.ZERO);
 	}
 
-	public BigDecimal getZusaetzlicherGutscheinGemeindeBetrag() {
-		return zusaetzlicherGutscheinGemeindeBetrag;
-	}
-
-	public void setZusaetzlicherGutscheinGemeindeBetrag(
-		BigDecimal zusaetzlicherGutscheinGemeindeBetrag
-	) {
-		this.zusaetzlicherGutscheinGemeindeBetrag =
-			zusaetzlicherGutscheinGemeindeBetrag;
-	}
-
-	public BigDecimal getZusaetzlicherBabyGutscheinBetrag() {
-		return zusaetzlicherBabyGutscheinBetrag;
-	}
-
-	public void setZusaetzlicherBabyGutscheinBetrag(
-		BigDecimal zusaetzlicherBabyGutscheinBetrag
-	) {
-		this.zusaetzlicherBabyGutscheinBetrag =
-			zusaetzlicherBabyGutscheinBetrag;
-	}
-
-	public BigDecimal getVerguenstigungMahlzeitenTotal() {
-		return verguenstigungMahlzeitenTotal;
-	}
-
-	public void setVerguenstigungMahlzeitenTotal(
-		BigDecimal verguenstigungMahlzeitenTotal
-	) {
-		this.verguenstigungMahlzeitenTotal = verguenstigungMahlzeitenTotal;
-	}
-
-	public BigDecimal getMinimalPauschalBetrag() {
-		return minimalPauschalBetrag;
-	}
-
-	public void setMinimalPauschalBetrag(BigDecimal minimalPauschalBetrag) {
-		this.minimalPauschalBetrag = minimalPauschalBetrag;
-	}
 }

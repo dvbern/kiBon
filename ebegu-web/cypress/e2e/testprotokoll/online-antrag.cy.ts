@@ -44,7 +44,7 @@ import {
     VerfuegungPO
 } from '@dv-e2e/page-objects';
 import {getUser, TestPeriode} from '@dv-e2e/types';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MANDANTS} from '@models/mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 

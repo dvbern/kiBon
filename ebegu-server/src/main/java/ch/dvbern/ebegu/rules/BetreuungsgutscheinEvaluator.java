@@ -41,6 +41,7 @@ import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragStatus;
+import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
@@ -55,6 +56,7 @@ import ch.dvbern.ebegu.rechner.rules.ZusaetzlicherGutscheinGemeindeRechnerRule;
 import ch.dvbern.ebegu.rules.initalizer.RestanspruchInitializer;
 import ch.dvbern.ebegu.rules.initalizer.RestanspruchInitializerDefaultVisitor;
 import ch.dvbern.ebegu.rules.mutationsmerger.MutationsMerger;
+import ch.dvbern.ebegu.rules.mutationsmerger.MutationsMergerParameter;
 import ch.dvbern.ebegu.rules.mutationsmerger.OneVorgaengerEnsurer;
 import ch.dvbern.ebegu.rules.util.BemerkungsMerger;
 import ch.dvbern.ebegu.rules.veraenderung.VeraenderungCalculator;
@@ -68,6 +70,7 @@ import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANSPRUCH_MONATSWEISE;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.EINGEWOEHNUNG_TYP;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLEN_TYP;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GESCHWISTERNBONUS_TYP;
 
 /**
  * This is the Evaluator that runs all the rules and calculations for a given Antrag to determine the
@@ -175,6 +178,12 @@ public class BetreuungsgutscheinEvaluator {
 				kibonAbschlussRulesParameters.get(
 					EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND
 				).getValueAsBoolean();
+			GeschwisterbonusTyp geschwisterBonusTyp =
+				GeschwisterbonusTyp.getEnumValue(
+					kibonAbschlussRulesParameters.get(
+						EinstellungKey.GESCHWISTERNBONUS_TYP
+					)
+				);
 			OneVorgaengerEnsurer oneVorgaengerEnsurer =
 				new OneVorgaengerEnsurer(
 					isDebug
@@ -182,7 +191,10 @@ public class BetreuungsgutscheinEvaluator {
 			MutationsMerger mutationsMerger = new MutationsMerger(
 				locale,
 				isDebug,
-				pauschaleRueckwirkendAuszahlen
+				new MutationsMergerParameter(
+					pauschaleRueckwirkendAuszahlen,
+					geschwisterBonusTyp
+				)
 			);
 			AbschlussNormalizer abschlussNormalizerMitMonate =
 				new AbschlussNormalizer(true, isDebug);
@@ -463,7 +475,8 @@ public class BetreuungsgutscheinEvaluator {
 			FKJV_PAUSCHALE_RUECKWIRKEND,
 			EINGEWOEHNUNG_TYP,
 			ANSPRUCH_MONATSWEISE,
-			FACHSTELLEN_TYP
+			FACHSTELLEN_TYP,
+			GESCHWISTERNBONUS_TYP
 		);
 	}
 

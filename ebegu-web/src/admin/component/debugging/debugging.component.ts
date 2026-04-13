@@ -30,7 +30,7 @@ import {Category, UIRouter} from '@uirouter/core';
 import {visualizer} from '@uirouter/visualizer';
 import {Subject} from 'rxjs';
 import {distinctUntilChanged, filter, map, takeUntil} from 'rxjs/operators';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
 
 const LOG = LogFactory.createLog('DebuggingComponent');

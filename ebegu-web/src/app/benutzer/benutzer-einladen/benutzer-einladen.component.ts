@@ -17,13 +17,13 @@
 
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {TSRole} from '@kibon/shared/model/enums';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {CONSTANTS} from '@models/constants';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSBenutzerStatus} from '../../../models/enums/TSBenutzerStatus';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
@@ -40,9 +40,7 @@ export class BenutzerEinladenComponent {
     private readonly stateService = inject(StateService);
     private readonly errorService = inject(ErrorService);
     private readonly translate = inject(TranslateService);
-    readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
-    );
+    readonly applicationPropertyRS = inject(ApplicationPropertyRsService);
 
     public readonly benutzer = new TSBenutzer();
     public readonly excludedRoles: ReadonlyArray<TSRole> = [

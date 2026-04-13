@@ -13,34 +13,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {StateService} from '@uirouter/core';
 import {IComponentOptions} from 'angular';
 import moment from 'moment';
-import {
-    TSEinstellungenTagesschule,
-    TSMandant,
-    TSModulTagesschuleGroup
-} from '@kibon/shared/model/entity';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {
-    getWeekdaysValues,
-    TSBetreuungsstatus,
-    TSDayOfWeek,
-    TSModulTagesschuleIntervall,
-    TSModulTagesschuleTyp,
-    TSBrowserLanguage
-} from '@kibon/shared/model/enums';
+import {CONSTANTS} from '@models/constants';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
-import {MandantService} from '@kibon/shared-util-mandant-service';
 import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSEinstellungenTagesschule} from '../../../models/entity/TSEinstellungenTagesschule';
+import {TSMandant} from '../../../models/entity/TSMandant';
+import {TSModulTagesschuleGroup} from '../../../models/entity/TSModulTagesschuleGroup';
+import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
 import {
     getTSAbholungTagesschuleValues,
     TSAbholungTagesschule
@@ -50,18 +38,28 @@ import {
     getTSBelegungTagesschuleModulIntervallValues,
     TSBelegungTagesschuleModulIntervall
 } from '../../../models/enums/TSBelegungTagesschuleModulIntervall';
-import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {TSBrowserLanguage} from '../../../models/enums/TSBrowserLanguage';
+import {
+    getWeekdaysValues,
+    TSDayOfWeek
+} from '../../../models/enums/TSDayOfWeek';
+import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {
     getTSFleischOptionValues,
     TSFleischOption
 } from '../../../models/enums/TSFleischOption';
+import {TSModulTagesschuleIntervall} from '../../../models/enums/TSModulTagesschuleIntervall';
+import {TSModulTagesschuleTyp} from '../../../models/enums/TSModulTagesschuleTyp';
 import {TSBelegungTagesschuleModul} from '../../../models/TSBelegungTagesschuleModul';
 import {TSBelegungTagesschuleModulGroup} from '../../../models/TSBelegungTagesschuleModulGroup';
 import {TSBetreuung} from '../../../models/TSBetreuung';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
+import {MomentUtil} from '../../../utils/date/MomentUtil';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {HybridFormBridgeService} from '../../../utils/hybrid-form-bridge/hybrid-form-bridge.service';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {TagesschuleUtil} from '../../../utils/TagesschuleUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {OkDialogLongTextController} from '../../dialog/OkDialogLongTextController';
@@ -121,7 +119,7 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         'GlobalCacheService',
         '$timeout',
         '$translate',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         'DownloadRS',
         'GemeindeRS',
         'I18nServiceRSRest',
@@ -168,7 +166,7 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         globalCacheService: GlobalCacheService,
         $timeout: ITimeoutService,
         $translate: ITranslateService,
-        applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        applicationPropertyRS: ApplicationPropertyRsService,
         private readonly downloadRS: DownloadRS,
         private readonly gemeindeRS: GemeindeRS,
         private readonly i18nServiceRS: I18nServiceRSRest,

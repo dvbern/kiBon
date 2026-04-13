@@ -25,13 +25,13 @@ import {
     SimpleChanges,
     inject
 } from '@angular/core';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {Moment} from 'moment';
+import {TSDokumentUploadTyp} from '../../../../models/enums/TSDokumentUploadTyp';
 import {TSFile} from '../../../../models/TSFile';
 import {TSUploadFile} from '../../../../models/TSUploadFile';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
-import {TSDokumentUploadTyp} from '@kibon/shared/model/enums';
-import {FileUtil} from '@kibon/shared-util-fn-file';
+import {ApplicationPropertyRsService} from '../../../../utils/application-property-rs/application-property-rs.service';
+import {MomentUtil} from '../../../../utils/date/MomentUtil';
+import {FileUtil} from '../../../../utils/file/file';
 import {ErrorServiceX} from '../../../core/errors/service/ErrorServiceX';
 
 export interface HTMLInputEvent extends Event {
@@ -49,7 +49,7 @@ export class MultipleFileUploadComponent<T extends TSFile>
     implements OnChanges, OnInit
 {
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly errorService = inject(ErrorServiceX);
 

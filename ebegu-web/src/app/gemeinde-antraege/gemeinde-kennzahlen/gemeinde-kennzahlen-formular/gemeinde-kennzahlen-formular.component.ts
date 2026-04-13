@@ -25,11 +25,6 @@ import {
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatRadioChange} from '@angular/material/radio';
-import {
-    getTSEinschulungTypValues,
-    TSEinschulungTyp,
-    TSRole
-} from '@kibon/shared/model/enums';
 import {TranslateService} from '@ngx-translate/core';
 import {
     combineLatest,
@@ -40,13 +35,18 @@ import {
 } from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
+import {
+    getTSEinschulungTypValues,
+    TSEinschulungTyp
+} from '../../../../models/enums/TSEinschulungTyp';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSGemeindeKennzahlen} from '../../../../models/gemeindeantrag/gemeindekennzahlen/TSGemeindeKennzahlen';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {ErrorServiceX} from '../../../core/errors/service/ErrorServiceX';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {GemeindeKennzahlenService} from '../gemeinde-kennzahlen.service';
 
 const LOG = LogFactory.createLog('GemeindeKennzahlenFormularComponent');

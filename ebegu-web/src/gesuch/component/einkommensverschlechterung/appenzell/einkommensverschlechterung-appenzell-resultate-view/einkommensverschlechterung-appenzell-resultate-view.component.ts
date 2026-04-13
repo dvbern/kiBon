@@ -26,7 +26,7 @@ import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';

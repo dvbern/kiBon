@@ -25,12 +25,12 @@ import {
     inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {
     TSAufteilungDTO,
     TSFinanzielleSituationAufteilungDTO
 } from '../../../../../models/dto/TSFinanzielleSituationAufteilungDTO';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {FinanzielleSituationRS} from '../../../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 

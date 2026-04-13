@@ -21,7 +21,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {UIRouterModule} from '@uirouter/angular';
 import {of} from 'rxjs';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
-import {WindowRef} from '@kibon/shared-util-window-ref';
+import {WindowRef} from '../../../utils/window-ref/windowRef.service';
 import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
 import {SharedModule} from '../../shared/shared.module';
 

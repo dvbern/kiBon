@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from './TSRole';
 export enum TSEingangsart {
     ONLINE = 'ONLINE',
     PAPIER = 'PAPIER'

@@ -21,22 +21,23 @@ import {
     ViewChild,
     inject
 } from '@angular/core';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {IPromise} from 'angular';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {TSFamiliensituation} from '../../../../../models/TSFamiliensituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSGesuch} from '../../../../../models/TSGesuch';
+import {ApplicationPropertyRsService} from '../../../../../utils/application-property-rs/application-property-rs.service';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '../../../../../utils/dv-show-warning-angaben-vervollstaendingen/shared-util-dv-show-warning-angaben-vervollstaendingen.service';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractFinSitLuzernView} from '../AbstractFinSitLuzernView';
 import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern.service';
 import {ResultatComponent} from '../resultat/resultat.component';
-import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 @Component({
     selector: 'dv-finanzielle-situation-start-view-luzern',
@@ -50,7 +51,7 @@ export class FinanzielleSituationStartViewLuzernComponent extends AbstractFinSit
     protected finSitLuService: FinanzielleSituationLuzernService;
     protected authServiceRS: AuthServiceRS;
     protected readonly translate: TranslateService;
-    protected readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService;
+    protected readonly applicationPropertyRS: ApplicationPropertyRsService;
     protected readonly dvShowWarningAngabenVervollstaendigenService = inject(
         SharedUtilDvShowWarningAngabenVervollstaendingenService
     );
@@ -64,9 +65,7 @@ export class FinanzielleSituationStartViewLuzernComponent extends AbstractFinSit
         const finSitLuService = inject(FinanzielleSituationLuzernService);
         const authServiceRS = inject(AuthServiceRS);
         const translate = inject(TranslateService);
-        const applicationPropertyRS = inject(
-            SharedUtilApplicationPropertyRsService
-        );
+        const applicationPropertyRS = inject(ApplicationPropertyRsService);
 
         super(
             gesuchModelManager,

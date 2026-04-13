@@ -17,12 +17,10 @@
 
 import {Component, OnInit, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {
-    TSEinstellungenTagesschule,
-    TSInstitutionStammdaten,
-    TSModulTagesschuleGroup
-} from '@kibon/shared/model/entity';
-import {TSModulTagesschuleTyp} from '@kibon/shared/model/enums';
+import {TSEinstellungenTagesschule} from '../../../../models/entity/TSEinstellungenTagesschule';
+import {TSInstitutionStammdaten} from '../../../../models/entity/TSInstitutionStammdaten';
+import {TSModulTagesschuleGroup} from '../../../../models/entity/TSModulTagesschuleGroup';
+import {TSModulTagesschuleTyp} from '../../../../models/enums/TSModulTagesschuleTyp';
 import {InstitutionStammdatenRS} from '../../../core/service/institutionStammdatenRS.rest';
 
 @Component({

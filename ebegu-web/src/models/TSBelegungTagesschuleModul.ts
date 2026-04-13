@@ -15,8 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSAbstractEntity} from './entity/TSAbstractEntity';
+import {TSModulTagesschule} from './entity/TSModulTagesschule';
 import {TSBelegungTagesschuleModulIntervall} from './enums/TSBelegungTagesschuleModulIntervall';
-import {TSAbstractEntity, TSModulTagesschule} from '@kibon/shared/model/entity';
 
 export class TSBelegungTagesschuleModul extends TSAbstractEntity {
     public intervall: TSBelegungTagesschuleModulIntervall;

@@ -17,6 +17,8 @@
 
 package ch.dvbern.ebegu.inbox.consumer.betreuung.stornieren.action;
 
+import java.util.Locale;
+
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
@@ -26,6 +28,8 @@ import ch.dvbern.ebegu.inbox.consumer.betreuung.event.BetreuungEvent;
 import ch.dvbern.ebegu.inbox.consumer.betreuung.pattern.decisiontree.Action;
 import ch.dvbern.ebegu.inbox.consumer.betreuung.stornieren.action.util.TextMessageFactory;
 import ch.dvbern.ebegu.services.BetreuungService;
+import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.util.EbeguUtil;
 
 /**
  * Definiert eine Aktion mit der eine Betreuung als Reaktion auf ein Event abgewiesen wird.
@@ -41,6 +45,12 @@ public class BetreuungAbweisenAction implements Action<BetreuungEvent> {
 	private BetreuungService betreuungService;
 
 	/**
+	 * Referenz auf den Service mit dem das verwendete Locale für die Betreuung gesucht wird.
+	 */
+	@Inject
+	private GemeindeService gemeindeService;
+
+	/**
 	 * Referenz auf die Message-Factory, welche den Begründungstext für das Abweisen einer Betreuung liefert.
 	 */
 	@Inject
@@ -53,11 +63,15 @@ public class BetreuungAbweisenAction implements Action<BetreuungEvent> {
 	 */
 	@Override
 	public void execute(@NotNull BetreuungEvent betreuungEvent) {
+		Locale locale = EbeguUtil.extractKorrespondenzsprache(
+			betreuungEvent.getBetreuung().extractGesuch(),
+			gemeindeService
+		).getLocale();
 
 		betreuungService.betreuungPlatzAbweisen(
 			betreuungEvent.getBetreuung(),
 			betreuungEvent.getEventMonitor().getClientName(),
-			messageFactory.getMessage()
+			messageFactory.getMessage(locale)
 		);
 	}
 }

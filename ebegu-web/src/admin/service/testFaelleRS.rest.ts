@@ -17,10 +17,11 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
 import moment from 'moment';
 import {Observable} from 'rxjs';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
+import {TSGemeinde} from '../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../models/entity/TSGesuchsperiode';
 import {TSGemeindeAntragTyp} from '../../models/enums/TSGemeindeAntragTyp';
-import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '../../utils/date/MomentUtil';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 
 @Injectable({

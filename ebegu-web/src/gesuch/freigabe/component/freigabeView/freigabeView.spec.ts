@@ -27,14 +27,13 @@ import {DownloadRS} from '../../../../app/core/service/downloadRS.rest';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
+import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
 import {TSDossier} from '../../../../models/TSDossier';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
 import {TSFall} from '../../../../models/TSFall';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-
 import {TSGesuch} from '../../../../models/TSGesuch';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {GESUCH_JS_MODULE} from '../../../gesuch.module';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
@@ -76,7 +75,7 @@ xdescribe('freigabeView', () => {
             gesuchModelManager = $injector.get('GesuchModelManager');
             $httpBackend = $injector.get('$httpBackend');
             applicationPropertyRS = $injector.get(
-                'SharedUtilApplicationPropertyRsService'
+                'ApplicationPropertyRsService'
             );
             authServiceRS = $injector.get('AuthServiceRS');
             $timeout = $injector.get('$timeout');

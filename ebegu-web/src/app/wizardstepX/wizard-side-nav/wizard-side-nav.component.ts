@@ -23,8 +23,9 @@ import {
     inject
 } from '@angular/core';
 import {Observable} from 'rxjs';
-import {TSWizardStepStatus} from '@kibon/shared/model/enums';
-import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSWizardStepX} from '../../../models/TSWizardStepX';
 import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
 

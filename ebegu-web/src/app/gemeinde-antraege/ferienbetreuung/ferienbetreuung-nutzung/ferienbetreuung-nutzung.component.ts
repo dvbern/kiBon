@@ -34,7 +34,7 @@ import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantr
 import {TSFerienbetreuungAngabenNutzung} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenNutzung';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {
     numberValidator,

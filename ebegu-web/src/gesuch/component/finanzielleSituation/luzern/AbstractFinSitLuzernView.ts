@@ -16,19 +16,20 @@
  */
 
 import {MatRadioChange} from '@angular/material/radio';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {IPromise} from 'angular';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
-import {TSRole} from '@kibon/shared/model/enums';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
+import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
 import {TSFinanzielleSituationContainer} from '../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzielleSituationSelbstdeklaration} from '../../../../models/TSFinanzielleSituationSelbstdeklaration';
 import {TSFinanzModel} from '../../../../models/TSFinanzModel';
 import {TSGesuch} from '../../../../models/TSGesuch';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {ApplicationPropertyRsService} from '../../../../utils/application-property-rs/application-property-rs.service';
+import {MomentUtil} from '../../../../utils/date/MomentUtil';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
@@ -46,7 +47,7 @@ export abstract class AbstractFinSitLuzernView extends AbstractGesuchViewX<TSFin
         protected finSitLuService: FinanzielleSituationLuzernService,
         protected authServiceRS: AuthServiceRS,
         protected readonly translate: TranslateService,
-        protected readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
+        protected readonly applicationPropertyRS: ApplicationPropertyRsService
     ) {
         super(
             gesuchModelManager,

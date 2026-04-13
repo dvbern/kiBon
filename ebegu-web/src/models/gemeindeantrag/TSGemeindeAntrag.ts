@@ -15,12 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSAbstractEntity} from '../entity/TSAbstractEntity';
+import {TSGemeinde} from '../entity/TSGemeinde';
+import {TSGesuchsperiode} from '../entity/TSGesuchsperiode';
 import {TSGemeindeAntragTyp} from '../enums/TSGemeindeAntragTyp';
-import {
-    TSAbstractEntity,
-    TSGemeinde,
-    TSGesuchsperiode
-} from '@kibon/shared/model/entity';
 import {TSBenutzerNoDetails} from '../TSBenutzerNoDetails';
 
 export class TSGemeindeAntrag extends TSAbstractEntity {

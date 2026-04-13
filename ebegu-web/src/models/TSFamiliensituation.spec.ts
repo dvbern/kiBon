@@ -1,8 +1,9 @@
-import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
 import moment from 'moment';
+import {TSDateRange} from './entity/TSDateRange';
+import {TSGesuchsperiode} from './entity/TSGesuchsperiode';
 import {TSFamilienstatus} from './enums/TSFamilienstatus';
+import {TSGesuchsperiodeStatus} from './enums/TSGesuchsperiodeStatus';
 import {TSFamiliensituation} from './TSFamiliensituation';
-import {TSDateRange, TSGesuchsperiode} from '@kibon/shared/model/entity';
 
 describe('Familiensituation', () => {
     describe('spezialfall konkubinat ohne kind wird X jährig während der Periode', () => {

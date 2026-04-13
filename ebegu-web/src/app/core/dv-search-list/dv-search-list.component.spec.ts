@@ -20,10 +20,9 @@ import {UpgradeModule} from '@angular/upgrade/static';
 import {TranslateModule} from '@ngx-translate/core';
 import {of} from 'rxjs';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
 import {MaterialModule} from '../../shared/material.module';
 import {SharedModule} from '../../shared/shared.module';
-
 import {DvSearchListComponent} from './dv-search-list.component';
 
 describe('DvSearchListComponent', () => {

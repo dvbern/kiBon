@@ -15,7 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractEntity, TSAdresse} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from './entity/TSAbstractEntity';
+import {TSAdresse} from './entity/TSAdresse';
 
 export class TSZahlungsinformationen extends TSAbstractEntity {
     private _iban: string;

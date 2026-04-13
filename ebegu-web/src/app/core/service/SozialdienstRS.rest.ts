@@ -22,8 +22,8 @@ import {map} from 'rxjs/operators';
 import {TSSozialdienst} from '../../../models/sozialdienst/TSSozialdienst';
 import {TSSozialdienstStammdaten} from '../../../models/sozialdienst/TSSozialdienstStammdaten';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {CONSTANTS} from '@models/constants';
+import {LogFactory} from '@utils/log';
 
 const LOG = LogFactory.createLog('SozialdienstRS');
 

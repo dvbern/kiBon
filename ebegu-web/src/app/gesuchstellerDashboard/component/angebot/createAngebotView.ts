@@ -12,25 +12,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-import {TSAnmeldungDTO} from '@kibon/shared/model/dto';
-import {
-    getTSEinschulungTypValues,
-    TSEinschulungTyp,
-    TSBetreuungsstatus,
-    TSBetreuungsangebotTyp
-} from '@kibon/shared/model/enums';
+
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, IController} from 'angular';
 import moment from 'moment';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
-import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
+import {CONSTANTS} from '@models/constants';
+import {BetreuungRS} from '@hybrid/gesuch/betreuung';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {TSAnmeldungDTO} from '../../../../models/dto/TSAnmeldungDTO';
+import {TSInstitutionStammdaten} from '../../../../models/entity/TSInstitutionStammdaten';
+import {TSBetreuungsstatus} from '../../../../models/enums/betreuung/TSBetreuungsstatus';
+import {TSBetreuungsangebotTyp} from '../../../../models/enums/TSBetreuungsangebotTyp';
+import {
+    getTSEinschulungTypValues,
+    TSEinschulungTyp
+} from '../../../../models/enums/TSEinschulungTyp';
 import {TSBelegungFerieninsel} from '../../../../models/TSBelegungFerieninsel';
 import {TSBelegungTagesschule} from '../../../../models/TSBelegungTagesschule';
 import {TSBetreuung} from '../../../../models/TSBetreuung';
 import {TSKindContainer} from '../../../../models/TSKindContainer';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {IAngebotStateParams} from '../../gesuchstellerDashboard.route';
 import IFormController = angular.IFormController;

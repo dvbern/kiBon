@@ -14,16 +14,13 @@
  */
 
 import moment from 'moment';
-import {EbeguUtil} from '../utils/EbeguUtil';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSAdresse} from './entity/TSAdresse';
+import {TSDateRange} from './entity/TSDateRange';
+import {TSGesuchsperiode} from './entity/TSGesuchsperiode';
 import {TSFamilienstatus} from './enums/TSFamilienstatus';
 import {TSGesuchstellerKardinalitaet} from './enums/TSGesuchstellerKardinalitaet';
 import {TSUnterhaltsvereinbarungAnswer} from './enums/TSUnterhaltsvereinbarungAnswer';
-import {
-    TSAbstractMutableEntity,
-    TSAdresse,
-    TSDateRange,
-    TSGesuchsperiode
-} from '@kibon/shared/model/entity';
 
 export class TSFamiliensituation extends TSAbstractMutableEntity {
     private _familienstatus: TSFamilienstatus;
@@ -198,9 +195,8 @@ export class TSFamiliensituation extends TSAbstractMutableEntity {
         switch (this.familienstatus) {
             case TSFamilienstatus.SCHWYZ:
                 return (
-                    EbeguUtil.isNotNullOrUndefined(
-                        this.gesuchstellerKardinalitaet
-                    ) &&
+                    this.gesuchstellerKardinalitaet !== null &&
+                    this.gesuchstellerKardinalitaet !== undefined &&
                     this.gesuchstellerKardinalitaet ===
                         TSGesuchstellerKardinalitaet.ZU_ZWEIT
                 );
@@ -304,10 +300,16 @@ export class TSFamiliensituation extends TSAbstractMutableEntity {
     }
 
     public isSameFamiliensituation(other: TSFamiliensituation): boolean {
-        let same = EbeguUtil.areSameOrWithoutValue(
+        const areSameOrWithoutValue = (right: any, left: any): boolean =>
+            ((right === null || right === undefined) &&
+                (left === null || left === undefined)) ||
+            right === left;
+
+        let same = areSameOrWithoutValue(
             this.familienstatus,
             other.familienstatus
         );
+
         if (
             same &&
             this.familienstatus === TSFamilienstatus.KONKUBINAT_KEIN_KIND
@@ -316,36 +318,36 @@ export class TSFamiliensituation extends TSAbstractMutableEntity {
         }
         if (same && this.fkjvFamSit) {
             same =
-                EbeguUtil.areSameOrWithoutValue(
+                areSameOrWithoutValue(
                     this.geteilteObhut,
                     other.geteilteObhut
                 ) &&
-                EbeguUtil.areSameOrWithoutValue(
+                areSameOrWithoutValue(
                     this.unterhaltsvereinbarung,
                     other.unterhaltsvereinbarung
                 ) &&
-                EbeguUtil.areSameOrWithoutValue(
+                areSameOrWithoutValue(
                     this.gesuchstellerKardinalitaet,
                     other.gesuchstellerKardinalitaet
                 );
         }
         if (this.familienstatus === TSFamilienstatus.APPENZELL) {
             same =
-                EbeguUtil.areSameOrWithoutValue(
+                areSameOrWithoutValue(
                     this.geteilteObhut,
                     other.geteilteObhut
                 ) &&
-                EbeguUtil.areSameOrWithoutValue(
+                areSameOrWithoutValue(
                     this.gemeinsamerHaushaltMitObhutsberechtigterPerson,
                     other.gemeinsamerHaushaltMitObhutsberechtigterPerson
                 ) &&
-                EbeguUtil.areSameOrWithoutValue(
+                areSameOrWithoutValue(
                     this.gemeinsamerHaushaltMitPartner,
                     other.gemeinsamerHaushaltMitPartner
                 );
         }
         if (this.familienstatus === TSFamilienstatus.SCHWYZ) {
-            same = EbeguUtil.areSameOrWithoutValue(
+            same = areSameOrWithoutValue(
                 this.gesuchstellerKardinalitaet,
                 other.gesuchstellerKardinalitaet
             );
@@ -460,7 +462,10 @@ export class TSFamiliensituation extends TSAbstractMutableEntity {
     }
 
     public konkubinatGetXYearsInPeriod(gueltigkeit: TSDateRange): boolean {
-        if (EbeguUtil.isNullOrUndefined(this.startKonkubinat)) {
+        if (
+            this.startKonkubinat === null ||
+            this.startKonkubinat === undefined
+        ) {
             return false;
         }
         return (
@@ -490,11 +495,13 @@ export class TSFamiliensituation extends TSAbstractMutableEntity {
         target.iban = this.iban;
         target.kontoinhaber = this.kontoinhaber;
         target.abweichendeZahlungsadresse = this.abweichendeZahlungsadresse;
-        if (EbeguUtil.isNotNullOrUndefined(this.zahlungsadresse)) {
+        if (
+            this.zahlungsadresse !== null &&
+            this.zahlungsadresse !== undefined
+        ) {
             target.zahlungsadresse = new TSAdresse();
             target.zahlungsadresse.deepCopyTo(this.zahlungsadresse);
         }
-
         target.infomaKreditorennummer = this.infomaKreditorennummer;
         target.infomaBankcode = this.infomaBankcode;
         target.gesuchstellerKardinalitaet = this.gesuchstellerKardinalitaet;

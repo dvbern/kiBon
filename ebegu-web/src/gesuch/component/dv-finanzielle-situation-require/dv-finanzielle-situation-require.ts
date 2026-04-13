@@ -15,12 +15,12 @@
 
 import {IComponentOptions, IController, IFormController} from 'angular';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {EbeguNumberPipe} from '../../../app/shared/pipe/ebegu-number.pipe';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {getBernFKJVFinSitTyp} from '@kibon/shared/model/enums';
+import {getBernFKJVFinSitTyp} from '../../../models/enums/TSFinanzielleSituationTyp';
 import {TSFinSitStatus} from '../../../models/enums/TSFinSitStatus';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
 import {FinanzielleSituationRS} from '../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import ITranslateService = angular.translate.ITranslateService;

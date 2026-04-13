@@ -17,9 +17,9 @@
 
 import {Component, Input, inject} from '@angular/core';
 import {TargetState} from '@uirouter/core';
+import {KiBonMandant} from '@models/mandant';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
-import {MandantService} from '@kibon/shared-util-mandant-service';
-import {KiBonMandant} from '@kibon/shared-model-mandant';
+import {MandantService} from '@utils/mandant';
 
 @Component({
     selector: 'dv-tutorial-gemeinde-login',

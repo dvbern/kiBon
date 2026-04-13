@@ -1,10 +1,10 @@
 import {Component, Input, OnInit, inject} from '@angular/core';
-import {TSAdresse} from '@kibon/shared/model/entity';
-import {KiBonMandant} from '@kibon/shared-model-mandant';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {KiBonMandant} from '@models/mandant';
+import {TSAdresse} from '../../../../models/entity/TSAdresse';
 import {TSGemeindeStammdaten} from '../../../../models/TSGemeindeStammdaten';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
+import {LogFactory} from '../../../../utils/log-factory/LogFactory';
+import {MandantService} from '../../../../utils/mandant-service/mandant.service';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {SharedModule} from '../../../../app/shared/shared.module';

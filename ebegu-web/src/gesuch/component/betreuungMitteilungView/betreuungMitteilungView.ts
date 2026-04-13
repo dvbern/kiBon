@@ -15,7 +15,7 @@
 
 import {StateService} from '@uirouter/core';
 import {IComponentOptions} from 'angular';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {BerechnungsManager} from '../../service/berechnungsManager';
 import {GesuchModelManager} from '../../service/gesuchModelManager';

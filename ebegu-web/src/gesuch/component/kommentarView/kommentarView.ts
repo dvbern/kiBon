@@ -13,8 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {MAX_FILE_SIZE} from '@models/constants';
 import {StateService} from '@uirouter/core';
 import {
     copy,
@@ -27,22 +26,24 @@ import {
 } from 'angular';
 import {forkJoin} from 'rxjs';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
 import {TSDokumenteDTO} from '../../../models/dto/TSDokumenteDTO';
+import {TSWizardStep} from '../../../models/entity/TSWizardStep';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {TSCacheTyp} from '@kibon/shared/model/enums';
-import {TSDokumentGrundTyp} from '@kibon/shared/model/enums';
+import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
+import {TSDokumentGrundTyp} from '../../../models/enums/TSDokumentGrundTyp';
+import {TSDokumentUploadTyp} from '../../../models/enums/TSDokumentUploadTyp';
 import {TSEingangsart} from '../../../models/enums/TSEingangsart';
-import {TSDokumentUploadTyp, TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSDokument} from '../../../models/TSDokument';
 import {TSDokumentGrund} from '../../../models/TSDokumentGrund';
 import {TSDossier} from '../../../models/TSDossier';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSWizardStep} from '@kibon/shared/model/entity';
-
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {FileUtil} from '../../../utils/file/file';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {OkHtmlDialogController} from '../../dialog/OkHtmlDialogController';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
@@ -54,7 +55,6 @@ import {GlobalCacheService} from '../../service/globalCacheService';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import ISidenavService = angular.material.ISidenavService;
 import ITranslateService = angular.translate.ITranslateService;
-import {FileUtil} from '@kibon/shared-util-fn-file';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 
 const okHtmlDialogTempl = require('../../../gesuch/dialog/okHtmlDialogTemplate.html');
@@ -86,7 +86,7 @@ export class KommentarViewController implements IController {
         '$state',
         '$mdSidenav',
         '$q',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         'ErrorService'
     ];
 
@@ -111,7 +111,7 @@ export class KommentarViewController implements IController {
         private readonly $state: StateService,
         private readonly $mdSidenav: ISidenavService,
         private readonly $q: IQService,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly applicationPropertyRS: ApplicationPropertyRsService,
         private readonly errorService: ErrorService
     ) {
         if (!this.isGesuchUnsaved()) {

@@ -17,15 +17,15 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {TSBenutzerTableFilterDTO} from '../../../models/dto/TSBenutzerTableFilterDTO';
+import {TSTraegerschaft} from '../../../models/entity/TSTraegerschaft';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
 import {TSBerechtigungHistory} from '../../../models/TSBerechtigungHistory';
-import {TSTraegerschaft} from '@kibon/shared/model/entity';
 import {TSUserSearchresultDTO} from '../../../models/TSUserSearchresultDTO';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {CoreModule} from '../core.module';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {firstValueFrom} from 'rxjs';
 
 @Injectable({

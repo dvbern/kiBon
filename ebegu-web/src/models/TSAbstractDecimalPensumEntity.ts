@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSAbstractDateRangedEntity} from './entity/TSAbstractDateRangedEntity';
 import {TSPensumUnits} from './enums/TSPensumUnits';
-import {TSAbstractDateRangedEntity} from '@kibon/shared/model/entity';
 import {TSEingewoehnung} from './TSEingewoehnung';
 
 export class TSAbstractDecimalPensumEntity extends TSAbstractDateRangedEntity {

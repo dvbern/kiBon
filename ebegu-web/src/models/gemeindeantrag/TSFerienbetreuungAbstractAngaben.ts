@@ -15,8 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSAbstractEntity} from '../entity/TSAbstractEntity';
 import {TSFerienbetreuungFormularStatus} from '../enums/TSFerienbetreuungFormularStatus';
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+
 export class TSFerienbetreuungAbstractAngaben extends TSAbstractEntity {
     protected _status: TSFerienbetreuungFormularStatus;
 

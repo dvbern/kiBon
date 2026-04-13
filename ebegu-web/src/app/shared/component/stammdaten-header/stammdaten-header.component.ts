@@ -30,7 +30,8 @@ import {StateService} from '@uirouter/core';
 import {Observable, of} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
+
 @Component({
     selector: 'dv-stammdaten-header',
     templateUrl: './stammdaten-header.component.html',

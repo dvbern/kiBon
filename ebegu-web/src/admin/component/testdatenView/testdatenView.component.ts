@@ -15,27 +15,28 @@
 
 import {Component, OnInit, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import moment from 'moment';
 import {firstValueFrom, Observable} from 'rxjs';
 import {DvNgConfirmDialogComponent} from '../../../app/core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
 import {DvNgDisplayObjectDialogComponent} from '../../../app/core/component/dv-ng-display-object-dialog/dv-ng-display-object-dialog.component';
 import {DvNgLinkDialogComponent} from '../../../app/core/component/dv-ng-link-dialog/dv-ng-link-dialog.component';
 import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../../app/core/service/benutzerRSX.rest';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {GemeindeAntragService} from '../../../app/gemeinde-antraege/services/gemeinde-antrag.service';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
 import {TSPagination} from '../../../models/dto/TSPagination';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
 import {TSKibonAnfrage} from '../../../models/neskovanp/TSKibonAnfrage';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
-import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
 import {TestFaelleRS} from '../../service/testFaelleRS.rest';
 
 const LOG = LogFactory.createLog('TestdatenView');
@@ -52,7 +53,7 @@ export class TestdatenViewComponent implements OnInit {
     private readonly errorService = inject(ErrorService);
     private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly gemeindeRS = inject(GemeindeRS);
     private readonly dialog = inject(MatDialog);

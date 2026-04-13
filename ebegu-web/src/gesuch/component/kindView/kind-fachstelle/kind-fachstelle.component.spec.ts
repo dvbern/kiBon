@@ -4,14 +4,11 @@ import {of} from 'rxjs';
 import {SharedModule} from '../../../../app/shared/shared.module';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
-import {
-    TSDateRange,
-    TSFachstelle,
-    TSPensumFachstelle
-} from '@kibon/shared/model/entity';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSDateRange} from '../../../../models/entity/TSDateRange';
+import {TSFachstelle} from '../../../../models/entity/TSFachstelle';
+import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
+import {TSPensumFachstelle} from '../../../../models/entity/TSPensumFachstelle';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
-
 import {KindFachstelleComponent} from './kind-fachstelle.component';
 
 describe('KindFachstelleComponent', () => {

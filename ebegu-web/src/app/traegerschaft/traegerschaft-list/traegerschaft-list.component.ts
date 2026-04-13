@@ -30,10 +30,10 @@ import {StateService} from '@uirouter/core';
 import {from, Observable} from 'rxjs';
 import {AbstractAdminViewX} from '../../../admin/abstractAdminViewX';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '@kibon/shared/model/enums';
-import {TSTraegerschaft} from '@kibon/shared/model/entity';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
+import {Log, LogFactory} from '@utils/log';
+import {TSTraegerschaft} from '../../../models/entity/TSTraegerschaft';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
 import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
 

@@ -26,13 +26,16 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.dto.VerfuegungsBemerkungDTO;
 import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.rechner.rules.MinimalPauschalbetragGemeindeRechnerRule;
+import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
 import com.spotify.hamcrest.pojo.IsPojo;
@@ -84,6 +87,163 @@ public class KitaRechnerTest extends AbstractBGRechnerTest {
 		LocalDate.of(2019, Month.FEBRUARY, 10),
 		LocalDate.of(2019, Month.FEBRUARY, 10)
 	);
+
+	@Test
+	public void minimaleVerguenstigung_shouldBeCalculatedVerguenstigung_whenCalculatedVerguenstigungIsHigherThanPauschalBetrag() {
+		var calculatedVerguenstigung = BigDecimal.valueOf(15.8333);
+		var parameter = new RechnerRuleParameterDTO();
+		BigDecimal minimalPauschalBetrag = BigDecimal.valueOf(8);
+		parameter.setMinimalPauschalBetrag(minimalPauschalBetrag);
+		parameter.setMinimalPauschalBetragBemerkung(
+			new VerfuegungsBemerkungDTO(
+				RuleValidity.GEMEINDE,
+				MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_KITA,
+				Locale.GERMAN,
+				minimalPauschalBetrag
+			)
+		);
+		var input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.GEMEINDE
+		);
+
+		var minimaleVerguenstigung =
+			kitaRechner.getMinimaleVerguenstigungProZeiteinheit(
+				calculatedVerguenstigung,
+				parameter,
+				input
+			);
+
+		assertThat(minimaleVerguenstigung, is(calculatedVerguenstigung));
+	}
+
+	@Test
+	public void minimaleVerguenstigungBemerkung_shouldNotBeSet_whenCalculatedVerguenstigungIsHigherThanPauschalBetrag() {
+		var calculatedVerguenstigung = BigDecimal.valueOf(15.8333);
+		var parameter = new RechnerRuleParameterDTO();
+		BigDecimal minimalPauschalBetrag = BigDecimal.valueOf(8);
+		parameter.setMinimalPauschalBetrag(minimalPauschalBetrag);
+		parameter.setMinimalPauschalBetragBemerkung(
+			new VerfuegungsBemerkungDTO(
+				RuleValidity.GEMEINDE,
+				MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_KITA,
+				Locale.GERMAN,
+				minimalPauschalBetrag
+			)
+		);
+		var input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.GEMEINDE
+		);
+
+		kitaRechner.getMinimaleVerguenstigungProZeiteinheit(
+			calculatedVerguenstigung,
+			parameter,
+			input
+		);
+
+		assertThat(
+			input.getParent()
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_KITA),
+			is(false)
+		);
+	}
+
+	@Test
+	public void minimaleVerguenstigungBemerkung_shouldNotBeSet_whenCalculatedVerguenstigungIsEqualToPauschalBetrag() {
+		var calculatedVerguenstigung = BigDecimal.valueOf(8);
+		var parameter = new RechnerRuleParameterDTO();
+		BigDecimal minimalPauschalBetrag = BigDecimal.valueOf(8);
+		parameter.setMinimalPauschalBetrag(minimalPauschalBetrag);
+		parameter.setMinimalPauschalBetragBemerkung(
+			new VerfuegungsBemerkungDTO(
+				RuleValidity.GEMEINDE,
+				MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_KITA,
+				Locale.GERMAN,
+				minimalPauschalBetrag
+			)
+		);
+		var input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.GEMEINDE
+		);
+
+		kitaRechner.getMinimaleVerguenstigungProZeiteinheit(
+			calculatedVerguenstigung,
+			parameter,
+			input
+		);
+
+		assertThat(
+			input.getParent()
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_KITA),
+			is(false)
+		);
+	}
+
+	@Test
+	public void minimaleVerguenstigung_shouldBeMinimalerPauschalBetrag_whenCalculatedVerguenstigungIsLowerThanPauschalBetrag() {
+		var calculatedVerguenstigung = BigDecimal.valueOf(7.99);
+		var parameter = new RechnerRuleParameterDTO();
+		BigDecimal minimalPauschalBetrag = BigDecimal.valueOf(8);
+		parameter.setMinimalPauschalBetrag(minimalPauschalBetrag);
+		parameter.setMinimalPauschalBetragBemerkung(
+			new VerfuegungsBemerkungDTO(
+				RuleValidity.GEMEINDE,
+				MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_KITA,
+				Locale.GERMAN,
+				minimalPauschalBetrag
+			)
+		);
+		var input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.GEMEINDE
+		);
+
+		var minimaleVerguenstigung =
+			kitaRechner.getMinimaleVerguenstigungProZeiteinheit(
+				calculatedVerguenstigung,
+				parameter,
+				input
+			);
+
+		assertThat(minimaleVerguenstigung, is(minimalPauschalBetrag));
+	}
+
+	@Test
+	public void minimaleVerguenstigungBemerkung_shouldBeSet_whenCalculatedVerguenstigungIsHigherThanPauschalBetrag() {
+		var calculatedVerguenstigung = BigDecimal.valueOf(7.99);
+		var parameter = new RechnerRuleParameterDTO();
+		BigDecimal minimalPauschalBetrag = BigDecimal.valueOf(8);
+		parameter.setMinimalPauschalBetrag(minimalPauschalBetrag);
+		parameter.setMinimalPauschalBetragBemerkung(
+			new VerfuegungsBemerkungDTO(
+				RuleValidity.GEMEINDE,
+				MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_KITA,
+				Locale.GERMAN,
+				minimalPauschalBetrag
+			)
+		);
+		var input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.GEMEINDE
+		);
+
+		kitaRechner.getMinimaleVerguenstigungProZeiteinheit(
+			calculatedVerguenstigung,
+			parameter,
+			input
+		);
+
+		assertThat(
+			input.getParent()
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_KITA),
+			is(true)
+		);
+	}
 
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test

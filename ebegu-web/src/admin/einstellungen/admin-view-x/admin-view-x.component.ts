@@ -11,20 +11,18 @@ import {NgForm} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import {AdminUtilKeycloakAdminRsService} from '@kibon/admin-util-keycloak-admin-rs';
-import {
-    TSApplicationProperty,
-    TSApplicationPropertyKey
-} from '@kibon/shared/model/einstellung';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {KeycloakAdminRsService} from '@admin/util';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {combineLatest} from 'rxjs';
 import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {ErrorServiceX} from '../../../app/core/errors/service/ErrorServiceX';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {SearchRS} from '../../../gesuch/service/searchRS.rest';
+import {TSApplicationProperty} from '../../../models/einstellung/TSApplicationProperty';
+import {TSApplicationPropertyKey} from '../../../models/einstellung/TSApplicationPropertyKey';
 import {AbstractAdminViewX} from '../../abstractAdminViewX';
 import {ReindexRS} from '../../service/reindexRS.rest';
-import {ConfigurableEinstellung} from '@kibon/admin-edit-einstellung';
+import {ConfigurableEinstellung} from '@admin/einstellungen';
 export interface DisplayedGroup {
     groupName: string;
     applicationProperties: TSApplicationProperty[];
@@ -40,7 +38,7 @@ export interface DisplayedGroup {
 })
 export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly reindexRS = inject(ReindexRS);
     private readonly searchRS = inject(SearchRS);
@@ -48,7 +46,7 @@ export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
     private readonly cd = inject(ChangeDetectorRef);
     private readonly errorService = inject(ErrorServiceX);
     private readonly adminUtilKeycloakAdminService = inject(
-        AdminUtilKeycloakAdminRsService
+        KeycloakAdminRsService
     );
     public authServiceRS = inject(AuthServiceRS);
 

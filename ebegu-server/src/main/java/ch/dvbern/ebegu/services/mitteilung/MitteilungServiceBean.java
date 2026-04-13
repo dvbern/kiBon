@@ -207,6 +207,9 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 	@Inject
 	MitteilungSharedServiceBean mitteilungSharedServiceBean;
 
+	@Inject
+	MitteilungEmpfaengerResolver mitteilungEmpfaengerResolver;
+
 	@Override
 	@Nonnull
 	public Mitteilung sendMitteilung(@Nonnull Mitteilung mitteilung) {
@@ -1463,7 +1466,7 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		neueVeranlagungsMitteilung.setMitteilungStatus(MitteilungStatus.NEU);
 		neueVeranlagungsMitteilung.setSentDatum(LocalDateTime.now());
 		neueVeranlagungsMitteilung.setEmpfaenger(
-			mitteilungSharedServiceBean.getEmpfaengerBeiMitteilungAnGemeinde(
+			mitteilungEmpfaengerResolver.getEmpfaengerBeiMitteilungAnGemeinde(
 				neueVeranlagungsMitteilung
 			)
 		);

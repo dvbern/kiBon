@@ -17,60 +17,50 @@
 
 import {
     ChangeDetectionStrategy,
-    ChangeDetectorRef,
     Component,
-    Input,
-    OnChanges,
-    OnDestroy,
-    SimpleChanges,
-    inject
+    inject,
+    computed,
+    input
 } from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {ControlContainer, NgForm, ValidationErrors} from '@angular/forms';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {map} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
-
-const LOG = LogFactory.createLog('ErrorMessagesComponent');
 
 @Component({
     selector: 'dv-error-messages',
     templateUrl: './error-messages.component.html',
     styleUrls: ['./dv-error-messages.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
-    standalone: false
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
 })
-export class ErrorMessagesComponent implements OnChanges, OnDestroy {
+export class ErrorMessagesComponent {
     readonly form = inject(NgForm);
-    readonly changeDetectorRef = inject(ChangeDetectorRef);
     private readonly translate = inject(TranslateService);
 
-    @Input() public errorObject: ValidationErrors | null;
-    @Input() public inputId: string;
-    @Input() public errorMessageOverrides: Record<string, string> = {};
+    readonly errorObject = input<ValidationErrors | null>(null);
+    readonly inputId = input<string>('');
+    readonly errorMessageOverrides = input<Record<string, string>>({});
 
-    public error: string = '';
+    private readonly currentLang = toSignal(
+        this.translate.onLangChange.pipe(map(e => e.lang)),
+        {initialValue: this.translate.getCurrentLang()}
+    );
 
-    private readonly unsubscribe$ = new Subject<void>();
-
-    public constructor() {
-        this.form.ngSubmit.pipe(takeUntil(this.unsubscribe$)).subscribe({
-            next: () => this.changeDetectorRef.markForCheck(),
-            error: err => LOG.error(err)
-        });
-    }
-
-    public ngOnChanges(changes: SimpleChanges): void {
-        // when the errors change we need to update our error
-        if (changes?.errorObject || changes?.errorMessageOverrides) {
-            this.initError(changes.errorObject.currentValue);
-        }
-    }
+    readonly error = computed(() => {
+        this.currentLang();
+        const errors = this.errorObject();
+        const errorKey = this.findFirstErrorKey(errors);
+        return errorKey
+            ? this.getErrorMessage(errorKey, errors?.[errorKey])
+            : '';
+    });
 
     private getErrorMessage(errorKey: string, errorValue?: any): string {
-        if (this.errorMessageOverrides?.[errorKey]) {
-            return this.translate.instant(this.errorMessageOverrides[errorKey]);
+        if (this.errorMessageOverrides()?.[errorKey]) {
+            return this.translate.instant(
+                this.errorMessageOverrides()[errorKey]
+            );
         }
 
         switch (errorKey) {
@@ -142,35 +132,19 @@ export class ErrorMessagesComponent implements OnChanges, OnDestroy {
         }
     }
 
-    public ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
-    }
-
-    public initError(errors: ValidationErrors | null): void {
-        const errorKey = this.findFirstErrorKey(errors);
-        const errorValue = errors?.[errorKey];
-        this.error = errorKey ? this.getErrorMessage(errorKey, errorValue) : '';
-    }
-
     private findFirstErrorKey(errors?: ValidationErrors | null): string {
         if (!errors) {
             return '';
         }
 
-        const firstErroneousKey = Object.keys(errors)
-            // sort required to the end so more precise errors precede
-            .sort((a, b) => {
-                if (a === 'required') {
-                    return 1;
-                }
-                if (b === 'required') {
-                    return -1;
-                }
-                return a.localeCompare(b);
-            })
-            .find(key => !!errors[key]);
-
-        return firstErroneousKey || '';
+        return (
+            Object.keys(errors)
+                .sort((a, b) => {
+                    if (a === 'required') return 1;
+                    if (b === 'required') return -1;
+                    return a.localeCompare(b);
+                })
+                .find(key => !!errors[key]) ?? ''
+        );
     }
 }

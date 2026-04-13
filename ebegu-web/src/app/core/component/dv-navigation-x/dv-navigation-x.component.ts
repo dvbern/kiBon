@@ -37,11 +37,11 @@ import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager'
 import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
 import {TSFinanzielleSituationSubStepName} from '../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
+import {TSFinanzielleSituationTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
+import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {ErrorService} from '../../errors/service/ErrorService';
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {Log, LogFactory} from '@utils/log';
 
 @Component({
     selector: 'dv-navigation-x',

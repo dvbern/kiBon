@@ -17,11 +17,10 @@ import angular, {IHttpBackendService, IHttpService} from 'angular';
 import moment from 'moment';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
-
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {TSDateRange} from '@kibon/shared/model/entity';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';

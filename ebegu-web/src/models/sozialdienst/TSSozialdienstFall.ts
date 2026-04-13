@@ -16,8 +16,9 @@
  */
 
 import moment from 'moment';
+import {TSAbstractEntity} from '../entity/TSAbstractEntity';
+import {TSAdresse} from '../entity/TSAdresse';
 import {TSSozialdienstFallStatus} from '../enums/TSSozialdienstFallStatus';
-import {TSAbstractEntity, TSAdresse} from '@kibon/shared/model/entity';
 import {TSSozialdienst} from './TSSozialdienst';
 
 export class TSSozialdienstFall extends TSAbstractEntity {

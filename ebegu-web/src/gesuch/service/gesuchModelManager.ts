@@ -15,26 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {BetreuungUtilAnmeldungRestService} from '@kibon/betreuung/util/anmeldung-rest';
-import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {
-    TSAdresse,
-    TSFachstelle,
-    TSGemeinde,
-    TSGesuchsperiode,
-    TSInstitutionStammdaten
-} from '@kibon/shared/model/entity';
-import {
-    TSAdressetyp,
-    TSBetreuungsstatus,
-    TSGesuchsperiodeStatus,
-    TSRole,
-    TSWizardStepName,
-    TSWizardStepStatus
-} from '@kibon/shared/model/enums';
-import {isSchulamt} from '@kibon/shared/util-fn/betreuungsangebot-typ';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {AnmeldungRestService} from '@hybrid/gesuch/betreuung';
+import {BetreuungRS} from '@hybrid/gesuch/betreuung';
+import {CONSTANTS} from '@models/constants';
 import {copy, ILogService, IPromise, IQService} from 'angular';
 import moment from 'moment';
 import {
@@ -60,6 +43,13 @@ import {VerfuegungRS} from '../../app/core/service/verfuegungRS.rest';
 import {GemeindeService} from '../../app/shared/services/gemeinde.service';
 import {AuthLifeCycleService} from '../../authentication/service/authLifeCycle.service';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
+import {TSAdresse} from '../../models/entity/TSAdresse';
+import {TSFachstelle} from '../../models/entity/TSFachstelle';
+import {TSGemeinde} from '../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../models/entity/TSGesuchsperiode';
+import {TSInstitutionStammdaten} from '../../models/entity/TSInstitutionStammdaten';
+import {TSBetreuungsstatus} from '../../models/enums/betreuung/TSBetreuungsstatus';
+import {TSAdressetyp} from '../../models/enums/TSAdressetyp';
 import {
     isAnyStatusOfVerfuegt,
     isAtLeastFreigegeben,
@@ -69,14 +59,18 @@ import {
 } from '../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../models/enums/TSAntragTyp';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
-import {TSCacheTyp} from '@kibon/shared/model/enums';
+import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
 import {TSCreationAction} from '../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
 import {TSErrorLevel} from '../../models/enums/TSErrorLevel';
 import {TSErrorType} from '../../models/enums/TSErrorType';
 import {TSFamilienstatus} from '../../models/enums/TSFamilienstatus';
 import {TSGesuchBetreuungenStatus} from '../../models/enums/TSGesuchBetreuungenStatus';
+import {TSGesuchsperiodeStatus} from '../../models/enums/TSGesuchsperiodeStatus';
+import {TSRole} from '../../models/enums/TSRole';
 import {TSSozialdienstFallStatus} from '../../models/enums/TSSozialdienstFallStatus';
+import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../models/enums/TSWizardStepStatus';
 import {TSAdresseContainer} from '../../models/TSAdresseContainer';
 import {TSBenutzerNoDetails} from '../../models/TSBenutzerNoDetails';
 import {TSBetreuung} from '../../models/TSBetreuung';
@@ -97,6 +91,7 @@ import {TSGesuchsteller} from '../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../models/TSGesuchstellerContainer';
 import {TSKindContainer} from '../../models/TSKindContainer';
 import {TSVerfuegung} from '../../models/TSVerfuegung';
+import {isSchulamt} from '../../utils/betreuungsangebot-typ/betreuungsangebot-typ';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
 import {FinanzielleSituationAppenzellService} from '../component/finanzielleSituation/appenzell/finanzielle-situation-appenzell.service';
@@ -110,6 +105,7 @@ import {GesuchGenerator} from './gesuchGenerator';
 import {GesuchRS} from './gesuchRS.rest';
 import {GlobalCacheService} from './globalCacheService';
 import {WizardStepManager} from './wizardStepManager';
+import {LogFactory} from 'src/utils/log-factory/LogFactory';
 
 const LOG = LogFactory.createLog('GesuchModelManager');
 
@@ -142,7 +138,7 @@ export class GesuchModelManager {
         'InternePendenzenRS',
         'EinstellungRS',
         'GemeindeService',
-        'BetreuungUtilAnmeldungRestService'
+        'AnmeldungRestService'
     ];
     private gesuch: TSGesuch;
     private neustesGesuch: boolean;
@@ -194,7 +190,7 @@ export class GesuchModelManager {
         private readonly internePendenzenRS: InternePendenzenRS,
         private readonly einstellungenRS: EinstellungRS,
         private readonly gemeindeService: GemeindeService,
-        private readonly anmeldungService: BetreuungUtilAnmeldungRestService
+        private readonly anmeldungService: AnmeldungRestService
     ) {}
 
     public $onInit(): void {

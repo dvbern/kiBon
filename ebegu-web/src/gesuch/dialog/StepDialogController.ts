@@ -18,7 +18,7 @@
 import IDialogService = angular.material.IDialogService;
 import ITranslateService = angular.translate.ITranslateService;
 import {IPromise} from 'angular';
-import {TSZahlungslaufTyp} from '@kibon/zahlung/model/entity';
+import {TSZahlungslaufTyp} from '@models/zahlung';
 
 export class StepDialogController {
     public static $inject = [

@@ -443,10 +443,7 @@
                             st-table=""
                         >
                             <mat-header-cell *matHeaderCellDef="let column">
-                                <mat-form-field
-                                    class="dv-table-mat-form-field"
-                                    floatLabel="never"
-                                >
+                                <mat-form-field class="dv-table-mat-form-field">
                                     <mat-select
                                         [(value)]="empfaengerVerantwortung"
                                         panelClass="mat-select-panel1"
@@ -458,7 +455,7 @@
                                             ></mat-option
                                         >
                                         @for (
-                                            verantwortung of getVerantwortungList();
+                                            verantwortung of verantwortungList();
                                             track verantwortung
                                         ) {
                                             <mat-option

@@ -15,9 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {EbeguUtil} from '../utils/EbeguUtil';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
-
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSSozialhilfeZeitraum} from './TSSozialhilfeZeitraum';
 
 export class TSSozialhilfeZeitraumContainer extends TSAbstractMutableEntity {
@@ -50,20 +48,29 @@ export class TSSozialhilfeZeitraumContainer extends TSAbstractMutableEntity {
     }
 
     public isGSContainerEmpty(): boolean {
-        return EbeguUtil.isNullOrUndefined(this.sozialhilfeZeitraumGS);
+        return (
+            this.sozialhilfeZeitraumGS === null ||
+            this.sozialhilfeZeitraumGS === undefined
+        );
     }
 
     public deepCopyTo(
         target: TSSozialhilfeZeitraumContainer
     ): TSSozialhilfeZeitraumContainer {
         super.deepCopyTo(target);
-        if (EbeguUtil.isNotNullOrUndefined(this._sozialhilfeZeitraumGS)) {
+        if (
+            this._sozialhilfeZeitraumGS !== null &&
+            this._sozialhilfeZeitraumGS !== undefined
+        ) {
             target._sozialhilfeZeitraumGS =
                 this._sozialhilfeZeitraumGS.deepCopyTo(
                     new TSSozialhilfeZeitraum()
                 );
         }
-        if (EbeguUtil.isNotNullOrUndefined(this._sozialhilfeZeitraumJA)) {
+        if (
+            this._sozialhilfeZeitraumJA !== null &&
+            this._sozialhilfeZeitraumJA !== undefined
+        ) {
             target._sozialhilfeZeitraumJA =
                 this._sozialhilfeZeitraumJA.deepCopyTo(
                     new TSSozialhilfeZeitraum()

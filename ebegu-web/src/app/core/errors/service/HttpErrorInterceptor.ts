@@ -17,7 +17,7 @@ import {IHttpResponse} from 'angular';
 import {TSErrorLevel} from '../../../../models/enums/TSErrorLevel';
 import {TSErrorType} from '../../../../models/enums/TSErrorType';
 import {TSExceptionReport} from '../../../../models/TSExceptionReport';
-import {HTTP_CODES} from '@kibon/shared/model/constants';
+import {HTTP_CODES} from '@models/constants';
 import {ErrorService} from './ErrorService';
 import {isOIDCTokenInitialisationException} from './HttpErrorInterceptorUtil';
 import IHttpInterceptor = angular.IHttpInterceptor;

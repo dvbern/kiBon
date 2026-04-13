@@ -18,7 +18,7 @@ import {IComponentOptions, IController} from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {TSHTTPEvent} from '../../events/TSHTTPEvent';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {BroadcastService} from '../../service/broadcast.service';
 import IFormController = angular.IFormController;
 import ITimeoutService = angular.ITimeoutService;

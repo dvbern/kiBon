@@ -18,10 +18,10 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {StateService} from '@uirouter/core';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
+import {WindowRef} from '../../../utils/window-ref/windowRef.service';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 import {MaterialModule} from '../../shared/material.module';
 import {SharedModule} from '../../shared/shared.module';
 

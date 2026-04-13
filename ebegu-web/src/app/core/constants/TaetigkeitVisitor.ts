@@ -15,11 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    AbstractMandantDefaultVisitor,
-    KiBonMandant
-} from '@kibon/shared-model-mandant';
 import {TSTaetigkeit} from '../../../models/enums/TSTaetigkeit';
+import {AbstractMandantDefaultVisitor, KiBonMandant} from '@models/mandant';
 
 export class TaetigkeitVisitor extends AbstractMandantDefaultVisitor<
     ReadonlyArray<TSTaetigkeit>

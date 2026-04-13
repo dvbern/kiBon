@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {HybridFormBridgeService} from '@utils/hybrid-form-bridge';
 import angular from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
@@ -21,14 +21,13 @@ import {CORE_JS_MODULE} from '../../../app/core/core.angularjs.module';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSKind} from '../../../models/entity/TSKind';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {TSInstitution} from '@kibon/shared/model/entity';
-import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
-import {TSKind} from '@kibon/kind/model/entity';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {BerechnungsManager} from '../../service/berechnungsManager';
 import {GesuchModelManager} from '../../service/gesuchModelManager';

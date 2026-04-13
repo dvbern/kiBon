@@ -16,13 +16,13 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {HTTP_CODES} from '@kibon/shared/model/constants';
+import {HTTP_CODES} from '@models/constants';
 import {TranslateLoader} from '@ngx-translate/core';
 import {combineLatest, Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {MANDANTS} from '@models/mandant';
+import {LogFactory} from '../../utils/log-factory/LogFactory';
 import {I18nServiceRSRest} from './services/i18nServiceRS.rest';
-import {MANDANTS} from '@kibon/shared-model-mandant';
 
 const LOG = LogFactory.createLog('MultiMandantHttpLoaderX');
 

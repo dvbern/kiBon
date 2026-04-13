@@ -16,7 +16,7 @@
  */
 
 import moment from 'moment';
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from '../entity/TSAbstractEntity';
 import {TSBenutzer} from '../TSBenutzer';
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
 

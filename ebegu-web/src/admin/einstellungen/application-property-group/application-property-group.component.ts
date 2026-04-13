@@ -1,3 +1,7 @@
+import {
+    ConfigurableEinstellung,
+    EditEinstellungComponent
+} from '@admin/einstellungen';
 import {Component, input, output, OnInit} from '@angular/core';
 import {
     MatAccordion,
@@ -6,11 +10,7 @@ import {
     MatExpansionPanelTitle
 } from '@angular/material/expansion';
 import {SharedModule} from '../../../app/shared/shared.module';
-import {TSApplicationProperty} from '@kibon/shared/model/einstellung';
-import {
-    ConfigurableEinstellung,
-    EditEinstellungComponent
-} from '@kibon/admin-edit-einstellung';
+import {TSApplicationProperty} from '../../../models/einstellung/TSApplicationProperty';
 
 @Component({
     selector: 'dv-application-property-group',

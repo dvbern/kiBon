@@ -18,18 +18,16 @@ import {Injectable, inject} from '@angular/core';
 import moment from 'moment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {
-    TSInstitution,
-    TSInstitutionStammdaten
-} from '@kibon/shared/model/entity';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
 import {TSInstitutionExternalClientAssignment} from '../../../models/TSInstitutionExternalClientAssignment';
 import {TSInstitutionListDTO} from '../../../models/TSInstitutionListDTO';
 import {TSInstitutionUpdate} from '../../../models/TSInstitutionUpdate';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 
 @Injectable({
     providedIn: 'root'

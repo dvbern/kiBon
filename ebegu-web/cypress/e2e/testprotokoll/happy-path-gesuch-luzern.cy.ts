@@ -39,7 +39,7 @@ import {
     VerfuegungPO
 } from '@dv-e2e/page-objects';
 import {GemeindeTestFall, getUser, User} from '@dv-e2e/types';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MANDANTS} from '@models/mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 
 xdescribe('Luzern - Happy Path Gesuch', () => {

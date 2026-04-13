@@ -28,21 +28,19 @@ import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {TSInstitution} from '@kibon/shared/model/entity';
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AbstractAdminViewX} from '../../../admin/abstractAdminViewX';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {
-    TSBetreuungsangebotTyp,
-    TSRole,
-    TSInstitutionStatus
-} from '@kibon/shared/model/enums';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSInstitutionStatus} from '../../../models/enums/TSInstitutionStatus';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSBerechtigung} from '../../../models/TSBerechtigung';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {Log, LogFactory} from '../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
 
@@ -62,9 +60,7 @@ export class InstitutionListComponent
     private readonly $state = inject(StateService);
     private readonly cd = inject(ChangeDetectorRef);
     private readonly gemeindeRS = inject(GemeindeRS);
-    readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
-    );
+    readonly applicationPropertyRS = inject(ApplicationPropertyRsService);
     public authServiceRS = inject(AuthServiceRS);
 
     private readonly log: Log = LogFactory.createLog(

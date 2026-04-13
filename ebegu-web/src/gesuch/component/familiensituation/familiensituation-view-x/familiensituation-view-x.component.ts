@@ -21,9 +21,9 @@ import {TranslateService} from '@ngx-translate/core';
 import {isNullOrUndefined} from '@uirouter/core';
 import moment from 'moment';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
 import {

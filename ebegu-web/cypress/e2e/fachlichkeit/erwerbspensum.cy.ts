@@ -29,7 +29,7 @@ import {
 } from '@dv-e2e/page-objects';
 import {getUser, TestFall, TestPeriode} from '@dv-e2e/types';
 import {describe} from 'mocha';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MANDANTS} from '@models/mandant';
 import {TSUnterhaltsvereinbarungAnswer} from '../../../src/models/enums/TSUnterhaltsvereinbarungAnswer';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 

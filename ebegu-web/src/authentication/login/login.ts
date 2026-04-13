@@ -15,7 +15,7 @@
 
 import {TargetState} from '@uirouter/core';
 import {IComponentOptions, IController} from 'angular';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 import {DvDialog} from '../../app/core/directive/dv-dialog/dv-dialog';
 import {RedirectWarningDialogController} from '../redirect-warning-dialog/RedirectWarningDialogController';
 import {AuthServiceRS} from '../service/AuthServiceRS.rest';

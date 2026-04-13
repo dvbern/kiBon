@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {HEADER_ACCEPT_LANGUAGE} from '@kibon/shared/model/constants';
+import {HEADER_ACCEPT_LANGUAGE} from '@models/constants';
 import {IHttpInterceptor, IRequestConfig} from 'angular';
 import {I18nServiceRSRest} from '../services/i18nServiceRS.rest';
 

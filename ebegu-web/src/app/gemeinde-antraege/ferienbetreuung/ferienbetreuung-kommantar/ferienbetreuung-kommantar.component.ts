@@ -30,7 +30,7 @@ import {ReplaySubject, Subscription} from 'rxjs';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {BenutzerRSX} from '../../../core/service/benutzerRSX.rest';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
 

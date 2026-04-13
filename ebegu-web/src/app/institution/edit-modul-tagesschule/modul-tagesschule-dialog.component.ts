@@ -18,13 +18,14 @@
 import {Component, OnInit, ViewChild, inject} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {TSModulTagesschuleGroup} from '@kibon/shared/model/entity';
+import {CONSTANTS} from '@models/constants';
+import {TSModulTagesschuleGroup} from '../../../models/entity/TSModulTagesschuleGroup';
 import {
     getTSModulTagesschuleIntervallValues,
-    TSModulTagesschuleIntervall,
-    TSModulTagesschuleName
-} from '@kibon/shared/model/enums';
+    TSModulTagesschuleIntervall
+} from '../../../models/enums/TSModulTagesschuleIntervall';
+import {TSModulTagesschuleName} from '../../../models/enums/TSModulTagesschuleName';
+
 @Component({
     selector: 'modul-tagesschule-dialog',
     templateUrl: './modul-tagesschule-dialog.template.html',

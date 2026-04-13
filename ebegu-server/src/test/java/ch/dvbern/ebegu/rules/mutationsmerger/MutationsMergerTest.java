@@ -41,6 +41,7 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragTyp;
 import ch.dvbern.ebegu.enums.FinSitStatus;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
+import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
 import ch.dvbern.ebegu.enums.Kinderabzug;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
@@ -74,7 +75,7 @@ public class MutationsMergerTest {
 	private MutationsMerger mutationsMerger = new MutationsMerger(
 		Locale.GERMAN,
 		IS_DEBUG,
-		false
+		new MutationsMergerParameter(false, GeschwisterbonusTyp.NONE)
 	);
 
 	private final LocalDate OCTOBER_31 = START_PERIODE.plusMonths(3)
@@ -730,7 +731,11 @@ public class MutationsMergerTest {
 
 		//mutationMerger mit Pauschale Rueckwirkend
 		MutationsMerger mutationsMergerMitPauschaleRueckwirkend =
-			new MutationsMerger(Locale.GERMAN, IS_DEBUG, true);
+			new MutationsMerger(
+				Locale.GERMAN,
+				IS_DEBUG,
+				new MutationsMergerParameter(true, GeschwisterbonusTyp.NONE)
+			);
 
 		// mergen
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper

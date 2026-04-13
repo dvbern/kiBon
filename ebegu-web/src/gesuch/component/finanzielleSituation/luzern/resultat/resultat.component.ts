@@ -23,8 +23,8 @@ import {
     OnInit,
     inject
 } from '@angular/core';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern.service';
 

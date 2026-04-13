@@ -17,10 +17,10 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {CONSTANTS} from '@models/constants';
 import {TSFamiliensituationContainer} from '../../models/TSFamiliensituationContainer';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
+import {LogFactory} from '../../utils/log-factory/LogFactory';
 import {WizardStepManager} from './wizardStepManager';
 
 const LOG = LogFactory.createLog('FamiliensituationRS');

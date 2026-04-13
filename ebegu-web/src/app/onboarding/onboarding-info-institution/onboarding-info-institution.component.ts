@@ -23,8 +23,9 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+
 @Component({
     selector: 'dv-onboarding-info-institution',
     templateUrl: './onboarding-info-institution.component.html',

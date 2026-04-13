@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAdresse} from '@kibon/shared/model/entity';
+import {TSAdresse} from '../entity/TSAdresse';
 import {TSFerienbetreuungAbstractAngaben} from './TSFerienbetreuungAbstractAngaben';
 
 export class TSFerienbetreuungAngabenAngebot extends TSFerienbetreuungAbstractAngaben {

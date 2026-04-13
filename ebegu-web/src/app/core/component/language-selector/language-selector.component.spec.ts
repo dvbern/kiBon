@@ -17,7 +17,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSBrowserLanguage} from '@kibon/shared/model/enums';
+import {TSBrowserLanguage} from '../../../../models/enums/TSBrowserLanguage';
 import {I18nServiceRSRest} from '../../../i18n/services/i18nServiceRS.rest';
 
 import {LanguageSelectorComponent} from './language-selector.component';

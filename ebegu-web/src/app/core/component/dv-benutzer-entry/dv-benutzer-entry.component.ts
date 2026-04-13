@@ -16,7 +16,7 @@
  */
 
 import {Component, Input} from '@angular/core';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSVerantwortung} from '../../../../models/enums/TSVerantwortung';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';

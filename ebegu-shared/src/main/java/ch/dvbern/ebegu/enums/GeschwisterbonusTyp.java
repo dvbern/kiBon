@@ -18,11 +18,37 @@
 package ch.dvbern.ebegu.enums;
 
 import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.util.GeschwisterbonusTypVisitor;
 
 public enum GeschwisterbonusTyp {
-	LUZERN, SCHWYZ, SCHWYZ_2, NONE;
+	LUZERN {
+		@Override
+		public <T> T accept(GeschwisterbonusTypVisitor<T> visitor) {
+			return visitor.visitLuzern();
+		}
+	},
+	SCHWYZ {
+		@Override
+		public <T> T accept(GeschwisterbonusTypVisitor<T> visitor) {
+			return visitor.visitSchwyz();
+		}
+	},
+	SCHWYZ_2 {
+		@Override
+		public <T> T accept(GeschwisterbonusTypVisitor<T> visitor) {
+			return visitor.visitSchwyz2();
+		}
+	},
+	NONE {
+		@Override
+		public <T> T accept(GeschwisterbonusTypVisitor<T> visitor) {
+			return visitor.visitNone();
+		}
+	};
 
 	public static GeschwisterbonusTyp getEnumValue(Einstellung einstellung) {
 		return GeschwisterbonusTyp.valueOf(einstellung.getValue());
 	}
+
+	public abstract <T> T accept(GeschwisterbonusTypVisitor<T> visitor);
 }

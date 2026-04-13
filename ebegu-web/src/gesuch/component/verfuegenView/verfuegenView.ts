@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSZahlungslaufTyp} from '@models/zahlung';
 import {StateService, TransitionPromise} from '@uirouter/core';
 import {
     IComponentOptions,
@@ -25,40 +26,34 @@ import {
     IWindowService
 } from 'angular';
 import {map} from 'rxjs/operators';
-import {
-    TSEinstellungenTagesschule,
-    TSModulTagesschuleGroup
-} from '@kibon/shared/model/entity';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {
-    getWeekdaysValues,
-    TSBetreuungsstatus,
-    TSBrowserLanguage,
-    TSDayOfWeek,
-    TSRole,
-    TSWizardStepName,
-    TSDemoFeature
-} from '@kibon/shared/model/enums';
-import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
-import {MANDANTS} from '@kibon/shared-model-mandant';
-import {MandantService} from '@kibon/shared-util-mandant-service';
-import {TSZahlungslaufTyp} from '@kibon/zahlung/model/entity';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {DemoFeatureRS} from '../../../app/core/service/demoFeatureRS.rest';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
+import {TSEinstellungenTagesschule} from '../../../models/entity/TSEinstellungenTagesschule';
+import {TSModulTagesschuleGroup} from '../../../models/entity/TSModulTagesschuleGroup';
 import {TSBedarfsstufe} from '../../../models/enums/betreuung/TSBedarfsstufe';
+import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
+import {TSGemeindeZusaetzlicherGutscheinTyp} from '../../../models/enums/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
 import {
     getTSAbholungTagesschuleValues,
     TSAbholungTagesschule
 } from '../../../models/enums/TSAbholungTagesschule';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
-import {TSGemeindeZusaetzlicherGutscheinTyp} from '@kibon/shared/model/enums';
+import {MANDANTS} from '@models/mandant';
+import {TSBrowserLanguage} from '../../../models/enums/TSBrowserLanguage';
+import {
+    getWeekdaysValues,
+    TSDayOfWeek
+} from '../../../models/enums/TSDayOfWeek';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
+import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
+import {TSRole} from '../../../models/enums/TSRole';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
 import {TSBelegungTagesschuleModulGroup} from '../../../models/TSBelegungTagesschuleModulGroup';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
@@ -66,8 +61,11 @@ import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGesuch} from '../../../models/TSGesuch';
 import {TSVerfuegung} from '../../../models/TSVerfuegung';
 import {TSVerfuegungZeitabschnitt} from '../../../models/TSVerfuegungZeitabschnitt';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {TagesschuleUtil} from '../../../utils/TagesschuleUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
@@ -110,7 +108,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         '$stateParams',
         '$window',
         'ExportRS',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         '$timeout',
         'AuthServiceRS',
         'I18nServiceRSRest',
@@ -168,7 +166,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         $stateParams: IBetreuungStateParams,
         private readonly $window: IWindowService,
         private readonly exportRS: ExportRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly applicationPropertyRS: ApplicationPropertyRsService,
         $timeout: ITimeoutService,
         private readonly authServiceRs: AuthServiceRS,
         private readonly i18nServiceRS: I18nServiceRSRest,
@@ -258,7 +256,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
 
         this.demoFeatureRS
             .isDemoFeatureAllowed(TSDemoFeature.ZAHLUNGSSTATUS)
-            .subscribe(res => {
+            .subscribe((res: any) => {
                 this.demoFeatureZahlungsstatusAllowed = res;
             });
 

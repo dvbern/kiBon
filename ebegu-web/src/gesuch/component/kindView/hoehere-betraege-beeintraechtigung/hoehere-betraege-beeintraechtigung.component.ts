@@ -8,8 +8,8 @@ import {
     inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSKindContainer} from '../../../../models/TSKindContainer';
+import {LogFactory} from '../../../../utils/log-factory/LogFactory';
 import {KinderabzugExchangeService} from '../service/kinderabzug-exchange.service';
 
 const LOG = LogFactory.createLog('HoehereBetraegeBeeintraechtigungComponent');

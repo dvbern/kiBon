@@ -27,7 +27,7 @@ import {
     VerfuegenPO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MANDANTS} from '@models/mandant';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 import {VerfuegungPO} from '../../page-objects/antrag/verfuegung.po';
 

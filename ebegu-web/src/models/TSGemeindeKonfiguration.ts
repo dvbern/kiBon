@@ -15,15 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import moment from 'moment';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {EbeguUtil} from '../utils/EbeguUtil';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
-import {TSEinschulungTyp} from '@kibon/shared/model/enums';
+import {CONSTANTS} from '@models/constants';
 import {TSEinstellungKey} from '../admin/einstellungen/TSEinstellungKey';
-import {TSGemeindeZusaetzlicherGutscheinTyp} from '@kibon/shared/model/enums';
 import {TSEinstellung} from '../admin/einstellungen/TSEinstellung';
+import {TSGesuchsperiode} from './entity/TSGesuchsperiode';
+import {TSGemeindeZusaetzlicherGutscheinTyp} from './enums/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from './enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
+import {TSEinschulungTyp} from './enums/TSEinschulungTyp';
 import {TSFerieninselStammdaten} from './TSFerieninselStammdaten';
 
 export class TSGemeindeKonfiguration {
@@ -126,14 +125,16 @@ export class TSGemeindeKonfiguration {
     }
 
     public hasTagesschulenAnmeldung(): boolean {
-        return EbeguUtil.isNotNullOrUndefined(
-            this.konfigTagesschuleAktivierungsdatum
+        return (
+            this.konfigTagesschuleAktivierungsdatum !== null &&
+            this.konfigTagesschuleAktivierungsdatum !== undefined
         );
     }
 
     public hasFerieninseAnmeldung(): boolean {
-        return EbeguUtil.isNotNullOrUndefined(
-            this.konfigFerieninselAktivierungsdatum
+        return (
+            this.konfigFerieninselAktivierungsdatum !== null &&
+            this.konfigFerieninselAktivierungsdatum !== undefined
         );
     }
 

@@ -15,13 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    TSAdresse,
-    TSGemeinde,
-    TSInstitution,
-    TSTextRessource
-} from '@kibon/shared/model/entity';
 import {TSRoleUtil} from '../utils/TSRoleUtil';
+import {TSAdresse} from './entity/TSAdresse';
+import {TSGemeinde} from './entity/TSGemeinde';
+import {TSInstitution} from './entity/TSInstitution';
+import {TSTextRessource} from './entity/TSTextRessource';
 import {TSAbstractGemeindeStammdaten} from './TSAbstractGemeindeStammdaten';
 import {TSBenutzer} from './TSBenutzer';
 import {TSGemeindeStammdatenKorrespondenz} from './TSGemeindeStammdatenKorrespondenz';

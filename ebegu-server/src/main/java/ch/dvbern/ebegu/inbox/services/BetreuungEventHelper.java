@@ -56,9 +56,24 @@ public class BetreuungEventHelper {
 	@Nonnull
 	public Benutzer getMutationsmeldungBenutzer(Betreuung betreuung) {
 		Mandant mandant = betreuung.extractGesuch().extractMandant();
-		String technicalUserID = USER_CONFIG_VISITOR.process(
+		String betreuungMitteilungUserID = USER_CONFIG_VISITOR.process(
 			mandant.getMandantIdentifier()
 		).getBetreuungMitteilungUser();
+		return benutzerService.findBenutzerById(betreuungMitteilungUserID)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					EMPTY,
+					ERROR_ENTITY_NOT_FOUND,
+					betreuungMitteilungUserID
+				)
+			);
+	}
+
+	@Nonnull
+	public Benutzer getSchliessungsmitteilungBenutzer(Mandant mandant) {
+		String technicalUserID = USER_CONFIG_VISITOR.process(
+			mandant.getMandantIdentifier()
+		).getTechnicalUser();
 		return benutzerService.findBenutzerById(technicalUserID)
 			.orElseThrow(
 				() -> new EbeguEntityNotFoundException(

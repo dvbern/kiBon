@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSWizardStepStatus} from './enums/TSWizardStepStatus';
 import {TSWizardStepXTyp} from './enums/TSWizardStepXTyp';
 
 export class TSWizardStepX {

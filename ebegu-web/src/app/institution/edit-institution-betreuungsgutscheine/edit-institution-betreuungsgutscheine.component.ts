@@ -26,16 +26,14 @@ import {
     inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
-import {
-    TSAdresse,
-    TSInstitutionStammdatenBetreuungsgutscheine,
-    TSInstitutionStammdaten
-} from '@kibon/shared/model/entity';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSAdresse} from '../../../models/entity/TSAdresse';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSInstitutionStammdatenBetreuungsgutscheine} from '../../../models/entity/TSInstitutionStammdatenBetreuungsgutscheine';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 
 @Component({
@@ -52,7 +50,7 @@ export class EditInstitutionBetreuungsgutscheineComponent
     private readonly translate = inject(TranslateService);
     private readonly authServiceRS = inject(AuthServiceRS);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly cd = inject(ChangeDetectorRef);
 

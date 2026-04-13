@@ -354,6 +354,14 @@ UPDATE einstellung set value = '2024-08-01' where gesuchsperiode_id = @gesuchspe
 INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
 SELECT UUID(), now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_25_26, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_24_25;
 
+UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_paris;
+UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_paris;
+UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' AND gemeinde_id  = @gemeinde_paris;
+
+UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' AND gemeinde_id  = @gemeinde_london;
+
 # Test-Institutionen erstellen
 INSERT IGNORE INTO traegerschaft (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, active) VALUES (UNHEX(REPLACE('f9ddee82-81a1-4cda-b273-fb24e9299308', '-', '')), '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, 'Kitas & Tagis Stadt Bern', true);
 

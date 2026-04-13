@@ -25,7 +25,7 @@ import {
 import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {VersionService} from '../service/version/version.service';
 
 /**

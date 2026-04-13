@@ -23,11 +23,11 @@ import {
     inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {StateService, Transition} from '@uirouter/core';
 import {StateDeclaration} from '@uirouter/core/lib/state/interface';
 import {from, Observable} from 'rxjs';
-import {TSTraegerschaft} from '@kibon/shared/model/entity';
+import {TSTraegerschaft} from '../../../models/entity/TSTraegerschaft';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
 

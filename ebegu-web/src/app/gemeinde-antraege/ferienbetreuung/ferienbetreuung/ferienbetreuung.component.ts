@@ -29,7 +29,7 @@ import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.re
 import {TSWizardStepXTyp} from '../../../../models/enums/TSWizardStepXTyp';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';

@@ -17,12 +17,13 @@
 
 import {StateService} from '@uirouter/angular';
 import moment from 'moment';
-import {TSGesuchsperiode, TSDateRange} from '@kibon/shared/model/entity';
-import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
+import {TSDateRange} from '../../../../models/entity/TSDateRange';
+import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
 import {TSFamilienstatus} from '../../../../models/enums/TSFamilienstatus';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
+import {TSFinanzielleSituationTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
+import {TSGesuchsperiodeStatus} from '../../../../models/enums/TSGesuchsperiodeStatus';
 import {TSFamiliensituation} from '../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../models/TSFamiliensituationContainer';
 import {TSFinanzielleSituation} from '../../../../models/TSFinanzielleSituation';

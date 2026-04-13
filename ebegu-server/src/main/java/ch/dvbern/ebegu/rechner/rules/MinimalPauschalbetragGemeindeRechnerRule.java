@@ -23,10 +23,12 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.dto.VerfuegungsBemerkungDTO;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
 import ch.dvbern.ebegu.rechner.RechnerRuleParameterDTO;
+import ch.dvbern.ebegu.rules.RuleValidity;
 
 public class MinimalPauschalbetragGemeindeRechnerRule implements RechnerRule {
 
@@ -97,7 +99,14 @@ public class MinimalPauschalbetragGemeindeRechnerRule implements RechnerRule {
 		}
 
 		rechnerParameter.setMinimalPauschalBetrag(minimalPauschalbetrag);
-		inputGemeinde.addBemerkung(msgKey, locale, minimalPauschalbetrag);
+		rechnerParameter.setMinimalPauschalBetragBemerkung(
+			new VerfuegungsBemerkungDTO(
+				RuleValidity.GEMEINDE,
+				msgKey,
+				locale,
+				minimalPauschalbetrag
+			)
+		);
 	}
 
 	private BigDecimal getMinimalBetragTFO(

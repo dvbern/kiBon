@@ -15,12 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
-import {
-    TSBetreuungsangebotTyp,
-    TSWizardStepName
-} from '@kibon/shared/model/enums';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {BetreuungRS} from '@hybrid/gesuch/betreuung';
+import {LogFactory} from '@utils/log';
 import {StateService} from '@uirouter/core';
 import angular, {copy, IComponentOptions} from 'angular';
 import {forkJoin} from 'rxjs';
@@ -28,13 +24,15 @@ import {first, map} from 'rxjs/operators';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {MANDANTS} from '@kibon/shared-model-mandant';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {TSBetreuungspensumAbweichungStatus} from '../../../models/enums/betreuung/TSBetreuungspensumAbweichungStatus';
-import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
+import {MANDANTS} from '@models/mandant';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSBetreuungsmitteilung} from '../../../models/TSBetreuungsmitteilung';
 import {TSBetreuungspensumAbweichung} from '../../../models/TSBetreuungspensumAbweichung';

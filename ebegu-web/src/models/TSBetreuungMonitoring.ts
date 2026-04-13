@@ -16,7 +16,8 @@
  */
 
 import moment from 'moment';
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from './entity/TSAbstractEntity';
+
 export class TSBetreuungMonitoring extends TSAbstractEntity {
     public refNummer: string;
     public benutzer: string;

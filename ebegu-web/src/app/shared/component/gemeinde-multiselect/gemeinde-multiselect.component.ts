@@ -28,7 +28,7 @@ import {MatOptionSelectionChange} from '@angular/material/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
-import {TSGemeinde} from '@kibon/shared/model/entity';
+import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
 
 let nextId = 0;
 

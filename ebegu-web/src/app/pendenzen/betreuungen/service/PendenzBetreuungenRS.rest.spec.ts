@@ -13,10 +13,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import angular, {IHttpBackendService} from 'angular';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
+import {TSBetreuungsangebotTyp} from '../../../../models/enums/TSBetreuungsangebotTyp';
 import {TSPendenzBetreuung} from '../../../../models/TSPendenzBetreuung';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {PENDENZEN_BETREUUNGEN_JS_MODULE} from '../pendenzenBetreuungen.module';

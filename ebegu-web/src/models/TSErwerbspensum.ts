@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractIntegerPensumEntity} from '@kibon/shared/model/entity';
+import {TSAbstractIntegerPensumEntity} from './entity/TSAbstractIntegerPensumEntity';
 import {TSTaetigkeit} from './enums/TSTaetigkeit';
 import {TSUnbezahlterUrlaub} from './TSUnbezahlterUrlaub';
 

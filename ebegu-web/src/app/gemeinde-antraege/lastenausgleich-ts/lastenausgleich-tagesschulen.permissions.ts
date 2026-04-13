@@ -1,4 +1,4 @@
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 
 export enum PermissionLastenausgleichTagesschule {
     LOAD_VERLAUF = 'LOAD_VERLAUF'

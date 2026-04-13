@@ -22,14 +22,14 @@ import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest'
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
 import {TSFinanzielleSituationResultateDTO} from '../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSDossier} from '../../../models/TSDossier';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGemeindeStammdatenLite} from '../../../models/TSGemeindeStammdatenLite';
-import {TSGemeinde} from '@kibon/shared/model/entity';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSGesuchsteller} from '../../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../../models/TSGesuchstellerContainer';
 import {TSKindContainer} from '../../../models/TSKindContainer';
@@ -39,7 +39,7 @@ import {BerechnungsManager} from '../../service/berechnungsManager';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {VerfuegenListViewController} from './verfuegenListView';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 
 xdescribe('verfuegenListViewTest', () => {
     const verfuegenView = 'gesuch.verfuegenView';
@@ -54,7 +54,7 @@ xdescribe('verfuegenListViewTest', () => {
     let $httpBackend: IHttpBackendService;
     let einstellungRS: EinstellungRS;
     let gesuchsperiodeRS: GesuchsperiodeRS;
-    let appPropRs: SharedUtilApplicationPropertyRsService;
+    let appPropRs: ApplicationPropertyRsService;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
     beforeEach(angular.mock.module(GESUCH_JS_MODULE.name));
@@ -72,7 +72,7 @@ xdescribe('verfuegenListViewTest', () => {
             $httpBackend = $injector.get('$httpBackend');
             einstellungRS = $injector.get('EinstellungRS');
             gesuchsperiodeRS = $injector.get('GesuchsperiodeRS');
-            appPropRs = $injector.get('SharedUtilApplicationPropertyRsService');
+            appPropRs = $injector.get('ApplicationPropertyRsService');
             tsKindContainer = new TSKindContainer();
             tsKindContainer.kindNummer = 1;
             const wizardStepManager: WizardStepManager =

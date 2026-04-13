@@ -23,7 +23,7 @@ import {
     Validator,
     ValidatorFn
 } from '@angular/forms';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 /*
 Die Eingabe einer QR-IBAN soll verboten werden.
 

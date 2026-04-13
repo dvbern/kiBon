@@ -15,14 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
+import {TSInstitutionStammdatenSummary} from '../../../models/entity/TSInstitutionStammdatenSummary';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
 import {TSPensumUnits} from '../../../models/enums/TSPensumUnits';
 import {TSBetreuungspensum} from '../../../models/TSBetreuungspensum';
-import {
-    TSDateRange,
-    TSInstitutionStammdatenSummary
-} from '@kibon/shared/model/entity';
+
 export function createTSBetreuungspensum(params: {
     anzeigeEinstellung: TSPensumAnzeigeTyp;
     betreuungsangebotTyp: TSBetreuungsangebotTyp;

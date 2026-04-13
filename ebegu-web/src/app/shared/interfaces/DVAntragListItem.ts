@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 import moment from 'moment';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 
 export interface DVAntragListItem {
     fallNummer?: number;

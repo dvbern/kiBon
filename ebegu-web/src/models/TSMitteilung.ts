@@ -16,13 +16,11 @@
  */
 
 import moment from 'moment';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSInstitution} from './entity/TSInstitution';
 import {TSMitteilungStatus} from './enums/TSMitteilungStatus';
 import {TSMitteilungTeilnehmerTyp} from './enums/TSMitteilungTeilnehmerTyp';
 import {TSMitteilungTyp} from './enums/TSMitteilungTyp';
-import {
-    TSAbstractMutableEntity,
-    TSInstitution
-} from '@kibon/shared/model/entity';
 import {TSBenutzer} from './TSBenutzer';
 import {TSBetreuung} from './TSBetreuung';
 import {TSDossier} from './TSDossier';

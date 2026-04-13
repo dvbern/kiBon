@@ -1,4 +1,4 @@
-import {LogLevel} from '@kibon/shared/util-fn/log-factory';
+import {LogLevel} from '@utils/log';
 import {Environment} from './IEnvironment';
 
 export const environment: Environment = {

@@ -17,8 +17,8 @@
 
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
-import {InfoSchnittstelleDialogComponent} from '@kibon/admin/ui/tagesschule-modul-list';
-import {AdminUiTagesschuleModulListComponent} from '@kibon/admin/ui/tagesschule-modul-list';
+import {InfoSchnittstelleDialogComponent} from '@admin/tagesschule-modul-list';
+import {TagesschuleModulListComponent} from '@admin/tagesschule-modul-list';
 import {NgxIbanModule} from 'ngx-iban';
 import {WarningComponent} from '../shared/component/warning/warning.component';
 import {MaterialModule} from '../shared/material.module';
@@ -42,7 +42,7 @@ import {InstitutionListComponent} from './list-institution/institution-list.comp
         NgxIbanModule,
         ClipboardModule,
         WarningComponent,
-        AdminUiTagesschuleModulListComponent,
+        TagesschuleModulListComponent,
         InfoSchnittstelleDialogComponent,
         WebseiteValidatorDirective
     ],

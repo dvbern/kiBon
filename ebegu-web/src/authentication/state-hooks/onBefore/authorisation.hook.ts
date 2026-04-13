@@ -22,9 +22,9 @@ import {
     TransitionService
 } from '@uirouter/core';
 import {map} from 'rxjs/operators';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {hasFromState} from '../../../dvbModules/router/route-helper-provider';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {getRoleBasedTargetState} from '../../../utils/AuthenticationUtil';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
 import {OnBeforePriorities} from './onBeforePriorities';

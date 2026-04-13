@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {
     copy,
     IComponentOptions,
@@ -25,17 +24,18 @@ import {
     ITimeoutService
 } from 'angular';
 import {map} from 'rxjs/operators';
-import {MANDANTS} from '@kibon/shared-model-mandant';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {MandantService} from '@kibon/shared-util-mandant-service';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {SozialhilfeZeitraumRS} from '../../../../../app/core/service/sozialhilfeZeitraumRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
+import {MANDANTS} from '@models/mandant';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
 import {TSFamiliensituationContainer} from '../../../../../models/TSFamiliensituationContainer';
 import {TSSozialhilfeZeitraum} from '../../../../../models/TSSozialhilfeZeitraum';
 import {TSSozialhilfeZeitraumContainer} from '../../../../../models/TSSozialhilfeZeitraumContainer';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
+import {HybridFormBridgeService} from '../../../../../utils/hybrid-form-bridge/hybrid-form-bridge.service';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
+import {MandantService} from '../../../../../utils/mandant-service/mandant.service';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {ISozialhilfeZeitraumStateParams} from '../../../../gesuch.route';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';

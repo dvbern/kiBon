@@ -15,24 +15,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {IComponentOptions} from 'angular';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DemoFeatureRS} from '../../../../../app/core/service/demoFeatureRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSEinstellungKey} from '../../../../../admin/einstellungen/TSEinstellungKey';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../../models/enums/TSRole';
 import {isSteuerdatenAnfrageStatusErfolgreich} from '../../../../../models/enums/TSSteuerdatenAnfrageStatus';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
+import {ApplicationPropertyRsService} from '../../../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {FinanzielleSituationAufteilungDialogController} from '../../../../dialog/FinanzielleSituationAufteilungDialogController';
 import {IStammdatenStateParams} from '../../../../gesuch.route';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
@@ -74,7 +75,7 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
         'EinstellungRS',
         'DvDialog',
         'AuthServiceRS',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         'GesuchRS',
         'DemoFeatureRS'
     ];
@@ -101,7 +102,7 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
         einstellungRS: EinstellungRS,
         dvDialog: DvDialog,
         protected readonly authServiceRS: AuthServiceRS,
-        applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        applicationPropertyRS: ApplicationPropertyRsService,
         private readonly gesuchRS: GesuchRS,
         private readonly demoFeatureRS: DemoFeatureRS
     ) {

@@ -15,49 +15,51 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {PermissionKind, PERMISSIONS_KIND} from '@kibon/kind/model/permissions';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {HybridFormBridgeService} from '@utils/hybrid-form-bridge';
+import {LogFactory} from '@utils/log';
+import {MandantService} from '@utils/mandant';
+import {MomentUtil} from '@utils/moment';
 import {copy, IComponentOptions} from 'angular';
 import moment from 'moment';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {EinschulungTypesVisitor} from '../../../app/core/constants/EinschulungTypesVisitor';
 import {KindGeschlechtVisitor} from '../../../app/core/constants/KindGeschlechtVisitor';
-import {KiBonMandant} from '@kibon/shared-model-mandant';
-import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
+import {TSKind} from '../../../models/entity/TSKind';
+import {TSPensumAusserordentlicherAnspruch} from '../../../models/entity/TSPensumAusserordentlicherAnspruch';
+import {TSPensumFachstelle} from '../../../models/entity/TSPensumFachstelle';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {TSAusserordentlicherAnspruchTyp} from '@kibon/shared/model/enums';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
+import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
+import {TSFachstellenTyp} from '../../../models/enums/TSFachstellenTyp';
+import {TSGeschlecht} from '../../../models/enums/TSGeschlecht';
+import {TSGruendeZusatzleistung} from '../../../models/enums/TSGruendeZusatzleistung';
+import {TSIntegrationTyp} from '../../../models/enums/TSIntegrationTyp';
 import {
-    TSFachstellenTyp,
-    TSGeschlecht,
-    TSGruendeZusatzleistung,
-    TSIntegrationTyp,
-    TSPensumAusserordentlicherAnspruch,
-    TSPensumFachstelle,
-    TSDateRange
-} from '@kibon/shared/model/entity';
+    getTSKinderabzugValues,
+    TSKinderabzug
+} from '../../../models/enums/TSKinderabzug';
+import {KiBonMandant} from '@models/mandant';
 import {
     isKinderabzugTypFKJV,
     TSKinderabzugTyp
-} from '@kibon/shared/model/enums';
-import {TSRole} from '@kibon/shared/model/enums';
-import {TSEinschulungTyp, TSWizardStepName} from '@kibon/shared/model/enums';
-import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+} from '../../../models/enums/TSKinderabzugTyp';
+import {TSRole} from '../../../models/enums/TSRole';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
 import {
-    getTSKinderabzugValues,
-    TSKind,
-    TSKinderabzug
-} from '@kibon/kind/model/entity';
+    PermissionKind,
+    PERMISSIONS_KIND
+} from '../../../models/permissions/PermissionsKind';
 import {TSKindContainer} from '../../../models/TSKindContainer';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {EnumEx} from '../../../utils/EnumEx';

@@ -17,7 +17,7 @@
  */
 
 import {TSSozialdienstFallStatus} from '../../models/enums/TSSozialdienstFallStatus';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
 import {TSSozialdienstFall} from '../../models/sozialdienst/TSSozialdienstFall';
 import {TSFall} from '../../models/TSFall';
 import {GesuchModelManager} from '../service/gesuchModelManager';

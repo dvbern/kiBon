@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import angular from 'angular';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
@@ -32,7 +32,7 @@ xdescribe('dvVerantwortlicherSelect', () => {
     let benutzerRS: BenutzerRSX;
     let benutzer: TSBenutzerNoDetails;
     let $translate: ITranslateService;
-    let applicationPropertyRS: SharedUtilApplicationPropertyRsService;
+    let applicationPropertyRS: ApplicationPropertyRsService;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
 
@@ -47,7 +47,7 @@ xdescribe('dvVerantwortlicherSelect', () => {
             benutzer = new TSBenutzerNoDetails('Emiliano', 'Camacho');
             $translate = $injector.get('$translate');
             applicationPropertyRS = $injector.get(
-                'SharedUtilApplicationPropertyRsService'
+                'ApplicationPropertyRsService'
             );
 
             verantwortlicherselectController =

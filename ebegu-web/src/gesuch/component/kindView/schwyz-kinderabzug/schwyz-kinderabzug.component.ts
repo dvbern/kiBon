@@ -12,10 +12,10 @@ import {
 import {NgForm} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSGesuchstellerKardinalitaet} from '../../../../models/enums/TSGesuchstellerKardinalitaet';
 import {TSKindContainer} from '../../../../models/TSKindContainer';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {LogFactory} from '../../../../utils/log-factory/LogFactory';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
 import {KinderabzugExchangeService} from '../service/kinderabzug-exchange.service';
 

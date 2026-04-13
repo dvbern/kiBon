@@ -17,7 +17,7 @@
 
 import {TestFaellePO} from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MANDANTS} from '@models/mandant';
 
 describe('Kibon - generate Testfälle [Superadmin]', () => {
     const adminUser = getUser('[1-Superadmin] Super User');

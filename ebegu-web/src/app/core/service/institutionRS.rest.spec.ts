@@ -20,9 +20,9 @@ import {
 } from '@angular/common/http';
 import {TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
-import {TSInstitution} from '@kibon/shared/model/entity';
-import {TSMandant} from '@kibon/shared/model/entity';
-import {TSTraegerschaft} from '@kibon/shared/model/entity';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSMandant} from '../../../models/entity/TSMandant';
+import {TSTraegerschaft} from '../../../models/entity/TSTraegerschaft';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {InstitutionRS} from './institutionRS.rest';
 

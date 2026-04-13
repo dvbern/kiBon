@@ -13,7 +13,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity, TSGemeinde} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSGemeinde} from './entity/TSGemeinde';
 import {TSBenutzerNoDetails} from './TSBenutzerNoDetails';
 import {TSFall} from './TSFall';
 

@@ -15,18 +15,18 @@ import {StateService, TransitionService, UIRouterGlobals} from '@uirouter/core';
 import {of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {TSZahlungsstatus, TSZahlung} from '@kibon/zahlung/model/entity';
+import {TSZahlungsstatus, TSZahlung} from '@models/zahlung';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
 import {ReportRS} from '../../core/service/reportRS.rest';
 import {StateStoreService} from '../../shared/services/state-store.service';
-import {ZahlungUtilZahlungService} from '@kibon/zahlung/util/zahlung-service';
+import {ZahlungService} from '@app/zahlung/service';
 
 const LOG = LogFactory.createLog('ZahlungviewXComponent');
 
@@ -41,7 +41,7 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
     private readonly $state = inject(StateService);
     private readonly downloadRS = inject(DownloadRS);
     private readonly reportRS = inject(ReportRS);
-    private readonly zahlungRS = inject(ZahlungUtilZahlungService);
+    private readonly zahlungRS = inject(ZahlungService);
     private readonly authServiceRS = inject(AuthServiceRS);
     private readonly routerGlobals = inject(UIRouterGlobals);
     private readonly translate = inject(TranslateService);

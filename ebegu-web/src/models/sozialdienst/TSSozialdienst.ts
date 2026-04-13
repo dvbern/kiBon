@@ -15,8 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSAbstractEntity} from '../entity/TSAbstractEntity';
 import {TSSozialdienstStatus} from '../enums/TSSozialdienstStatus';
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+
 export class TSSozialdienst extends TSAbstractEntity {
     public name: string;
     public status: TSSozialdienstStatus;

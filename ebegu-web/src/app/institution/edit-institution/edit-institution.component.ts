@@ -28,42 +28,38 @@ import {
 import {NgForm} from '@angular/forms';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {
-    getBgInstitutionenBetreuungsangebote,
-    isJugendamt
-} from '@kibon/shared/util-fn/betreuungsangebot-typ';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
 import moment, {Moment} from 'moment';
 import {firstValueFrom, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {
-    TSBetreuungsangebotTyp,
-    TSInstitutionStatus,
-    TSRole
-} from '@kibon/shared/model/enums';
-import {
-    TSAdresse,
-    TSDateRange,
-    TSInstitution,
-    TSInstitutionStammdaten,
-    TSMandant,
-    TSTraegerschaft
-} from '@kibon/shared/model/entity';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {CONSTANTS} from '@models/constants';
+import {TSAdresse} from '../../../models/entity/TSAdresse';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSMandant} from '../../../models/entity/TSMandant';
+import {TSTraegerschaft} from '../../../models/entity/TSTraegerschaft';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
+import {TSInstitutionStatus} from '../../../models/enums/TSInstitutionStatus';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSExternalClient} from '../../../models/TSExternalClient';
 import {TSInstitutionExternalClient} from '../../../models/TSInstitutionExternalClient';
 import {TSInstitutionExternalClientAssignment} from '../../../models/TSInstitutionExternalClientAssignment';
 import {TSInstitutionUpdate} from '../../../models/TSInstitutionUpdate';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {
+    getBgInstitutionenBetreuungsangebote,
+    isJugendamt
+} from '../../../utils/betreuungsangebot-typ/betreuungsangebot-typ';
+import {MomentUtil} from '../../../utils/date/MomentUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {Permission} from '../../authorisation/Permission';
 import {PERMISSIONS} from '../../authorisation/Permissions';
 import {DvNgConfirmDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
-import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {InstitutionStammdatenRS} from '../../core/service/institutionStammdatenRS.rest';

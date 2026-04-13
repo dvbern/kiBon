@@ -23,7 +23,7 @@ import {TSDownloadFile} from '../../../models/TSDownloadFile';
 import {TSLastenausgleich} from '../../../models/TSLastenausgleich';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 
 type lastenausgleichCreateDTO = {
     jahr: string;

@@ -3513,6 +3513,21 @@ public final class TestDataUtil {
 		return benutzer;
 	}
 
+	public static Benutzer createBenutzer(
+		UserRole role,
+		@Nonnull Mandant mandant
+	) {
+		return createBenutzer(
+			role,
+			"test@mailbucket.dvbern.ch",
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
+	}
+
 	public static Benutzer createAndPersistJABenutzer(
 		Persistence persistence,
 		Mandant mandant

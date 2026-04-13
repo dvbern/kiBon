@@ -14,13 +14,11 @@
  */
 
 import moment from 'moment';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
+import {TSGesuchsperiode} from './entity/TSGesuchsperiode';
 import {TSAntragStatus} from './enums/TSAntragStatus';
 import {TSAntragTyp} from './enums/TSAntragTyp';
 import {TSEingangsart} from './enums/TSEingangsart';
-import {
-    TSAbstractMutableEntity,
-    TSGesuchsperiode
-} from '@kibon/shared/model/entity';
 import {TSDossier} from './TSDossier';
 
 export class TSAbstractAntragEntity extends TSAbstractMutableEntity {

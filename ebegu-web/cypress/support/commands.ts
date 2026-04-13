@@ -19,8 +19,8 @@ import {ConfirmDialogPO} from '@dv-e2e/page-objects';
 /// <reference types="cypress" />
 import * as dvTasks from '@dv-e2e/tasks';
 import {OnlyValidSelectors, User} from '@dv-e2e/types';
+import {KiBonMandant} from '@models/mandant';
 import {Method, WaitOptions} from 'cypress/types/net-stubbing';
-import {KiBonMandant} from '../../libs/shared/model/shared-model-mandant/src/lib/MANDANTS';
 
 type DvTasks = typeof dvTasks;
 

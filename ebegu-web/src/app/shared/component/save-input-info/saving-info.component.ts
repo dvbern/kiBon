@@ -24,7 +24,7 @@ import {
     inject
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 
 const LOG = LogFactory.createLog('SavingInfo');
 

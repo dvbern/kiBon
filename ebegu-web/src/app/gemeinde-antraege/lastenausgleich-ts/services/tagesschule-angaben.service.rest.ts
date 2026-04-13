@@ -23,7 +23,7 @@ import {TSDurchschnittKinderProTag} from '../../../../models/gemeindeantrag/TSDu
 import {TSLastenausgleichTagesschuleAngabenInstitution} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenInstitution';
 import {TSLastenausgleichTagesschuleAngabenInstitutionContainer} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenInstitutionContainer';
 import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 @Injectable({
     providedIn: 'root'
 })

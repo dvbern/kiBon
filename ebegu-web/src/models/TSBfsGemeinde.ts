@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from './entity/TSAbstractEntity';
 export class TSBfsGemeinde extends TSAbstractEntity {
     private _name: string;
     private _bfsNummer: number;

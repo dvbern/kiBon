@@ -15,13 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSAbstractEntity} from '../entity/TSAbstractEntity';
+import {TSGemeinde} from '../entity/TSGemeinde';
+import {TSGesuchsperiode} from '../entity/TSGesuchsperiode';
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
-import {TSRole} from '@kibon/shared/model/enums';
-import {
-    TSAbstractEntity,
-    TSGemeinde,
-    TSGesuchsperiode
-} from '@kibon/shared/model/entity';
+import {TSRole} from '../enums/TSRole';
 import {TSBenutzerNoDetails} from '../TSBenutzerNoDetails';
 import {TSLastenausgleichTagesschuleAngabenGemeinde} from './TSLastenausgleichTagesschuleAngabenGemeinde';
 import {TSLastenausgleichTagesschuleAngabenInstitutionContainer} from './TSLastenausgleichTagesschuleAngabenInstitutionContainer';

@@ -15,7 +15,8 @@
 
 import {Ng1StateDeclaration} from '@uirouter/angularjs';
 import {RouterHelper} from '../../../dvbModules/router/route-helper-provider';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
+
 pendenzRun.$inject = ['RouterHelper'];
 
 export function pendenzRun(routerHelper: RouterHelper): void {

@@ -22,7 +22,7 @@ import {ErrorService} from '../../../../../app/core/errors/service/ErrorService'
 import {SharedModule} from '../../../../../app/shared/shared.module';
 import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
+import {TSFinanzielleSituationTyp} from '../../../../../models/enums/TSFinanzielleSituationTyp';
 import {TSFamiliensituation} from '../../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../../models/TSFamiliensituationContainer';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
@@ -35,7 +35,6 @@ import {BerechnungsManager} from '../../../../service/berechnungsManager';
 import {FinanzielleSituationRS} from '../../../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
-
 import {EinkommensverschlechterungLuzernResultateViewComponent} from './einkommensverschlechterung-luzern-resultate-view.component';
 
 const gesuchModelManagerSpy = jasmine.createSpyObj<GesuchModelManager>(

@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import * as Sentry from '@sentry/browser';
 import {StateService} from '@uirouter/core';
 import {element} from 'angular';
@@ -26,9 +26,9 @@ import {environment} from '../../environments/environment';
 import {GemeindeRS} from '../../gesuch/service/gemeindeRS.rest';
 import {GlobalCacheService} from '../../gesuch/service/globalCacheService';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
-import {TSCacheTyp} from '@kibon/shared/model/enums';
-import {MandantService} from '@kibon/shared-util-mandant-service';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {MandantService} from '@utils/mandant';
+import {LogFactory} from '@utils/log';
+import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
 import {GesuchsperiodeRS} from './service/gesuchsperiodeRS.rest';
 import {ListResourceRS} from './service/listResourceRS.rest';
 import IInjectorService = angular.auto.IInjectorService;
@@ -68,10 +68,9 @@ export function appRun(
     gemeindeRS: GemeindeRS,
     LOCALE_ID: string
 ): void {
-    const applicationPropertyRS =
-        $injector.get<SharedUtilApplicationPropertyRsService>(
-            'SharedUtilApplicationPropertyRsService'
-        );
+    const applicationPropertyRS = $injector.get<ApplicationPropertyRsService>(
+        'ApplicationPropertyRsService'
+    );
     const mandantService = $injector.get<MandantService>('MandantService');
     mandantService.mandant$.pipe(take(1)).subscribe({
         next: () => {

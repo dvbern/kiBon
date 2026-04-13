@@ -34,7 +34,7 @@ import {WizardStepManager} from '../../gesuch/service/wizardStepManager';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {ErrorService} from './errors/service/ErrorService';
 import {AntragStatusHistoryRS} from './service/antragStatusHistoryRS.rest';
-import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
+import {BetreuungRS} from '@hybrid/gesuch/betreuung';
 import {DownloadRS} from './service/downloadRS.rest';
 import {GesuchsperiodeRS} from './service/gesuchsperiodeRS.rest';
 import {GesuchstellerRS} from './service/gesuchstellerRS.rest';

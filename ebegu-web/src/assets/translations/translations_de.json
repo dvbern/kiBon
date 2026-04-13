@@ -62,8 +62,8 @@
     "ERROR_MINDESTENS_EIN_WERT": "Es muss mindestens ein Mutationsbereich gewählt werden",
     "ERROR_FALSCHE_ANGEBOT": "Die ausgewählte Institution passt nicht zum ausgewählten Angebot",
     "ERROR_DATUM_GESETZT_BEI_MUTATION": "Bei einer Mutation muss die Familiensituation geändert werden, wenn ein Datum gesetzt ist.",
-    "ERSTGESUCH_WILLKOMMEN_TEXT_2_MIT_TS": "kiBon führt Sie Schritt für Schritt durch den Antrag für einen Betreuungsgutschein und/oder eine Tagesschulanmeldung.",
-    "ERSTGESUCH_WILLKOMMEN_TEXT_2_OHNE_TS": "kiBon führt Sie Schritt für Schritt durch den Antrag für einen Betreuungsgutschein.",
+    "ERSTGESUCH_WILLKOMMEN_TEXT_2_MIT_TS": "KiBon führt Sie Schritt für Schritt durch den Antrag für einen Betreuungsgutschein und/oder eine Tagesschulanmeldung.",
+    "ERSTGESUCH_WILLKOMMEN_TEXT_2_OHNE_TS": "KiBon führt Sie Schritt für Schritt durch den Antrag für einen Betreuungsgutschein.",
     "ERSTGESUCH_WILLKOMMEN_TEXT_3": "Sollten Sie zu einer Angabe weitere Informationen benötigen, klicken Sie auf das Info-Feld.",
     "TAETIGKEIT": "Tätigkeit",
     "TAETIGKEIT_PLACEHOLDER": "z.B. Arbeitgeber/in",
@@ -3330,5 +3330,7 @@
     "VERFUEGUNG": "Verfügung",
     "ABGELOESTE_VIEW_VERFUEGUNG_LIST": "Verfügung Liste",
     "ABGELOESTE_VIEW_VERFUEGUNG_SINGLE": "Verfügung",
+    "QUARKUS_STATISTIK": "Quarkus Statistik",
+    "QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER": "Betreuungsgutscheine: Kinder Statistik",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

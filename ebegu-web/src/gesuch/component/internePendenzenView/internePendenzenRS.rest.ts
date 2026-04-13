@@ -2,7 +2,7 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {TSGesuch} from '../../../models/TSGesuch';
 import {TSInternePendenz} from '../../../models/TSInternePendenz';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';

@@ -31,8 +31,8 @@ import {GesuchModelManager} from '../../../../../gesuch/service/gesuchModelManag
 import {SearchRS} from '../../../../../gesuch/service/searchRS.rest';
 import {TSAntragStatus} from '../../../../../models/enums/TSAntragStatus';
 import {TSAntragDTO} from '../../../../../models/TSAntragDTO';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DVAntragListFilter} from '../../../../shared/interfaces/DVAntragListFilter';
 import {DVAntragListItem} from '../../../../shared/interfaces/DVAntragListItem';
 import {DVPaginationEvent} from '../../../../shared/interfaces/DVPaginationEvent';

@@ -21,8 +21,8 @@ import {
     FixtureBetreuungFeutzSchwyz
 } from '@dv-e2e/fixtures';
 import {GemeindeTestFall} from '@dv-e2e/types';
+import {TSDayOfWeek} from '../../../src/models/enums/TSDayOfWeek';
 import {ConfirmDialogPO} from '../dialogs';
-import {TSDayOfWeek} from '@kibon/shared/model/enums';
 
 // !! -- PAGE OBJECTS -- !!
 const getPageTitle = () => {

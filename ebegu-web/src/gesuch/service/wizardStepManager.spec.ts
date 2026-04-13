@@ -13,7 +13,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {WizardStepRS} from '@kibon/shared/util/wizard-step-manager';
 import * as angular from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
@@ -21,25 +20,28 @@ import {CORE_JS_MODULE} from '../../app/core/core.angularjs.module';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../hybridTools/translationsMock';
-import {TSAdressetyp} from '@kibon/shared/model/enums';
+import {TSAdresse} from '../../models/entity/TSAdresse';
+import {TSDateRange} from '../../models/entity/TSDateRange';
+import {TSGemeinde} from '../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../models/entity/TSGesuchsperiode';
+import {TSWizardStep} from '../../models/entity/TSWizardStep';
+import {TSAdressetyp} from '../../models/enums/TSAdressetyp';
 import {TSAntragStatus} from '../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../models/enums/TSAntragTyp';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
-import {TSRole} from '@kibon/shared/model/enums';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
-import {TSAdresse} from '@kibon/shared/model/entity';
+import {TSRole} from '../../models/enums/TSRole';
+import {TSWizardStepStatus} from '../../models/enums/TSWizardStepStatus';
 import {TSAdresseContainer} from '../../models/TSAdresseContainer';
 import {TSDossier} from '../../models/TSDossier';
 import {TSEinstellung} from '../../admin/einstellungen/TSEinstellung';
 import {TSFall} from '../../models/TSFall';
-import {TSGemeinde} from '@kibon/shared/model/entity';
 import {TSGesuch} from '../../models/TSGesuch';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSGesuchstellerContainer} from '../../models/TSGesuchstellerContainer';
-import {TSDateRange, TSWizardStep} from '@kibon/shared/model/entity';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 import {TestDataUtil} from '../../utils/TestDataUtil.spec';
 import {WizardStepManager} from './wizardStepManager';
+import {WizardStepRS} from 'src/utils/wizard-step-manager/WizardStepRS.rest';
+import {TSWizardStepName} from 'src/models/enums/TSWizardStepName';
 
 /* eslint-disable */
 xdescribe('wizardStepManager', () => {

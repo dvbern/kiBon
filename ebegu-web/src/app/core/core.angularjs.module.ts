@@ -15,9 +15,8 @@
 
 import {LOCALE_ID} from '@angular/core';
 import {downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
-import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
-import {WizardStepRS} from '@kibon/shared/util/wizard-step-manager';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {BetreuungRS} from '@hybrid/gesuch/betreuung';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import * as angular from 'angular';
 /* eslint-disable import/no-unassigned-import */
 import 'angular-animate';
@@ -65,8 +64,10 @@ import {MahnungRS} from '../../gesuch/service/mahnungRS.rest';
 import {SearchRS} from '../../gesuch/service/searchRS.rest';
 import {SupportRS} from '../../gesuch/service/supportRS.rest';
 import {WizardStepManager} from '../../gesuch/service/wizardStepManager';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '../../utils/dv-show-warning-angaben-vervollstaendingen/shared-util-dv-show-warning-angaben-vervollstaendingen.service';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../utils/EbeguUtil';
+import {WizardStepRS} from '../../utils/wizard-step-manager/WizardStepRS.rest';
 import {BenutzerComponent} from '../benutzer/benutzer/benutzer.component';
 import {DvLanguageSelectorComponentConfig} from '../i18n/components/dv-language-selector/dv-language-selector';
 import {HttpI18nInterceptor} from '../i18n/httpInterceptor/http-i18n-Interceptor';
@@ -75,7 +76,7 @@ import {PosteingangService} from '../posteingang/service/posteingang.service';
 import {DvDemoFeatureWrapperComponent} from '../shared/component/dv-demo-feture-wrapper/dv-demo-feature-wrapper.component';
 import {ColorService} from '../shared/services/color.service';
 import {HttpPendingService} from '../shared/services/http-pending.service';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 import {DvAccordionComponentConfig} from './component/dv-accordion/dv-accordion';
 import {DvAccordionTabComponentConfig} from './component/dv-accordion/dv-accordion-tab/dv-accordion-tab';
 import {AdresseComponentConfig} from './component/dv-adresse/dv-adresse';
@@ -102,7 +103,7 @@ import {DVVersionComponentConfig} from './component/dv-version/dv-version';
 import {NavbarComponent} from './component/navbar/navbar.component';
 import {PulldownUserMenuComponent} from './component/pulldown-user-menu/pulldown-user-menu.component';
 import {configure} from './config';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {DVRoleElementController} from './controller/DVRoleElementController';
 import {appRun} from './core.route';
 import {customTranslateLoader} from './MultiMandantHttpLoader';
@@ -161,9 +162,8 @@ import {VerfuegungRS} from './service/verfuegungRS.rest';
 import {HttpVersionInterceptor} from './service/version/HttpVersionInterceptor';
 import {VersionService} from './service/version/version.service';
 import {WizardStepXRS} from './service/wizardStepXRS.rest';
-import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 import {DvIbanValidator} from './directive/dv-iban-validator/dv-iban-validator';
-import {SharedPatternMeldungsfensterComponent} from '@kibon/shared-pattern-meldungsfenster';
+import {PatternMeldungsfensterComponent} from '@app/shared/pattern/meldungsfenster';
 
 const dependencies = [
     /* Angular modules */
@@ -208,8 +208,8 @@ export const CORE_JS_MODULE = angular
     .constant('CONSTANTS', CONSTANTS)
     .factory('LOCALE_ID', downgradeInjectable(LOCALE_ID))
     .service(
-        'SharedUtilApplicationPropertyRsService',
-        downgradeInjectable(SharedUtilApplicationPropertyRsService) as any
+        'ApplicationPropertyRsService',
+        downgradeInjectable(ApplicationPropertyRsService) as any
     )
     .service('EbeguRestUtil', downgradeInjectable(EbeguRestUtil))
     .service('EbeguUtil', EbeguUtil)
@@ -320,7 +320,7 @@ export const CORE_JS_MODULE = angular
     .directive(
         'dvMeldungsfensterAngularjsWrapper',
         downgradeComponent({
-            component: SharedPatternMeldungsfensterComponent
+            component: PatternMeldungsfensterComponent
         })
     )
     .service('FachstelleRS', FachstelleRS)

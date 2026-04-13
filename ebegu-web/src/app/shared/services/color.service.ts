@@ -16,7 +16,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
+import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
 
 @Injectable({
     providedIn: 'root'

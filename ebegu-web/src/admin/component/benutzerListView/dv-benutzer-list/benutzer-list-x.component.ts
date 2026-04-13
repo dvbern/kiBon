@@ -29,8 +29,7 @@ import {PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {take} from 'rxjs/operators';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {CONSTANTS} from '@models/constants';
 import {BenutzerRSX} from '../../../../app/core/service/benutzerRSX.rest';
 import {InstitutionRS} from '../../../../app/core/service/institutionRS.rest';
 import {SozialdienstRS} from '../../../../app/core/service/SozialdienstRS.rest';
@@ -39,15 +38,14 @@ import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.re
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {TSBenutzerTableFilterDTO} from '../../../../models/dto/TSBenutzerTableFilterDTO';
 import {TSPagination} from '../../../../models/dto/TSPagination';
+import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
+import {TSInstitution} from '../../../../models/entity/TSInstitution';
+import {TSTraegerschaft} from '../../../../models/entity/TSTraegerschaft';
 import {TSBenutzerStatus} from '../../../../models/enums/TSBenutzerStatus';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
-import {
-    TSGemeinde,
-    TSTraegerschaft,
-    TSInstitution
-} from '@kibon/shared/model/entity';
+import {LogFactory} from '../../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {BenutzerListFilter} from './BenutzerListFilter';
 import {firstValueFrom} from 'rxjs';

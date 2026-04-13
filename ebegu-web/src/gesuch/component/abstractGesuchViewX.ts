@@ -22,8 +22,8 @@ import {TSEingangsart} from '../../models/enums/TSEingangsart';
 import {
     getBernFKJVFinSitTyp,
     TSFinanzielleSituationTyp
-} from '@kibon/shared/model/enums';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
+} from '../../models/enums/TSFinanzielleSituationTyp';
+import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
 import {TSAbstractFinanzielleSituation} from '../../models/TSAbstractFinanzielleSituation';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';

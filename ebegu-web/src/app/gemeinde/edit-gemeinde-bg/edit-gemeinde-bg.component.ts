@@ -28,40 +28,36 @@ import {
 } from '@angular/core';
 import {ControlContainer, NgForm, NgModelGroup} from '@angular/forms';
 import {MatButtonToggleChange} from '@angular/material/button-toggle';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateDeclaration, Transition} from '@uirouter/core';
 import {Moment} from 'moment';
 import {Observable} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
-import {
-    TSEinschulungTyp,
-    TSGemeindeStatus,
-    TSGesuchsperiodeStatus,
-    TSRole
-} from '@kibon/shared/model/enums';
 import {
     getGemeindspezifischeBGConfigKeys,
     TSEinstellungKey
 } from '../../../admin/einstellungen/TSEinstellungKey';
-import {TSGemeindeZusaetzlicherGutscheinTyp} from '@kibon/shared/model/enums';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSGemeindeZusaetzlicherGutscheinTyp} from '../../../models/enums/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
+import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
+import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
+import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGemeindeKonfiguration} from '../../../models/TSGemeindeKonfiguration';
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
-import {
-    TSGemeinde,
-    TSGesuchsperiode,
-    TSInstitution
-} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {EinschulungTypesGemeindeVisitor} from '../../core/constants/EinschulungTypesGemeindeVisitor';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MandantService} from '@utils/mandant';
 const LOG = LogFactory.createLog('EditGemeindeBGComponent');
 
 @Component({
@@ -79,7 +75,7 @@ export class EditGemeindeBGComponent implements OnInit {
     private readonly einstellungRS = inject(EinstellungRS);
     private readonly cd = inject(ChangeDetectorRef);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly institutionRS = inject(InstitutionRS);
     private readonly mandantService = inject(MandantService);

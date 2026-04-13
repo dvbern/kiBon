@@ -21,7 +21,7 @@ import {
     TestFaellePO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
-import {MANDANTS} from '../../libs/shared/model/shared-model-mandant/src/lib/MANDANTS';
+import {MANDANTS} from '@models/mandant';
 import {SidenavPO} from '../page-objects/antrag/sidenav.po';
 
 describe('kiBon - Features auf der FinSit - Page', () => {

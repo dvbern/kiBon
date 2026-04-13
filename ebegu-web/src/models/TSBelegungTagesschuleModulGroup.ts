@@ -15,10 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    TSAbstractEntity,
-    TSModulTagesschuleGroup
-} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from './entity/TSAbstractEntity';
+import {TSModulTagesschuleGroup} from './entity/TSModulTagesschuleGroup';
 import {TSBelegungTagesschuleModul} from './TSBelegungTagesschuleModul';
 
 /**

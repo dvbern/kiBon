@@ -15,35 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {PERMISSIONS_BETREUUNG} from '@kibon/betreuung-permission-betreuung';
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
-import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
-import {
-    TSFachstelle,
-    TSFachstellenTyp,
-    TSInstitutionStammdaten,
-    TSInstitutionStammdatenSummary
-} from '@kibon/shared/model/entity';
-import {
-    stringEingewoehnungTyp,
-    TSBetreuungsangebotTyp,
-    TSBetreuungsstatus,
-    TSDemoFeature,
-    TSEingewoehnungTyp,
-    TSEinschulungTyp,
-    TSInstitutionStatus,
-    TSPensumAnzeigeTyp,
-    TSRole,
-    TSWizardStepName
-} from '@kibon/shared/model/enums';
-import {
-    getTSBetreuungsangebotTypValuesForMandantIfTagesschulanmeldungen,
-    isJugendamt
-} from '@kibon/shared/util-fn/betreuungsangebot-typ';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {StateService} from '@uirouter/core';
 import {copy, IComponentOptions} from 'angular';
 import $ from 'jquery';
@@ -59,10 +30,15 @@ import {UnknownTFOIdVisitor} from '../../../app/core/constants/UnknownTFOIdVisit
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
-import {MandantService} from '@kibon/shared-util-mandant-service';
 import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
+import {TSFachstelle} from '../../../models/entity/TSFachstelle';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
+import {TSInstitutionStammdatenSummary} from '../../../models/entity/TSInstitutionStammdatenSummary';
 import {TSBedarfsstufe} from '../../../models/enums/betreuung/TSBedarfsstufe';
+import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
+import {PERMISSIONS_BETREUUNG} from '../../../models/enums/permission-betreuung/PermissionBetreuung';
 import {TSAnmeldungMutationZustand} from '../../../models/enums/TSAnmeldungMutationZustand';
 import {
     isAnyStatusOfGeprueftVerfuegenVerfuegtOrAbgeschlossenButJA,
@@ -70,6 +46,19 @@ import {
     isVerfuegtOrSTV,
     TSAntragStatus
 } from '../../../models/enums/TSAntragStatus';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
+import {
+    stringEingewoehnungTyp,
+    TSEingewoehnungTyp
+} from '../../../models/enums/TSEingewoehnungTyp';
+import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
+import {TSFachstellenTyp} from '../../../models/enums/TSFachstellenTyp';
+import {TSInstitutionStatus} from '../../../models/enums/TSInstitutionStatus';
+import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
+import {TSRole} from '../../../models/enums/TSRole';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
 import {TSBelegungTagesschule} from '../../../models/TSBelegungTagesschule';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSBetreuungsmitteilung} from '../../../models/TSBetreuungsmitteilung';
@@ -80,8 +69,17 @@ import {TSErweiterteBetreuung} from '../../../models/TSErweiterteBetreuung';
 import {TSErweiterteBetreuungContainer} from '../../../models/TSErweiterteBetreuungContainer';
 import {TSExceptionReport} from '../../../models/TSExceptionReport';
 import {TSKindContainer} from '../../../models/TSKindContainer';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
+import {
+    getTSBetreuungsangebotTypValuesForMandantIfTagesschulanmeldungen,
+    isJugendamt
+} from '../../../utils/betreuungsangebot-typ/betreuungsangebot-typ';
+import {MomentUtil} from '../../../utils/date/MomentUtil';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {HybridFormBridgeService} from '../../../utils/hybrid-form-bridge/hybrid-form-bridge.service';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {OkHtmlDialogController} from '../../dialog/OkHtmlDialogController';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
@@ -133,7 +131,7 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         'GlobalCacheService',
         '$timeout',
         '$translate',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         'MandantService',
         'EbeguRestUtil',
         'HybridFormBridgeService',
@@ -231,7 +229,7 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         private readonly globalCacheService: GlobalCacheService,
         $timeout: ITimeoutService,
         $translate: ITranslateService,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly applicationPropertyRS: ApplicationPropertyRsService,
         private readonly mandantService: MandantService,
         private readonly ebeguRestUtil: EbeguRestUtil,
         protected readonly hybridFormBridgeService: HybridFormBridgeService,

@@ -16,16 +16,17 @@
  */
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
-import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {CONSTANTS} from '@models/constants';
+import {LogFactory} from '@utils/log';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSPaginationResultDTO} from '../../../models/dto/TSPaginationResultDTO';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
 import {TSWizardStepXTyp} from '../../../models/enums/TSWizardStepXTyp';
 import {TSGemeindeAntrag} from '../../../models/gemeindeantrag/TSGemeindeAntrag';
-import {TSPaginationResultDTO} from '@kibon/shared/model/dto';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DVAntragListFilter} from '../../shared/interfaces/DVAntragListFilter';

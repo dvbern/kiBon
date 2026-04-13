@@ -1,15 +1,14 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {SharedModule} from '../../../../../app/shared/shared.module';
 import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
+import {TSWizardStep} from '../../../../../models/entity/TSWizardStep';
 import {TSFamilienstatus} from '../../../../../models/enums/TSFamilienstatus';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {TSFamiliensituation} from '../../../../../models/TSFamiliensituation';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {FinanzielleSituationSolothurnService} from '../finanzielle-situation-solothurn.service';
 import {SolothurnFinSitTestHelpers} from '../SolothurnFinSitTestHelpers';
-
 import {FinanzielleSituationStartSolothurnComponent} from './finanzielle-situation-start-solothurn.component';
-import {TSWizardStep} from '@kibon/shared/model/entity';
-import {TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {By} from '@angular/platform-browser';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 

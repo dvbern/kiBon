@@ -41,6 +41,7 @@ import {filter, map, startWith} from 'rxjs/operators';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSEinstellungKey} from '../../../../../admin/einstellungen/TSEinstellungKey';
+import {TSGesuchsperiode} from '../../../../../models/entity/TSGesuchsperiode';
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../../../../../models/enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
 import {TSLastenausgleichTagesschuleAngabenInstitutionStatus} from '../../../../../models/enums/TSLastenausgleichTagesschuleAngabenInstitutionStatus';
 import {TSWizardStepXTyp} from '../../../../../models/enums/TSWizardStepXTyp';
@@ -53,13 +54,12 @@ import {TSOeffnungszeitenTagesschule} from '../../../../../models/gemeindeantrag
 import {TSOeffnungszeitenTagesschuleTyp} from '../../../../../models/gemeindeantrag/TSOeffnungszeitenTagesschuleTyp';
 import {TSBenutzer} from '../../../../../models/TSBenutzer';
 import {TSExceptionReport} from '../../../../../models/TSExceptionReport';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {ErrorService} from '../../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {WizardStepXRS} from '../../../../core/service/wizardStepXRS.rest';
 import {
     numberValidator,

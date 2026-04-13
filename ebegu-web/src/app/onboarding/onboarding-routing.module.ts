@@ -21,7 +21,7 @@ import {
 import {HookResult, Transition} from '@uirouter/core';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../models/enums/TSRole';
 import {getRoleBasedTargetState} from '../../utils/AuthenticationUtil';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
 import {UiViewComponent} from '../shared/ui-view/ui-view.component';

@@ -16,10 +16,10 @@
  */
 
 import {IHttpService, IPromise} from 'angular';
+import {MANDANTS} from '@models/mandant';
 import {I18nServiceRSRest} from '../i18n/services/i18nServiceRS.rest';
-import {HTTP_CODES} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {HTTP_CODES} from '@models/constants';
+import {LogFactory} from '@utils/log';
 
 const LOG = LogFactory.createLog('customTranslateLoader');
 

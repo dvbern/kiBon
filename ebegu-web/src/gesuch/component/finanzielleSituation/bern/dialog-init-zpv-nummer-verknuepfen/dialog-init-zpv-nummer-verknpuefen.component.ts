@@ -18,9 +18,9 @@
 import {Component, inject} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {GesuchstellerRS} from '../../../../../app/core/service/gesuchstellerRS.rest';
-import {TSSprache} from '@kibon/shared/model/enums';
+import {TSSprache} from '../../../../../models/enums/TSSprache';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
 
 @Component({

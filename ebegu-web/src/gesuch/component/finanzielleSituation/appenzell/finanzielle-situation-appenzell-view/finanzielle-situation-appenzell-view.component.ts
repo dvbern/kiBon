@@ -26,12 +26,12 @@ import {TranslateService} from '@ngx-translate/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
 import {Observable} from 'rxjs';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSRole} from '@kibon/shared/model/enums';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../../models/enums/TSRole';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
@@ -39,7 +39,9 @@ import {TSFinSitZusatzangabenAppenzell} from '../../../../../models/TSFinSitZusa
 import {TSGesuch} from '../../../../../models/TSGesuch';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
 import {TSZahlungsinformationen} from '../../../../../models/TSZahlungsinformationen';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '../../../../../utils/dv-show-warning-angaben-vervollstaendingen/shared-util-dv-show-warning-angaben-vervollstaendingen.service';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {FinanzielleSituationRS} from '../../../../service/finanzielleSituationRS.rest';
 import {FinanzielleSituationSubStepManagerAppenzell} from '../../../../service/finanzielleSituationSubStepManagerAppenzell';
@@ -47,7 +49,6 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractGesuchViewX} from '../../../abstractGesuchViewX';
 import {FinanzielleSituationAppenzellService} from '../finanzielle-situation-appenzell.service';
-import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 const LOG = LogFactory.createLog('FinanzielleSituationAppenzellViewComponent');
 

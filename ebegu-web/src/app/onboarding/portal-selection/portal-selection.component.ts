@@ -25,9 +25,9 @@ import {
 import {UIRouterGlobals} from '@uirouter/core';
 import {fromEvent, Observable} from 'rxjs';
 import {map, startWith, throttleTime} from 'rxjs/operators';
-import {TSMandant} from '@kibon/shared/model/entity';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {TSMandant} from '../../../models/entity/TSMandant';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 const LOG = LogFactory.createLog('PortalSelectionComponent');
 
 @Component({

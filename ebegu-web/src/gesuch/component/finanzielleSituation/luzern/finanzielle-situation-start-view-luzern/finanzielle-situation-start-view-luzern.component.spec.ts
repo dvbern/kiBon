@@ -16,7 +16,7 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {StateService} from '@uirouter/angular';
 import {of} from 'rxjs';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
@@ -24,25 +24,24 @@ import {SharedModule} from '../../../../../app/shared/shared.module';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
+import {TSPublicAppConfig} from '../../../../../models/einstellung/TSPublicAppConfig';
+import {TSGemeinde} from '../../../../../models/entity/TSGemeinde';
+import {TSWizardStep} from '../../../../../models/entity/TSWizardStep';
+import {TSFinanzielleSituationTyp} from '../../../../../models/enums/TSFinanzielleSituationTyp';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {TSFamiliensituation} from '../../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../../models/TSFamiliensituationContainer';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
-import {TSGemeinde, TSWizardStep} from '@kibon/shared/model/entity';
-
 import {TSGesuch} from '../../../../../models/TSGesuch';
 import {TSGesuchsteller} from '../../../../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
-import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
 import {FinanzielleSituationRS} from '../../../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern.service';
-
 import {FinanzielleSituationStartViewLuzernComponent} from './finanzielle-situation-start-view-luzern.component';
-import {TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {By} from '@angular/platform-browser';
 
 const gesuchModelManagerSpy = jasmine.createSpyObj<GesuchModelManager>(
@@ -95,8 +94,8 @@ berechnungsManagerSpy.calculateFinanzielleSituationTemp.and.returnValue(
 );
 
 const applicationPropertyRSSpy =
-    jasmine.createSpyObj<SharedUtilApplicationPropertyRsService>(
-        SharedUtilApplicationPropertyRsService.name,
+    jasmine.createSpyObj<ApplicationPropertyRsService>(
+        ApplicationPropertyRsService.name,
         ['getPublicPropertiesCached']
     );
 applicationPropertyRSSpy.getPublicPropertiesCached.and.returnValue(
@@ -128,7 +127,7 @@ describe('FinanzielleSituationStartViewLuzernComponent', () => {
                 {provide: BerechnungsManager, useValue: berechnungsManagerSpy},
                 {provide: AuthServiceRS, useValue: authServiceSpy},
                 {
-                    provide: SharedUtilApplicationPropertyRsService,
+                    provide: ApplicationPropertyRsService,
                     useValue: applicationPropertyRSSpy
                 }
             ],

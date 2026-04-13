@@ -16,8 +16,8 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
 import {map} from 'rxjs/operators';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {TSFerienname} from '@kibon/shared/model/enums';
+import {CONSTANTS} from '@models/constants';
+import {TSFerienname} from '../../models/enums/TSFerienname';
 import {TSFerieninselStammdaten} from '../../models/TSFerieninselStammdaten';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {firstValueFrom} from 'rxjs';

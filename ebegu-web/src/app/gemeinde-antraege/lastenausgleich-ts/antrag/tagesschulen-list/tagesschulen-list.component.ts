@@ -38,7 +38,7 @@ import {TSLastenausgleichTagesschuleAngabenInstitutionContainer} from '../../../
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DvSimpleTableColumnDefinition} from '../../../../shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {LastenausgleichTSService} from '../../services/lastenausgleich-ts.service';
 import {TagesschuleAngabenRS} from '../../services/tagesschule-angaben.service.rest';

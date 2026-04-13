@@ -134,19 +134,32 @@ public abstract class AbstractGemeindeBernRechner extends
 			);
 		// Minimaler Gutschein der Gemeinde
 		verguenstigungProZeiteinheit = getMinimaleVerguenstigungProZeiteinheit(
-			verguenstigungProZeiteinheit
+			verguenstigungProZeiteinheit,
+			rechnerParameter,
+			input
 		);
 
 		return verguenstigungProZeiteinheit;
 	}
 
 	protected BigDecimal getMinimaleVerguenstigungProZeiteinheit(
-		BigDecimal verguenstigung
+		BigDecimal verguenstigung,
+		RechnerRuleParameterDTO rechnerParameter,
+		BGCalculationInput input
 	) {
-		return MathUtil.minimum(
-			verguenstigung,
-			rechnerParameter.getMinimalPauschalBetrag()
-		);
+		BigDecimal minimalPauschalBetrag = rechnerParameter
+			.getMinimalPauschalBetrag();
+		if (verguenstigung.compareTo(minimalPauschalBetrag) < 0) {
+			var bemerkung = rechnerParameter
+				.getMinimalPauschalBetragBemerkung();
+			input.addBemerkung(
+				bemerkung.getMsgKey(),
+				bemerkung.getSprache(),
+				minimalPauschalBetrag
+			);
+			return minimalPauschalBetrag;
+		}
+		return verguenstigung;
 	}
 
 	/**

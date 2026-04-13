@@ -22,7 +22,7 @@ import {
     HttpRequest
 } from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
-import {HEADER_ACCEPT_LANGUAGE} from '@kibon/shared/model/constants';
+import {HEADER_ACCEPT_LANGUAGE} from '@models/constants';
 import {Observable} from 'rxjs';
 import {I18nServiceRSRest} from '../../i18n/services/i18nServiceRS.rest';
 

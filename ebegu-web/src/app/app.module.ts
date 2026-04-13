@@ -31,7 +31,7 @@ import {
 import {NgAdminModule} from '../admin/ng-admin.module';
 import {NgAuthenticationModule} from '../authentication/ng-authentication.module';
 import {NgGesuchModule} from '../gesuch/ng-gesuch.module';
-import {TSBrowserLanguage} from '@kibon/shared/model/enums';
+import {TSBrowserLanguage} from '../models/enums/TSBrowserLanguage';
 import {AppRoutingModule} from './app-routing.module';
 import {APP_JS_MODULE} from './app.angularjs.module';
 import {BenutzerModule} from './benutzer/benutzer.module';

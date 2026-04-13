@@ -24,7 +24,8 @@ import {
     inject
 } from '@angular/core';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
+
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 
 /**

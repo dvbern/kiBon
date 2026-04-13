@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {StateService} from '@uirouter/core';
 import * as angular from 'angular';
 import {of} from 'rxjs';
@@ -24,8 +24,8 @@ import {SearchRS} from '../../../../gesuch/service/searchRS.rest';
 import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSAntragTyp} from '../../../../models/enums/TSAntragTyp';
+import {TSBetreuungsangebotTyp} from '../../../../models/enums/TSBetreuungsangebotTyp';
 import {TSAntragDTO} from '../../../../models/TSAntragDTO';
 import {TSAntragSearchresultDTO} from '../../../../models/TSAntragSearchresultDTO';
 import {TSGesuch} from '../../../../models/TSGesuch';
@@ -49,7 +49,7 @@ xdescribe('DVQuicksearchList', () => {
     let wizardStepManager: WizardStepManager;
     let authServiceRS: AuthServiceRS;
     let gemeindeRS: GemeindeRS;
-    let applicationPropertyRS: SharedUtilApplicationPropertyRsService;
+    let applicationPropertyRS: ApplicationPropertyRsService;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
 

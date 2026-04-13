@@ -22,12 +22,12 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import {TSRole} from '@kibon/shared/model/enums';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../errors/service/ErrorService';
 
@@ -42,7 +42,7 @@ import {ErrorService} from '../../errors/service/ErrorService';
 export class PulldownUserMenuComponent implements OnInit {
     private readonly authService = inject(AuthServiceRS);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly state = inject(StateService);
     private readonly errorService = inject(ErrorService);

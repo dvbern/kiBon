@@ -27,19 +27,19 @@ import {
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable, Subject} from 'rxjs';
 import {filter, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {TSLastenausgleich} from '../../../../models/TSLastenausgleich';
+import {ApplicationPropertyRsService} from '../../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {LogFactory} from '../../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {UploadRS} from '../../../core/service/uploadRS.rest';
 import {LastenausgleichRS} from '../../services/lastenausgleichRS.rest';
@@ -65,7 +65,7 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
     private readonly errorService = inject(ErrorService);
     private readonly cd = inject(ChangeDetectorRef);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
 
     // ab dem Jahr 2022 wird der Lastenausgleich ohne Selbstbehalt generiert

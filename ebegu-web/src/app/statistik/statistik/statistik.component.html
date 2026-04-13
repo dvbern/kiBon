@@ -2218,7 +2218,7 @@
 
                 <!--                betreuungsgutscheine: zahlungen-->
                 @if (
-                    showZahlungenStatistik() &&
+                    (hasBgInstitutionen$ | async) &&
                     showZahlungenStatistikAllowedForRoles
                 ) {
                     <div [dvDemoFeature]="demoFeature">
@@ -2352,9 +2352,7 @@
                                                                 class="form-control"
                                                             >
                                                                 <mat-option
-                                                                    [value]="
-                                                                        undefined
-                                                                    "
+                                                                    value="ALLE"
                                                                 >
                                                                     {{
                                                                         'ALLE'
@@ -2420,9 +2418,7 @@
                                                                 "
                                                             >
                                                                 <mat-option
-                                                                    [value]="
-                                                                        undefined
-                                                                    "
+                                                                    value="ALLE"
                                                                 >
                                                                     {{
                                                                         'ALLE'
@@ -2444,16 +2440,20 @@
                                                                     </mat-option>
                                                                 }
                                                             </mat-select>
-                                                            <dv-error-messages
-                                                                [errorObject]="
-                                                                    institutionenRef.errors
-                                                                "
-                                                                [errorMessageOverrides]="{
-                                                                    required:
-                                                                        'ERROR_GEMEINDE_INSTITUTION_REQUIRED'
-                                                                }"
-                                                                class="error"
-                                                            ></dv-error-messages>
+                                                            @if (
+                                                                bgZahlungenStatistikGemeindeAndInstitutionAlleSelected()
+                                                            ) {
+                                                                <dv-error-messages
+                                                                    [errorObject]="{
+                                                                        required: true
+                                                                    }"
+                                                                    [errorMessageOverrides]="{
+                                                                        required:
+                                                                            'ERROR_GEMEINDE_INSTITUTION_REQUIRED'
+                                                                    }"
+                                                                    class="error"
+                                                                ></dv-error-messages>
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2467,6 +2467,9 @@
                                                         margin-left: auto;
                                                         margin-right: auto;
                                                         width: 13rem;
+                                                    "
+                                                    [buttonDisabled]="
+                                                        bgZahlungenStatistikGemeindeAndInstitutionAlleSelected()
                                                     "
                                                 >
                                                     <span

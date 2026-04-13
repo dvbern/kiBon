@@ -17,8 +17,8 @@
 
 import {IComponentOptions, IController} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSBrowserLanguage} from '@kibon/shared/model/enums';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {TSBrowserLanguage} from '../../../../models/enums/TSBrowserLanguage';
+import {LogFactory} from '../../../../utils/log-factory/LogFactory';
 import {I18nServiceRSRest} from '../../services/i18nServiceRS.rest';
 import ITranslateService = angular.translate.ITranslateService;
 
@@ -41,8 +41,8 @@ export class DvLanguageSelector implements IController {
         'I18nServiceRSRest'
     ];
 
-    public readonly TSBrowserLanguage = TSBrowserLanguage;
     public readonly hideForLoggedUser: boolean;
+    public readonly TSBrowserLanguage = TSBrowserLanguage;
 
     public constructor(
         private readonly authServiceRS: AuthServiceRS,

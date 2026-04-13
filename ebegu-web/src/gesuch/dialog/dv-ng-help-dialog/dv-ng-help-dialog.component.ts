@@ -16,12 +16,12 @@
 import {Component, inject} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
-import {MANDANTS} from '@kibon/shared-model-mandant';
 import {KiBonGuidedTourService} from '../../../app/kibonTour/service/KiBonGuidedTourService';
 import {SupportDialogService} from '../../../app/shared/services/support-dialog.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {MANDANTS} from '@models/mandant';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {MandantService} from '@kibon/shared-util-mandant-service';
 
 /**
  * This component shows a Help Dialog with all contact details and a Link to the user manual

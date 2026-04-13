@@ -16,10 +16,9 @@
 import {IComponentOptions, IFormController} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSAdresseContainer} from '../../../../models/TSAdresseContainer';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-
 import {TSLand} from '../../../../models/types/TSLand';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {AdresseRS} from '../../service/adresseRS.rest';

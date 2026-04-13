@@ -1,10 +1,10 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {of} from 'rxjs';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 import {MaterialModule} from '../../../app/shared/material.module';
 import {SharedModule} from '../../../app/shared/shared.module';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
+import {WindowRef} from '../../../utils/window-ref/windowRef.service';
 import {BetreuungMonitoringRS} from '../../service/betreuungMonitoringRS.rest';
 
 import {BetreuungMonitoringComponent} from './betreuung-monitoring.component';

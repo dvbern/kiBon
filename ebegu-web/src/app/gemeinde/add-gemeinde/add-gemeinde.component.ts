@@ -25,9 +25,8 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {TSGemeindeStatus} from '@kibon/shared/model/enums';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {CONSTANTS} from '@models/constants';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
 import moment from 'moment';
@@ -35,13 +34,15 @@ import {from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
 import {TSBfsGemeinde} from '../../../models/TSBfsGemeinde';
 import {TSExceptionReport} from '../../../models/TSExceptionReport';
-import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {DvNgGesuchstellerDialogComponent} from '../../core/component/dv-ng-gesuchsteller-dialog/dv-ng-gesuchsteller-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {Log, LogFactory} from '@utils/log';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 
 @Component({
@@ -62,7 +63,7 @@ export class AddGemeindeComponent implements OnInit {
     private readonly dialog = inject(MatDialog);
     private readonly cd = inject(ChangeDetectorRef);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
 
     private readonly log: Log = LogFactory.createLog('AddGemeindeComponent');

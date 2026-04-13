@@ -15,11 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {EbeguUtil} from '../utils/EbeguUtil';
-import {
-    TSAbstractDateRangedEntity,
-    TSDateRange
-} from '@kibon/shared/model/entity';
+import {TSAbstractDateRangedEntity} from './entity/TSAbstractDateRangedEntity';
+import {TSDateRange} from './entity/TSDateRange';
 
 export class TSSozialhilfeZeitraum extends TSAbstractDateRangedEntity {
     public constructor() {
@@ -29,7 +26,7 @@ export class TSSozialhilfeZeitraum extends TSAbstractDateRangedEntity {
     public deepCopyTo(target: TSSozialhilfeZeitraum): TSSozialhilfeZeitraum {
         super.deepCopyTo(target);
         target.vorgaengerId = this.vorgaengerId;
-        if (EbeguUtil.isNotNullOrUndefined(this.gueltigkeit)) {
+        if (this.gueltigkeit !== null && this.gueltigkeit !== undefined) {
             target.gueltigkeit = new TSDateRange();
             target.gueltigkeit.gueltigAb = this.gueltigkeit.gueltigAb?.clone();
             target.gueltigkeit.gueltigBis =

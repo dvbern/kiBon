@@ -25,14 +25,14 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatSort} from '@angular/material/sort';
-import {TSGemeindeStatus} from '@kibon/shared/model/enums';
 import {StateService} from '@uirouter/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AbstractAdminViewX} from '../../../admin/abstractAdminViewX';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSGemeinde} from '@kibon/shared/model/entity';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
 

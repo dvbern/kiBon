@@ -25,7 +25,7 @@ import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.re
 import {TSPostEingangEvent} from '../../../../models/enums/TSPostEingangEvent';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {PosteingangService} from '../../../posteingang/service/posteingang.service';
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {Log, LogFactory} from '@utils/log';
 import {MitteilungRS} from '../../service/mitteilungRS.rest';
 
 @Component({

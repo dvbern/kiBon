@@ -14,7 +14,8 @@
  */
 
 import {StateService, TargetState, TransitionPromise} from '@uirouter/core';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../models/enums/TSRole';
+
 /**
  *  Navigiert basierend auf der Rolle zu einer anderen Startseite
  */

@@ -33,9 +33,7 @@ import {
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {getTSBetreuungsangebotTypValuesForMandant} from '@kibon/shared/util-fn/betreuungsangebot-typ';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {TransitionService} from '@uirouter/angular';
 import {UIRouterGlobals} from '@uirouter/core';
@@ -51,6 +49,9 @@ import {map, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {SearchRS} from '../../../gesuch/service/searchRS.rest';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
 import {
     getTSAntragStatusValuesByRole,
     TSAntragStatus
@@ -59,23 +60,20 @@ import {
     getNormalizedTSAntragTypValues,
     TSAntragTyp
 } from '../../../models/enums/TSAntragTyp';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
 import {TSAntragSearchresultDTO} from '../../../models/TSAntragSearchresultDTO';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
-import {
-    TSGemeinde,
-    TSGesuchsperiode,
-    TSInstitution
-} from '@kibon/shared/model/entity';
+import {getTSBetreuungsangebotTypValuesForMandant} from '../../../utils/betreuungsangebot-typ/betreuungsangebot-typ';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DVAntragListFilter} from '../../shared/interfaces/DVAntragListFilter';
 import {DVAntragListItem} from '../../shared/interfaces/DVAntragListItem';
 import {DVPaginationEvent} from '../../shared/interfaces/DVPaginationEvent';
 import {StateStoreService} from '../../shared/services/state-store.service';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {ErrorService} from '../errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {BenutzerRSX} from '../service/benutzerRSX.rest';
 import {GesuchsperiodeRS} from '../service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../service/institutionRS.rest';
@@ -108,7 +106,7 @@ export class NewAntragListComponent
     private readonly uiRouterGlobals = inject(UIRouterGlobals);
     private readonly benutzerRS = inject(BenutzerRSX);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
 
     @ViewChild(MatPaginator) public paginator: MatPaginator;

@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 
 /**
  * returns next gesuchsperiode as string representation

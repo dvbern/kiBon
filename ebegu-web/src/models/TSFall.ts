@@ -12,9 +12,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-import {EbeguUtil} from '../utils/EbeguUtil';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSSozialdienstFall} from './sozialdienst/TSSozialdienstFall';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {TSBenutzer} from './TSBenutzer';
 
 export class TSFall extends TSAbstractMutableEntity {
@@ -67,6 +66,9 @@ export class TSFall extends TSAbstractMutableEntity {
     }
 
     public isSozialdienstFall(): boolean {
-        return EbeguUtil.isNotNullOrUndefined(this._sozialdienstFall);
+        return (
+            this._sozialdienstFall !== null &&
+            this._sozialdienstFall !== undefined
+        );
     }
 }

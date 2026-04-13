@@ -19,7 +19,7 @@ import moment from 'moment';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {OkDialogController} from '../../../../gesuch/dialog/OkDialogController';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
 import {TSHTTPEvent} from '../../events/TSHTTPEvent';

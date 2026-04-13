@@ -29,8 +29,8 @@ import {GesuchsperiodeViewXComponent} from './einstellungen/gesuchsperiode-view-
 import {TestdatenViewComponent} from './component/testdatenView/testdatenView.component';
 import {UebersichtVersendeteMailsComponent} from './component/uebersichtVersendeteMails/uebersichtVersendeteMails.component';
 import {NgAdminRoutingModule} from './ng-admin-routing.module';
-import {AdminGesuchsperiodenEinstellungenComponent} from '@kibon/admin-gesuchsperioden-einstellungen';
-import {EditEinstellungComponent} from '@kibon/admin-edit-einstellung';
+import {GesuchsperiodenEinstellungenComponent} from '@admin/gesuchsperioden-einstellungen';
+import {EditEinstellungComponent} from '@admin/einstellungen';
 import {ApplicationPropertyGroupComponent} from './einstellungen/application-property-group/application-property-group.component';
 
 @NgModule({
@@ -39,7 +39,7 @@ import {ApplicationPropertyGroupComponent} from './einstellungen/application-pro
         NgAdminRoutingModule,
         EditEinstellungComponent,
         StringSqlDateToDisplayDatePipe,
-        AdminGesuchsperiodenEinstellungenComponent,
+        GesuchsperiodenEinstellungenComponent,
         ApplicationPropertyGroupComponent
     ],
     declarations: [

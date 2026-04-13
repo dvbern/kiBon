@@ -13,9 +13,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSSprache} from '@kibon/shared/model/enums';
 import angular, {IHttpService, ILogService, IPromise, IQService} from 'angular';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
+import {TSSprache} from '../../../models/enums/TSSprache';
 import {TSFerienbetreuungDokument} from '../../../models/gemeindeantrag/TSFerienbetreuungDokument';
 import {TSDokumentGrund} from '../../../models/TSDokumentGrund';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';

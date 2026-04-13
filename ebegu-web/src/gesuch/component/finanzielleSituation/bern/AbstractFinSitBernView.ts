@@ -15,20 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {IPromise, IScope, ITimeoutService} from 'angular';
 import moment from 'moment';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {DvDialog} from '../../../../app/core/directive/dv-dialog/dv-dialog';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
-import {TSRole} from '@kibon/shared/model/enums';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
+import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
 import {TSFinanzielleSituationContainer} from '../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../models/TSFinanzModel';
+import {ApplicationPropertyRsService} from '../../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {LogFactory} from '../../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {RemoveDialogController} from '../../../dialog/RemoveDialogController';
 import {BerechnungsManager} from '../../../service/berechnungsManager';
@@ -63,7 +63,7 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
         protected readonly authServiceRS: AuthServiceRS,
         protected readonly einstellungRS: EinstellungRS,
         protected readonly dvDialog: DvDialog,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
+        private readonly applicationPropertyRS: ApplicationPropertyRsService
     ) {
         super(
             gesuchModelManager,

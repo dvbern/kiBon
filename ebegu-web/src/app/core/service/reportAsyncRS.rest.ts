@@ -18,8 +18,10 @@
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
-import {TSGemeinde, TSInstitution} from '@kibon/shared/model/entity';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSInstitution} from '../../../models/entity/TSInstitution';
+
 /**
  * spricht die reportAsync ressource an welche die reports async generiert
  */

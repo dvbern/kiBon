@@ -16,19 +16,19 @@
 import IComponentOptions = angular.IComponentOptions;
 import ILogService = angular.ILogService;
 import ITimeoutService = angular.ITimeoutService;
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {IController} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {DossierRS} from '../../../../gesuch/service/dossierRS.rest';
-import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
+import {TSBetreuungsstatus} from '../../../../models/enums/betreuung/TSBetreuungsstatus';
 import {TSAntragStatusHistory} from '../../../../models/TSAntragStatusHistory';
 import {TSBetreuung} from '../../../../models/TSBetreuung';
 import {TSDossier} from '../../../../models/TSDossier';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
+import {BetreuungRS} from '@hybrid/gesuch/betreuung';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {IAlleVerfuegungenStateParams} from '../../alleVerfuegungen.route';
 
@@ -50,7 +50,7 @@ export class AlleVerfuegungenViewController implements IController {
         '$timeout',
         'DossierRS',
         'EbeguUtil',
-        'SharedUtilApplicationPropertyRsService'
+        'ApplicationPropertyRsService'
     ];
 
     public dossier: TSDossier;
@@ -70,7 +70,7 @@ export class AlleVerfuegungenViewController implements IController {
         private readonly $timeout: ITimeoutService,
         private readonly dossierRS: DossierRS,
         private readonly ebeguUtil: EbeguUtil,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
+        private readonly applicationPropertyRS: ApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {

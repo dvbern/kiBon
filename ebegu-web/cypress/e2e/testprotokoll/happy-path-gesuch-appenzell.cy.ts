@@ -43,7 +43,7 @@ import {
 import {getUser, TestPeriode, User} from '@dv-e2e/types';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 import {SidenavPO} from '@dv-e2e/page-objects';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MANDANTS} from '@models/mandant';
 
 describe('Appenzell - Happy Path Gesuch', () => {
     const userSuperadmin = getUser('[1-Superadmin] Super User');

@@ -19,7 +19,7 @@ import {translationsMock} from '../../../hybridTools/translationsMock';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSAntragStatusHistory} from '../../../models/TSAntragStatusHistory';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';

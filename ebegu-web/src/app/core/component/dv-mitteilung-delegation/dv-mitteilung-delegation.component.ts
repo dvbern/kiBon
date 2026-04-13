@@ -17,7 +17,7 @@
 
 import {Component, EventEmitter, Input, Output, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DvNgMitteilungDelegationDialogComponent} from '../dv-ng-mitteilung-delegation-dialog/dv-ng-mitteilung-delegation-dialog.component';
 
 const LOG = LogFactory.createLog('DvMitteilungDelegationComponent');

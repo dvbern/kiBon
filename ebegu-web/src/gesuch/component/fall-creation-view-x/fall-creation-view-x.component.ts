@@ -23,26 +23,25 @@ import {
     OnInit
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {GesuchUiMutationDialogComponent} from '@kibon/gesuch/ui/mutation-dialog';
-import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {
-    TSGesuchsperiodeStatus,
-    TSRole,
-    TSWizardStepName,
-    TSWizardStepStatus
-} from '@kibon/shared/model/enums';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {MutationDialogComponent} from '@gesuch/mutation/dialog';
+import {LogFactory} from '@utils/log';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
+import {MomentUtil} from '@utils/moment';
 import {firstValueFrom} from 'rxjs';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
+import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
+import {TSRole} from '../../../models/enums/TSRole';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSGesuch} from '../../../models/TSGesuch';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
@@ -76,7 +75,7 @@ export class FallCreationViewXComponent
     private readonly $state = inject(StateService);
     private readonly gesuchRS = inject(GesuchRS);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly dialog = inject(MatDialog);
 
@@ -201,7 +200,7 @@ export class FallCreationViewXComponent
         ) {
             firstValueFrom(
                 this.dialog
-                    .open(GesuchUiMutationDialogComponent, {
+                    .open(MutationDialogComponent, {
                         data: {
                             periode:
                                 this.gesuchModelManager.getGesuch()

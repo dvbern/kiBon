@@ -31,7 +31,7 @@ import {TSAuthEvent} from '../../../models/enums/TSAuthEvent';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {ErrorService} from '../errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DvDialog} from './dv-dialog/dv-dialog';
 import ITranslateService = angular.translate.ITranslateService;
 

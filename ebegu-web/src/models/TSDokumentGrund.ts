@@ -14,9 +14,9 @@
  */
 
 import {TSDokumentGrundPersonType} from './enums/TSDokumentGrundPersonType';
-import {TSDokumentGrundTyp} from '@kibon/shared/model/enums';
+import {TSDokumentGrundTyp} from './enums/TSDokumentGrundTyp';
 import {TSDokumentTyp} from './enums/TSDokumentTyp';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSDokument} from './TSDokument';
 
 export class TSDokumentGrund extends TSAbstractMutableEntity {

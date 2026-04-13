@@ -14,13 +14,13 @@
  */
 
 import {IPromise} from 'angular';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthLifeCycleService} from '../../authentication/service/authLifeCycle.service';
 import {TSDokumenteDTO} from '../../models/dto/TSDokumenteDTO';
 import {TSFinanzielleSituationResultateDTO} from '../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
 import {TSFinanzModel} from '../../models/TSFinanzModel';
 import {TSGesuch} from '../../models/TSGesuch';
+import {LogFactory} from '../../utils/log-factory/LogFactory';
 import {DokumenteRS} from './dokumenteRS.rest';
 import {EinkommensverschlechterungContainerRS} from './einkommensverschlechterungContainerRS.rest';
 import {FinanzielleSituationRS} from './finanzielleSituationRS.rest';

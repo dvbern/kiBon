@@ -13,7 +13,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {
     copy,
     IComponentOptions,
@@ -23,23 +22,24 @@ import {
     ITimeoutService
 } from 'angular';
 import {map} from 'rxjs/operators';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {MandantService} from '@kibon/shared-util-mandant-service';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
+import {CONSTANTS} from '@models/constants';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {TaetigkeitVisitor} from '../../../app/core/constants/TaetigkeitVisitor';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSTaetigkeit} from '../../../models/enums/TSTaetigkeit';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
 import {TSErwerbspensum} from '../../../models/TSErwerbspensum';
 import {TSErwerbspensumContainer} from '../../../models/TSErwerbspensumContainer';
 import {TSGesuchstellerContainer} from '../../../models/TSGesuchstellerContainer';
 import {TSUnbezahlterUrlaub} from '../../../models/TSUnbezahlterUrlaub';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '../../../utils/date/MomentUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {HybridFormBridgeService} from '../../../utils/hybrid-form-bridge/hybrid-form-bridge.service';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {IErwerbspensumStateParams} from '../../gesuch.route';
 import {BerechnungsManager} from '../../service/berechnungsManager';

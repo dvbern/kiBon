@@ -16,7 +16,8 @@
  */
 
 import moment from 'moment';
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from './entity/TSAbstractEntity';
+
 export class TSLastenausgleich extends TSAbstractEntity {
     private _jahr: number;
     private _totalAlleGemeinden: moment.Moment;

@@ -22,7 +22,7 @@ import {
     ValidationErrors,
     Validator
 } from '@angular/forms';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 /*
 Die Eingabe einer Invaldien Webseite soll verboten werden (valide Webseite "www.webseite.ch").
  */

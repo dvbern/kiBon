@@ -15,12 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
-import {FileUtil} from '@kibon/shared-util-fn-file';
-import {MandantService} from '@kibon/shared-util-mandant-service';
-import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
-import {TSDokumentUploadTyp, TSRole} from '@kibon/shared/model/enums';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {MandantService} from '@utils/mandant';
+import {MAX_FILE_SIZE} from '@models/constants';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {copy, IComponentOptions, IController, ILogService} from 'angular';
 import {Subscription} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
@@ -31,11 +28,15 @@ import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager'
 import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
 import {TSDokumentGrundPersonType} from '../../../../models/enums/TSDokumentGrundPersonType';
 import {TSDokumentTyp} from '../../../../models/enums/TSDokumentTyp';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
+import {TSDokumentUploadTyp} from '../../../../models/enums/TSDokumentUploadTyp';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSDokument} from '../../../../models/TSDokument';
 import {TSDokumentGrund} from '../../../../models/TSDokumentGrund';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {TSGesuch} from '../../../../models/TSGesuch';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {FileUtil} from '../../../../utils/file/file';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../errors/service/ErrorService';
 import {DownloadRS} from '../../service/downloadRS.rest';
@@ -76,7 +77,7 @@ export class DVDokumenteListController implements IController {
         '$translate',
         'MandantService',
         'ErrorService',
-        'SharedUtilApplicationPropertyRsService'
+        'ApplicationPropertyRsService'
     ];
 
     public dokumente: TSDokumentGrund[];
@@ -102,7 +103,7 @@ export class DVDokumenteListController implements IController {
         private readonly $translate: ITranslateService,
         private readonly mandantService: MandantService,
         private readonly errorService: ErrorService,
-        private applicationPropertyRS: SharedUtilApplicationPropertyRsService
+        private applicationPropertyRS: ApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {

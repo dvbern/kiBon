@@ -17,7 +17,6 @@ import {IController} from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {EinstellungRS} from '../admin/service/einstellungRS.rest';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AntragStatusHistoryRS} from '../app/core/service/antragStatusHistoryRS.rest';
 import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
 import {
@@ -28,18 +27,20 @@ import {
 import {TSAntragTyp} from '../models/enums/TSAntragTyp';
 import {TSEinstellungKey} from '../admin/einstellungen/TSEinstellungKey';
 import {TSGesuchBetreuungenStatus} from '../models/enums/TSGesuchBetreuungenStatus';
-import {TSRole} from '@kibon/shared/model/enums';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSRole} from '../models/enums/TSRole';
+import {TSWizardStepName} from '../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../models/enums/TSWizardStepStatus';
 import {TSDossier} from '../models/TSDossier';
 import {TSFall} from '../models/TSFall';
 import {TSGesuch} from '../models/TSGesuch';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '../utils/date/MomentUtil';
 import {EbeguUtil} from '../utils/EbeguUtil';
 import {TSRoleUtil} from '../utils/TSRoleUtil';
 import {GesuchModelManager} from './service/gesuchModelManager';
 import {WizardStepManager} from './service/wizardStepManager';
 import ISidenavService = angular.material.ISidenavService;
 import ITranslateService = angular.translate.ITranslateService;
+import {LogFactory} from 'src/utils/log-factory/LogFactory';
 
 const LOG = LogFactory.createLog('GesuchRouteController');
 
@@ -54,8 +55,6 @@ export class GesuchRouteController implements IController {
         '$mdSidenav',
         'EinstellungRS'
     ];
-
-    public readonly TSRole = TSRole;
     public readonly TSRoleUtil = TSRoleUtil;
     public openEwkSidenav: boolean;
     private readonly unsubscribe$ = new Subject<void>();

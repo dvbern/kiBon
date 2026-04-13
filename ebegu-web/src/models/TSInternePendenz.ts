@@ -16,7 +16,7 @@
  */
 
 import moment from 'moment';
-import {TSAbstractEntity} from '@kibon/shared/model/entity';
+import {TSAbstractEntity} from './entity/TSAbstractEntity';
 import {TSGesuch} from './TSGesuch';
 
 export class TSInternePendenz extends TSAbstractEntity {

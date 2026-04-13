@@ -26,27 +26,27 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {AdminUtilKeycloakAdminRsService} from '@kibon/admin-util-keycloak-admin-rs';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {KeycloakAdminRsService} from '@admin/util';
+import {CONSTANTS} from '@models/constants';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
 import moment from 'moment';
 import {of} from 'rxjs';
 import {filter, mergeMap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
 import {TSBenutzerStatus} from '../../../models/enums/TSBenutzerStatus';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBerechtigung} from '../../../models/TSBerechtigung';
 import {TSBerechtigungHistory} from '../../../models/TSBerechtigungHistory';
-import {TSDateRange} from '@kibon/shared/model/entity';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '../../../utils/date/MomentUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {Log, LogFactory} from '../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {Permission} from '../../authorisation/Permission';
 import {PERMISSIONS} from '../../authorisation/Permissions';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 
@@ -69,7 +69,7 @@ export class BenutzerComponent implements OnInit {
     private readonly dialog = inject(MatDialog);
     private readonly errorService = inject(ErrorService);
     private readonly adminUtilKeycloakAdminService = inject(
-        AdminUtilKeycloakAdminRsService
+        KeycloakAdminRsService
     );
 
     @ViewChild(NgForm) private readonly form: NgForm;

@@ -17,10 +17,10 @@
 
 import {ChangeDetectionStrategy, Component, Input, inject} from '@angular/core';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSBrowserLanguage} from '@kibon/shared/model/enums';
+import {TSBrowserLanguage} from '../../../../models/enums/TSBrowserLanguage';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {I18nServiceRSRest} from '../../../i18n/services/i18nServiceRS.rest';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 
 const LOG = LogFactory.createLog('LangageSelectorComponent');
 

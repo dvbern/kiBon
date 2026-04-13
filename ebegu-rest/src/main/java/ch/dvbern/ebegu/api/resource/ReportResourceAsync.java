@@ -49,6 +49,7 @@ import jakarta.ws.rs.core.UriInfo;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.dto.statistik.KinderStatistikParameterDto;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Institution;
@@ -76,7 +77,6 @@ import org.apache.commons.lang3.Validate;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
-import static ch.dvbern.ebegu.enums.DemoFeatureTyp.KAFKA_STATISTIK;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_INSTITUTION;
@@ -533,12 +533,12 @@ public class ReportResourceAsync {
 
 		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
-		if (applicationPropertyService.getActivatedDemoFeatures(
-			principalBean.getMandant()
-		)
-			.contains(
-				KAFKA_STATISTIK
-			)) {
+		if (Boolean.TRUE.equals(
+			applicationPropertyService.findApplicationPropertyAsBoolean(
+				ApplicationPropertyKey.QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER,
+				principalBean.getMandant()
+			)
+		)) {
 			KinderStatistikParameterDto dto = new KinderStatistikParameterDto();
 			dto.setBenutzerId(principalBean.getBenutzer().getId());
 			dto.setAuswertungVon(dateFrom);

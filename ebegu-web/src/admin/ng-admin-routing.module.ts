@@ -16,8 +16,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {AdminFeatureMeldungsfensterComponent} from '@kibon/admin-feature-meldungsfenster';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {Ng2StateDeclaration} from '@uirouter/angular';
 import {UIRouterUpgradeModule} from '@uirouter/angular-hybrid';
 import {Transition} from '@uirouter/angularjs';
@@ -34,19 +33,23 @@ import {GesuchsperiodeViewXComponent} from './einstellungen/gesuchsperiode-view-
 import {TestdatenViewComponent} from './component/testdatenView/testdatenView.component';
 import {UebersichtVersendeteMailsComponent} from './component/uebersichtVersendeteMails/uebersichtVersendeteMails.component';
 import {firstValueFrom} from 'rxjs';
-import {AdminUiMeldungsfensterCreateComponent} from '@kibon/admin-ui-meldungsfenster-create';
-import {AdminUiMeldungsfensterEditComponent} from '@kibon/admin-ui-meldungsfenster-edit';
-import {AdminPatternMeldungsfensterDetailComponent} from '@kibon/admin-pattern-meldungsfenster-detail';
+import {
+    MeldungsfensterComponent,
+    MeldungsfensterCreateComponent,
+    MeldungsfensterDetailComponent,
+    MeldungsfensterEditComponent
+} from './meldungsfenster';
 
 const applicationPropertiesResolver = [
-    'SharedUtilApplicationPropertyRsService',
-    (applicationPropertyRS: SharedUtilApplicationPropertyRsService) =>
+    'ApplicationPropertyRsService',
+    (applicationPropertyRS: ApplicationPropertyRsService) =>
         applicationPropertyRS.getAllApplicationProperties()
 ];
 
 function assertTestfaelleEnabled(transition: Transition): HookResult {
-    const applicationPropertyRS: SharedUtilApplicationPropertyRsService =
-        transition.injector().get('SharedUtilApplicationPropertyRsService');
+    const applicationPropertyRS: ApplicationPropertyRsService = transition
+        .injector()
+        .get('ApplicationPropertyRsService');
     return firstValueFrom(applicationPropertyRS.isTestfaelleEnabled());
 }
 assertTestfaelleEnabled.$inject = ['$transition$'];
@@ -147,7 +150,7 @@ const states: Ng2StateDeclaration[] = [
     {
         name: 'admin.meldungfenster',
         url: '/meldungsfenster',
-        component: AdminFeatureMeldungsfensterComponent,
+        component: MeldungsfensterComponent,
         data: {
             roles: TSRoleUtil.getSuperAdminRoles()
         }
@@ -155,7 +158,7 @@ const states: Ng2StateDeclaration[] = [
     {
         name: 'admin.meldungfenster-create',
         url: '/meldungsfenster/create',
-        component: AdminUiMeldungsfensterCreateComponent,
+        component: MeldungsfensterCreateComponent,
         data: {
             roles: TSRoleUtil.getSuperAdminRoles()
         }
@@ -163,7 +166,7 @@ const states: Ng2StateDeclaration[] = [
     {
         name: 'admin.meldungfenster-edit',
         url: `/meldungsfenster/edit/:id`,
-        component: AdminUiMeldungsfensterEditComponent,
+        component: MeldungsfensterEditComponent,
         data: {
             roles: TSRoleUtil.getSuperAdminRoles()
         }
@@ -171,7 +174,7 @@ const states: Ng2StateDeclaration[] = [
     {
         name: 'admin.meldungfenster-detail',
         url: `/meldungsfenster/:id`,
-        component: AdminPatternMeldungsfensterDetailComponent,
+        component: MeldungsfensterDetailComponent,
         data: {
             roles: TSRoleUtil.getSuperAdminRoles()
         }

@@ -28,10 +28,10 @@ import {
     viewChild
 } from '@angular/core';
 import {FormsModule, NgForm} from '@angular/forms';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import moment from 'moment';
+import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {HybridFormBridgeService} from '../../../../utils/hybrid-form-bridge/hybrid-form-bridge.service';
 import {SharedModule} from '../../shared.module';
 
 @Component({

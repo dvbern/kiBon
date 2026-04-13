@@ -10,9 +10,9 @@ import {
 import {TranslateService} from '@ngx-translate/core';
 import moment from 'moment';
 import {TSLastenausgleichTagesschulenStatusHistory} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschulenStatusHistory';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DvSimpleTableColumnDefinition} from '../../../shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {DvSimpleTableConfig} from '../../../shared/component/dv-simple-table/dv-simple-table-config';
 import {LastenausgleichTSService} from '../services/lastenausgleich-ts.service';

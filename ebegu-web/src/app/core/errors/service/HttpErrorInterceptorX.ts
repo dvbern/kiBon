@@ -26,8 +26,8 @@ import {catchError} from 'rxjs/operators';
 import {TSErrorLevel} from '../../../../models/enums/TSErrorLevel';
 import {TSErrorType} from '../../../../models/enums/TSErrorType';
 import {TSExceptionReport} from '../../../../models/TSExceptionReport';
-import {HTTP_CODES} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {HTTP_CODES} from '@models/constants';
+import {LogFactory} from '@utils/log';
 import {ErrorServiceX} from './ErrorServiceX';
 import {isOIDCTokenInitialisationException} from './HttpErrorInterceptorUtil';
 

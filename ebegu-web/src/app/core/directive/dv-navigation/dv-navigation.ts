@@ -22,7 +22,6 @@ import {
     IQService,
     ITimeoutService
 } from 'angular';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {FinanzielleSituationRS} from '../../../../gesuch/service/finanzielleSituationRS.rest';
 import {FinanzielleSituationSubStepManager} from '../../../../gesuch/service/finanzielleSituationSubStepManager';
 import {FinanzielleSituationSubStepManagerAppenzell} from '../../../../gesuch/service/finanzielleSituationSubStepManagerAppenzell';
@@ -34,10 +33,12 @@ import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager'
 import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
 import {TSFinanzielleSituationSubStepName} from '../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
+import {TSFinanzielleSituationTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
+import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {ErrorService} from '../../errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import ITranslateService = angular.translate.ITranslateService;
 
 /**

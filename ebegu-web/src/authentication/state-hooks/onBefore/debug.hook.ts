@@ -21,7 +21,7 @@ import {
     Transition,
     TransitionService
 } from '@uirouter/core';
-import {LogFactory, LogLevel} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory, LogLevel} from '@utils/log';
 import {OnBeforePriorities} from './onBeforePriorities';
 
 const LOG = LogFactory.createLog('debugHookRunBlock');

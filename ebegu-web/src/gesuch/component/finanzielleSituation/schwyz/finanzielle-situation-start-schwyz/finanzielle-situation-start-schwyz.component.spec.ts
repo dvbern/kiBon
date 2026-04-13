@@ -1,9 +1,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {SharedModule} from '../../../../../app/shared/shared.module';
 import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
+import {TSGesuchsperiode} from '../../../../../models/entity/TSGesuchsperiode';
+import {TSWizardStep} from '../../../../../models/entity/TSWizardStep';
+import {TSFinanzielleSituationTyp} from '../../../../../models/enums/TSFinanzielleSituationTyp';
+import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
 import {FinanzielleSituationStartSchwyzComponent} from './finanzielle-situation-start-schwyz.component';
-import {TSGesuchsperiode, TSWizardStep} from '@kibon/shared/model/entity';
-import {TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {By} from '@angular/platform-browser';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
@@ -18,7 +20,6 @@ import {StateService} from '@uirouter/angular';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {TSLand} from '../../../../../models/types/TSLand';
 import {Observable} from 'rxjs';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 
 const gesuchsperiodeSpy = jasmine.createSpyObj<TSGesuchsperiode>(

@@ -5,7 +5,7 @@ import {
     AbstractControl,
     ValidationErrors
 } from '@angular/forms';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 
 @Directive({
     selector: '[email][ngModel],[email][formControl],[email][formControlName]', // overrides angulars email directives

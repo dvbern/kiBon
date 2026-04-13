@@ -1,0 +1,320 @@
+<div class="tabellarische-maske">
+    <lib-tabellarische-maske-title>{{
+        'ABWEICHUNGEN_MELDEN_SZ_25' | translate
+    }}</lib-tabellarische-maske-title>
+    <span
+        [innerHTML]="
+            'TABELLARISCHE_MASKE_MITTAGTISCH_ERKLAERUNG'
+                | translate
+                    : {
+                          kindName: dialogData.templateVariables.kindName,
+                          institutionName:
+                              dialogData.templateVariables.institutionName
+                      }
+        "
+    >
+    </span>
+    <form (ngSubmit)="uebernehmen()">
+        <lib-tabellarische-maske-table>
+            <tr tabellarische-maske-table-header>
+                <th>{{ 'MONTH' | translate }}</th>
+                <th>{{ 'PENSUM_MAHLZEITEN' | translate }}</th>
+                <th>{{ 'KOSTEN_PRO_MAHLZEIT' | translate }}</th>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>8.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().AUGUST.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-august"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().AUGUST.tarifProHauptmahlzeit"
+                        name="monatliche-tarif-hauptmahlzeit-august"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>9.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().SEPTEMBER.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-september"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().SEPTEMBER.tarifProHauptmahlzeit
+                        "
+                        name="monatliche-tarif-hauptmahlzeit-september"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>10.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().OCTOBER.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-oktober"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().OCTOBER.tarifProHauptmahlzeit"
+                        name="monatliche-tarif-hauptmahlzeit-oktober"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>11.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().NOVEMBER.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-november"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().NOVEMBER.tarifProHauptmahlzeit
+                        "
+                        name="monatliche-tarif-hauptmahlzeit-november"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>12.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().DECEMBER.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-december"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().DECEMBER.tarifProHauptmahlzeit
+                        "
+                        name="monatliche-tarif-hauptmahlzeit-december"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>01.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().JANUARY.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-january"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().JANUARY.tarifProHauptmahlzeit"
+                        name="monatliche-tarif-hauptmahlzeit-january"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>02.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().FEBRUARY.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-february"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().FEBRUARY.tarifProHauptmahlzeit
+                        "
+                        name="monatliche-tarif-hauptmahlzeit-february"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>03.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().MARCH.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-march"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().MARCH.tarifProHauptmahlzeit"
+                        name="monatliche-tarif-hauptmahlzeit-march"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>04.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().APRIL.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-april"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().APRIL.tarifProHauptmahlzeit"
+                        name="monatliche-tarif-hauptmahlzeit-april"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>05.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().MAY.monatlicheHauptmahlzeiten"
+                        name="monatliche-mahlzeiten-may"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().MAY.tarifProHauptmahlzeit"
+                        name="monatliche-tarif-hauptmahlzeit-may"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>06.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().JUNE.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-june"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        [(ngModel)]="abschnitte().JUNE.tarifProHauptmahlzeit"
+                        name="monatliche-tarif-hauptmahlzeit-june"
+                        class="form-control"
+                        type="number"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>07.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().JULY.monatlicheHauptmahlzeiten
+                        "
+                        name="monatliche-mahlzeiten-july"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().JULY.tarifProHauptmahlzeit"
+                        name="monatliche-tarif-hauptmahlzeit-july"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+        </lib-tabellarische-maske-table>
+
+        <div class="tabellarische-maske-actions">
+            <button class="dv-btn">
+                {{ 'UEBERNEHMEN' | translate }}
+            </button>
+            <button
+                class="dv-btn cancel-button"
+                type="button"
+                (click)="cancel()"
+            >
+                {{ 'CANCEL' | translate }}
+            </button>
+        </div>
+    </form>
+</div>

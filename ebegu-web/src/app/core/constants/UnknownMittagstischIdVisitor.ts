@@ -15,10 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    KiBonMandant,
-    AbstractMandantDefaultVisitor
-} from '@kibon/shared-model-mandant';
+import {AbstractMandantDefaultVisitor, KiBonMandant} from '@models/mandant';
 
 export class UnknownMittagstischIdVisitor extends AbstractMandantDefaultVisitor<string> {
     public process(mandant: KiBonMandant): string {

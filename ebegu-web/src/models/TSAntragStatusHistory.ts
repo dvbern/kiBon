@@ -15,7 +15,7 @@
 
 import moment from 'moment';
 import {TSAntragStatus} from './enums/TSAntragStatus';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSBenutzer} from './TSBenutzer';
 
 export class TSAntragStatusHistory extends TSAbstractMutableEntity {

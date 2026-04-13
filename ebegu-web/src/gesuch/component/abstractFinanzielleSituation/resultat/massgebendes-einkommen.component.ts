@@ -25,7 +25,7 @@ import {
     inject
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {TSFinanzielleSituationResultateDTO} from '../../../../models/dto/TSFinanzielleSituationResultateDTO';
 
 const LOG = LogFactory.createLog('ResultatComponent');

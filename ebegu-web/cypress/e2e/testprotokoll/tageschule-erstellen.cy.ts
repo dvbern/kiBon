@@ -24,7 +24,7 @@ import {
     TagesschuleModulImportDialogPO
 } from '@dv-e2e/page-objects';
 import {getUser, TestInstitution} from '@dv-e2e/types';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MANDANTS} from '@models/mandant';
 
 describe('Kibon - generate Tagesschule Institutionen', () => {
     const superAdmin = getUser('[1-Superadmin] Super User');

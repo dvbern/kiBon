@@ -1,9 +1,0 @@
-{
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "outDir": "../../../../dist/out-tsc",
-        "types": ["node", "angular-mocks", "angular", "jquery", "jasmine"]
-    },
-    "files": ["../../../../src/polyfills.ts", "../../../../src/test.ts"],
-    "include": ["src/**/*.test.ts", "src/**/*.spec.ts", "src/**/*.d.ts"]
-}

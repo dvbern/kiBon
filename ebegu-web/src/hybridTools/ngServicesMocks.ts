@@ -13,16 +13,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
+import {HybridFormBridgeService} from '@utils/hybrid-form-bridge';
 import * as angular from 'angular';
 import moment from 'moment';
 import {CookieService} from 'ngx-cookie-service';
 import {Observable, of} from 'rxjs';
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
-import {MandantService} from '@kibon/shared-util-mandant-service';
-import {TSInstitution} from '@kibon/shared/model/entity';
-import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
+import {MandantService} from '@utils/mandant';
 import {EinstellungRS} from '../admin/service/einstellungRS.rest';
 import {ErrorServiceX} from '../app/core/errors/service/ErrorServiceX';
 import {BenutzerRSX} from '../app/core/service/benutzerRSX.rest';
@@ -30,7 +27,6 @@ import {DemoFeatureRS} from '../app/core/service/demoFeatureRS.rest';
 import {EwkRS} from '../app/core/service/ewkRS.rest';
 import {InstitutionRS} from '../app/core/service/institutionRS.rest';
 import {VersionService} from '../app/core/service/version/version.service';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 import {I18nServiceRSRest} from '../app/i18n/services/i18nServiceRS.rest';
 import {GemeindeService} from '../app/shared/services/gemeinde.service';
 import {AuthLifeCycleService} from '../authentication/service/authLifeCycle.service';
@@ -41,17 +37,21 @@ import {KinderabzugExchangeService} from '../gesuch/component/kindView/service/k
 import {FamiliensituationRS} from '../gesuch/service/familiensituationRS.service';
 import {GesuchGenerator} from '../gesuch/service/gesuchGenerator';
 import {SearchRS} from '../gesuch/service/searchRS.rest';
+import {TSPublicAppConfig} from '../models/einstellung/TSPublicAppConfig';
+import {TSInstitution} from '../models/entity/TSInstitution';
 import {TSAuthEvent} from '../models/enums/TSAuthEvent';
-import {TSBrowserLanguage} from '@kibon/shared/model/enums';
+import {TSBrowserLanguage} from '../models/enums/TSBrowserLanguage';
 import {TSEingangsart} from '../models/enums/TSEingangsart';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
 import {TSBenutzer} from '../models/TSBenutzer';
 import {TSDossier} from '../models/TSDossier';
 import {TSEinstellung} from '../admin/einstellungen/TSEinstellung';
 import {TSExceptionReport} from '../models/TSExceptionReport';
 import {TSFall} from '../models/TSFall';
 import {TSGesuch} from '../models/TSGesuch';
-import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '../utils/dv-show-warning-angaben-vervollstaendingen/shared-util-dv-show-warning-angaben-vervollstaendingen.service';
 import {EbeguRestUtil} from '../utils/EbeguRestUtil';
+import {WindowRef} from '../utils/window-ref/windowRef.service';
 
 ngServicesMock.$inject = ['$provide'];
 
@@ -216,12 +216,11 @@ export function ngServicesMock($provide: angular.auto.IProvideService): void {
             'getTextForFreigebenNotAllowed'
         ])
     );
-    $provide.factory('SharedUtilApplicationPropertyRsService', () => {
-        const spy =
-            jasmine.createSpyObj<SharedUtilApplicationPropertyRsService>(
-                'SharedUtilApplicationPropertyRsService',
-                ['getPublicPropertiesCached', 'isDevMode']
-            );
+    $provide.factory('ApplicationPropertyRsService', () => {
+        const spy = jasmine.createSpyObj<ApplicationPropertyRsService>(
+            'ApplicationPropertyRsService',
+            ['getPublicPropertiesCached', 'isDevMode']
+        );
         spy.getPublicPropertiesCached.and.returnValue(
             of({
                 steuerschnittstelleAktivAb: moment('2024-01-01'),
@@ -231,8 +230,8 @@ export function ngServicesMock($provide: angular.auto.IProvideService): void {
         spy.isDevMode.and.returnValue(of(true));
         return spy;
     });
-    $provide.factory('BetreuungUtilAnmeldungRestService', () =>
-        jasmine.createSpyObj('BetreuungUtilAnmeldungRestService', [
+    $provide.factory('AnmeldungRestService', () =>
+        jasmine.createSpyObj('AnmeldungRestService', [
             'anmeldungSchulamtAblehnen'
         ])
     );

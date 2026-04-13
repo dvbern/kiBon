@@ -17,18 +17,27 @@
 
 import angular from 'angular';
 import moment from 'moment';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
-import {TSAdressetyp} from '@kibon/shared/model/enums';
+import {TSAdresse} from '../models/entity/TSAdresse';
+import {TSDateRange} from '../models/entity/TSDateRange';
+import {TSFachstelle} from '../models/entity/TSFachstelle';
+import {TSGesuchsperiode} from '../models/entity/TSGesuchsperiode';
+import {TSInstitution} from '../models/entity/TSInstitution';
+import {TSInstitutionStammdaten} from '../models/entity/TSInstitutionStammdaten';
+import {TSInstitutionStammdatenBetreuungsgutscheine} from '../models/entity/TSInstitutionStammdatenBetreuungsgutscheine';
+import {TSMandant} from '../models/entity/TSMandant';
+import {TSTraegerschaft} from '../models/entity/TSTraegerschaft';
+import {TSBetreuungsstatus} from '../models/enums/betreuung/TSBetreuungsstatus';
+import {TSAdressetyp} from '../models/enums/TSAdressetyp';
 import {TSAntragTyp} from '../models/enums/TSAntragTyp';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
-import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
-
+import {TSBetreuungsangebotTyp} from '../models/enums/TSBetreuungsangebotTyp';
+import {TSFachstelleName} from '../models/enums/TSFachstelleName';
+import {TSFinanzielleSituationTyp} from '../models/enums/TSFinanzielleSituationTyp';
+import {TSGeschlecht} from '../models/enums/TSGeschlecht';
+import {TSGesuchsperiodeStatus} from '../models/enums/TSGesuchsperiodeStatus';
 import {TSPensumUnits} from '../models/enums/TSPensumUnits';
 import {TSVerfuegungZeitabschnittZahlungsstatus} from '../models/enums/TSVerfuegungZeitabschnittZahlungsstatus';
 import {TSAbwesenheit} from '../models/TSAbwesenheit';
 import {TSAbwesenheitContainer} from '../models/TSAbwesenheitContainer';
-import {TSAdresse} from '@kibon/shared/model/entity';
 import {TSAntragDTO} from '../models/TSAntragDTO';
 import {TSBetreuung} from '../models/TSBetreuung';
 import {TSBetreuungspensum} from '../models/TSBetreuungspensum';
@@ -36,27 +45,15 @@ import {TSBetreuungspensumContainer} from '../models/TSBetreuungspensumContainer
 import {TSDossier} from '../models/TSDossier';
 import {TSErweiterteBetreuungContainer} from '../models/TSErweiterteBetreuungContainer';
 import {TSErwerbspensum} from '../models/TSErwerbspensum';
-import {
-    TSDateRange,
-    TSFachstelle,
-    TSFachstelleName,
-    TSGeschlecht
-} from '@kibon/shared/model/entity';
 import {TSFall} from '../models/TSFall';
 import {TSFamiliensituation} from '../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../models/TSFamiliensituationContainer';
 import {TSGesuch} from '../models/TSGesuch';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSGesuchsteller} from '../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../models/TSGesuchstellerContainer';
-import {TSInstitution} from '@kibon/shared/model/entity';
-import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
-import {TSInstitutionStammdatenBetreuungsgutscheine} from '@kibon/shared/model/entity';
-import {TSMandant} from '@kibon/shared/model/entity';
-import {TSTraegerschaft} from '@kibon/shared/model/entity';
 import {TSVerfuegung} from '../models/TSVerfuegung';
 import {TSVerfuegungZeitabschnitt} from '../models/TSVerfuegungZeitabschnitt';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 import {EbeguRestUtil} from './EbeguRestUtil';
 import {TestDataUtil} from './TestDataUtil.spec';
 

@@ -15,7 +15,7 @@
 
 import moment from 'moment';
 import {TSMahnungTyp} from './enums/TSMahnungTyp';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSGesuch} from './TSGesuch';
 
 export class TSMahnung extends TSAbstractMutableEntity {

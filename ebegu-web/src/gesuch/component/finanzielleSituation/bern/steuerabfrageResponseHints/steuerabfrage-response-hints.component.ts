@@ -29,21 +29,21 @@ import {
     inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {TSRole} from '@kibon/shared/model/enums';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {TranslateService} from '@ngx-translate/core';
 import moment from 'moment';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSAntragStatus} from '../../../../../models/enums/TSAntragStatus';
+import {TSRole} from '../../../../../models/enums/TSRole';
 import {
     isSteuerdatenAnfrageStatusErfolgreich,
     TSSteuerdatenAnfrageStatus
 } from '../../../../../models/enums/TSSteuerdatenAnfrageStatus';
 import {TSBenutzer} from '../../../../../models/TSBenutzer';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {FinanzielleSituationRS} from '../../../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';

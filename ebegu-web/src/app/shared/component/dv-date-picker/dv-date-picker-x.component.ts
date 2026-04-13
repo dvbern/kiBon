@@ -28,9 +28,9 @@ import {
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {DateAdapter} from '@angular/material/core';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import moment from 'moment';
 import {distinctUntilChanged} from 'rxjs/operators';
+import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {I18nServiceRSRest} from '../../../i18n/services/i18nServiceRS.rest';
 

@@ -15,10 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    AbstractMandantDefaultVisitor,
-    KiBonMandant
-} from '@kibon/shared-model-mandant';
+import {AbstractMandantDefaultVisitor, KiBonMandant} from '@models/mandant';
 
 export class UnknownTagesschuleIdVisitor extends AbstractMandantDefaultVisitor<string> {
     protected visitDefault(): string {

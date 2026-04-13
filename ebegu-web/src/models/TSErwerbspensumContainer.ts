@@ -13,8 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {EbeguUtil} from '../utils/EbeguUtil';
-import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSAbstractMutableEntity} from './entity/TSAbstractMutableEntity';
 import {TSErwerbspensum} from './TSErwerbspensum';
 
 export class TSErwerbspensumContainer extends TSAbstractMutableEntity {
@@ -38,6 +37,8 @@ export class TSErwerbspensumContainer extends TSAbstractMutableEntity {
     }
 
     public isGSContainerEmpty(): boolean {
-        return EbeguUtil.isNullOrUndefined(this.erwerbspensumGS);
+        return (
+            this.erwerbspensumGS === null || this.erwerbspensumGS === undefined
+        );
     }
 }

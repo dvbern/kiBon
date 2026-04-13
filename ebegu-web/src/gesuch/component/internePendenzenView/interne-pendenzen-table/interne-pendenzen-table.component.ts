@@ -13,7 +13,7 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatSort, Sort, SortDirection} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {isMoment} from 'moment';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {TSInternePendenz} from '../../../../models/TSInternePendenz';
 import {firstValueFrom} from 'rxjs';
 

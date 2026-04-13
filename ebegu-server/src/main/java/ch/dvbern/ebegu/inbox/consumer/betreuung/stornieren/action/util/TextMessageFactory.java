@@ -17,6 +17,8 @@
 
 package ch.dvbern.ebegu.inbox.consumer.betreuung.stornieren.action.util;
 
+import java.util.Locale;
+
 /**
  * Schnittstelle für Text-Nachrichten-Provider.
  */
@@ -25,5 +27,5 @@ public interface TextMessageFactory {
 	/**
 	 * @return Eine Textnachricht.
 	 */
-	String getMessage();
+	String getMessage(Locale locale);
 }

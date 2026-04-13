@@ -15,8 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSAbstractEntity} from '../entity/TSAbstractEntity';
+import {TSInstitution} from '../entity/TSInstitution';
 import {TSLastenausgleichTagesschuleAngabenInstitutionStatus} from '../enums/TSLastenausgleichTagesschuleAngabenInstitutionStatus';
-import {TSAbstractEntity, TSInstitution} from '@kibon/shared/model/entity';
 import {TSLastenausgleichTagesschuleAngabenInstitution} from './TSLastenausgleichTagesschuleAngabenInstitution';
 
 export class TSLastenausgleichTagesschuleAngabenInstitutionContainer extends TSAbstractEntity {

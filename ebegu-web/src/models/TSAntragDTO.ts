@@ -15,9 +15,9 @@
 
 import moment from 'moment';
 import {EbeguUtil} from '../utils/EbeguUtil';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSAntragStatus} from './enums/TSAntragStatus';
 import {TSAntragTyp} from './enums/TSAntragTyp';
+import {TSBetreuungsangebotTyp} from './enums/TSBetreuungsangebotTyp';
 import {TSEingangsart} from './enums/TSEingangsart';
 import {TSGesuchBetreuungenStatus} from './enums/TSGesuchBetreuungenStatus';
 import {TSAbstractAntragDTO} from './TSAbstractAntragDTO';

@@ -15,27 +15,23 @@
 
 import {IHttpBackendService} from 'angular';
 import moment from 'moment';
-import {
-    TSGemeindeStatus,
-    TSGesuchsperiodeStatus,
-    TSRole,
-    TSWizardStepName,
-    TSWizardStepStatus
-} from '@kibon/shared/model/enums';
+import {TSAbstractDateRangedEntity} from '../models/entity/TSAbstractDateRangedEntity';
+import {TSAbstractEntity} from '../models/entity/TSAbstractEntity';
+import {TSAbstractMutableEntity} from '../models/entity/TSAbstractMutableEntity';
+import {TSAdresse} from '../models/entity/TSAdresse';
+import {TSDateRange} from '../models/entity/TSDateRange';
+import {TSGemeinde} from '../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../models/entity/TSGesuchsperiode';
+import {TSMandant} from '../models/entity/TSMandant';
+import {TSModulTagesschule} from '../models/entity/TSModulTagesschule';
+import {TSModulTagesschuleGroup} from '../models/entity/TSModulTagesschuleGroup';
+import {TSWizardStep} from '../models/entity/TSWizardStep';
+import {TSGemeindeStatus} from '../models/enums/TSGemeindeStatus';
+import {TSGesuchsperiodeStatus} from '../models/enums/TSGesuchsperiodeStatus';
+import {TSRole} from '../models/enums/TSRole';
 import {TSTaetigkeit} from '../models/enums/TSTaetigkeit';
-import {
-    TSAbstractDateRangedEntity,
-    TSAbstractEntity,
-    TSAbstractMutableEntity,
-    TSAdresse,
-    TSDateRange,
-    TSGemeinde,
-    TSGesuchsperiode,
-    TSMandant,
-    TSModulTagesschule,
-    TSModulTagesschuleGroup,
-    TSWizardStep
-} from '@kibon/shared/model/entity';
+import {TSWizardStepName} from '../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../models/enums/TSWizardStepStatus';
 import {TSAdresseContainer} from '../models/TSAdresseContainer';
 import {TSBenutzer} from '../models/TSBenutzer';
 import {TSBerechtigung} from '../models/TSBerechtigung';
@@ -43,12 +39,11 @@ import {TSDossier} from '../models/TSDossier';
 import {TSErwerbspensum} from '../models/TSErwerbspensum';
 import {TSErwerbspensumContainer} from '../models/TSErwerbspensumContainer';
 import {TSFall} from '../models/TSFall';
-
 import {TSGemeindeKonfiguration} from '../models/TSGemeindeKonfiguration';
 import {TSGesuchsteller} from '../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../models/TSGesuchstellerContainer';
 import {TSVerfuegung} from '../models/TSVerfuegung';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 
 /* eslint-disable no-magic-numbers */
 export class TestDataUtil {

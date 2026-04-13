@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSBetreuungsangebotTyp} from '../../../../../models/enums/TSBetreuungsangebotTyp';
 import {TSErweiterteBetreuung} from '../../../../../models/TSErweiterteBetreuung';
 import {
     ErweiterteBeduerfnisseBestaetigenEinstellungen,

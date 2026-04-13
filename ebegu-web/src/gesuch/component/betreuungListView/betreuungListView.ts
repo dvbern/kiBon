@@ -13,26 +13,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {element, IComponentOptions} from 'angular';
 import {IDVFocusableController} from '../../../app/core/component/IDVFocusableController';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
+
 import {
     isStatusVerfuegenVerfuegt,
     TSAntragStatus
 } from '../../../models/enums/TSAntragStatus';
-import {TSRole} from '@kibon/shared/model/enums';
-import {
-    TSWizardStepName,
-    TSWizardStepStatus,
-    TSBetreuungsstatus
-} from '@kibon/shared/model/enums';
+import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSRole} from '../../../models/enums/TSRole';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSKindContainer} from '../../../models/TSKindContainer';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
@@ -74,7 +73,7 @@ export class BetreuungListViewController
         '$scope',
         '$log',
         '$timeout',
-        'SharedUtilApplicationPropertyRsService'
+        'ApplicationPropertyRsService'
     ];
 
     public readonly TSRoleUtil = TSRoleUtil;
@@ -94,7 +93,7 @@ export class BetreuungListViewController
         $scope: IScope,
         private readonly $log: ILogService,
         $timeout: ITimeoutService,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
+        private readonly applicationPropertyRS: ApplicationPropertyRsService
     ) {
         super(
             gesuchModelManager,

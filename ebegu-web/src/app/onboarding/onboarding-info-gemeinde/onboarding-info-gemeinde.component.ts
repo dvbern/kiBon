@@ -23,15 +23,16 @@ import {
     inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSBfsGemeinde} from '../../../models/TSBfsGemeinde';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+
 @Component({
     selector: 'dv-onboarding-info-gem',
     templateUrl: './onboarding-info-gemeinde.component.html',
@@ -50,7 +51,7 @@ export class OnboardingInfoGemeindeComponent implements OnInit {
     private readonly gemeindeRS = inject(GemeindeRS);
     private readonly mandantService = inject(MandantService);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly cd = inject(ChangeDetectorRef);
 

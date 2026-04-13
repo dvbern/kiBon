@@ -15,28 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
+import {MAX_FILE_SIZE} from '@models/constants';
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, IScope} from 'angular';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {
-    TSDokumentUploadTyp,
-    TSRole,
-    TSSprache
-} from '@kibon/shared/model/enums';
+import {TSDokumentUploadTyp} from '../../../models/enums/TSDokumentUploadTyp';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSSozialdienstFallStatus} from '../../../models/enums/TSSozialdienstFallStatus';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSSprache} from '../../../models/enums/TSSprache';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSSozialdienstFall} from '../../../models/sozialdienst/TSSozialdienstFall';
 import {TSSozialdienstFallDokument} from '../../../models/sozialdienst/TSSozialdienstFallDokument';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
 import {TSFall} from '../../../models/TSFall';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
 import {OkHtmlDialogController} from '../../dialog/OkHtmlDialogController';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
 import {INewFallStateParams} from '../../gesuch.route';

@@ -18,13 +18,14 @@
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, element} from 'angular';
 import {combineLatest} from 'rxjs';
+import {LogFactory} from '@utils/log';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {IDVFocusableController} from '../../../app/core/component/IDVFocusableController';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {TSKindDublette} from '../../../models/TSKindDublette';
 import {EbeguUtil} from '../../../utils/EbeguUtil';

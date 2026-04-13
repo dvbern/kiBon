@@ -18,7 +18,8 @@
 import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
+import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 

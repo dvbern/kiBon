@@ -29,10 +29,10 @@ import {StateService, Transition} from '@uirouter/core';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSSozialdienstStammdaten} from '../../../models/sozialdienst/TSSozialdienstStammdaten';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
 

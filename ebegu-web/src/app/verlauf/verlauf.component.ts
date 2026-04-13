@@ -31,7 +31,7 @@ import {TSDossier} from '../../models/TSDossier';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {AntragStatusHistoryRS} from '../core/service/antragStatusHistoryRS.rest';
 import {DvSimpleTableColumnDefinition} from '../shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {DvSimpleTableConfig} from '../shared/component/dv-simple-table/dv-simple-table-config';

@@ -27,7 +27,7 @@ import {
     VerfuegungPO
 } from '@dv-e2e/page-objects';
 import {getUser, User} from '@dv-e2e/types';
-import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MANDANTS} from '@models/mandant';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 
 describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {

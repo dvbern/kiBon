@@ -41,21 +41,19 @@ import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Betreuungsmitteilung;
 import ch.dvbern.ebegu.entities.BetreuungsmitteilungPensum;
-import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Mitteilung;
-import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
 import ch.dvbern.ebegu.enums.UserRoleName;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
-import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.inbox.services.BetreuungEventHelper;
 import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.BenutzerService;
-import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.util.BetreuungUtil;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.Gueltigkeit;
 import ch.dvbern.ebegu.util.MathUtil;
+import ch.dvbern.ebegu.util.MitteilungUtil;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.AnwesenheitstageMessageFactory;
 import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.BetreuungsmitteilungPensumMessageFactory;
@@ -88,9 +86,6 @@ class MitteilungSharedServiceBean {
 	private Authorizer authorizer;
 
 	@Inject
-	private GemeindeService gemeindeService;
-
-	@Inject
 	private BetreuungEinstellungenService betreuungEinstellungenService;
 
 	@Inject
@@ -99,163 +94,163 @@ class MitteilungSharedServiceBean {
 	@Inject
 	private ApplicationPropertyService applicationPropertyService;
 
+	@Inject
+	private MitteilungEmpfaengerResolver mitteilungEmpfaengerResolver;
+
+	@Inject
+	private BetreuungEventHelper betreuungEventHelper;
+
 	void setSenderAndEmpfaengerAndCheckAuthorization(
 		@Nonnull Mitteilung mitteilung
 	) {
 		Optional<Benutzer> currentBenutzer = benutzerService
 			.getCurrentBenutzer();
+
 		//wenn man direkt aus Kafka Event liest sind man nicht eingeloggt, aber man hat der Rolle SUPER_ADMIN
-		if (currentBenutzer.isEmpty()
-			&& !principalBean.isCallerInRole(UserRoleName.SUPER_ADMIN)) {
+		if (currentBenutzer.isEmpty()) {
+			handleSystemUser(mitteilung);
+			return;
+		}
+
+		switch (currentBenutzer.get().getRole()) {
+		case GESUCHSTELLER -> {
+			setEmpfaengerGemeindeEmpfaengerTypJugendamt(mitteilung);
+			mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.GESUCHSTELLER);
+		}
+		case ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION, ADMIN_TRAEGERSCHAFT,
+			SACHBEARBEITER_TRAEGERSCHAFT -> {
+			setEmpfaengerGemeindeEmpfaengerTypJugendamt(mitteilung);
+			mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.INSTITUTION);
+		}
+		case ADMIN_BG, ADMIN_GEMEINDE -> handleGemeindeAdministrator(
+			mitteilung
+		);
+		case SACHBEARBEITER_TS, SACHBEARBEITER_BG, SACHBEARBEITER_GEMEINDE,
+			ADMIN_TS -> handleGemeinde(mitteilung);
+		case ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST -> {
+			setEmpfaengerGemeindeEmpfaengerTypJugendamt(mitteilung);
+			mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.SOZIALDIENST);
+		}
+		case SACHBEARBEITER_MANDANT, ADMIN_MANDANT -> {
+			if (MitteilungUtil.isSchliessungsmitteilung(mitteilung)) {
+				mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
+				setEmpfaengerGemeindeEmpfaengerTypJugendamt(mitteilung);
+			}
+		}
+		case SUPER_ADMIN -> handleSuperAdminMultipleRole(mitteilung);
+		}
+
+		authorizer.checkWriteAuthorizationMitteilung(mitteilung);
+		setSender(mitteilung, currentBenutzer.get());
+	}
+
+	private void handleSystemUser(@Nonnull Mitteilung mitteilung) {
+		if (!principalBean.isCallerInRole(UserRoleName.SUPER_ADMIN)) {
 			throw new IllegalStateException("Benutzer ist nicht eingeloggt!");
 		}
-		if (currentBenutzer.isEmpty()
-			&& principalBean.isCallerInRole(UserRoleName.SUPER_ADMIN)) {
-			mitteilung.setEmpfaenger(
-				getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
+		mitteilung.setEmpfaenger(
+			mitteilungEmpfaengerResolver
+				.getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
+		);
+	}
+
+	/**
+	 * Superadmin kann als verschiedene Rollen Mitteilungen schicken - dieser Methode simuliert verschiedene UseCases
+	 */
+	private void handleSuperAdminMultipleRole(@Nonnull Mitteilung mitteilung) {
+		if (mitteilung instanceof Betreuungsmitteilung) {
+			setEmpfaengerGemeindeEmpfaengerTypJugendamt(mitteilung);
+			mitteilung.setSenderTyp(
+				MitteilungTeilnehmerTyp.INSTITUTION
 			);
-		} else if (currentBenutzer.isPresent()) {
-			switch (currentBenutzer.get().getRole()) {
-			case GESUCHSTELLER: {
-				mitteilung.setEmpfaenger(
-					getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-				);
-				mitteilung.setEmpfaengerTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.GESUCHSTELLER);
-				break;
-			}
-			case ADMIN_INSTITUTION:
-			case SACHBEARBEITER_INSTITUTION:
-			case ADMIN_TRAEGERSCHAFT:
-			case SACHBEARBEITER_TRAEGERSCHAFT: {
-				mitteilung.setEmpfaenger(
-					getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-				);
-				mitteilung.setEmpfaengerTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.INSTITUTION);
-				break;
-			}
-			case ADMIN_BG:
-			case ADMIN_GEMEINDE:
-				if (mitteilung instanceof Betreuungsmitteilung) {
-					mitteilung.setEmpfaenger(
-						getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-					);
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.JUGENDAMT
-					);
-					mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-					break;
-				}
-			case SACHBEARBEITER_TS:
-			case SACHBEARBEITER_BG:
-			case SACHBEARBEITER_GEMEINDE:
-			case ADMIN_TS: {
-				if (mitteilung.getInstitution() != null) {
-					//Bei Institution Mitteilungen sollen schon der Institution ID Bestimmt sein
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.INSTITUTION
-					);
-				} else if (mitteilung.getFall().getSozialdienstFall() != null) {
-					// Sozialdienst hat kein Empfanger
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.SOZIALDIENST
-					);
-				} else {
-					mitteilung.setEmpfaenger(
-						mitteilung.getFall().getBesitzer()
-					);
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.GESUCHSTELLER
-					);
-				}
-				mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				break;
-			}
-			case ADMIN_SOZIALDIENST:
-			case SACHBEARBEITER_SOZIALDIENST: {
-				mitteilung.setEmpfaenger(
-					getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-				);
-				mitteilung.setEmpfaengerTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.SOZIALDIENST);
-				break;
-			}
-			case SUPER_ADMIN: {
-				// Superadmin kann als verschiedene Rollen Mitteilungen schicken
-				if (mitteilung instanceof Betreuungsmitteilung) {
-					mitteilung.setEmpfaenger(
-						getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-					);
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.JUGENDAMT
-					);
-					mitteilung.setSenderTyp(
-						MitteilungTeilnehmerTyp.INSTITUTION
-					);
-				} else if (mitteilung.getBetreuung() != null) {
-					//Die Betreuung ist gesetzt bei Mitteilungen an die Gemeinde, so ruckwirkend wird auch sein
-					//es gibt keine Benutzer als empfanger
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.INSTITUTION
-					);
-				} else if (mitteilung.getInstitution() != null) {
-					//Bei Institution Mitteilungen sollen schon der Institution ID Bestimmt sein
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.INSTITUTION
-					);
-					mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				} else if (mitteilung.getFall().getSozialdienstFall() != null) {
-					// Sozialdienst hat kein Empfanger
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.SOZIALDIENST
-					);
-					mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				} else {
-					mitteilung.setEmpfaenger(
-						mitteilung.getFall().getBesitzer()
-					);
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.GESUCHSTELLER
-					);
-					mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				}
-			}
-			}
-			authorizer.checkWriteAuthorizationMitteilung(mitteilung);
-			// Der Sender darf erst nach dem CHECK gesetzt werden! Sonst kann eine Mitteilung gekaptert werden
-			mitteilung.setSender(currentBenutzer.get());
+		} else if (mitteilung.getBetreuung() != null) {
+			//Die Betreuung ist gesetzt bei Mitteilungen an die Gemeinde, so ruckwirkend wird auch sein
+			//es gibt keine Benutzer als empfanger
+			mitteilung.setEmpfaengerTyp(
+				MitteilungTeilnehmerTyp.INSTITUTION
+			);
+		} else if (mitteilung.getInstitution() != null) {
+			//Bei Institution Mitteilungen sollen schon der Institution ID Bestimmt sein
+			mitteilung.setEmpfaengerTyp(
+				MitteilungTeilnehmerTyp.INSTITUTION
+			);
+			mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
+		} else if (mitteilung.getFall().getSozialdienstFall() != null) {
+			// Sozialdienst hat kein Empfanger
+			mitteilung.setEmpfaengerTyp(
+				MitteilungTeilnehmerTyp.SOZIALDIENST
+			);
+			mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
+		} else {
+			mitteilung.setEmpfaenger(
+				mitteilung.getFall().getBesitzer()
+			);
+			mitteilung.setEmpfaengerTyp(
+				MitteilungTeilnehmerTyp.GESUCHSTELLER
+			);
+			mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
 		}
 	}
 
-	Benutzer getEmpfaengerBeiMitteilungAnGemeinde(
+	private void setEmpfaengerGemeindeEmpfaengerTypJugendamt(
 		@Nonnull Mitteilung mitteilung
 	) {
-		Benutzer empfaenger = mitteilung.getDossier().getVerantwortlicherBG();
-		if (empfaenger == null) {
-			empfaenger = mitteilung.getDossier().getVerantwortlicherTS();
+		mitteilung.setEmpfaenger(
+			mitteilungEmpfaengerResolver
+				.getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
+		);
+		mitteilung.setEmpfaengerTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
+	}
+
+	private void handleGemeindeAdministrator(@Nonnull Mitteilung mitteilung) {
+		if (mitteilung instanceof Betreuungsmitteilung) {
+			setEmpfaengerGemeindeEmpfaengerTypJugendamt(mitteilung);
+			mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
+			return;
 		}
-		if (empfaenger == null) {
-			String gemeindeId = mitteilung.getDossier().getGemeinde().getId();
-			Optional<GemeindeStammdaten> stammdatenOptional =
-				gemeindeService.getGemeindeStammdatenByGemeindeId(
-					gemeindeId
-				);
-			if (stammdatenOptional.isPresent()) {
-				// Wir kontrollieren bei den Mitteilungen explizit nicht, ob die Rolle stimmt!
-				// Wir nehmen den Allgemeinen Default, weil wir auf der Mitteilung kein Gesuch haben
-				// und daher nicht wissen, ob es ein reines BG- oder TS-Gesuch ist
-				empfaenger = stammdatenOptional.get().getDefaultBenutzer();
-			}
-		}
-		if (empfaenger == null) {
-			throw new EbeguRuntimeException(
-				"getEmpfaengerBeiMitteilungAnGemeinde",
-				ErrorCodeEnum.ERROR_VERANTWORTLICHER_NOT_FOUND,
-				mitteilung.getId()
+		handleGemeinde(mitteilung);
+	}
+
+	private void handleGemeinde(@Nonnull Mitteilung mitteilung) {
+		if (mitteilung.getInstitution() != null) {
+			//Bei Institution Mitteilungen sollen schon der Institution ID Bestimmt sein
+			mitteilung.setEmpfaengerTyp(
+				MitteilungTeilnehmerTyp.INSTITUTION
+			);
+		} else if (mitteilung.getFall().getSozialdienstFall() != null) {
+			// Sozialdienst hat kein Empfanger
+			mitteilung.setEmpfaengerTyp(
+				MitteilungTeilnehmerTyp.SOZIALDIENST
+			);
+		} else {
+			mitteilung.setEmpfaenger(
+				mitteilung.getFall().getBesitzer()
+			);
+			mitteilung.setEmpfaengerTyp(
+				MitteilungTeilnehmerTyp.GESUCHSTELLER
 			);
 		}
-		return empfaenger;
+		mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
+	}
+
+	private void setSender(
+		@Nonnull Mitteilung mitteilung,
+		@Nonnull Benutzer currentBenutzer
+	) {
+		switch (currentBenutzer.getRole()) {
+		case SACHBEARBEITER_MANDANT:
+		case ADMIN_MANDANT:
+			if (MitteilungUtil.isSchliessungsmitteilung(mitteilung)) {
+				mitteilung.setSender(
+					betreuungEventHelper.getSchliessungsmitteilungBenutzer(
+						currentBenutzer.getMandant()
+					)
+				);
+			}
+			break;
+		default:
+			mitteilung.setSender(currentBenutzer);
+		}
 	}
 
 	String createNachrichtForMutationsmeldung(

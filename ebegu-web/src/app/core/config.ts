@@ -15,9 +15,9 @@
 
 import * as angular from 'angular';
 import {environment} from '../../environments/environment';
-import {TSBrowserLanguage} from '@kibon/shared/model/enums';
+import {TSBrowserLanguage} from '../../models/enums/TSBrowserLanguage';
+import {getWindowObject} from '../../utils/window-ref/windowRef.service';
 import {extractPreferredLanguage} from '../i18n/services/i18nServiceRS.rest';
-import {getWindowObject} from '@kibon/shared-util-window-ref';
 import IInjectorService = angular.auto.IInjectorService;
 import IHttpProvider = angular.IHttpProvider;
 import ILocationProvider = angular.ILocationProvider;

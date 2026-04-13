@@ -1,7 +1,4 @@
-import {
-    AbstractMandantDefaultVisitor,
-    KiBonMandant
-} from '@kibon/shared-model-mandant';
+import {AbstractMandantDefaultVisitor, KiBonMandant} from '@models/mandant';
 
 export class FamiliensituationVisitor extends AbstractMandantDefaultVisitor<any> {
     public process(mandant: KiBonMandant): any {

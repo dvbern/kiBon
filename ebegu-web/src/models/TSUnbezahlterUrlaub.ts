@@ -15,10 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    TSAbstractDateRangedEntity,
-    TSDateRange
-} from '@kibon/shared/model/entity';
+import {TSAbstractDateRangedEntity} from './entity/TSAbstractDateRangedEntity';
+import {TSDateRange} from './entity/TSDateRange';
 
 /**
  * Definiert einen unbezahlten Urlaub

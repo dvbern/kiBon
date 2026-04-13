@@ -23,7 +23,7 @@ import {
     inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
 import {GuidedTourService} from 'ngx-guided-tour';
@@ -46,14 +46,13 @@ import {
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {INewFallStateParams} from '../../../../gesuch/gesuch.route';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
 import {TSCreationAction} from '../../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSSozialdienstStatus} from '../../../../models/enums/TSSozialdienstStatus';
 import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
 import {TSSozialdienstStammdaten} from '../../../../models/sozialdienst/TSSozialdienstStammdaten';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {PERMISSIONS} from '../../../authorisation/Permissions';
@@ -62,7 +61,7 @@ import {
     GUIDED_TOUR_SUPPORTED_ROLES,
     GuidedTourByRole
 } from '../../../kibonTour/shared/KiBonGuidedTour';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {GesuchsperiodeRS} from '../../service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../../service/institutionRS.rest';
 import {SozialdienstRS} from '../../service/SozialdienstRS.rest';
@@ -91,7 +90,7 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
     private readonly sozialdienstRS = inject(SozialdienstRS);
     private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly institutionService = inject(InstitutionRS);
 

@@ -126,7 +126,7 @@
     "TOOLBAR_ERSTGESUCH_NO_DATE": "Gesuch",
     "TOOLBAR_ERNEUERUNGSGESUCH": "Gesuch",
     "TOOLBAR_ERNEUERUNGSGESUCH_NO_DATE": "Gesuch",
-    "ERSTGESUCH_WILLKOMMEN_TEXT_2_OHNE_TS": "kiBon führt Sie Schritt für Schritt durch das Gesuch für Beiträge zur Kinderbetreuung.",
+    "ERSTGESUCH_WILLKOMMEN_TEXT_2_OHNE_TS": "KiBon führt Sie Schritt für Schritt durch das Gesuch für Beiträge zur Kinderbetreuung.",
     "ERSTGESUCH_WILLKOMMEN_TEXT_3": "Wenn Sie zu einer Angabe weitere Informationen benötigen, klicken Sie auf das Info-Feld.",
     "EINGANGSDATUM_HINT": "Wenn Sie eine Mutation erfassen, gelten die Änderungen erst ab dem Folgemonat. Das hier erfasste Datum ist das Mutationsdatum und relevant für die Berechnung. Ausnahme: Die Gemeinde kann die Gültigkeit der Mutation übersteuern, indem sie ein alternatives Datum setzt.",
     "KITAX_ERSTGESUCH_PERIODE": "kiBon – Gesuch der Periode {{periode}}",

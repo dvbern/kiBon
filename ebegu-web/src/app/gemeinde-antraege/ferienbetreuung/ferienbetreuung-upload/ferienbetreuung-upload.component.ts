@@ -35,10 +35,10 @@ import {TSFerienbetreuungDokument} from '../../../../models/gemeindeantrag/TSFer
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
-import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
+import {MAX_FILE_SIZE} from '@models/constants';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {UploadRS} from '../../../core/service/uploadRS.rest';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';

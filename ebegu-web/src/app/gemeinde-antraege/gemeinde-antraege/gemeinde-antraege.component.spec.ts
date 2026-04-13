@@ -32,20 +32,20 @@ import {
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {UpgradeModule} from '@angular/upgrade/static';
-import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateModule} from '@ngx-translate/core';
 import {StateService, UIRouterModule} from '@uirouter/angular';
 import {BehaviorSubject, of} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
 import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBerechtigung} from '../../../models/TSBerechtigung';
+import {WindowRef} from '../../../utils/window-ref/windowRef.service';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {GesuchsperiodeRS} from '../../core/service/gesuchsperiodeRS.rest';
-import {WindowRef} from '@kibon/shared-util-window-ref';
 import {MaterialModule} from '../../shared/material.module';
 import {GemeindeAntragService} from '../services/gemeinde-antrag.service';
 
@@ -90,8 +90,8 @@ const gemeindeRSSpy = jasmine.createSpyObj<GemeindeRS>(GemeindeRS.name, [
 ]);
 
 const applicationPropertyRSSpy =
-    jasmine.createSpyObj<SharedUtilApplicationPropertyRsService>(
-        SharedUtilApplicationPropertyRsService.name,
+    jasmine.createSpyObj<ApplicationPropertyRsService>(
+        ApplicationPropertyRsService.name,
         ['getPublicPropertiesCached', 'isDevMode']
     );
 
@@ -148,7 +148,7 @@ describe('GemeindeAntraegeComponent', () => {
                     useValue: gemeindeAntragServiceSpy
                 },
                 {
-                    provide: SharedUtilApplicationPropertyRsService,
+                    provide: ApplicationPropertyRsService,
                     useValue: applicationPropertyRSSpy
                 },
                 provideHttpClient(withInterceptorsFromDi())

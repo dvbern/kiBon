@@ -16,7 +16,7 @@
  */
 
 import {TSEingangsart} from './TSEingangsart';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from './TSRole';
 
 export enum TSAntragStatus {
     IN_BEARBEITUNG_GS = 'IN_BEARBEITUNG_GS',

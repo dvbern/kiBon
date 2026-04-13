@@ -15,26 +15,25 @@
 
 import {Component, Input, OnChanges, OnDestroy, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {IPromise} from 'angular';
 import {from, Observable, of} from 'rxjs';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {DvNgGemeindeDialogComponent} from '../../../app/core/component/dv-ng-gemeinde-dialog/dv-ng-gemeinde-dialog.component';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {GemeindeService} from '../../../app/shared/services/gemeinde.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSKitaxResponse} from '../../../models/dto/TSKitaxResponse';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 import {TSCreationAction} from '../../../models/enums/TSCreationAction';
 import {
     getTSEingangsartFromRole,
     TSEingangsart
 } from '../../../models/enums/TSEingangsart';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSSozialdienstFallStatus} from '../../../models/enums/TSSozialdienstFallStatus';
 import {TSDossier} from '../../../models/TSDossier';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {NavigationUtil} from '../../../utils/NavigationUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
@@ -59,7 +58,7 @@ export class FallToolbarComponent implements OnChanges, OnDestroy {
     private readonly gesuchRS = inject(GesuchRS);
     private readonly authServiceRS = inject(AuthServiceRS);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly gemeindeService = inject(GemeindeService);
 

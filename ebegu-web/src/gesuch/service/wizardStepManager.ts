@@ -16,19 +16,11 @@
  */
 
 import {copy, IPromise, IQService} from 'angular';
-import {TSWizardStep} from '@kibon/shared/model/entity';
-import {WizardStepRS} from '@kibon/shared/util/wizard-step-manager';
 import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';
-import {
-    getTSWizardStepNameValues,
-    TSWizardStepName,
-    TSWizardStepStatus,
-    TSBetreuungsstatus
-} from '@kibon/shared/model/enums';
-import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthLifeCycleService} from '../../authentication/service/authLifeCycle.service';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
+import {TSWizardStep} from '../../models/entity/TSWizardStep';
+import {TSBetreuungsstatus} from '../../models/enums/betreuung/TSBetreuungsstatus';
 import {
     isAnyStatusOfVerfuegtOrKeinKontingent,
     TSAntragStatus
@@ -39,11 +31,19 @@ import {
     getBernFKJVFinSitTyp,
     getSchwyzFinSitTyp,
     TSFinanzielleSituationTyp
-} from '@kibon/shared/model/enums';
-import {TSRole} from '@kibon/shared/model/enums';
+} from '../../models/enums/TSFinanzielleSituationTyp';
+import {TSRole} from '../../models/enums/TSRole';
+import {
+    getTSWizardStepNameValues,
+    TSWizardStepName
+} from '../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../models/enums/TSWizardStepStatus';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';
+import {LogFactory} from '../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
+import {WizardStepRS} from '../../utils/wizard-step-manager/WizardStepRS.rest';
+import {EinstellungRS} from 'src/admin/service/einstellungRS.rest';
 
 const LOG = LogFactory.createLog('WizardStepManager');
 

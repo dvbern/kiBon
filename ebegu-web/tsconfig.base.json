@@ -7,8 +7,9 @@
         "experimentalDecorators": true,
         "importHelpers": true,
         "lib": ["dom", "es2017", "es2018.promise"],
-        "module": "es2020",
+        "module": "es2022",
         "moduleResolution": "bundler",
+        "target": "ES2022",
         "newLine": "lf",
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
@@ -19,8 +20,7 @@
         "skipLibCheck": true,
         "sourceMap": true,
         "strict": false,
-        "baseUrl": "./",
-        "target": "ES2022",
+        "baseUrl": ".",
         "typeRoots": ["node_modules/@types"],
         "useDefineForClassFields": false,
         "paths": {
@@ -28,188 +28,69 @@
             "@dv-e2e/page-objects": ["./cypress/page-objects/index.ts"],
             "@dv-e2e/tasks": ["./cypress/support/tasks.ts"],
             "@dv-e2e/types": ["./cypress/support/types.ts"],
-            "@dv/tooling/nx-plugin": ["libs/tooling/nx-plugin/src/index.ts"],
-            "@kibon/admin-edit-einstellung": [
-                "libs/admin/ui/edit-einstellung/src/index.ts"
+            "@models/constants": ["src/models/constants/CONSTANTS.ts"],
+            "@models/meldungsfenster": ["src/models/meldungsfenster/index.ts"],
+            "@models/mandant": ["src/models/mandant/index.ts"],
+            "@models/zahlung": ["src/models/zahlung/index.ts"],
+            "@app/shared/pattern/meldungsfenster": [
+                "src/app/shared/pattern/meldungsfenster/index.ts"
             ],
-            "@kibon/admin-feature-meldungsfenster": [
-                "libs/admin/feature/admin-feature-meldungsfenster/src/index.ts"
+            "@app/shared/pattern/tooltip-x": [
+                "src/app/shared/pattern/tooltip-x/index.ts"
             ],
-            "@kibon/admin-gesuchsperioden-einstellungen": [
-                "libs/admin/smart/gesuchsperioden-einstellungen/src/index.ts"
+            "@app/shared/component/remove-dialog": [
+                "src/app/shared/component/remove-dialog/index.ts"
             ],
-            "@kibon/admin-pattern-meldungsfenster-detail": [
-                "libs/admin/pattern/admin-pattern-meldungsfenster-detail/src/index.ts"
+            "@app/shared/component/date-time-picker": [
+                "src/app/shared/component/date-time-picker"
             ],
-            "@kibon/admin-ui-meldungsfenster-create": [
-                "libs/admin/ui/admin-ui-meldungsfenster-create/src/index.ts"
+            "@app/shared/ui-meldungsfenster": [
+                "src/app/shared/ui-meldungsfenster/index.ts"
             ],
-            "@kibon/admin-ui-meldungsfenster-edit": [
-                "libs/admin/ui/admin-ui-meldungsfenster-edit/src/index.ts"
+            "@app/zahlung/service": [
+                "src/app/zahlung/zahlung-service/index.ts"
             ],
-            "@kibon/admin-ui-meldungsfenster-form": [
-                "libs/admin/ui/admin-ui-meldungsfenster-form/src/index.ts"
+            "@app/zahlung/zahlungslauf-erstellen": [
+                "src/app/zahlung/zahlungslauf-erstellen/index.ts"
             ],
-            "@kibon/admin-util-keycloak-admin-rs": [
-                "libs/admin/util/admin-util-keycloak-admin-rs/src/index.ts"
+            "@gesuch/kind/kind-terminiert": [
+                "src/gesuch/kind/kind-gueltigkeit-terminiert/index.ts"
             ],
-            "@kibon/admin/model/institution-tagesschule-einstellungen": [
-                "libs/admin/model/institution-tagesschule-einstellungen/src/index.ts"
+            "@gesuch/mutation/dialog": [
+                "src/gesuch/mutation/mutation-dialog/index.ts"
             ],
-            "@kibon/admin/ui/tagesschule-modul-list": [
-                "libs/admin/ui/tagesschule-modul-list/src/index.ts"
+            "@gesuch/page-layout": ["src/gesuch/page-layout/index.ts"],
+            "@gesuch/heading": ["src/gesuch/heading/index.ts"],
+            "@gesuch/dokumente": ["src/gesuch/dokumente/index.ts"],
+            "@hybrid/gesuch/erwerbspensum": [
+                "src/hybrid/gesuch/erwerbspensum/index.ts"
             ],
-            "@kibon/admin/util-fn/institution-tagesschule-einstellungen": [
-                "libs/admin/util-fn/institution-tagesschule-einstellungen/src/index.ts"
+            "@hybrid/gesuch/betreuung": [
+                "src/hybrid/gesuch/betreuung/index.ts"
             ],
-            "@kibon/anmeldung-tagesschule/util/rest": [
-                "libs/anmeldung-tagesschule/util/rest/src/index.ts"
+            "@admin/util": ["src/admin/util/index.ts"],
+            "@admin/gesuchsperioden-einstellungen": [
+                "src/admin/gesuchsperioden-einstellungen/index.ts"
             ],
-            "@kibon/betreuung-pattern-tabellarische-maske-kita": [
-                "libs/betreuung/pattern/betreuung-pattern-tabellarische-maske-kita/src/index.ts"
+            "@admin/einstellungen": [
+                "src/admin/einstellungen/edit-einstellung/index.ts"
             ],
-            "@kibon/betreuung/util/anmeldung-rest": [
-                "libs/betreuung/util/anmeldung-rest/src/index.ts"
+            "@admin/tagesschule-modul-list": [
+                "src/admin/tagesschule-modul-list/index.ts"
             ],
-            "@kibon/betreuung/util/betreuung-rs": [
-                "libs/betreuung/util/betreuung-rs/src/index.ts"
+            "@utils/log": ["src/utils/log-factory/index.ts"],
+            "@utils/moment": ["src/utils/date/index.ts"],
+            "@utils/mandant": ["src/utils/mandant-service/index.ts"],
+            "@utils/application-property-rs": [
+                "src/utils/application-property-rs/index.ts"
             ],
-            "@kibon/gesuch-dokumente-uebernehmen-selection": [
-                "libs/gesuch/smart/dokumente-uebernehmen-selection/src/index.ts"
-            ],
-            "@kibon/gesuch-erwerbspensumView": [
-                "libs/gesuch/routeable-component/erwerbspensum-view/src/index.ts"
-            ],
-            "@kibon/gesuch-open-dokumente-uebernehmen-button": [
-                "libs/gesuch/smart/open-dokumente-uebernehmen-button/src/index.ts"
-            ],
-            "@kibon/gesuch-heading": ["libs/gesuch/ui/heading/src/index.ts"],
-            "@kibon/gesuch-page-layout": [
-                "libs/gesuch/ui/page-layout/src/index.ts"
-            ],
-            "@kibon/gesuch-util-gesuch-store": [
-                "libs/gesuch/util/gesuch-util-gesuch-store/src/index.ts"
-            ],
-            "@kibon/gesuch/feature/mutation-dialog": [
-                "libs/gesuch/feature/mutation-dialog/src/index.ts"
-            ],
-            "@kibon/gesuch/ui/mutation-dialog": [
-                "libs/gesuch/ui/mutation-dialog/src/index.ts"
-            ],
-            "@kibon/kibon-generator": [
-                "libs/generator/kibon-generator/src/index.ts"
-            ],
-            "@kibon/kind/model/entity": ["libs/kind/model/entity/src/index.ts"],
-            "@kibon/kind/model/permissions": [
-                "libs/kind/model/permissions/src/index.ts"
-            ],
-            "@kibon/kind/ui/kind-gueltigkeit-terminiert": [
-                "libs/kind/ui/kind-gueltigkeit-terminiert/src/index.ts"
-            ],
-            "@kibon/shared-model-mandant": [
-                "libs/shared/model/shared-model-mandant/src/index.ts"
-            ],
-            "@kibon/shared-model-meldungsfenster": [
-                "libs/shared/model/meldungsfenster/src/index.ts"
-            ],
-            "@kibon/shared-pattern-meldungsfenster": [
-                "libs/shared/pattern/shared-pattern-meldungsfenster/src/index.ts"
-            ],
-            "@kibon/shared-pattern-tooltip-x": [
-                "libs/shared/pattern/shared-pattern-tooltip-x/src/index.ts"
-            ],
-            "@kibon/shared-ui-date-time-picker": [
-                "libs/shared/ui/shared-ui-date-time-picker/src/index.ts"
-            ],
-            "@kibon/shared-ui-meldungsfenster": [
-                "libs/shared/ui/shared-ui-meldungsfenster/src/index.ts"
-            ],
-            "@kibon/shared-util-fn-file": [
-                "libs/shared/util-fn/shared-util-fn-file/src/index.ts"
-            ],
-            "@kibon/shared-util-mandant-service": [
-                "libs/shared/util/shared-util-mandant-service/src/index.ts"
-            ],
-            "@kibon/shared-util-meldungsfenster": [
-                "libs/shared/util/meldungsfenster/src/index.ts"
-            ],
-            "@kibon/shared-util-signal-helpers": [
-                "libs/shared/util/shared-util-signal-helpers/src/index.ts"
-            ],
-            "@kibon/shared-util-validator": [
-                "libs/shared/util/shared-util-validator/src/index.ts"
-            ],
-            "@kibon/shared-util-window-ref": [
-                "libs/shared/util/shared-util-window-ref/src/index.ts"
-            ],
-            "@kibon/shared/model/constants": [
-                "libs/shared/model/constants/src/index.ts"
-            ],
-            "@kibon/shared/model/dto": ["libs/shared/model/dto/src/index.ts"],
-            "@kibon/shared/model/einstellung": [
-                "libs/shared/model/einstellung/src/index.ts"
-            ],
-            "@kibon/shared/model/entity": [
-                "libs/shared/model/entity/src/index.ts"
-            ],
-            "@kibon/shared/model/enums": [
-                "libs/shared/model/enums/src/index.ts"
-            ],
-            "@kibon/shared/ui/mutation-dialog": [
-                "libs/shared/ui/mutation-dialog/src/index.ts"
-            ],
-            "@kibon/shared/ui/remove-dialog": [
-                "libs/shared/ui/remove-dialog/src/index.ts"
-            ],
-            "@kibon/shared/util-fn/betreuungsangebot-typ": [
-                "libs/shared/util-fn/betreuungsangebot-typ/src/index.ts"
-            ],
-            "@kibon/shared/util-fn/date": [
-                "libs/shared/util-fn/date/src/index.ts"
-            ],
-            "@kibon/shared/util-fn/date-util": [
-                "libs/shared/util-fn/date-util/src/index.ts"
-            ],
-            "@kibon/shared/util-fn/log-factory": [
-                "libs/shared/util-fn/log-factory/src/index.ts"
-            ],
-            "@kibon/shared/util-fn/math-util": [
-                "libs/shared/util-fn/shared-util-fn-math-util/src/index.ts"
-            ],
-            "@kibon/shared/util/application-property-rs": [
-                "libs/shared/util/application-property-rs/src/index.ts"
-            ],
-            "@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen": [
-                "libs/shared/util/dv-show-warning-angaben-vervollstaendingen/src/index.ts"
-            ],
-            "@kibon/shared/util/hybrid-form-bridge": [
-                "libs/shared/util/hybrid-form-bridge/src/index.ts"
-            ],
-            "@kibon/shared/util/wizard-step-manager": [
-                "libs/shared/util/wizard-step-manager/src/index.ts"
-            ],
-            "@kibon/zahlung/model/entity": [
-                "libs/zahlung/model/entity/src/index.ts"
-            ],
-            "@kibon/zahlung/ui/zahlungslauf-erstellen": [
-                "libs/zahlung/ui/zahlungslauf-erstellen/src/index.ts"
-            ],
-            "@kibon/zahlung/util/zahlung-service": [
-                "libs/zahlung/util/zahlung-service/src/index.ts"
-            ],
-            "@kibon/betreuung-permission-betreuung": [
-                "libs/betreuung/model/permission-betreuung/src/index.ts"
+            "@utils/hybrid-form-bridge": [
+                "src/utils/hybrid-form-bridge/index.ts"
             ]
         }
     },
     "angularCompilerOptions": {
         "fullTemplateTypeCheck": true,
         "strictInjectionParameters": true
-    },
-    "files": ["src/main.ts", "src/polyfills.ts"],
-    "include": ["src/**/*.d.ts"],
-    "exclude": [
-        "node_modules",
-        "libs/tooling/nx-plugin/src/generators/lib/files"
-    ]
+    }
 }

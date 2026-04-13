@@ -1,0 +1,424 @@
+<div class="tabellarische-maske">
+    <lib-tabellarische-maske-title>{{
+        'ABWEICHUNGEN_MELDEN_SZ_25' | translate
+    }}</lib-tabellarische-maske-title>
+    <span
+        [innerHTML]="
+            'TABELLARISCHE_MASKE_ERKLAERUNG'
+                | translate
+                    : {
+                          kindName: dialogData.templateVariables.kindName,
+                          institutionName:
+                              dialogData.templateVariables.institutionName
+                      }
+        "
+    >
+    </span>
+    <form (ngSubmit)="uebernehmen()">
+        <lib-tabellarische-maske-table>
+            <tr tabellarische-maske-table-header>
+                <th>{{ 'MONTH' | translate }}</th>
+                <th>{{ 'HOURS' | translate }}</th>
+                <th>{{ 'ANWESENHEITSTAGE_PRO_MONAT' | translate }}</th>
+                <th>{{ 'MONATLICHE_BETREUUNGSKOSTEN' | translate }}</th>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>8.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().AUGUST.pensumInStunden"
+                        name="pensum-august"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().AUGUST.betreuteTage"
+                        name="betreuute-tage-august"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().AUGUST.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-august"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>9.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().SEPTEMBER.pensumInStunden"
+                        name="pensum-september"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().SEPTEMBER.betreuteTage"
+                        name="betreuute-tage-september"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().SEPTEMBER.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-september"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>10.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().OCTOBER.pensumInStunden"
+                        name="pensum-oktober"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().OCTOBER.betreuteTage"
+                        name="betreuute-tage-oktober"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().OCTOBER.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-oktober"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>11.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().NOVEMBER.pensumInStunden"
+                        name="pensum-november"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().NOVEMBER.betreuteTage"
+                        name="betreuute-tage-november"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().NOVEMBER.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-november"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>12.{{ gpData.firstYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().DECEMBER.pensumInStunden"
+                        name="pensum-december"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().DECEMBER.betreuteTage"
+                        name="betreuute-tage-december"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().DECEMBER.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-december"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>01.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().JANUARY.pensumInStunden"
+                        name="pensum-january"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().JANUARY.betreuteTage"
+                        name="betreuute-tage-january"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().JANUARY.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-january"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>02.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().FEBRUARY.pensumInStunden"
+                        name="pensum-february"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().FEBRUARY.betreuteTage"
+                        name="betreuute-tage-february"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().FEBRUARY.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-february"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>03.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().MARCH.pensumInStunden"
+                        name="pensum-march"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().MARCH.betreuteTage"
+                        name="betreuute-tage-march"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().MARCH.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-march"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>04.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().APRIL.pensumInStunden"
+                        name="pensum-april"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().APRIL.betreuteTage"
+                        name="betreuute-tage-april"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().APRIL.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-april"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>05.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().MAY.pensumInStunden"
+                        name="pensum-may"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().MAY.betreuteTage"
+                        name="betreuute-tage-may"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().MAY.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-may"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>06.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().JUNE.pensumInStunden"
+                        name="pensum-june"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().JUNE.betreuteTage"
+                        name="betreuute-tage-june"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().JUNE.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-june"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+            <tr tabellarische-maske-table-body>
+                <td>07.{{ gpData.secondYear }}</td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().JULY.pensumInStunden"
+                        name="pensum-july"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="abschnitte().JULY.betreuteTage"
+                        name="betreuute-tage-july"
+                        class="form-control"
+                    />
+                </td>
+                <td>
+                    <input
+                        (keydown)="InputUtil.blockInvalidChars($event)"
+                        type="number"
+                        [(ngModel)]="
+                            abschnitte().JULY.monatlicheBetreuungskosten
+                        "
+                        name="monatliche-betreuungskosten-july"
+                        class="form-control"
+                    />
+                </td>
+            </tr>
+        </lib-tabellarische-maske-table>
+
+        <div class="tabellarische-maske-actions">
+            <button class="dv-btn">
+                {{ 'UEBERNEHMEN' | translate }}
+            </button>
+            <button
+                class="dv-btn cancel-button"
+                type="button"
+                (click)="cancel()"
+            >
+                {{ 'CANCEL' | translate }}
+            </button>
+        </div>
+    </form>
+</div>

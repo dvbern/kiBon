@@ -16,7 +16,7 @@
  */
 import {HttpClient} from '@angular/common/http';
 import {Injectable, OnDestroy, inject} from '@angular/core';
-import {CONSTANTS, HTTP_CODES} from '@kibon/shared/model/constants';
+import {CONSTANTS, HTTP_CODES} from '@models/constants';
 import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {filter, map, mergeMap, takeUntil, tap} from 'rxjs/operators';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
@@ -26,7 +26,7 @@ import {TSFerienbetreuungAngabenKostenEinnahmen} from '../../../../models/gemein
 import {TSFerienbetreuungAngabenNutzung} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenNutzung';
 import {TSFerienbetreuungAngabenStammdaten} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenStammdaten';
 import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {TSFerienbetreuungBerechnung} from '../ferienbetreuung-kosten-einnahmen/TSFerienbetreuungBerechnung';
 import {
     FerienbetreuungStatusHistory,

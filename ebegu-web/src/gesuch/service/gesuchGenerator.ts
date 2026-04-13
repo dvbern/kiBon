@@ -17,7 +17,6 @@
 
 import {Injectable, inject} from '@angular/core';
 import {IPromise} from 'angular';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AntragStatusHistoryRS} from '../../app/core/service/antragStatusHistoryRS.rest';
 import {GesuchsperiodeRS} from '../../app/core/service/gesuchsperiodeRS.rest';
 import {SozialdienstRS} from '../../app/core/service/SozialdienstRS.rest';
@@ -36,6 +35,7 @@ import {TSDossier} from '../../models/TSDossier';
 import {TSFall} from '../../models/TSFall';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';
+import {LogFactory} from '../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
 import {DossierRS} from './dossierRS.rest';
 import {FallRS} from './fallRS.rest';

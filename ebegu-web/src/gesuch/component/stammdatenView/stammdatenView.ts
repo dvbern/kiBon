@@ -15,27 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {MANDANTS} from '@kibon/shared-model-mandant';
-import {MandantService} from '@kibon/shared-util-mandant-service';
-import {CONSTANTS, MAX_FILE_SIZE} from '@kibon/shared/model/constants';
-import {TSAdresse, TSGeschlecht} from '@kibon/shared/model/entity';
-import {
-    getTSSpracheValues,
-    TSAdressetyp,
-    TSDokumentUploadTyp,
-    TSRole,
-    TSSprache,
-    TSWizardStepName,
-    TSWizardStepStatus
-} from '@kibon/shared/model/enums';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {CONSTANTS, MAX_FILE_SIZE} from '@models/constants';
 import {copy, IComponentOptions} from 'angular';
 import {map} from 'rxjs/operators';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {DemoFeatureRS} from '../../../app/core/service/demoFeatureRS.rest';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
@@ -43,13 +27,23 @@ import {EwkRS} from '../../../app/core/service/ewkRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSDokumenteDTO} from '../../../models/dto/TSDokumenteDTO';
+import {TSAdresse} from '../../../models/entity/TSAdresse';
+import {TSAdressetyp} from '../../../models/enums/TSAdressetyp';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {TSDokumentGrundTyp} from '@kibon/shared/model/enums';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
+import {TSDokumentGrundTyp} from '../../../models/enums/TSDokumentGrundTyp';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
+import {TSDokumentUploadTyp} from '../../../models/enums/TSDokumentUploadTyp';
 import {TSEingangsart} from '../../../models/enums/TSEingangsart';
 import {TSFamilienstatus} from '../../../models/enums/TSFamilienstatus';
+import {TSGeschlecht} from '../../../models/enums/TSGeschlecht';
 import {TSGesuchstellerKardinalitaet} from '../../../models/enums/TSGesuchstellerKardinalitaet';
+import {TSRole} from '../../../models/enums/TSRole';
+import {getTSSpracheValues, TSSprache} from '../../../models/enums/TSSprache';
 import {TSUnterhaltsvereinbarungAnswer} from '../../../models/enums/TSUnterhaltsvereinbarungAnswer';
+import {MANDANTS} from '@models/mandant';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSSozialdienstFallDokument} from '../../../models/sozialdienst/TSSozialdienstFallDokument';
 import {TSAdresseContainer} from '../../../models/TSAdresseContainer';
 import {TSDokument} from '../../../models/TSDokument';
@@ -58,9 +52,13 @@ import {TSDownloadFile} from '../../../models/TSDownloadFile';
 import {TSFamiliensituation} from '../../../models/TSFamiliensituation';
 import {TSGesuchsteller} from '../../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../../models/TSGesuchstellerContainer';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {EnumEx} from '../../../utils/EnumEx';
+import {HybridFormBridgeService} from '../../../utils/hybrid-form-bridge/hybrid-form-bridge.service';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {IStammdatenStateParams} from '../../gesuch.route';
 import {BerechnungsManager} from '../../service/berechnungsManager';
@@ -103,7 +101,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         'EinstellungRS',
         'UploadRS',
         'DownloadRS',
-        'SharedUtilApplicationPropertyRsService',
+        'ApplicationPropertyRsService',
         'DokumenteRS',
         'MandantService',
         'DemoFeatureRS',
@@ -153,7 +151,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         private readonly einstellungRS: EinstellungRS,
         private readonly uploadRS: UploadRS,
         private readonly downloadRS: DownloadRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly applicationPropertyRS: ApplicationPropertyRsService,
         private readonly dokumenteRS: DokumenteRS,
         private readonly mandantService: MandantService,
         private readonly demoFeatureRS: DemoFeatureRS,
@@ -273,7 +271,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
             );
         this.demoFeatureRS
             .isDemoFeatureAllowed(TSDemoFeature.KIBON_2754)
-            .subscribe(isAllowed => (this.demoFeature2754 = isAllowed));
+            .subscribe((isAllowed: any) => (this.demoFeature2754 = isAllowed));
     }
 
     public getFamilienSituationDisplayValue(): string {

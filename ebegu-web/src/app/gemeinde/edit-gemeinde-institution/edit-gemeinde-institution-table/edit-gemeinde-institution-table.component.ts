@@ -17,10 +17,8 @@ import {
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import {
-    TSInstitution,
-    TSInstitutionStammdaten
-} from '@kibon/shared/model/entity';
+import {TSInstitution} from '../../../../models/entity/TSInstitution';
+import {TSInstitutionStammdaten} from '../../../../models/entity/TSInstitutionStammdaten';
 import {TSGemeindeStammdaten} from '../../../../models/TSGemeindeStammdaten';
 import {TSInstitutionUpdate} from '../../../../models/TSInstitutionUpdate';
 import {InstitutionRS} from '../../../core/service/institutionRS.rest';

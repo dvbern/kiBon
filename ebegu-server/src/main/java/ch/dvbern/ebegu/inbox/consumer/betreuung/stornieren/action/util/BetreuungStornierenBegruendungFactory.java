@@ -42,11 +42,6 @@ public class BetreuungStornierenBegruendungFactory implements
 		"ExchangeServce_BetreuungStornieren_Grund";
 
 	/**
-	 * Standard-Locale, mit dem die Übersetzungsdatei identifiziert und aus welcher der Begründungstext gelesen wird.
-	 */
-	private static final Locale DEFAULT_LOCALE = new Locale("de", "CH");
-
-	/**
 	 * Standard-Mandant, mit dem die Übersetzungsdatei identifiziert und aus welcher der Begründungstext gelesen wird.
 	 */
 	private static final MandantIdentifier DEFAULT_MANDANT =
@@ -68,10 +63,10 @@ public class BetreuungStornierenBegruendungFactory implements
 	 * Standard-Locale und den Standard-Mandant.
 	 */
 	@Override
-	public String getMessage() {
+	public String getMessage(Locale locale) {
 		return ServerMessageUtil.getMessage(
 			TXT_KEY_GRUND,
-			DEFAULT_LOCALE,
+			locale,
 			MANDANT
 		);
 	}

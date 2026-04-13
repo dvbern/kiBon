@@ -27,7 +27,7 @@ import {BehaviorSubject, Subject, Subscription} from 'rxjs';
 import {GesuchModelManager} from '../../../../../gesuch/service/gesuchModelManager';
 import {SearchRS} from '../../../../../gesuch/service/searchRS.rest';
 import {TSAntragDTO} from '../../../../../models/TSAntragDTO';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {DVAntragListFilter} from '../../../../shared/interfaces/DVAntragListFilter';
 import {DVAntragListItem} from '../../../../shared/interfaces/DVAntragListItem';
 import {DVPaginationEvent} from '../../../../shared/interfaces/DVPaginationEvent';

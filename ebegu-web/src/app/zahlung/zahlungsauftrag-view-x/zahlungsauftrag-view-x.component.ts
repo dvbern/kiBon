@@ -29,7 +29,7 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort, SortDirection} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, TransitionService, UIRouterGlobals} from '@uirouter/core';
 import moment from 'moment';
@@ -37,29 +37,28 @@ import {of, Subject} from 'rxjs';
 import {mergeMap, switchMap, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {TSPaginationResultDTO} from '../../../models/dto/TSPaginationResultDTO';
+import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
+import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 import {TSGeneratedDokumentTyp} from '../../../models/enums/TSGeneratedDokumentTyp';
 import {
     TSZahlungsauftragsstatus,
     TSZahlungsstatus,
     TSZahlungsauftrag,
     TSZahlungslaufTyp
-} from '@kibon/zahlung/model/entity';
+} from '@models/zahlung';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
-import {TSGemeinde} from '@kibon/shared/model/entity';
-
-import {TSPaginationResultDTO} from '@kibon/shared/model/dto';
-import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
 import {ReportRS} from '../../core/service/reportRS.rest';
 import {DvSimpleTableColumnDefinition} from '../../shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {StateStoreService} from '../../shared/services/state-store.service';
-import {ZahlungUtilZahlungService} from '@kibon/zahlung/util/zahlung-service';
+import {ZahlungService} from '@app/zahlung/service';
 
 const LOG = LogFactory.createLog('ZahlungsauftragViewXComponent');
 
@@ -73,11 +72,11 @@ const LOG = LogFactory.createLog('ZahlungsauftragViewXComponent');
 export class ZahlungsauftragViewXComponent
     implements OnInit, AfterViewInit, OnDestroy
 {
-    private readonly zahlungRS = inject(ZahlungUtilZahlungService);
+    private readonly zahlungRS = inject(ZahlungService);
     private readonly $state = inject(StateService);
     private readonly downloadRS = inject(DownloadRS);
     private readonly applicationPropertyRS = inject(
-        SharedUtilApplicationPropertyRsService
+        ApplicationPropertyRsService
     );
     private readonly reportRS = inject(ReportRS);
     private readonly authServiceRS = inject(AuthServiceRS);

@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSWizardStepName} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';

@@ -20,7 +20,7 @@ import {
     getTSRoleValuesWithoutSuperAdmin,
     rolePrefix,
     TSRole
-} from '@kibon/shared/model/enums';
+} from '../models/enums/TSRole';
 import {Permission} from '../app/authorisation/Permission';
 import {PERMISSIONS} from '../app/authorisation/Permissions';
 

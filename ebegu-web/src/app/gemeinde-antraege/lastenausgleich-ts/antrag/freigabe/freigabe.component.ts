@@ -31,7 +31,7 @@ import {BehaviorSubject, combineLatest, firstValueFrom, Observable} from 'rxjs';
 import {filter, first, map, mergeMap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../../../../../models/enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../../../models/enums/TSRole';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {TSExceptionReport} from '../../../../../models/TSExceptionReport';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';

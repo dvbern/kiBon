@@ -17,7 +17,8 @@ import angular from 'angular';
 import {AUTHENTICATION_JS_MODULE} from '../../../authentication/authentication.module';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
+
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {DVRoleElementController} from './DVRoleElementController';
 

@@ -19,7 +19,7 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {VERSION} from '../../../../environments/version';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 
 const LOG = LogFactory.createLog('VersionService');
 

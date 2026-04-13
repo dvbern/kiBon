@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {ListResourceRS} from '../../app/core/service/listResourceRS.rest';
-import {TSAdresse} from '@kibon/shared/model/entity';
+import {TSAdresse} from '../../models/entity/TSAdresse';
 import {TSZahlungsinformationen} from '../../models/TSZahlungsinformationen';
 import {TSLand} from '../../models/types/TSLand';
 import {EbeguUtil} from '../../utils/EbeguUtil';

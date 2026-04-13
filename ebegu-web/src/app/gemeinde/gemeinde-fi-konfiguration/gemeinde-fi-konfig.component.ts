@@ -29,16 +29,15 @@ import {StateDeclaration} from '@uirouter/core/lib/state/interface';
 import moment from 'moment';
 import {Moment} from 'moment';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {
-    TSGemeindeStatus,
-    TSGesuchsperiodeStatus
-} from '@kibon/shared/model/enums';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
+import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
+import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
 import {TSFerieninselStammdaten} from '../../../models/TSFerieninselStammdaten';
 import {TSFerieninselZeitraum} from '../../../models/TSFerieninselZeitraum';
 import {TSGemeindeKonfiguration} from '../../../models/TSGemeindeKonfiguration';
-import {TSDateRange} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
+
 @Component({
     selector: 'dv-gemeinde-fi-konfiguration',
     templateUrl: './gemeinde-fi-konfig.component.html',

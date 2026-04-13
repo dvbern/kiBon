@@ -24,7 +24,8 @@ import {
 } from '@angular/core';
 import {SharedModule} from '../../../../app/shared/shared.module';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
 import {TSFreigabe} from '../../../../models/TSFreigabe';
 import {TSGesuch} from '../../../../models/TSGesuch';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';

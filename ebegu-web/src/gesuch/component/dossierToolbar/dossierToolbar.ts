@@ -15,7 +15,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {
     copy,
@@ -29,13 +28,13 @@ import {map} from 'rxjs/operators';
 import {Permission} from '../../../app/authorisation/Permission';
 import {PERMISSIONS} from '../../../app/authorisation/Permissions';
 import {IDVFocusableController} from '../../../app/core/component/IDVFocusableController';
-import {MANDANTS} from '@kibon/shared-model-mandant';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {SozialdienstRS} from '../../../app/core/service/SozialdienstRS.rest';
-import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSInstitutionStammdatenSummary} from '../../../models/entity/TSInstitutionStammdatenSummary';
 import {
     isAnyStatusOfVerfuegt,
     isAtLeastFreigegebenOrFreigabequittung,
@@ -44,20 +43,18 @@ import {
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
 import {TSCreationAction} from '../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../models/enums/TSEingangsart';
-import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
-
+import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
 import {TSMitteilungEvent} from '../../../models/enums/TSMitteilungEvent';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSSozialdienstFallStatus} from '../../../models/enums/TSSozialdienstFallStatus';
+import {MANDANTS} from '@models/mandant';
 import {TSSozialdienstStammdaten} from '../../../models/sozialdienst/TSSozialdienstStammdaten';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
 import {TSDossier} from '../../../models/TSDossier';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {
-    TSGesuchsperiode,
-    TSInstitutionStammdatenSummary
-} from '@kibon/shared/model/entity';
+import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {NavigationUtil} from '../../../utils/NavigationUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
@@ -130,7 +127,7 @@ export class DossierToolbarController implements IDVFocusableController {
         'SozialdienstRS',
         '$translate',
         'MandantService',
-        'SharedUtilApplicationPropertyRsService'
+        'ApplicationPropertyRsService'
     ];
 
     public antragList: Array<TSAntragDTO>;
@@ -177,7 +174,7 @@ export class DossierToolbarController implements IDVFocusableController {
         private readonly sozialdienstRS: SozialdienstRS,
         private readonly $translate: ITranslateService,
         private readonly mandantService: MandantService,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
+        private readonly applicationPropertyRS: ApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {

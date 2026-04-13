@@ -25,7 +25,7 @@ import {
 } from '@angular/core';
 import {Moment} from 'moment';
 import {TSFile} from '../../../../models/TSFile';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 
 export interface HTMLInputEvent extends Event {
     target: HTMLInputElement & EventTarget;

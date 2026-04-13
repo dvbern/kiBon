@@ -16,10 +16,10 @@
  */
 
 import {downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
-import {BetreuungUtilAnmeldungRestService} from '@kibon/betreuung/util/anmeldung-rest';
-import {GesuchErwerbspensumViewComponent} from '@kibon/gesuch-erwerbspensumView';
-import {BetreuungUiKindGueltigkeitTerminiertAngularjsWrapperComponent} from '@kibon/kind/ui/kind-gueltigkeit-terminiert';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {DokumenteUebernehmenButtonComponent} from '@gesuch/dokumente';
+import {KindGueltigkeitTerminiertAngularjsWrapperComponent} from '@gesuch/kind/kind-terminiert';
+import {AnmeldungRestService} from '@hybrid/gesuch/betreuung';
+import {ErwerbspensumViewComponent} from '@hybrid/gesuch/erwerbspensum';
 import {TransitionService} from '@uirouter/core';
 import * as angular from 'angular';
 import {EinstellungRS} from '../admin/service/einstellungRS.rest';
@@ -29,6 +29,7 @@ import {PosteingangService} from '../app/posteingang/service/posteingang.service
 import {MultipleFileUploadComponent} from '../app/shared/component/multpile-file-upload/multiple-file-upload.component';
 import {GemeindeService} from '../app/shared/services/gemeinde.service';
 import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
+import {HybridFormBridgeService} from '../utils/hybrid-form-bridge/hybrid-form-bridge.service';
 import {FinSitFelderAppenzellComponent} from './component/abstractFinanzielleSituation/appenzell/fin-sit-zusatzfelder-appenzell/fin-sit-felder-appenzell.component';
 import {SelbstdeklarationComponent} from './component/abstractFinanzielleSituation/luzern/selbstdeklaration/selbstdeklaration.component';
 import {AbwesenheitViewComponentConfig} from './component/abwesenheitView/abwesenheitView';
@@ -103,8 +104,7 @@ import {GesuchModelManager} from './service/gesuchModelManager';
 import {UnterstuetzungsdienstFallService} from './service/unterstuetzungsdienst-fall.service';
 import {abweichungenEnabledHook} from './state-hooks/abweichungen-enabled.hook';
 import {GemeindeKontaktdatenComponent} from './component/dossierToolbar/gemeinde-kontaktdaten/gemeinde-kontaktdaten.component';
-import {OpenTabellarischeMaskeButtonComponent} from '@kibon/betreuung-pattern-tabellarische-maske-kita';
-import {GesuchOpenDokumenteUebernehmenButtonComponent} from '@kibon/gesuch-open-dokumente-uebernehmen-button';
+import {OpenTabellarischeMaskeButtonComponent} from '@hybrid/gesuch/betreuung';
 import {DvDatePickerXAngularjswrapperComponent} from '../app/shared/component/dv-date-picker/dv-date-picker-x.angularjswrapper.component';
 
 export const GESUCH_JS_MODULE = angular
@@ -416,7 +416,7 @@ export const GESUCH_JS_MODULE = angular
     .directive(
         'dvGesuchOpenDokumenteUebernehmenButton',
         downgradeComponent({
-            component: GesuchOpenDokumenteUebernehmenButtonComponent,
+            component: DokumenteUebernehmenButtonComponent,
             outputs: ['dokumenteUebernehmen']
         })
     )
@@ -459,22 +459,18 @@ export const GESUCH_JS_MODULE = angular
         'UnterstuetzungsdienstFallService',
         downgradeInjectable(UnterstuetzungsdienstFallService)
     )
-    .factory(
-        'BetreuungUtilAnmeldungRestService',
-        downgradeInjectable(BetreuungUtilAnmeldungRestService)
-    )
+    .factory('AnmeldungRestService', downgradeInjectable(AnmeldungRestService))
     .factory('PosteingangService', downgradeInjectable(PosteingangService))
     .directive(
-        'dvBetreuungUiKindGueltigkeitTerminiertAngularJSWrapper',
+        'dvKindGueltigkeitTerminiertAngularJSWrapper',
         downgradeComponent({
-            component:
-                BetreuungUiKindGueltigkeitTerminiertAngularjsWrapperComponent,
+            component: KindGueltigkeitTerminiertAngularjsWrapperComponent,
             inputs: ['kind']
         })
     )
     .directive(
         'dvGesuchErwerbspensumView',
         downgradeComponent({
-            component: GesuchErwerbspensumViewComponent
+            component: ErwerbspensumViewComponent
         })
     );

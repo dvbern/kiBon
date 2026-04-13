@@ -14,9 +14,9 @@
 -->
 
 <div class="dv-error-messages">
-    @if (error) {
+    @if (error()) {
         <div id="{{ inputId + '-error' }}" class="error">
-            {{ error }}
+            {{ error() }}
         </div>
     }
 </div>

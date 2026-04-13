@@ -6,7 +6,7 @@ import {
     TestFaellePO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
-import {MANDANTS} from '../../libs/shared/model/shared-model-mandant/src/lib/MANDANTS';
+import {MANDANTS} from '@models/mandant';
 import {GemeindeAntraegePO} from '../page-objects/gemeindeantraege';
 import {LastenausgleichTagesschulePo} from '../page-objects/gemeindeantraege/lastenausgleichTagesschule.po';
 

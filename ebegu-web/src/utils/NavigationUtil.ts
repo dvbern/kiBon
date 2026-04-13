@@ -14,7 +14,7 @@
  */
 
 import {StateService} from '@uirouter/core';
-import {TSRole} from '@kibon/shared/model/enums';
+import {TSRole} from '../models/enums/TSRole';
 import {TSRoleUtil} from './TSRoleUtil';
 
 export class NavigationUtil {

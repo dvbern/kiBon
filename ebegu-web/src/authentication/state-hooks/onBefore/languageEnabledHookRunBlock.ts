@@ -15,22 +15,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TransitionService} from '@uirouter/angular';
 import {HookResult} from '@uirouter/core';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
-import {TSBrowserLanguage} from '@kibon/shared/model/enums';
 import {firstValueFrom} from 'rxjs';
+import {TSBrowserLanguage} from '../../../models/enums/TSBrowserLanguage';
 
 languageEnabledHookRunBlock.$inject = [
     '$transitions',
-    'SharedUtilApplicationPropertyRsService',
+    'ApplicationPropertyRsService',
     'I18nServiceRSRest'
 ];
 
 export function languageEnabledHookRunBlock(
     $transitions: TransitionService,
-    applicationPropertyService: SharedUtilApplicationPropertyRsService,
+    applicationPropertyService: ApplicationPropertyRsService,
     i18nService: I18nServiceRSRest
 ): void {
     $transitions.onBefore({}, async () =>
@@ -39,7 +39,7 @@ export function languageEnabledHookRunBlock(
 }
 
 async function changeLanguageIfNotEnabled(
-    applicationPropertyService: SharedUtilApplicationPropertyRsService,
+    applicationPropertyService: ApplicationPropertyRsService,
     i18nService: I18nServiceRSRest
 ): Promise<HookResult> {
     await firstValueFrom(applicationPropertyService.getFrenchEnabled()).then(

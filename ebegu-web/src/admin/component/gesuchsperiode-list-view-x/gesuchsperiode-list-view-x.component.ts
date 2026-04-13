@@ -24,12 +24,12 @@ import {
 } from '@angular/core';
 import {StateService} from '@uirouter/core';
 import moment from 'moment';
-import {CONSTANTS} from '@kibon/shared/model/constants';
+import {CONSTANTS} from '@models/constants';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {DvSimpleTableColumnDefinition} from '../../../app/shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {DvSimpleTableConfig} from '../../../app/shared/component/dv-simple-table/dv-simple-table-config';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {AbstractAdminViewX} from '../../abstractAdminViewX';
 
 @Component({

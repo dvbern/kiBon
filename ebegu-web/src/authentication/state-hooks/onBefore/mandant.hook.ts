@@ -23,9 +23,9 @@ import {
 } from '@uirouter/core';
 import {combineLatest, firstValueFrom} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {MandantService} from '@kibon/shared-util-mandant-service';
+import {LogFactory} from '@utils/log';
+import {MandantService} from '@utils/mandant';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
 import {OnBeforePriorities} from './onBeforePriorities';
 
 const LOG = LogFactory.createLog('mandantHook');

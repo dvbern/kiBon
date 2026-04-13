@@ -13,16 +13,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {IComponentOptions, IPromise} from 'angular';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {TSAdressetyp} from '@kibon/shared/model/enums';
-import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
-import {TSAdresse} from '@kibon/shared/model/entity';
+import {TSAdresse} from '../../../models/entity/TSAdresse';
+import {TSAdressetyp} from '../../../models/enums/TSAdressetyp';
+import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
+import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSAdresseContainer} from '../../../models/TSAdresseContainer';
 import {TSGesuchstellerContainer} from '../../../models/TSGesuchstellerContainer';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {HybridFormBridgeService} from '../../../utils/hybrid-form-bridge/hybrid-form-bridge.service';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
 import {BerechnungsManager} from '../../service/berechnungsManager';
 import {GesuchModelManager} from '../../service/gesuchModelManager';

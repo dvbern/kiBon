@@ -48,7 +48,7 @@ import {DvNgMitteilungDelegationDialogComponent} from '../core/component/dv-ng-m
 import {DvNgMitteilungResultDialogComponent} from '../core/component/dv-ng-mitteilung-result-dialog/dv-ng-mitteilung-result-dialog.component';
 import {DvNgMultiSelectDialogComponent} from '../core/component/dv-ng-multi-select-dialog/dv-ng-multi-select-dialog.component';
 import {DvNgOkDialogComponent} from '../core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {DvNgSelectTraegerschaftEmailDialogComponent} from '../core/component/dv-ng-select-traegerschaft-email-dialog/dv-ng-select-traegerschaft-email-dialog.component';
 import {DvNgSozialdienstDialogComponent} from '../core/component/dv-ng-sozialdienst-dialog/dv-ng-sozialdienst-dialog.component';
 import {DvNgThreeButtonDialogComponent} from '../core/component/dv-ng-three-button-dialog/dv-ng-three-button-dialog.component';
@@ -120,7 +120,10 @@ import {BicSwiftValidatorDirective} from './validators/bic-swift-validator.direc
         MatListItem,
         BicSwiftValidatorDirective,
         dvStrictEmailValidatorDirective,
-        DateInPeriodeValidatorDirective
+        DateInPeriodeValidatorDirective,
+        DvNgRemoveDialogComponent,
+        ErrorMessagesComponent,
+        LoadingButtonDirective
     ],
     declarations: [
         AccordionDirective,
@@ -141,18 +144,15 @@ import {BicSwiftValidatorDirective} from './validators/bic-swift-validator.direc
         DvNgLinkDialogComponent,
         DvNgOkDialogComponent,
         DvNgDisplayObjectDialogComponent,
-        DvNgRemoveDialogComponent,
         DvNgBackDialogComponent,
         DvNgCancelDialogComponent,
         DvNgMultiSelectDialogComponent,
         DvNgThreeButtonDialogComponent,
         DvNgShowElementDirective,
         DvPosteingangComponent,
-        ErrorMessagesComponent,
         FullHeightContainerComponent,
         FullHeightInnerPaddingContainerComponent,
         GemeindeMultiselectComponent,
-        LoadingButtonDirective,
         NavbarComponent,
         StammdatenHeaderComponent,
         TooltipDirective,

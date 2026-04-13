@@ -17,8 +17,8 @@
 
 import {HookResult, Transition, TransitionService} from '@uirouter/core';
 import {map, mergeMap} from 'rxjs/operators';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {TSRole} from '@kibon/shared/model/enums';
+import {LogFactory} from '@utils/log';
+import {TSRole} from '../../../models/enums/TSRole';
 import {navigateToStartPageForRole} from '../../../utils/AuthenticationUtil';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
 import {OnErrorPriorities} from './onErrorPriorities';

@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {HybridFormBridgeService} from '@utils/hybrid-form-bridge';
 import angular, {
     IHttpBackendService,
     IQService,
@@ -25,7 +25,7 @@ import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSAdressetyp} from '@kibon/shared/model/enums';
+import {TSAdressetyp} from '../../../models/enums/TSAdressetyp';
 import {TSGesuch} from '../../../models/TSGesuch';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {BerechnungsManager} from '../../service/berechnungsManager';

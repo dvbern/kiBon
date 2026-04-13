@@ -15,7 +15,7 @@
 
 import {IController, IDirective, IDirectiveFactory} from 'angular';
 import moment from 'moment';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {MomentUtil} from '@utils/moment';
 import IAttributes = angular.IAttributes;
 import ILogService = angular.ILogService;
 import INgModelController = angular.INgModelController;

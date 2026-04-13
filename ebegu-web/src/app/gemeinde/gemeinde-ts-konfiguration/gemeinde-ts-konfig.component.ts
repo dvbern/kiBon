@@ -25,29 +25,27 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {CONSTANTS, MAX_FILE_SIZE} from '@kibon/shared/model/constants';
+import {CONSTANTS, MAX_FILE_SIZE} from '@models/constants';
 import {TranslateService} from '@ngx-translate/core';
 import {Transition} from '@uirouter/core';
 import {StateDeclaration} from '@uirouter/core/lib/state/interface';
 import {Moment} from 'moment';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {
-    TSDokumentUploadTyp,
-    TSGemeindeStatus,
-    TSGesuchsperiodeStatus,
-    TSRole,
-    TSSprache
-} from '@kibon/shared/model/enums';
+import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
+import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
+import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
+import {TSRole} from '../../../models/enums/TSRole';
+import {TSSprache} from '../../../models/enums/TSSprache';
 import {TSGemeindeKonfiguration} from '../../../models/TSGemeindeKonfiguration';
+import {FileUtil} from '../../../utils/file/file';
 import {DvNgOkDialogComponent} from '../../core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
 import {GesuchsperiodeRS} from '../../core/service/gesuchsperiodeRS.rest';
 import {UploadRS} from '../../core/service/uploadRS.rest';
-import {FileUtil} from '@kibon/shared-util-fn-file';
+import {TSDokumentUploadTyp} from '../../../models/enums/TSDokumentUploadTyp';
 
 @Component({
     selector: 'dv-gemeinde-ts-konfiguration',

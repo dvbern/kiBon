@@ -9,31 +9,32 @@ import {
 import {NgForm} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
-import {TSDateRange, TSGesuchsperiode} from '@kibon/shared/model/entity';
-import {
-    TSGesuchsperiodeStatus,
-    TSSprache,
-    getTSGesuchsperiodeStatusValues,
-    TSDokumentUploadTyp
-} from '@kibon/shared/model/enums';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
 import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
-import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
+import {MAX_FILE_SIZE} from '@models/constants';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
-import {TSCacheTyp} from '@kibon/shared/model/enums';
+import {TSDateRange} from '../../../models/entity/TSDateRange';
+import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
+import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
+import {TSDokumentUploadTyp} from '../../../models/enums/TSDokumentUploadTyp';
+import {
+    getTSGesuchsperiodeStatusValues,
+    TSGesuchsperiodeStatus
+} from '../../../models/enums/TSGesuchsperiodeStatus';
+import {TSSprache} from '../../../models/enums/TSSprache';
+import {FileUtil} from '../../../utils/file/file';
+import {LogFactory} from '../../../utils/log-factory/LogFactory';
 import {TSEinstellung} from '../TSEinstellung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {AbstractAdminViewX} from '../../abstractAdminViewX';
 import {EinstellungRS} from '../../service/einstellungRS.rest';
-import {FileUtil} from '@kibon/shared-util-fn-file';
 import {ErrorServiceX} from '../../../app/core/errors/service/ErrorServiceX';
 
 const LOG = LogFactory.createLog('GesuchsperiodeViewXComponent');

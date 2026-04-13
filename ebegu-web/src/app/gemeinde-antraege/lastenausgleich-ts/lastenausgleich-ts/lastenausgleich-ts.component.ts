@@ -30,7 +30,7 @@ import {TSWizardStepXTyp} from '../../../../models/enums/TSWizardStepXTyp';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {TSWizardStepX} from '../../../../models/TSWizardStepX';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {LogFactory} from '@utils/log';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {LastenausgleichTSService} from '../services/lastenausgleich-ts.service';
