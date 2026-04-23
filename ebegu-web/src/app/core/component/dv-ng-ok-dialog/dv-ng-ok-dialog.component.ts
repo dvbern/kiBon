@@ -30,12 +30,14 @@ export class DvNgOkDialogComponent {
     private readonly data = inject(MAT_DIALOG_DATA);
 
     public title: string = '';
+    public text: string = '';
 
     public constructor() {
         const data = this.data;
 
         if (data) {
             this.title = data.title;
+            this.text = data.text;
         }
     }
 

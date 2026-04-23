@@ -1001,6 +1001,7 @@
     "KEIN_ABZUG": "Nein",
     "HALBER_ABZUG": "50%",
     "GANZER_ABZUG": "100%",
+    "UPDATE_PASSWORD": "Passwort ändern",
     "AUSLOGGEN": "Ausloggen",
     "PARAMETER": "Perioden und -Parameter",
     "BATCHJOBTRIGGER": "Batchjobs manuell auslösen",
@@ -3330,6 +3331,8 @@
     "VERFUEGUNG": "Verfügung",
     "ABGELOESTE_VIEW_VERFUEGUNG_LIST": "Verfügung Liste",
     "ABGELOESTE_VIEW_VERFUEGUNG_SINGLE": "Verfügung",
+    "UPDATE_PASSWORD_DIALOG_TITLE": "Ihnen wurde eine E-Mail mit einem Link zum Ändern Ihres Passworts zugeschickt.",
+    "UPDATE_PASSWORD_DIALOG_TEXT": "Bitte überprüfen Sie Ihren Posteingang. Falls Sie die E-Mail nicht finden, schauen Sie auch im Spam-Ordner nach.",
     "QUARKUS_STATISTIK": "Quarkus Statistik",
     "QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER": "Betreuungsgutscheine: Kinder Statistik",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"

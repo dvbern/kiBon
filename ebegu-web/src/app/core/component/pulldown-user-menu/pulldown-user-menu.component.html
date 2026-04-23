@@ -115,6 +115,13 @@
             >{{ 'MANDANT_SWITCH' | translate }}</dv-pulldown-user-menu-button
         >
     }
+
+    @if (canUpdatePassword()) {
+        <dv-pulldown-user-menu-button (buttonClick)="updatePassword()">{{
+            'UPDATE_PASSWORD' | translate
+        }}</dv-pulldown-user-menu-button>
+    }
+
     <dv-pulldown-user-menu-button (buttonClick)="logout($event)">{{
         'AUSLOGGEN' | translate
     }}</dv-pulldown-user-menu-button>

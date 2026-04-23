@@ -319,4 +319,12 @@ export class BenutzerRSX {
                 .pipe(map((response: any) => response))
         );
     }
+
+    public updatePassword(): Promise<string[]> {
+        return firstValueFrom(
+            this.$http
+                .get(`${this.serviceURL}/updatePassword`)
+                .pipe(map((response: any) => response))
+        );
+    }
 }

@@ -305,4 +305,11 @@ public interface BenutzerService {
 		List<Gemeinde> gemeinden,
 		UserRole... roles
 	);
+
+	/**
+	 * Sendet einen Passwort-Ändern-Link an den gegebenen Benutzer.
+	 *
+	 * @param benutzer Der Benutzer, dem ein Passwort-Ändern-Link zugeschickt werden soll.
+	 */
+	void sendUpdatePasswordEmail(Benutzer benutzer);
 }

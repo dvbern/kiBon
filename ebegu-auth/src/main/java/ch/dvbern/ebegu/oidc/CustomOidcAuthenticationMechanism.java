@@ -54,6 +54,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
+import ch.dvbern.ebegu.backchannellogout.SessionRegistry;
 import ch.dvbern.ebegu.scolaris.ScolarisAuthentication;
 import com.google.common.base.Strings;
 import org.glassfish.soteria.mechanisms.openid.OpenIdState;
@@ -134,6 +135,9 @@ public class CustomOidcAuthenticationMechanism implements
 
 	@Inject
 	private ScolarisAuthentication scolarisAuthentication;
+
+	@Inject
+	private SessionRegistry sessionRegistry;
 
 	private static final Map<String, Object> SESSION_LOCKS =
 		new ConcurrentHashMap<>();
@@ -467,6 +471,17 @@ public class CustomOidcAuthenticationMechanism implements
 					validationResult.getCallerPrincipal().getName(),
 					validationResult.getCallerGroups()
 				);
+
+				// registerSession here
+				HttpSession session = request.getSession(false); // false, um keine neue zu erstellen, wenn keine da ist
+
+				String subject = validationResult.getCallerPrincipal()
+					.getName();
+
+				if (subject != null && !subject.isEmpty()) {
+					// Session in der Registry speichern
+					sessionRegistry.registerSession(session, subject);
+				}
 
 				if (configuration.isRedirectToOriginalResource()) {
 					// Restore request manually (if @LoginToContinue used, this would be done by its interceptor)

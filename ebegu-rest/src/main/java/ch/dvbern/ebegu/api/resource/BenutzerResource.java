@@ -746,4 +746,45 @@ public class BenutzerResource {
 			.map(Benutzer::getEmail)
 			.collect(Collectors.toList());
 	}
+
+	/**
+	 * Triggers the update password action via Keycloak API for the user currently logged in.
+	 * This user will then receive an e-mail with instructions on how to change his password.
+	 * If this API is called with no existing, validly authenticated user, an {@link EbeguRuntimeException}
+	 * will be thrown.
+	 * The update password action is not available for users of mandant Berne. This is because Berne
+	 * uses an external IDP. If the currently authenticated user is of mandant Berne, an {@link EbeguRuntimeException}
+	 * will be thrown, too.
+	 *
+	 * @return An empty response with HTTP response code 200 - if the update password action has been
+	 * successfully initiated - an apropriate error response, especially for the cases described above, otherwise.
+	 */
+	@Operation(
+		summary = "Sendet eine E-Mail mit einem Passwort-Ändern-Link an den, in dieser Session angemeldeten Benutzer.")
+	@GET
+	@Path("/updatePassword")
+	@Consumes(MediaType.WILDCARD)
+	@PermitAll
+	public Response updatePassword() {
+
+		Benutzer eingeloggterBenutzer = benutzerService.getCurrentBenutzer()
+			.orElseThrow(
+				() -> new EbeguRuntimeException(
+					"changePassword",
+					"User not found or user not logged in"
+				)
+			);
+
+		if (MandantIdentifier.BERN
+			== eingeloggterBenutzer.getMandant().getMandantIdentifier()) {
+			throw new EbeguRuntimeException(
+				"changePassword",
+				"The update password action is not available for users of mandant Berne."
+			);
+		}
+
+		benutzerService.sendUpdatePasswordEmail(eingeloggterBenutzer);
+
+		return Response.ok().build();
+	}
 }

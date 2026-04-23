@@ -153,6 +153,13 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements
 	private static final String KIBON_EXCHANGE_NEU_VERANLAGUNG_ENABLED =
 		"kibon.exchange.neuveranlagung.enabled";
 
+	private static final String KIBON_IAMEVENTQUEUE_HOST =
+		"kibon.iam-event-queue.host";
+	private static final String KIBON_IAMEVENTQUEUE_TOPIC_LOGOUT =
+		"kibon.iam-event-queue.topic.logout";
+	private static final String KIBON_IAMEVENTQUEUE_CONSUMER_GROUP =
+		"kibon.iam-event-queue.consumer.group";
+
 	@Inject
 	private ApplicationPropertyService applicationPropertyService;
 
@@ -548,6 +555,18 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements
 	@Override
 	public String getGeresSchwyzPassword() {
 		return getEnvOrString("ebegu.personensuche.geres.schwyz.password");
+	}
+
+	public String getKibonIameventqueueHost() {
+		return getEnvOrString(KIBON_IAMEVENTQUEUE_HOST);
+	}
+
+	public String getKibonIameventqueueTopicLogout() {
+		return getEnvOrString(KIBON_IAMEVENTQUEUE_TOPIC_LOGOUT);
+	}
+
+	public String getKibonIameventqueueConsumerGroup() {
+		return getEnvOrString(KIBON_IAMEVENTQUEUE_CONSUMER_GROUP);
 	}
 
 	private String getEnvOrString(String property) {

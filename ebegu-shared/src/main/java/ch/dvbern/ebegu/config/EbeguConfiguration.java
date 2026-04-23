@@ -351,4 +351,25 @@ public interface EbeguConfiguration {
 	String getGeresSchwyzUsername();
 
 	String getGeresSchwyzPassword();
+
+	/**
+	 * Retrieves the host name where the Kibon IAM event queue is running.
+	 *
+	 * @return the host name as a String for the Kibon IAM event queue.
+	 */
+	String getKibonIameventqueueHost();
+
+	/**
+	 * Retrieves the topic name for the Kibon IAM event queue associated with logout events.
+	 *
+	 * @return the topic name as a String for the logout event queue in the Kibon IAM system.
+	 */
+	String getKibonIameventqueueTopicLogout();
+
+	/**
+	 * Retrieves the consumer group identifier for the Kibon IAM event queue.
+	 *
+	 * @return the consumer group identifier as a String for the Kibon IAM event queue.
+	 */
+	String getKibonIameventqueueConsumerGroup();
 }

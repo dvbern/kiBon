@@ -22,14 +22,19 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {MANDANTS} from '@models/mandant';
 import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {StateService} from '@uirouter/core';
+import {MandantService} from '@utils/mandant';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSRole} from '../../../../models/enums/TSRole';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../errors/service/ErrorService';
+import {BenutzerRSX} from '../../service/benutzerRSX.rest';
+import {DvNgOkDialogComponent} from '../dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 
 @Component({
     selector: 'dv-pulldown-user-menu',
@@ -50,6 +55,12 @@ export class PulldownUserMenuComponent implements OnInit {
     public multimandantAktiv: boolean;
     public frenchEnabled: boolean;
     public testfaelleEnabled: boolean;
+
+    public constructor(
+        private readonly mandantService: MandantService,
+        private readonly benutzerRS: BenutzerRSX,
+        private readonly dvDialog: MatDialog
+    ) {}
 
     public ngOnInit(): void {
         this.initMandantSwitch();
@@ -113,6 +124,35 @@ export class PulldownUserMenuComponent implements OnInit {
 
     public isDevMode() {
         return this.applicationPropertyRS.isDevMode();
+    }
+
+    /**
+     * @returns If the current user is allowed to change his password. User's of mandant Bern
+     * aren't allowed to do so, because Bern uses AGOV (external IDP) login, where no password is required.
+     */
+    public canUpdatePassword(): boolean {
+        let mandantIsNotBern: boolean;
+        this.mandantService.mandant$.subscribe(mandant => {
+            mandantIsNotBern = MANDANTS.BERN !== mandant;
+        });
+
+        return mandantIsNotBern;
+    }
+
+    public updatePassword(): void {
+        this.benutzerRS
+            .updatePassword()
+            .then(() => {
+                this.dvDialog.open(DvNgOkDialogComponent, {
+                    data: {
+                        title: 'UPDATE_PASSWORD_DIALOG_TITLE',
+                        text: 'UPDATE_PASSWORD_DIALOG_TEXT'
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Failed to update password:', error);
+            });
     }
 
     public logout(event: Event): void {

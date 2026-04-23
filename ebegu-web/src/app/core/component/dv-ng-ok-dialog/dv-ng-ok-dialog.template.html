@@ -15,6 +15,12 @@
 
 <h2 mat-dialog-title [textContent]="title | translate"></h2>
 
+@if (text) {
+    <mat-dialog-content class="margin-bottom-20">
+        <span [innerHTML]="text | translate"></span>
+    </mat-dialog-content>
+}
+
 <mat-dialog-actions>
     <div class="dv-dialog-actions">
         <button

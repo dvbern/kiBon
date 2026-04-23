@@ -54,6 +54,8 @@ import static ch.dvbern.ebegu.services.authentication.RealmRoles.MITARBEITER_ACC
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class KeycloakApi {
 
+	private static final Integer SIX_HOURS_IN_SECONDS = 6 * 60 * 60;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(
 		KeycloakApi.class
 	);
@@ -305,6 +307,29 @@ public class KeycloakApi {
 		return response.isEmpty() ?
 			Optional.empty() :
 			Optional.of(response.get(0).getId());
+	}
+
+	public void sendUpdatePasswordEmail(Benutzer benutzer) {
+		var realmName = getRealmName(benutzer);
+		var uuid = benutzer.getExternalUUID();
+		var user = keycloak.realm(realmName).users().get(uuid);
+
+		try {
+			user.executeActionsEmail(
+				List.of("UPDATE_PASSWORD"),
+				SIX_HOURS_IN_SECONDS
+			);
+			LOGGER.info(
+				"Update password email sent to user with externalUuid: {}",
+				uuid
+			);
+		} catch (RuntimeException ex) {
+			throw new IllegalStateException(
+				"Failed to trigger user action UPDATE_PASSWORD for user with externalUuid: "
+					+ uuid,
+				ex
+			);
+		}
 	}
 
 	public String getIDPLogoutUrl(String realmName, String idpAlias) {

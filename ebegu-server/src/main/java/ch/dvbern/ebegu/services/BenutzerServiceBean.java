@@ -2149,4 +2149,8 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 		);
 	}
 
+	@Override
+	public void sendUpdatePasswordEmail(Benutzer benutzer) {
+		keycloakApi.sendUpdatePasswordEmail(benutzer);
+	}
 }
