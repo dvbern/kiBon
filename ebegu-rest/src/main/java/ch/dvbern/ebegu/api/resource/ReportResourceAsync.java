@@ -49,6 +49,7 @@ import jakarta.ws.rs.core.UriInfo;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.dto.statistik.KinderStatistikParameterDto;
+import ch.dvbern.ebegu.dto.statistik.MitarbeitendeStatistikParameterDto;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Gemeinde;
@@ -64,7 +65,7 @@ import ch.dvbern.ebegu.errors.EbeguException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
-import ch.dvbern.ebegu.outbox.statistik.KafkaKinderStatistikProducer;
+import ch.dvbern.ebegu.outbox.statistik.KafkaStatistikProducer;
 import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.InstitutionService;
@@ -127,7 +128,7 @@ public class ReportResourceAsync {
 	private ApplicationPropertyService applicationPropertyService;
 
 	@Inject
-	KafkaKinderStatistikProducer kafkaKinderStatistikProducer;
+	KafkaStatistikProducer kafkaStatistikProducer;
 
 	@Operation(
 		summary = "Erstellt ein Excel mit der Statistik 'Gesuch-Stichtag'")
@@ -331,15 +332,31 @@ public class ReportResourceAsync {
 		}
 
 		Workjob workJob = createWorkjobForReport(request, uriInfo);
-
-		workJob = workjobReportService.createNewReporting(
-			workJob,
-			ReportVorlage.VORLAGE_REPORT_MITARBEITERINNEN,
-			dateAuswertungVon,
-			dateAuswertungBis,
-			null,
-			LocaleThreadLocal.get()
-		);
+		if (Boolean.TRUE.equals(
+			applicationPropertyService.findApplicationPropertyAsBoolean(
+				ApplicationPropertyKey.QUARKUS_STATISTIK_MITARBEITENDE,
+				principalBean.getMandant()
+			)
+		)) {
+			MitarbeitendeStatistikParameterDto dto =
+				new MitarbeitendeStatistikParameterDto();
+			dto.setBenutzerId(principalBean.getBenutzer().getId());
+			dto.setAuswertungVon(dateAuswertungVon);
+			dto.setAuswertungBis(dateAuswertungBis);
+			dto.setSprache(LocaleThreadLocal.get().getLanguage());
+			dto.setWorkjobId(workJob.getId());
+			kafkaStatistikProducer.sendMitarbeitendeStatistik(dto);
+			workjobReportService.persistWorkjobForReport(workJob);
+		} else {
+			workJob = workjobReportService.createNewReporting(
+				workJob,
+				ReportVorlage.VORLAGE_REPORT_MITARBEITERINNEN,
+				dateAuswertungVon,
+				dateAuswertungBis,
+				null,
+				LocaleThreadLocal.get()
+			);
+		}
 
 		return createWorkjobResponse(workJob);
 	}
@@ -546,7 +563,7 @@ public class ReportResourceAsync {
 			dto.setGesuchsperiodeId(periodeId);
 			dto.setSprache(LocaleThreadLocal.get().getLanguage());
 			dto.setWorkjobId(workJob.getId());
-			kafkaKinderStatistikProducer.sendKinderStatistik(dto);
+			kafkaStatistikProducer.sendKinderStatistik(dto);
 			workjobReportService.persistWorkjobForReport(workJob);
 		} else {
 			workJob = workjobReportService.createNewReporting(

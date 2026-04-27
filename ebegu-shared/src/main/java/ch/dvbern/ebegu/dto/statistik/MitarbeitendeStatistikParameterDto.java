@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 DV Bern AG, Switzerland
+ * Copyright (C) 2026 DV Bern AG, Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -13,17 +13,22 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package ch.dvbern.ebegu.dto.statistik;
 
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class BaseDto {
-	private String sprache;
-	private String workjobId;
-	private String benutzerId;
+public class MitarbeitendeStatistikParameterDto extends BaseDto {
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate auswertungVon;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate auswertungBis;
 }

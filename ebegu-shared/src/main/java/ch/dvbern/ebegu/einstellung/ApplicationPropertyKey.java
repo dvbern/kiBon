@@ -314,6 +314,8 @@ public enum ApplicationPropertyKey {
 	 */
 	@BooleanEinstellung QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER(
 		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
+	), @BooleanEinstellung QUARKUS_STATISTIK_MITARBEITENDE(
+		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
 	);
 
 	private final KeyGrouping keyGrouping;

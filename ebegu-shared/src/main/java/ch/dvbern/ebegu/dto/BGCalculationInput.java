@@ -1164,7 +1164,7 @@ public class BGCalculationInput {
 		);
 		if (other.bedarfsstufe != null) {
 			if (this.bedarfsstufe != null
-				&& this.bedarfsstufe == other.bedarfsstufe) {
+				&& this.bedarfsstufe != other.bedarfsstufe) {
 				throw new IllegalArgumentException(
 					"Bedarfsstufe können nicht gemerged werden"
 				);

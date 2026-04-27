@@ -25,6 +25,7 @@ import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.dto.statistik.KinderStatistikParameterDto;
+import ch.dvbern.ebegu.dto.statistik.MitarbeitendeStatistikParameterDto;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,10 +41,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class KafkaKinderStatistikProducer {
+public class KafkaStatistikProducer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(
-		KafkaKinderStatistikProducer.class
+		KafkaStatistikProducer.class
 	);
 
 	@Inject
@@ -88,24 +89,7 @@ public class KafkaKinderStatistikProducer {
 		initIfNeeded();
 		try {
 			String json = mapper.writeValueAsString(dto);
-			ProducerRecord<String, String> record =
-				new ProducerRecord<>("kinderstatistik", json);
-
-			producer.send(
-				record,
-				(metadata, exception) -> {
-					if (exception != null) {
-						LOG.error("Failed to send: {}", exception.getMessage());
-						throw new EbeguRuntimeException(
-							"sendKinderStatistik",
-							"Could not send message to Kafka",
-							exception
-						);
-					} else {
-						LOG.info("Sent to topic {}", metadata.topic());
-					}
-				}
-			);
+			sendStatistikToKafka("kinderstatistik", json);
 
 		} catch (JsonProcessingException e) {
 			throw new EbeguRuntimeException(
@@ -114,6 +98,44 @@ public class KafkaKinderStatistikProducer {
 				e
 			);
 		}
+	}
+
+	public void sendMitarbeitendeStatistik(
+		MitarbeitendeStatistikParameterDto dto
+	) {
+		initIfNeeded();
+		try {
+			String json = mapper.writeValueAsString(dto);
+			sendStatistikToKafka("mitarbeitendestatistik", json);
+
+		} catch (JsonProcessingException e) {
+			throw new EbeguRuntimeException(
+				"sendMitarbeitendeStatistik",
+				"Could not serialize DTO",
+				e
+			);
+		}
+	}
+
+	private void sendStatistikToKafka(String topic, String json) {
+		ProducerRecord<String, String> record =
+			new ProducerRecord<>(topic, json);
+
+		producer.send(
+			record,
+			(metadata, exception) -> {
+				if (exception != null) {
+					LOG.error("Failed to send: {}", exception.getMessage());
+					throw new EbeguRuntimeException(
+						topic,
+						"Could not send message to Kafka topic",
+						exception
+					);
+				} else {
+					LOG.info("Sent to topic {}", metadata.topic());
+				}
+			}
+		);
 	}
 
 	@PreDestroy

@@ -3335,5 +3335,6 @@
     "UPDATE_PASSWORD_DIALOG_TEXT": "Bitte überprüfen Sie Ihren Posteingang. Falls Sie die E-Mail nicht finden, schauen Sie auch im Spam-Ordner nach.",
     "QUARKUS_STATISTIK": "Quarkus Statistik",
     "QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER": "Betreuungsgutscheine: Kinder Statistik",
+    "QUARKUS_STATISTIK_MITARBEITENDE": "Mitarbeitende Statistik",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }
