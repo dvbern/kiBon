@@ -232,6 +232,7 @@
                                 type="button"
                                 (buttonClick)="downloadAllDetails(element)"
                                 [buttonClass]="'dv-btn-operation'"
+                                data-test="ExcelDownloadButton"
                             >
                                 <i class="fa fa-lg fa-file-code-o"></i>
                             </dv-loading-button>
@@ -250,6 +251,7 @@
                                     type="button"
                                     (buttonClick)="edit(element)"
                                     [buttonClass]="'dv-btn-operation'"
+                                    data-test="editZahlungsauftrag"
                                 >
                                     <i class="fa fa-lg fa-pencil-square-o"></i>
                                 </dv-loading-button>
@@ -259,6 +261,7 @@
                                     type="button"
                                     (buttonClick)="save()"
                                     [buttonClass]="'dv-btn-operation'"
+                                    data-test="saveZahlungsauftrag"
                                 >
                                     <i class="fa fa-lg fa-floppy-o"></i>
                                 </dv-loading-button>
@@ -355,6 +358,7 @@
                                         [(ngModel)]="
                                             zahlungsauftragToEdit.beschrieb
                                         "
+                                        data-test="zahlungsauftragBeschrieb"
                                         required
                                     />
                                     <div
@@ -391,6 +395,7 @@
                                         type="button"
                                         (buttonClick)="ausloesen(element.id)"
                                         [buttonClass]="'dv-btn-operation'"
+                                        data-test="ausloesen"
                                     >
                                         <i
                                             class="fa fa-lg fa-arrow-right"

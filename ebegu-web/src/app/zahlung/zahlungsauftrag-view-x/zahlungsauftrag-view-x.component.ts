@@ -272,7 +272,7 @@ export class ZahlungsauftragViewXComponent
         return this.downloadRS
             .getPain001AccessTokenGeneratedDokument(zahlungsauftrag.id, typ)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     true,
@@ -293,10 +293,10 @@ export class ZahlungsauftragViewXComponent
         this.reportRS
             .getZahlungsauftragReportExcel(zahlungsauftrag.id)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
-                    false,
+                    true,
                     win
                 );
             })

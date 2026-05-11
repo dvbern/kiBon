@@ -112,28 +112,38 @@
                                                 tabindex="0"
                                             ></button>
                                         </td>
-                                        <td
-                                            width="2%"
-                                            class="symbol"
-                                            tabindex="-1"
-                                        >
-                                            <button
-                                                type="button"
-                                                (click)="
-                                                    onDownload(file, false);
-                                                    $event.stopPropagation()
-                                                "
-                                                class="dv-btn fa fa-eye dv-btn-operation"
-                                                title="{{
-                                                    'DOKUMENT_LOOK' | translate
-                                                }}"
-                                                [attr.aria-label]="
-                                                    'DOKUMENT_LOOK' | translate
-                                                "
-                                                aria-hidden="true"
-                                                tabindex="0"
-                                            ></button>
-                                        </td>
+                                        @if (isOfficeFile(file)) {
+                                            <td
+                                                class="symbol"
+                                                tabindex="-1"
+                                            ></td>
+                                        } @else {
+                                            <td
+                                                width="2%"
+                                                class="symbol"
+                                                tabindex="-1"
+                                            >
+                                                <button
+                                                    type="button"
+                                                    (click)="
+                                                        onDownload(file, false);
+                                                        $event.stopPropagation()
+                                                    "
+                                                    class="dv-btn fa fa-eye dv-btn-operation"
+                                                    title="{{
+                                                        'DOKUMENT_LOOK'
+                                                            | translate
+                                                    }}"
+                                                    [attr.aria-label]="
+                                                        'DOKUMENT_LOOK'
+                                                            | translate
+                                                    "
+                                                    aria-hidden="true"
+                                                    tabindex="0"
+                                                ></button>
+                                            </td>
+                                        }
+
                                         <td
                                             width="2%"
                                             class="symbol"

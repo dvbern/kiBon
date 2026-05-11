@@ -286,6 +286,12 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements
 		return getAllGesuchsperioden(mandant);
 	}
 
+	/**
+	 * Returns all gesuchsperioden of mandant ordered by gueltigAb date
+	 * 
+	 * @param mandant the {@link Mandant} the gesuchsperioden are to be retrieved for
+	 * @return all {@link Gesuchsperiode}n of the {@link Mandant}
+	 */
 	@Nonnull
 	@Override
 	public Collection<Gesuchsperiode> getAllGesuchsperioden(

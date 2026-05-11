@@ -18,22 +18,35 @@
 package ch.dvbern.ebegu.outbox.gemeinde;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.gemeinde.GemeindeKonfigurationService;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import ch.dvbern.kibon.exchange.commons.gemeinde.GemeindeEventDTO;
 import ch.dvbern.kibon.exchange.commons.util.AvroConverter;
+import org.easymock.EasyMockExtension;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
+import org.easymock.TestSubject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
+import static org.easymock.EasyMock.expect;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class GemeindeEventConverterTest {
+@ExtendWith(EasyMockExtension.class)
+public class GemeindeEventConverterTest extends EasyMockSupport {
 
+	@TestSubject
 	private final GemeindeEventConverter gemeindeEventConverter =
 		new GemeindeEventConverter();
+
+	@Mock
+	private GemeindeKonfigurationService gemeindeKonfigurationService;
 
 	@Test
 	public void testChangedEvent() {
@@ -45,6 +58,13 @@ public class GemeindeEventConverterTest {
 		gemeinde.setGueltigBis(LocalDate.of(9999, 12, 31));
 		gemeinde.setMandant(new Mandant());
 		gemeinde.getMandant().setMandantIdentifier(MandantIdentifier.BERN);
+
+		expect(
+			gemeindeKonfigurationService
+				.loadEinstellungenOfGPRelevantForGemeinde(gemeinde)
+		).andReturn(Map.of());
+
+		replayAll();
 
 		GemeindeChangedEvent gemeindeChangedEvent = gemeindeEventConverter.of(
 			gemeinde

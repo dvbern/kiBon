@@ -239,7 +239,7 @@ export class DownloadRS {
      * Das Window muss als Parameter mitgegeben werden, damit der Popup Blocker das Oeffnen dieses Fesnters nicht als
      * Popup identifiziert.
      */
-    public startDownloadGeneratedPDF(
+    public startDownloadGeneratedFile(
         accessToken: string,
         _dokumentName: string,
         attachment: boolean,

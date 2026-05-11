@@ -376,7 +376,7 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
         this.downloadRS
             .getAccessTokenSozialdienstFallDokument(dokument.id)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     attachment,

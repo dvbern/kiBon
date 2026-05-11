@@ -49,6 +49,7 @@ import jakarta.ws.rs.core.UriInfo;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.dto.statistik.KinderStatistikParameterDto;
+import ch.dvbern.ebegu.dto.statistik.LastenausgleichBGStatistikParameterDto;
 import ch.dvbern.ebegu.dto.statistik.MitarbeitendeStatistikParameterDto;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
@@ -1035,24 +1036,41 @@ public class ReportResourceAsync {
 		}
 
 		Workjob workJob = createWorkjobForReport(request, uriInfo);
-
-		workJob = workjobReportService.createNewReporting(
-			workJob,
-			ReportVorlage.VORLAGE_REPORT_LASTENAUSGLEICH_BG_ZEITABSCHNITTE,
-			dateVon,
-			dateBis,
-			null,
-			false,
-			false,
-			false,
-			false,
-			gemeinde,
-			null,
-			jahr,
-			null,
-			LocaleThreadLocal.get()
-		);
-
+		if (Boolean.TRUE.equals(
+			applicationPropertyService.findApplicationPropertyAsBoolean(
+				ApplicationPropertyKey.QUARKUS_STATISTIK_LASTENAUSGLEICH_BG,
+				principalBean.getMandant()
+			)
+		)) {
+			LastenausgleichBGStatistikParameterDto dto =
+				new LastenausgleichBGStatistikParameterDto();
+			dto.setBenutzerId(principalBean.getBenutzer().getId());
+			dto.setVon(dateVon);
+			dto.setBis(dateBis);
+			dto.setSprache(LocaleThreadLocal.get().getLanguage());
+			dto.setLastenausgleichJahr(jahr);
+			dto.setGemeindeId(gemeinde != null ? gemeinde.getId() : null);
+			dto.setWorkjobId(workJob.getId());
+			kafkaStatistikProducer.sendLastenausgleichBGStatistik(dto);
+			workjobReportService.persistWorkjobForReport(workJob);
+		} else {
+			workJob = workjobReportService.createNewReporting(
+				workJob,
+				ReportVorlage.VORLAGE_REPORT_LASTENAUSGLEICH_BG_ZEITABSCHNITTE,
+				dateVon,
+				dateBis,
+				null,
+				false,
+				false,
+				false,
+				false,
+				gemeinde,
+				null,
+				jahr,
+				null,
+				LocaleThreadLocal.get()
+			);
+		}
 		return createWorkjobResponse(workJob);
 	}
 

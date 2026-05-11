@@ -196,7 +196,7 @@ export class PosteingangViewComponent
     public verantwortungList = computed(() => {
         const verantwortungen = [TSVerantwortung.VERANTWORTUNG_BG];
         const appProps = this.applicationProperties.value();
-        if (appProps.angebotTSActivated) {
+        if (appProps?.angebotTSActivated) {
             verantwortungen.push(TSVerantwortung.VERANTWORTUNG_TS);
         }
         return verantwortungen;

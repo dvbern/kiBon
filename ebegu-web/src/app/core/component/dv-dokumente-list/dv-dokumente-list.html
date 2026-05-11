@@ -304,7 +304,14 @@
                                 style="color: black"
                             ></span>
                         </td>
-                        <td class="dateientable-td symbol">
+                        <td
+                            ng-if="vm.isOfficeFile(dokument)"
+                            class="dateientable-td"
+                        ></td>
+                        <td
+                            ng-if="!vm.isOfficeFile(dokument)"
+                            class="dateientable-td symbol"
+                        >
                             <span
                                 ng-click="vm.download(dokument, false)"
                                 class="fa fa-eye"

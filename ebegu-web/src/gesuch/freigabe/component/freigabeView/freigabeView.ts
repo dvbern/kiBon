@@ -239,7 +239,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
                 this.gesuchModelManager
                     .openGesuch(gesuchId)
                     .then(() => {
-                        this.downloadRS.startDownloadGeneratedPDF(
+                        this.downloadRS.startDownloadGeneratedFile(
                             downloadFile.accessToken,
                             downloadFile.filename,
                             false,

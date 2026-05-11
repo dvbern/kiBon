@@ -26,7 +26,11 @@ import {
     inject
 } from '@angular/core';
 import {Moment} from 'moment';
-import {TSDokumentUploadTyp} from '../../../../models/enums/TSDokumentUploadTyp';
+import {DokumenteUtil} from '../../../../gesuch/component/DokumenteView/DokumenteUtil';
+import {
+    isOfficeFileEnding,
+    TSDokumentUploadTyp
+} from '../../../../models/enums/TSDokumentUploadTyp';
 import {TSFile} from '../../../../models/TSFile';
 import {TSUploadFile} from '../../../../models/TSUploadFile';
 import {ApplicationPropertyRsService} from '../../../../utils/application-property-rs/application-property-rs.service';
@@ -113,5 +117,11 @@ export class MultipleFileUploadComponent<T extends TSFile>
         if (!this.readOnly) {
             fileInput.click();
         }
+    }
+
+    isOfficeFile(file: TSUploadFile): boolean {
+        return isOfficeFileEnding(
+            DokumenteUtil.getFileExtensionWithDot(file.filename)
+        );
     }
 }

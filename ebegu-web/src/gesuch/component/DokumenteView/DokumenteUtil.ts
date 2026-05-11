@@ -25,4 +25,11 @@ export abstract class DokumenteUtil {
             authServiceRS.isOneOfRoles(TSRoleUtil.getReadOnlyRoles())
         );
     }
+
+    static getFileExtensionWithDot(filename: string): string {
+        if (!filename || !filename.includes('.')) {
+            return '';
+        }
+        return `.${filename.split('.').pop()?.toLowerCase()}`;
+    }
 }

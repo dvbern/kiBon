@@ -191,10 +191,10 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
                         .getZemisExcel(zemisDialogData.jahr)
                         .subscribe(
                             (downloadFile: TSDownloadFile) => {
-                                this.downloadRS.startDownloadGeneratedPDF(
+                                this.downloadRS.startDownloadGeneratedFile(
                                     downloadFile.accessToken,
                                     downloadFile.filename,
-                                    false,
+                                    true,
                                     win
                                 );
                             },
@@ -254,10 +254,10 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
             .getLastenausgleichReportExcel(lastenausgleich.id)
             .subscribe(
                 (downloadFile: TSDownloadFile) => {
-                    this.downloadRS.startDownloadGeneratedPDF(
+                    this.downloadRS.startDownloadGeneratedFile(
                         downloadFile.accessToken,
                         downloadFile.filename,
-                        false,
+                        true,
                         win
                     );
                 },
@@ -273,10 +273,10 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
             .getLastenausgleichReportCSV(lastenausgleich.id)
             .subscribe(
                 (downloadFile: TSDownloadFile) => {
-                    this.downloadRS.startDownloadGeneratedPDF(
+                    this.downloadRS.startDownloadGeneratedFile(
                         downloadFile.accessToken,
                         downloadFile.filename,
-                        false,
+                        true,
                         win
                     );
                 },

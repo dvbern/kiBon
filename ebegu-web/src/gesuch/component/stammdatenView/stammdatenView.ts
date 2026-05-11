@@ -795,7 +795,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         this.downloadRS
             .getAccessTokenDokument(dokument.id)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     attachment,

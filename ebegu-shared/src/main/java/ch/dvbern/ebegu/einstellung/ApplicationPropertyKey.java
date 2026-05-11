@@ -316,6 +316,8 @@ public enum ApplicationPropertyKey {
 		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
 	), @BooleanEinstellung QUARKUS_STATISTIK_MITARBEITENDE(
 		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
+	), @BooleanEinstellung QUARKUS_STATISTIK_LASTENAUSGLEICH_BG(
+		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
 	);
 
 	private final KeyGrouping keyGrouping;

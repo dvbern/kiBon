@@ -23,6 +23,8 @@
             class="text-content"
             [innerHTML]="dialogData.text | translate"
         ></div>
-        <button class="dv-btn" (click)="close()" translate>ZURUECK_ONLY</button>
+        <button class="dv-btn" (click)="close()">
+            {{ 'ZURUECK_ONLY' | translate }}
+        </button>
     </div>
 </div>

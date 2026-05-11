@@ -28,6 +28,7 @@ import {
 } from '@dv-e2e/page-objects';
 import {getUser, User} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
+import {GesuchPO} from '../../page-objects/antrag/gesuch.po';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 
 describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
@@ -213,26 +214,8 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
     };
 
     const gesuchVerfuegen = () => {
-        betreuungVerfuegen(0, 0);
-        betreuungVerfuegen(1, 0);
-    };
-
-    const betreuungVerfuegen = (kindIndex: number, betreuungIndex: number) => {
-        SidenavPO.goTo('VERFUEGEN');
-        cy.waitForRequest(
-            'GET',
-            '**/einstellung/key/FINANZIELLE_SITUATION_TYP/gemeinde/**',
-            () => {
-                VerfuegenPO.getVerfuegung(kindIndex, betreuungIndex).click();
-            }
-        );
-
-        VerfuegungPO.getVerfuegungsBemerkungenKontrolliert().click();
-
-        cy.waitForRequest('PUT', '**/verfuegung/verfuegen/**', () => {
-            VerfuegungPO.getVerfuegenButton().click();
-            ConfirmDialogPO.getDvLoadingConfirmButton().click();
-        });
+        GesuchPO.betreuungVerfuegen(0, 0);
+        GesuchPO.betreuungVerfuegen(1, 0);
     };
 
     const checkBetreuungsstatus = () => {

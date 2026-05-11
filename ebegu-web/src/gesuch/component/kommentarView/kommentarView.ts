@@ -228,7 +228,7 @@ export class KommentarViewController implements IController {
                 .getAccessTokenDokument(newest.id)
                 .then(response => {
                     const tempDokument = copy(response);
-                    this.downloadRS.startDownloadGeneratedPDF(
+                    this.downloadRS.startDownloadGeneratedFile(
                         tempDokument.accessToken,
                         newest.filename,
                         false,

@@ -29,7 +29,10 @@ import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
 import {TSDokumentGrundPersonType} from '../../../../models/enums/TSDokumentGrundPersonType';
 import {TSDokumentTyp} from '../../../../models/enums/TSDokumentTyp';
 import {KiBonMandant, MANDANTS} from '@models/mandant';
-import {TSDokumentUploadTyp} from '../../../../models/enums/TSDokumentUploadTyp';
+import {
+    isOfficeFileEnding,
+    TSDokumentUploadTyp
+} from '../../../../models/enums/TSDokumentUploadTyp';
 import {TSRole} from '../../../../models/enums/TSRole';
 import {TSDokument} from '../../../../models/TSDokument';
 import {TSDokumentGrund} from '../../../../models/TSDokumentGrund';
@@ -272,7 +275,7 @@ export class DVDokumenteListController implements IController {
             .getAccessTokenDokument(dokument.id)
             .then((downloadFile: TSDownloadFile) => {
                 this.$log.debug(`accessToken: ${downloadFile.accessToken}`);
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     attachment,
@@ -398,6 +401,12 @@ export class DVDokumenteListController implements IController {
             FinanzielleSituationAppenzellService.finSitNeedsTwoSeparateAntragsteller(
                 gesuch
             ) && EbeguUtil.isNullOrUndefined(gesuch.gesuchsteller2)
+        );
+    }
+
+    public isOfficeFile(dokument: TSDokument) {
+        return isOfficeFileEnding(
+            DokumenteUtil.getFileExtensionWithDot(dokument.filename)
         );
     }
 }

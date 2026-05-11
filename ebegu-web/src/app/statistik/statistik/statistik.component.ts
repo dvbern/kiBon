@@ -586,10 +586,10 @@ export class StatistikComponent implements OnInit, OnDestroy {
 
         const win = this.downloadRS.prepareDownloadWindow();
         LOG.debug(`accessToken: ${row.resultData}`);
-        this.downloadRS.startDownloadGeneratedPDF(
+        this.downloadRS.startDownloadGeneratedFile(
             row.resultData,
             'report.xlsx',
-            false,
+            true,
             win
         );
     }

@@ -278,7 +278,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 betreuung.verfuegung.generatedBemerkungen
             )
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -859,7 +859,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 this.gesuchModelManager.getGesuch().id
             )
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -944,7 +944,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 this.gesuchModelManager.getGesuch().id
             )
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -964,7 +964,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 this.gesuchModelManager.getGesuch().id
             )
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -979,7 +979,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         this.downloadRS
             .getAccessTokenMahnungGeneratedDokument(mahnung || this.mahnung)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,

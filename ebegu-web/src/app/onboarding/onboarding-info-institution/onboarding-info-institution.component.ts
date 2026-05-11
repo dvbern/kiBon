@@ -19,9 +19,12 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnInit,
-    inject
+    inject,
+    computed
 } from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {NgForm} from '@angular/forms';
+import {MANDANTS} from '@models/mandant';
 import {TranslateService} from '@ngx-translate/core';
 import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
@@ -53,6 +56,16 @@ export class OnboardingInfoInstitutionComponent implements OnInit {
 
     public testZugangBeantragen: boolean;
     public institutionName: string;
+    private mandant = toSignal(this.mandantService.mandant$);
+
+    /**
+     * This is a specific kiBon antipattern to check a specific mandant like this.
+     * But this requirement has no einstellung or config behind it,
+     * so this is neccessary unfortunately.
+     */
+    public showTestzugangBeantragen = computed(
+        () => this.mandant() !== MANDANTS.SCHWYZ
+    );
 
     public ngOnInit(): void {
         this.onboardingPlaceholderService.setDescription1(

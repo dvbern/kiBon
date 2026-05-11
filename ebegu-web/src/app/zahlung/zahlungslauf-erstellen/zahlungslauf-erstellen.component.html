@@ -27,6 +27,7 @@
                                 name="gemeinde"
                                 #gemeinde="ngModel"
                                 required
+                                data-test="gemeinde"
                             >
                                 <option [ngValue]="null"></option>
                                 @for (
@@ -68,6 +69,7 @@
                             [(ngModel)]="model.faelligkeitsdatum"
                             [matDatepicker]="faelligkeitsdatumPicker"
                             placeholder="{{ 'DATE_PLACEHOLDER' | translate }}"
+                            data-test="faelligkeitsdatum"
                             required
                         />
                         <mat-datepicker-toggle
@@ -107,6 +109,7 @@
                                 placeholder="{{
                                     'DATE_PLACEHOLDER' | translate
                                 }}"
+                                data-test="generiertdatum"
                             />
                             <mat-datepicker-toggle
                                 matSuffix
@@ -139,6 +142,7 @@
                             [(ngModel)]="model.beschrieb"
                             class="form-control input-dv input-element"
                             required
+                            data-test="beschrieb"
                         />
                         <dv-error-messages
                             [errorObject]="beschrieb.errors"
@@ -151,6 +155,7 @@
                         (buttonClick)="createZahlungsauftrag()"
                         [ariaLabel]="getLabelZahlungslaufErstellen()"
                         type="submit"
+                        data-test="container.senden"
                     >
                         <span class="uppercase">{{
                             getLabelZahlungslaufErstellen()

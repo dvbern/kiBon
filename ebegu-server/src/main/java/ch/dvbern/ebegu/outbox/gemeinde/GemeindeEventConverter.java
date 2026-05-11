@@ -17,17 +17,30 @@
 
 package ch.dvbern.ebegu.outbox.gemeinde;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.gemeinde.GemeindeKonfigurationService;
 import ch.dvbern.kibon.exchange.commons.gemeinde.GemeindeEventDTO;
 import ch.dvbern.kibon.exchange.commons.gemeinde.GemeindeEventDTO.Builder;
+import ch.dvbern.kibon.exchange.commons.types.GemeindeGesuchsperiodeKonfiguration;
 import ch.dvbern.kibon.exchange.commons.types.Mandant;
 import ch.dvbern.kibon.exchange.commons.util.AvroConverter;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 @ApplicationScoped
 public class GemeindeEventConverter {
+
+	@Inject
+	private GemeindeKonfigurationService gemeindeKonfigurationService;
 
 	@Nonnull
 	public GemeindeChangedEvent of(@Nonnull Gemeinde gemeinde) {
@@ -48,6 +61,9 @@ public class GemeindeEventConverter {
 
 	@Nonnull
 	private GemeindeEventDTO toGemeindeEventDTO(@Nonnull Gemeinde gemeinde) {
+		var gpEinstellungenMap = this.gemeindeKonfigurationService
+			.loadEinstellungenOfGPRelevantForGemeinde(gemeinde);
+
 		//noinspection ConstantConditions
 		Builder builder = GemeindeEventDTO.newBuilder()
 			.setGemeindeUUID(gemeinde.getId())
@@ -66,7 +82,40 @@ public class GemeindeEventConverter {
 			)
 			.setAngebotBG(gemeinde.isAngebotBG())
 			.setAngebotTS(gemeinde.isAngebotTS())
-			.setAngebotFI(gemeinde.isAngebotFI());
+			.setAngebotFI(gemeinde.isAngebotFI())
+			.setGemeindeGesuchsperiodeKonfigurationen(
+				toGemeindeGesuchsperiodeKonfigurationList(gpEinstellungenMap)
+			);
 		return builder.build();
+	}
+
+	private List<GemeindeGesuchsperiodeKonfiguration> toGemeindeGesuchsperiodeKonfigurationList(
+		@MonotonicNonNull Map<Gesuchsperiode, Map<EinstellungKey, Einstellung>> gpEinstellungenMap
+	) {
+		return gpEinstellungenMap.keySet()
+			.stream()
+			.map(
+				gp -> GemeindeGesuchsperiodeKonfiguration
+					.newBuilder()
+					.setGesuchsperiodeStart(
+						gp
+							.getGueltigkeit()
+							.getGueltigAb()
+					)
+					.setGesuchsperiodeEnd(
+						gp
+							.getGueltigkeit()
+							.getGueltigBis()
+					)
+					.setKontingentierung(
+						gpEinstellungenMap.get(gp)
+							.get(
+								EinstellungKey.GEMEINDE_KONTINGENTIERUNG_ENABLED
+							)
+							.getValueAsBoolean()
+					)
+					.build()
+			)
+			.toList();
 	}
 }

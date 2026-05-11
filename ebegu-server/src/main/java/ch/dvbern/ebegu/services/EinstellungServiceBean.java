@@ -539,6 +539,13 @@ public class EinstellungServiceBean extends AbstractBaseService implements
 		return result;
 	}
 
+	/**
+	 * Gets all Einstellungen of gemeinde that are activated for the {@link Mandant} of the {@link Gemeinde}
+	 * 
+	 * @param gemeinde the {@link Gemeinde} to be retrieved for
+	 * @param gesuchsperiode the {@link Gesuchsperiode} to be retrieved for
+	 * @return all {@link Einstellung} activated for provided {@link Gemeinde} in {@link Gesuchsperiode}
+	 */
 	@Nonnull
 	@Override
 	public Map<EinstellungKey, Einstellung> getGemeindeEinstellungenActiveForMandantOnlyAsMap(

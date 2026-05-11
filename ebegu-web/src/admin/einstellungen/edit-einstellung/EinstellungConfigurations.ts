@@ -303,7 +303,8 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
     ABGELOESTE_VIEW_VERFUEGUNG_LIST: createConfiguration(Boolean),
     ABGELOESTE_VIEW_VERFUEGUNG_SINGLE: createConfiguration(Boolean),
     QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER: createConfiguration(Boolean),
-    QUARKUS_STATISTIK_MITARBEITENDE: createConfiguration(Boolean)
+    QUARKUS_STATISTIK_MITARBEITENDE: createConfiguration(Boolean),
+    QUARKUS_STATISTIK_LASTENAUSGLEICH_BG: createConfiguration(Boolean)
 };
 
 type ConfigurableEnums = (typeof configEnums)[number];

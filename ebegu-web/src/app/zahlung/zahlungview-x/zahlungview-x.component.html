@@ -81,6 +81,7 @@
                                     type="button"
                                     (buttonClick)="downloadDetails(element)"
                                     [buttonClass]="'dv-btn-operation'"
+                                    data-test="ExcelDownloadButton"
                                 >
                                     <i class="fa fa-lg fa-file-code-o"></i>
                                 </dv-loading-button>
@@ -100,7 +101,10 @@
                                         class="btn-link link-underline pointer-cursor"
                                         (click)="bestaetigen(element)"
                                     >
-                                        <span translate style="color: #d50025"
+                                        <span
+                                            translate
+                                            style="color: #d50025"
+                                            data-test="zahlungErhalten"
                                             >ZAHLUNG_ERHALTEN</span
                                         >
                                     </a>

@@ -163,7 +163,7 @@ xdescribe('freigabeView', () => {
                 downloadRS,
                 'getFreigabequittungAccessTokenGeneratedDokument'
             ).and.returnValue($q.resolve(downloadFile));
-            spyOn(downloadRS, 'startDownloadGeneratedPDF').and.returnValue();
+            spyOn(downloadRS, 'startDownloadGeneratedFile').and.returnValue();
 
             const fakeWindow: any = undefined;
             spyOn(downloadRS, 'prepareDownloadWindow').and.returnValue(
@@ -183,7 +183,7 @@ xdescribe('freigabeView', () => {
             expect(
                 downloadRS.getFreigabequittungAccessTokenGeneratedDokument
             ).toHaveBeenCalledWith(gesuch.id, true);
-            expect(downloadRS.startDownloadGeneratedPDF).toHaveBeenCalledWith(
+            expect(downloadRS.startDownloadGeneratedFile).toHaveBeenCalledWith(
                 downloadFile.accessToken,
                 downloadFile.filename,
                 false,
@@ -200,7 +200,7 @@ xdescribe('freigabeView', () => {
             spyOn(gesuchModelManager, 'openGesuch').and.returnValue(
                 $q.resolve(gesuch)
             );
-            spyOn(downloadRS, 'startDownloadGeneratedPDF').and.returnValue();
+            spyOn(downloadRS, 'startDownloadGeneratedFile').and.returnValue();
             tsDownloadFile = new TSDownloadFile();
             spyOn(
                 downloadRS,

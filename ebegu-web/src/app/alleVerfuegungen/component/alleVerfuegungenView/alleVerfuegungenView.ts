@@ -181,7 +181,7 @@ export class AlleVerfuegungenViewController implements IController {
             )
             .then((downloadFile: TSDownloadFile) => {
                 this.$log.debug(`accessToken: ${downloadFile.accessToken}`);
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -202,7 +202,7 @@ export class AlleVerfuegungenViewController implements IController {
             .getAccessTokenNichteintretenGeneratedDokument(betreuung.id, false)
             .then((downloadFile: TSDownloadFile) => {
                 this.$log.debug(`accessToken: ${downloadFile.accessToken}`);
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,

@@ -55,11 +55,11 @@ import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.TextRessource;
 import ch.dvbern.ebegu.enums.KorrespondenzSpracheTyp;
+import ch.dvbern.ebegu.gemeinde.GemeindeKonfigurationService;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
 import ch.dvbern.ebegu.services.BenutzerService;
 import ch.dvbern.ebegu.services.FerieninselStammdatenService;
 import ch.dvbern.ebegu.services.GemeindeService;
-import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import ch.dvbern.ebegu.services.InstitutionService;
 import ch.dvbern.ebegu.util.StreamsUtil;
 import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
@@ -81,7 +81,7 @@ public class JaxGemeindeStammdatenConverter extends AbstractBaseConverter {
 	@Inject
 	private InstitutionService institutionService;
 	@Inject
-	private GesuchsperiodeService gesuchsperiodeService;
+	private GemeindeKonfigurationService gemeindeKonfigurationService;
 	@Inject
 	private JaxBenutzerConverter jaxBenutzerConverter;
 	@Inject
@@ -469,26 +469,7 @@ public class JaxGemeindeStammdatenConverter extends AbstractBaseConverter {
 		// Konfiguration: Wir laden die Gesuchsperioden, die vor dem Ende der Gemeinde-Gültigkeit liegen
 		Objects.requireNonNull(stammdaten.getGemeinde().getMandant());
 		List<Gesuchsperiode> gueltigeGesuchsperiodenForGemeinde =
-			gesuchsperiodeService.getAllGesuchsperioden(
-				stammdaten.getGemeinde().getMandant()
-			)
-				.stream()
-				.filter(
-					gesuchsperiode -> gesuchsperiode.getMandant()
-						.equals(
-							stammdaten.getGemeinde()
-								.getMandant()
-						)
-				)
-				.filter(
-					gesuchsperiode -> stammdaten.getGemeinde()
-						.getGueltigBis()
-						.isAfter(
-							gesuchsperiode.getGueltigkeit()
-								.getGueltigAb()
-						)
-				)
-				.collect(Collectors.toList());
+			gemeindeKonfigurationService.getGueltigeGesuchsperioden(stammdaten);
 
 		for (Gesuchsperiode gesuchsperiode : gueltigeGesuchsperiodenForGemeinde) {
 			jaxStammdaten.getKonfigurationsListe()

@@ -25,6 +25,7 @@ import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.dto.statistik.KinderStatistikParameterDto;
+import ch.dvbern.ebegu.dto.statistik.LastenausgleichBGStatistikParameterDto;
 import ch.dvbern.ebegu.dto.statistik.MitarbeitendeStatistikParameterDto;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -111,6 +112,23 @@ public class KafkaStatistikProducer {
 		} catch (JsonProcessingException e) {
 			throw new EbeguRuntimeException(
 				"sendMitarbeitendeStatistik",
+				"Could not serialize DTO",
+				e
+			);
+		}
+	}
+
+	public void sendLastenausgleichBGStatistik(
+		LastenausgleichBGStatistikParameterDto dto
+	) {
+		initIfNeeded();
+		try {
+			String json = mapper.writeValueAsString(dto);
+			sendStatistikToKafka("lastenausgleichbgstatistik", json);
+
+		} catch (JsonProcessingException e) {
+			throw new EbeguRuntimeException(
+				"sendLastenausgleichBGStatistik",
 				"Could not serialize DTO",
 				e
 			);

@@ -874,7 +874,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                 this.$log.debug(
                     'accessToken for verfuegung: ' + downloadFile.accessToken
                 );
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -892,7 +892,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                 this.$log.debug(
                     'accessToken for export: ' + downloadFile.accessToken
                 );
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     true,
@@ -914,7 +914,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                     'accessToken for nichteintreten: ' +
                         downloadFile.accessToken
                 );
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -1131,7 +1131,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                     'accessToken for Anmeldebestaetigung: ' +
                         downloadFile.accessToken
                 );
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,

@@ -132,10 +132,10 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
         this.reportRS
             .getZahlungReportExcel(zahlung.id)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownloadGeneratedPDF(
+                this.downloadRS.startDownloadGeneratedFile(
                     downloadFile.accessToken,
                     downloadFile.filename,
-                    false,
+                    true,
                     win
                 );
             })
