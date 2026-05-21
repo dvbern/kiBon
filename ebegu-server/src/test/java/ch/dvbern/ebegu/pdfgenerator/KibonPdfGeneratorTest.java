@@ -45,6 +45,7 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.KorrespondenzSpracheTyp;
 import ch.dvbern.ebegu.enums.MahnungTyp;
 import ch.dvbern.ebegu.enums.Sprache;
@@ -390,7 +391,7 @@ public class KibonPdfGeneratorTest extends AbstractPDFGeneratorTest {
 				.betreuungspensumAnzeigeTyp(
 					BetreuungspensumAnzeigeTyp.ZEITEINHEIT_UND_PROZENT
 				)
-				.isHoehereBeitraegeConfigured(false)
+				.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 				.build();
 
 		final VerfuegungPdfGeneratorVisitor verfuegungPdfGeneratorVisitor =
@@ -468,7 +469,7 @@ public class KibonPdfGeneratorTest extends AbstractPDFGeneratorTest {
 				.betreuungspensumAnzeigeTyp(
 					BetreuungspensumAnzeigeTyp.ZEITEINHEIT_UND_PROZENT
 				)
-				.isHoehereBeitraegeConfigured(false)
+				.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 				.build();
 		final VerfuegungPdfGeneratorVisitor verfuegungPdfGeneratorVisitor =
 			new VerfuegungPdfGeneratorVisitor(
@@ -544,7 +545,7 @@ public class KibonPdfGeneratorTest extends AbstractPDFGeneratorTest {
 				.betreuungspensumAnzeigeTyp(
 					BetreuungspensumAnzeigeTyp.ZEITEINHEIT_UND_PROZENT
 				)
-				.isHoehereBeitraegeConfigured(false)
+				.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 				.build();
 		final VerfuegungPdfGeneratorVisitor verfuegungPdfGeneratorVisitor =
 			new VerfuegungPdfGeneratorVisitor(

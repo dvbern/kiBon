@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.zahlungslauf.ZahlungslaufHelper;
@@ -44,7 +45,8 @@ public class VeraenderungBetreuungsgutscheinCalculator extends
 
 	@Override
 	public void calculateKorrekturAusbezahlteVerguenstigung(
-		AbstractPlatz platz
+		AbstractPlatz platz,
+		HoehereBeitraegeTyp beitraegeTyp
 	) {
 		if (platz.getVerfuegungOrVerfuegungPreview() == null
 			|| platz.getVorgaengerVerfuegung() == null) {
@@ -58,13 +60,15 @@ public class VeraenderungBetreuungsgutscheinCalculator extends
 			calculateKorrekturAusbazahlteVerguenstigung(
 				aktuell,
 				vorgaenger,
-				ZahlungslaufTyp.GEMEINDE_INSTITUTION
+				ZahlungslaufTyp.GEMEINDE_INSTITUTION,
+				beitraegeTyp
 			);
 		BigDecimal korrekturEltern =
 			calculateKorrekturAusbazahlteVerguenstigung(
 				aktuell,
 				vorgaenger,
-				ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER
+				ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER,
+				beitraegeTyp
 			);
 
 		aktuell.setKorrekturAusbezahltEltern(korrekturEltern);
@@ -74,10 +78,12 @@ public class VeraenderungBetreuungsgutscheinCalculator extends
 	private BigDecimal calculateKorrekturAusbazahlteVerguenstigung(
 		Verfuegung aktuell,
 		Verfuegung vorgaenger,
-		ZahlungslaufTyp zahlungslaufTyp
+		ZahlungslaufTyp zahlungslaufTyp,
+		HoehereBeitraegeTyp beitraegeTyp
 	) {
-		ZahlungslaufHelper helper = ZahlungslaufHelperFactory
-			.getZahlungslaufHelper(zahlungslaufTyp);
+
+		final ZahlungslaufHelper helper = ZahlungslaufHelperFactory
+			.getZahlungslaufHelper(zahlungslaufTyp, beitraegeTyp);
 
 		//Im Vorgänger nach ausbezahlten Zeitabschnitten suchen
 		List<VerfuegungZeitabschnitt> ausbezahlteZeitabschnitte =

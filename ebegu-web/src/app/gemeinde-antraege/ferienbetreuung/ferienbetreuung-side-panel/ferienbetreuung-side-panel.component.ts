@@ -34,16 +34,16 @@ import {LogFactory} from '@utils/log';
 import {BenutzerRSX} from '../../../core/service/benutzerRSX.rest';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
 
-const LOG = LogFactory.createLog('FerienbetreuungKommantarComponent');
+const LOG = LogFactory.createLog('FerienbetreuungSidePanelComponent');
 
 @Component({
-    selector: 'dv-ferienbetreuung-kommantar',
-    templateUrl: './ferienbetreuung-kommantar.component.html',
-    styleUrls: ['./ferienbetreuung-kommantar.component.less'],
+    selector: 'dv-ferienbetreuung-side-panel',
+    templateUrl: './ferienbetreuung-side-panel.component.html',
+    styleUrls: ['./ferienbetreuung-side-panel.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
-export class FerienbetreuungKommantarComponent implements OnInit, OnDestroy {
+export class FerienbetreuungSidePanelComponent implements OnInit, OnDestroy {
     private readonly ferienbetreuungService = inject(FerienbetreuungService);
     private readonly ref = inject(ChangeDetectorRef);
     private readonly errorService = inject(ErrorService);

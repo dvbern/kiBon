@@ -24,7 +24,7 @@ import {WizardstepXModule} from '../../wizardstepX/wizardstep-x.module';
 import {FerienbetreuungAbschlussComponent} from './ferienbetreuung-abschluss/ferienbetreuung-abschluss.component';
 import {FerienbetreuungAngebotComponent} from './ferienbetreuung-angebot/ferienbetreuung-angebot.component';
 import {FerienbetreuungFreigabeComponent} from './ferienbetreuung-freigabe/ferienbetreuung-freigabe.component';
-import {FerienbetreuungKommantarComponent} from './ferienbetreuung-kommantar/ferienbetreuung-kommantar.component';
+import {FerienbetreuungSidePanelComponent} from './ferienbetreuung-side-panel/ferienbetreuung-side-panel.component';
 import {FerienbetreuungBerechnungComponent} from './ferienbetreuung-kosten-einnahmen/ferienbetreuung-berechnung/ferienbetreuung-berechnung.component';
 import {FerienbetreuungKostenEinnahmenComponent} from './ferienbetreuung-kosten-einnahmen/ferienbetreuung-kosten-einnahmen.component';
 import {FerienbetreuungLastYearValueComponent} from './ferienbetreuung-last-year-value/ferienbetreuung-last-year-value.component';
@@ -32,6 +32,7 @@ import {FerienbetreuungNutzungComponent} from './ferienbetreuung-nutzung/ferienb
 import {FerienbetreuungRoutingModule} from './ferienbetreuung-routing/ferienbetreuung-routing.module';
 import {FerienbetreuungStammdatenGemeindeComponent} from './ferienbetreuung-stammdaten-gemeinde/ferienbetreuung-stammdaten-gemeinde.component';
 import {FerienbetreuungUploadComponent} from './ferienbetreuung-upload/ferienbetreuung-upload.component';
+import {FerienbetreuungVerlaufComponent} from './ferienbetreuung-verlauf/ferienbetreuung-verlauf.component';
 import {FerienbetreuungComponent} from './ferienbetreuung/ferienbetreuung.component';
 import {FerienbetreuungDokumentService} from './services/ferienbetreuung-dokument.service';
 import {FerienbetreuungService} from './services/ferienbetreuung.service';
@@ -40,7 +41,7 @@ import {WarningComponent} from '../../shared/component/warning/warning.component
 @NgModule({
     declarations: [
         FerienbetreuungComponent,
-        FerienbetreuungKommantarComponent,
+        FerienbetreuungSidePanelComponent,
         FerienbetreuungStammdatenGemeindeComponent,
         FerienbetreuungAngebotComponent,
         FerienbetreuungNutzungComponent,
@@ -49,7 +50,8 @@ import {WarningComponent} from '../../shared/component/warning/warning.component
         FerienbetreuungFreigabeComponent,
         FerienbetreuungAbschlussComponent,
         FerienbetreuungBerechnungComponent,
-        FerienbetreuungLastYearValueComponent
+        FerienbetreuungLastYearValueComponent,
+        FerienbetreuungVerlaufComponent
     ],
     imports: [
         CommonModule,

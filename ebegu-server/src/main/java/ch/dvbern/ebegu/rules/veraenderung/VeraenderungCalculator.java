@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 
 public abstract class VeraenderungCalculator {
 
@@ -68,6 +69,7 @@ public abstract class VeraenderungCalculator {
 	protected abstract boolean isVerfuegungIgnorable(BigDecimal veraenderung);
 
 	public abstract void calculateKorrekturAusbezahlteVerguenstigung(
-		@NotNull AbstractPlatz platz
+		@NotNull AbstractPlatz platz,
+		@NotNull HoehereBeitraegeTyp beitraegeTyp
 	);
 }

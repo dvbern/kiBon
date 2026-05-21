@@ -2,7 +2,7 @@ package ch.dvbern.ebegu.validators.gemeindeantraege.lats;
 
 import java.math.BigDecimal;
 
-import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitution;
+import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.LastenausgleichTagesschuleAngabenInstitution;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

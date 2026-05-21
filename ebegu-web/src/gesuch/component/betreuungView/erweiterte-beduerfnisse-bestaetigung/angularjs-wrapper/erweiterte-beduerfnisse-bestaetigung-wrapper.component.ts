@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {HoehereBeitraegeTyp} from '../../../../../models/enums/HoehereBeitraegeTyp';
 import {TSBetreuungsangebotTyp} from '../../../../../models/enums/TSBetreuungsangebotTyp';
 import {TSErweiterteBetreuung} from '../../../../../models/TSErweiterteBetreuung';
 import {
@@ -28,4 +29,6 @@ export class ErweiterteBeduerfnisseBestaetigungWrapperComponent {
     angebotTyp: TSBetreuungsangebotTyp;
     @Input()
     readOnly: boolean;
+    @Input()
+    hoehereBeitraegeTyp: HoehereBeitraegeTyp;
 }

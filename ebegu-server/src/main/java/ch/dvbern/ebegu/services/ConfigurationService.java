@@ -26,6 +26,7 @@ import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
 import ch.dvbern.ebegu.pdfgenerator.verfuegung.VerfuegungPdfGeneratorKonfiguration;
 
@@ -56,6 +57,17 @@ public class ConfigurationService {
 				.getValueAsBoolean();
 		}
 
+		Einstellung hoehereBeitraegeEinstellung = einstellungService
+			.findEinstellung(
+				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+				betreuung.extractGemeinde(),
+				betreuung.extractGesuchsperiode()
+			);
+
+		HoehereBeitraegeTyp hoehereBeitraegeTyp = HoehereBeitraegeTyp.valueOf(
+			hoehereBeitraegeEinstellung.getValue()
+		);
+
 		return VerfuegungPdfGeneratorKonfiguration.builder()
 			.kontingentierungEnabledAndEntwurf(showInfoKontingentierung)
 			.stadtBernAsivConfigured(
@@ -69,15 +81,25 @@ public class ConfigurationService {
 			.betreuungspensumAnzeigeTyp(
 				getEinstellungBetreuungspensumAnzeigeTyp(betreuung)
 			)
-			.isHoehereBeitraegeConfigured(
-				getEinstellungHoehereBeitraegeConfigured(betreuung)
-			)
+			.hoehereBeitraegeTyp(hoehereBeitraegeTyp)
 			.build();
 	}
 
 	public VerfuegungPdfGeneratorKonfiguration getVerfuegungPdfGeneratorKonfigurationNichtEintretten(
 		@Nonnull Betreuung betreuung
 	) {
+
+		Einstellung hoehereBeitraegeEinstellung = einstellungService
+			.findEinstellung(
+				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+				betreuung.extractGemeinde(),
+				betreuung.extractGesuchsperiode()
+			);
+
+		HoehereBeitraegeTyp hoehereBeitraegeTyp = HoehereBeitraegeTyp.valueOf(
+			hoehereBeitraegeEinstellung.getValue()
+		);
+
 		return VerfuegungPdfGeneratorKonfiguration.builder()
 			.kontingentierungEnabledAndEntwurf(false)
 			.stadtBernAsivConfigured(false)
@@ -85,9 +107,7 @@ public class ConfigurationService {
 			.betreuungspensumAnzeigeTyp(
 				getEinstellungBetreuungspensumAnzeigeTyp(betreuung)
 			)
-			.isHoehereBeitraegeConfigured(
-				getEinstellungHoehereBeitraegeConfigured(betreuung)
-			)
+			.hoehereBeitraegeTyp(hoehereBeitraegeTyp)
 			.build();
 	}
 
@@ -110,15 +130,5 @@ public class ConfigurationService {
 			).getValue()
 		);
 
-	}
-
-	private boolean getEinstellungHoehereBeitraegeConfigured(
-		@Nonnull Betreuung betreuung
-	) {
-		return einstellungService.findEinstellung(
-			EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
-			betreuung.extractGesuch().extractGemeinde(),
-			betreuung.extractGesuchsperiode()
-		).getValueAsBoolean();
 	}
 }

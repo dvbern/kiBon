@@ -43,6 +43,7 @@ import ch.dvbern.ebegu.entities.Mahnung;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.MahnungTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
@@ -374,7 +375,7 @@ class PDFServiceBeanTest extends EasyMockSupport {
 				.betreuungspensumAnzeigeTyp(
 					BetreuungspensumAnzeigeTyp.NUR_PROZENT
 				)
-				.isHoehereBeitraegeConfigured(false)
+				.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 				.build()
 		);
 
@@ -1104,7 +1105,7 @@ class PDFServiceBeanTest extends EasyMockSupport {
 				.betreuungspensumAnzeigeTyp(
 					BetreuungspensumAnzeigeTyp.NUR_PROZENT
 				)
-				.isHoehereBeitraegeConfigured(false)
+				.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 				.build()
 		);
 
@@ -1217,7 +1218,7 @@ class PDFServiceBeanTest extends EasyMockSupport {
 				.betreuungspensumAnzeigeTyp(
 					BetreuungspensumAnzeigeTyp.NUR_PROZENT
 				)
-				.isHoehereBeitraegeConfigured(false)
+				.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 				.build()
 		);
 

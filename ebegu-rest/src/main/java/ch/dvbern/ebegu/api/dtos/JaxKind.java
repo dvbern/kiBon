@@ -109,7 +109,9 @@ public class JaxKind extends JaxAbstractPersonDTO {
 	@Nullable
 	private Boolean unterhaltspflichtig;
 
-	private boolean hoehereBeitraegeWegenBeeintraechtigungBeantragen;
+	@Setter
+	@Getter
+	private Boolean hoehereBeitraegeWegenBeeintraechtigungBeantragen;
 
 	@Nullable
 	private Boolean hoehereBeitraegeUnterlagenDigital;
@@ -342,17 +344,6 @@ public class JaxKind extends JaxAbstractPersonDTO {
 
 	public void setUnterhaltspflichtig(@Nullable Boolean unterhaltspflichtig) {
 		this.unterhaltspflichtig = unterhaltspflichtig;
-	}
-
-	public boolean getHoehereBeitraegeWegenBeeintraechtigungBeantragen() {
-		return hoehereBeitraegeWegenBeeintraechtigungBeantragen;
-	}
-
-	public void setHoehereBeitraegeWegenBeeintraechtigungBeantragen(
-		boolean hoehereBeitraegeWegenBeeintraechtigungBeantragen
-	) {
-		this.hoehereBeitraegeWegenBeeintraechtigungBeantragen =
-			hoehereBeitraegeWegenBeeintraechtigungBeantragen;
 	}
 
 	@Nullable

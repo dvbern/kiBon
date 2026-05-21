@@ -48,6 +48,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
+import ch.dvbern.ebegu.api.converter.JaxGesuchsperiodeConverter;
+import ch.dvbern.ebegu.api.converter.gemeinde.JaxGemeindeConverter;
 import ch.dvbern.ebegu.api.converter.gesuch.JaxAntragConverter;
 import ch.dvbern.ebegu.api.dtos.JaxAlwaysEditableProperties;
 import ch.dvbern.ebegu.api.dtos.JaxGesuch;
@@ -60,7 +62,11 @@ import ch.dvbern.ebegu.dto.JaxAntragDTO;
 import ch.dvbern.ebegu.dto.JaxFreigabeDTO;
 import ch.dvbern.ebegu.dto.neskovanp.KibonAnfrageDTO;
 import ch.dvbern.ebegu.dto.personensuche.EWKResultat;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Dossier;
+import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
@@ -70,6 +76,7 @@ import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.AntragStatusDTO;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.FinSitStatus;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguException;
@@ -144,6 +151,12 @@ public class GesuchResource {
 	private JaxAntragConverter converter;
 
 	@Inject
+	private JaxGesuchsperiodeConverter jaxGesuchsperiodeConverter;
+
+	@Inject
+	private JaxGemeindeConverter jaxGemeindeConverter;
+
+	@Inject
 	private ResourceHelper resourceHelper;
 
 	@Inject
@@ -166,6 +179,9 @@ public class GesuchResource {
 
 	@Inject
 	private FreigabeService freigabeService;
+
+	@Inject
+	private EinstellungService einstellungService;
 
 	@Resource
 	private EJBContext context;    //fuer rollback
@@ -461,9 +477,31 @@ public class GesuchResource {
 				.setFinanzielleSituationContainer(null);
 		}
 
+		Gesuchsperiode gesuchsperiode = jaxGesuchsperiodeConverter
+			.gesuchsperiodeToEntity(
+				completeGesuch.getGesuchsperiode(),
+				new Gesuchsperiode()
+			);
+
+		Gemeinde gemeinde = jaxGemeindeConverter.gemeindeToEntity(
+			completeGesuch.getDossier().getGemeinde(),
+			new Gemeinde()
+		);
+
+		Einstellung einstellung = einstellungService.findEinstellung(
+			EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+			gemeinde,
+			gesuchsperiode
+		);
+
+		boolean hoehereBeitraegeAnInstitutionAktiviert =
+			HoehereBeitraegeTyp.valueOf(einstellung.getValue())
+				== HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION;
+
 		RestUtil.purgeKinderAndBetreuungenOfInstitutionen(
 			completeGesuch.getKindContainers(),
-			userInstitutionen
+			userInstitutionen,
+			hoehereBeitraegeAnInstitutionAktiviert
 		);
 		return completeGesuch;
 	}

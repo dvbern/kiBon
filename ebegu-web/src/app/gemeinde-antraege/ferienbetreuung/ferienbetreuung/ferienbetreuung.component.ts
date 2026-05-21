@@ -23,6 +23,7 @@ import {
     OnInit,
     inject
 } from '@angular/core';
+import {StateService} from '@uirouter/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Subscription} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
@@ -49,6 +50,7 @@ export class FerienbetreuungComponent implements OnInit, OnDestroy {
     private readonly wizardStepXRS = inject(WizardStepXRS);
     private readonly downloadRS = inject(DownloadRS);
     private readonly translate = inject(TranslateService);
+    private readonly stateService = inject(StateService);
 
     @Input()
     public ferienbetreuungId: string;
@@ -93,6 +95,12 @@ export class FerienbetreuungComponent implements OnInit, OnDestroy {
                 res => this.openDownloadForFile(res),
                 err => LOG.error(err)
             );
+    }
+
+    public navigateToVerlauf(): void {
+        this.stateService.go('FERIENBETREUUNG.VERLAUF', {
+            id: this.ferienbetreuungId
+        });
     }
 
     private openDownloadForFile(response: BlobPart): void {

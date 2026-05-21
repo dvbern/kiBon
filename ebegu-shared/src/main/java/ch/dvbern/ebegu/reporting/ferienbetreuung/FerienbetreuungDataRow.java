@@ -30,6 +30,7 @@ public class FerienbetreuungDataRow {
 	private String periode = null;
 	private FerienbetreuungAngabenStatus status = null;
 	private @Nullable LocalDateTime timestampMutiert = null;
+	private @Nullable LocalDate firstEinreicheDatum = null;
 
 	private @Nullable String traegerschaft = null;
 	private String weitereGemeinden = null;
@@ -171,6 +172,16 @@ public class FerienbetreuungDataRow {
 
 	public void setTimestampMutiert(@Nullable LocalDateTime timestampMutiert) {
 		this.timestampMutiert = timestampMutiert;
+	}
+
+	public @Nullable LocalDate getFirstEinreicheDatum() {
+		return firstEinreicheDatum;
+	}
+
+	public void setFirstEinreicheDatum(
+		@Nullable LocalDate firstEinreicheDatum
+	) {
+		this.firstEinreicheDatum = firstEinreicheDatum;
 	}
 
 	public @Nullable String getTraegerschaft() {

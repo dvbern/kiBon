@@ -33,6 +33,7 @@ import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.FachstellenTyp;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.KinderabzugTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.rules.familienabzug.AbstractFamilienabzugCalcRule;
@@ -350,11 +351,22 @@ public class BetreuungsgutscheinConfigurator {
 
 		// - Betreuungspensum
 		assert kitaxParameterDTO != null;
+		Einstellung hoehereBeitraegeAktiviert = ruleParameterUtil
+			.getEinstellung(HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT);
+		if (hoehereBeitraegeAktiviert == null) {
+			throw new IllegalStateException(
+				"Einstellung HOEHERE_BEITRAEGE_AKTIVIERT not found"
+			);
+		}
+		HoehereBeitraegeTyp hoehereBeitraegeTyp = HoehereBeitraegeTyp.valueOf(
+			hoehereBeitraegeAktiviert.getValue()
+		);
 		BetreuungspensumAbschnittRule betreuungspensumAbschnittRule =
 			new BetreuungspensumAbschnittRule(
 				defaultGueltigkeit,
 				locale,
-				kitaxParameterDTO
+				kitaxParameterDTO,
+				hoehereBeitraegeTyp
 			);
 		addToRuleSetIfRelevantForGemeinde(
 			betreuungspensumAbschnittRule,

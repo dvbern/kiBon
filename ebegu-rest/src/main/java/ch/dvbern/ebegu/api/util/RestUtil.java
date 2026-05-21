@@ -17,6 +17,7 @@ package ch.dvbern.ebegu.api.util;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,6 +45,7 @@ import ch.dvbern.ebegu.api.dtos.JaxZahlungsauftrag;
 import ch.dvbern.ebegu.entities.FileMetadata;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.enums.UserRole;
+import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.util.UploadFileInfo;
 import com.google.common.net.UrlEscapers;
@@ -178,8 +180,27 @@ public final class RestUtil {
 		Collection<JaxKindContainer> kindContainers,
 		Collection<Institution> userInstitutionen
 	) {
+		purgeKinderAndBetreuungenOfInstitutionen(
+			kindContainers,
+			userInstitutionen,
+			false
+		);
+	}
+
+	/**
+	 * Overload of purgeKinderAndBetreuungenOfInstitutionen above
+	 *
+	 * @param kindContainers Alle KindContainers
+	 * @param userInstitutionen Institutionen mit denen, die Kinder eine Beziehung haben muessen.
+	 */
+	public static void purgeKinderAndBetreuungenOfInstitutionen(
+		Collection<JaxKindContainer> kindContainers,
+		Collection<Institution> userInstitutionen,
+		Boolean hoehereBeitraegeAnInstitutionAktiviert
+	) {
 		final Iterator<JaxKindContainer> kindsIterator = kindContainers
 			.iterator();
+
 		while (kindsIterator.hasNext()) {
 			final JaxKindContainer kind = kindsIterator.next();
 			purgeSingleKindAndBetreuungenOfInstitutionen(
@@ -190,7 +211,8 @@ public final class RestUtil {
 				kindsIterator.remove();
 			} else {
 				cleanZeitabschnitteForInsitutionTraegerschaft(
-					kind.getBetreuungen()
+					kind.getBetreuungen(),
+					hoehereBeitraegeAnInstitutionAktiviert
 				);
 			}
 		}
@@ -256,17 +278,55 @@ public final class RestUtil {
 	 * Entfernt alle Zeitabschnitte, welche an die Eltern ausbezahlt wurden oder werden aus dem Gesuch
 	 */
 	private static void cleanZeitabschnitteForInsitutionTraegerschaft(
-		Collection<JaxBetreuung> betreuungen
+		Collection<JaxBetreuung> betreuungen,
+		Boolean hoehereBeitraegeAnInstitutionAktiviert
 	) {
 		betreuungen.forEach(betreuung -> {
 			if (betreuung.getVerfuegung() != null) {
 				betreuung.getVerfuegung()
 					.getZeitabschnitte()
 					.removeIf(
-						JaxVerfuegungZeitabschnitt::isAuszahlungAnEltern
+						jaxVerfuegungZeitabschnitt -> jaxVerfuegungZeitabschnitt
+							.isAuszahlungAnEltern()
+							&& !hasHoeherenBeitragAnInstitutionAndAuszahlungAnEltern(
+								jaxVerfuegungZeitabschnitt,
+								hoehereBeitraegeAnInstitutionAktiviert
+							)
 					);
+				betreuung.getVerfuegung()
+					.getZeitabschnitte()
+					.forEach(zeitabschnitt -> {
+						if (hasHoeherenBeitragAnInstitutionAndAuszahlungAnEltern(
+							zeitabschnitt,
+							hoehereBeitraegeAnInstitutionAktiviert
+						)) {
+							zeitabschnitt.setMinimalerElternbeitrag(
+								BigDecimal.ZERO
+							);
+							zeitabschnitt.setMinimalerElternbeitragGekuerzt(
+								BigDecimal.ZERO
+							);
+							zeitabschnitt.setMassgebendesEinkommenVorAbzugFamgr(
+								BigDecimal.ZERO
+							);
+							zeitabschnitt
+								.setVerguenstigungOhneBeruecksichtigungMinimalbeitrag(
+									BigDecimal.ZERO
+								);
+						}
+					});
 			}
 		});
+	}
+
+	private static boolean hasHoeherenBeitragAnInstitutionAndAuszahlungAnEltern(
+		JaxVerfuegungZeitabschnitt verfuegungZeitabschnitt,
+		boolean hoehereBeitraegeAnInstitutionAktiviert
+	) {
+		return verfuegungZeitabschnitt.isAuszahlungAnEltern()
+			&& hoehereBeitraegeAnInstitutionAktiviert
+			&& verfuegungZeitabschnitt.getBedarfsstufe() != null
+			&& verfuegungZeitabschnitt.getBedarfsstufe() != Bedarfsstufe.KEINE;
 	}
 
 	public static Response sendErrorNotAuthorized() {

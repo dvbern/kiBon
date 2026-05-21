@@ -46,6 +46,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Betreuung;
@@ -61,6 +64,7 @@ import ch.dvbern.ebegu.entities.Zahlungsposition;
 import ch.dvbern.ebegu.entities.Zahlungsposition_;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
@@ -122,6 +126,12 @@ public class ZahlungUeberpruefungServiceBean extends AbstractBaseService {
 	@Inject
 	private ZahlungService zahlungService;
 
+	@Inject
+	private EinstellungService einstellungService;
+
+	private final List<ZahlungUeberpruefungContext> zahlungUeberpruefungContexts =
+		new ArrayList<>();
+
 	public void pruefungZahlungen(
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
@@ -130,36 +140,13 @@ public class ZahlungUeberpruefungServiceBean extends AbstractBaseService {
 		@Nonnull String beschrieb,
 		@Nonnull Boolean auszahlungInZukunft
 	) {
-		ZahlungUeberpruefungContext zahlungUeberpruefungContext =
-			new ZahlungUeberpruefungContext(
-				gemeinde,
-				beschrieb,
-				zahlungsauftragId,
-				ZahlungslaufHelperFactory
-					.getZahlungslaufHelper(zahlungslaufTyp)
-			);
+
 		StopWatch stopWatch = logAndStartTimer(
 			String.format(
 				"Starte Zahlungsüberprüfung für %s",
 				gemeinde.getName()
 			)
 		);
-
-		// Die Whitelist lesen
-		final String whitelistString =
-			ebeguConfiguration.getEbeguZahlungenUeberpruefungWhitelist();
-		if (StringUtils.isNotEmpty(whitelistString)) {
-			zahlungUeberpruefungContext.setWhiteListOfReferenzNummmern(
-				Arrays.asList(
-					whitelistString.split(";")
-				)
-			);
-		}
-
-		Objects.requireNonNull(gemeinde);
-		Objects.requireNonNull(zahlungsauftragId);
-		Objects.requireNonNull(datumLetzteZahlung);
-		zahlungUeberpruefungContext.resetAllPotentielleFehlerData();
 
 		// Alle Gesuchsperioden im Status AKTIV und INAKTIV muessen geprueft werden, da auch rueckwirkend Korrekturen gemacht werden koennen.
 		Collection<Gesuchsperiode> aktiveGesuchsperioden = gesuchsperiodeService
@@ -175,74 +162,126 @@ public class ZahlungUeberpruefungServiceBean extends AbstractBaseService {
 					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
 				)
 			);
+
 		Collection<Gesuchsperiode> containedGesuchsperioden =
 			ZahlungslaufUtil.findGesuchsperiodenContainedInZahlungsauftrag(
 				aktiveGesuchsperioden,
 				zahlungsauftrag
 			);
 
-		// Auf dem Front End gibt es z.B. bei Luzern eine Checkbox, die definiert, ob der Folgemonat auch ausbezahlt werden soll.
-		// Falls die Checkbox aktiv ist, wird der Folgemonat auch ausbezahlt. z.B. ausloesen am 15.8. ergibt eine
-		// Zahlung bis 30.09.
-		zahlungUeberpruefungContext.setAnzahlMonateInZukunft(
-			Boolean.TRUE.equals(auszahlungInZukunft) ? 1 : 0
-		);
+		// Die Whitelist lesen
+		final String whitelistString =
+			ebeguConfiguration.getEbeguZahlungenUeberpruefungWhitelist();
 
-		ermittleIstAndSollAndCheckFuerGPs(
-			containedGesuchsperioden,
-			datumLetzteZahlung,
-			zahlungUeberpruefungContext
-		);
+		List<String> potentielleFehlerList =
+			new ArrayList<>();
+
+		for (Gesuchsperiode gesuchsperiode : containedGesuchsperioden) {
+
+			Einstellung hoehereBeitraegeAktiviert = einstellungService
+				.findEinstellung(
+					EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+					gemeinde,
+					gesuchsperiode
+				);
+
+			HoehereBeitraegeTyp hoehereBeitraegeTyp = HoehereBeitraegeTyp
+				.valueOf(hoehereBeitraegeAktiviert.getValue());
+
+			ZahlungUeberpruefungContext zahlungUeberpruefungContext =
+				new ZahlungUeberpruefungContext(
+					gemeinde,
+					beschrieb,
+					zahlungsauftragId,
+					ZahlungslaufHelperFactory
+						.getZahlungslaufHelper(
+							zahlungslaufTyp,
+							hoehereBeitraegeTyp
+						)
+				);
+
+			if (StringUtils.isNotEmpty(whitelistString)) {
+				zahlungUeberpruefungContext.setWhiteListOfReferenzNummmern(
+					Arrays.asList(
+						whitelistString.split(";")
+					)
+				);
+			}
+
+			Objects.requireNonNull(gemeinde);
+			Objects.requireNonNull(zahlungsauftragId);
+			Objects.requireNonNull(datumLetzteZahlung);
+			zahlungUeberpruefungContext.resetAllPotentielleFehlerData();
+
+			// Auf dem Front End gibt es z.B. bei Luzern eine Checkbox, die definiert, ob der Folgemonat auch ausbezahlt werden soll.
+			// Falls die Checkbox aktiv ist, wird der Folgemonat auch ausbezahlt. z.B. ausloesen am 15.8. ergibt eine
+			// Zahlung bis 30.09.
+			zahlungUeberpruefungContext.setAnzahlMonateInZukunft(
+				Boolean.TRUE.equals(auszahlungInZukunft) ? 1 : 0
+			);
+
+			ermittleIstAndSollAndCheckFuerGPs(
+				gesuchsperiode,
+				datumLetzteZahlung,
+				zahlungUeberpruefungContext
+			);
+
+			potentielleFehlerList.addAll(
+				zahlungUeberpruefungContext.getPotentielleFehlerList()
+			);
+
+			zahlungUeberpruefungContexts.add(zahlungUeberpruefungContext);
+		}
 
 		logAndStopTimer(
 			stopWatch,
 			String.format(
 				"Zahlungsüberprüfung für %s beendet: %s",
 				gemeinde.getName(),
-				(zahlungUeberpruefungContext.getPotentielleFehlerList()
+				(potentielleFehlerList
 					.isEmpty() ? "OK" : "ERROR")
 			)
 		);
 
-		if (!zahlungUeberpruefungContext.getPotentielleFehlerList().isEmpty()) {
-			sendeMail(zahlungUeberpruefungContext);
-		} else {
-			String auftragBezeichnung = "Zahlungslauf "
-				+ zahlungUeberpruefungContext.getGemeinde().getName();
-			LOGGER.info(
-				"{}, Bezeichnung: {}: Keine Fehler gefunden",
-				auftragBezeichnung,
-				zahlungUeberpruefungContext.getBeschrieb()
-			);
+		for (ZahlungUeberpruefungContext zahlungUeberpruefungContext : zahlungUeberpruefungContexts) {
+			if (!potentielleFehlerList.isEmpty()) {
+				sendeMail(zahlungUeberpruefungContext);
+			} else {
+				String auftragBezeichnung = "Zahlungslauf "
+					+ zahlungUeberpruefungContext.getGemeinde().getName();
+				LOGGER.info(
+					"{}, Bezeichnung: {}: Keine Fehler gefunden",
+					auftragBezeichnung,
+					zahlungUeberpruefungContext.getBeschrieb()
+				);
+			}
+			zahlungUeberpruefungContext.resetAllPotentielleFehlerData();
 		}
-		zahlungUeberpruefungContext.resetAllPotentielleFehlerData();
 	}
 
 	private void ermittleIstAndSollAndCheckFuerGPs(
-		@Nonnull Collection<Gesuchsperiode> gesuchesperiodenToCheck,
+		@Nonnull Gesuchsperiode gesuchsperiode,
 		@Nonnull LocalDateTime datumLetzteZahlung,
 		@Nonnull ZahlungUeberpruefungContext zahlungUeberpruefungContext
 	) {
-		for (Gesuchsperiode gesuchsperiode : gesuchesperiodenToCheck) {
-			final String step = String.format(
-				"Kontrolle für Gesuchsperiode %s für Gemeinde %s",
-				gesuchsperiode.getGesuchsperiodeString(),
-				zahlungUeberpruefungContext.getGemeinde().getName()
-			);
-			final StopWatch stopWatch = logAndStartTimer(step);
-			final Map<String, List<Zahlungsposition>> zahlungenIstFuerGP =
-				pruefeZahlungenIst(
-					gesuchsperiode,
-					zahlungUeberpruefungContext
-				);
-			pruefungZahlungenSollFuerGesuchsperiode(
+		final String step = String.format(
+			"Kontrolle für Gesuchsperiode %s für Gemeinde %s",
+			gesuchsperiode.getGesuchsperiodeString(),
+			zahlungUeberpruefungContext.getGemeinde().getName()
+		);
+		final StopWatch stopWatch = logAndStartTimer(step);
+		final Map<String, List<Zahlungsposition>> zahlungenIstFuerGP =
+			pruefeZahlungenIst(
 				gesuchsperiode,
-				datumLetzteZahlung,
-				zahlungenIstFuerGP,
 				zahlungUeberpruefungContext
 			);
-			logAndStopTimer(stopWatch, step);
-		}
+		pruefungZahlungenSollFuerGesuchsperiode(
+			gesuchsperiode,
+			datumLetzteZahlung,
+			zahlungenIstFuerGP,
+			zahlungUeberpruefungContext
+		);
+		logAndStopTimer(stopWatch, step);
 	}
 
 	private void sendeMail(
@@ -372,6 +411,7 @@ public class ZahlungUeberpruefungServiceBean extends AbstractBaseService {
 					gesuchsperiode,
 					zahlungUeberpruefungContext.getGemeinde()
 				);
+
 		for (Gesuch gesuch : neuesteVerfuegteGesuche) {
 			pruefeZahlungenSollFuerGesuch(
 				gesuch,

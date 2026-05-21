@@ -10,6 +10,7 @@ import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.test.TestDataUtil;
@@ -478,7 +479,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.ZERO,
@@ -513,7 +517,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		Assert.assertNull(verfuegung.getKorrekturAusbezahltInstitution());
 		Assert.assertNull(verfuegung.getKorrekturAusbezahltEltern());
@@ -559,10 +566,83 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.valueOf(-20),
+			verfuegung.getKorrekturAusbezahltInstitution()
+		);
+		assertEquals(
+			BigDecimal.ZERO,
+			verfuegung.getKorrekturAusbezahltEltern()
+		);
+	}
+
+	@Test
+	public void ausbezahlteVerguenstigungWithKorrekturOfHoehereBeitraegeAndAuszahlungInstiutionenAktiviert_AmountForInstitutionIsKorrigiertOnly() {
+		List<VerfuegungZeitabschnitt> zeitaschnitteVorgaenger = Arrays.asList(
+			createZeitabschnittMitVergunstigung(
+				BigDecimal.valueOf(10),
+				august,
+				VerfuegungsZeitabschnittZahlungsstatus.VERRECHNET,
+				VerfuegungsZeitabschnittZahlungsstatus.NEU
+			),
+			createZeitabschnittMitVergunstigung(
+				BigDecimal.valueOf(20),
+				september,
+				VerfuegungsZeitabschnittZahlungsstatus.VERRECHNET,
+				VerfuegungsZeitabschnittZahlungsstatus.NEU
+			)
+		);
+		zeitaschnitteVorgaenger.forEach(za -> {
+			za.getRelevantBgCalculationResult().setAuszahlungAnEltern(true);
+			za.getRelevantBgCalculationResult()
+				.setHoehererBeitrag(BigDecimal.valueOf(5));
+		});
+
+		Verfuegung vorgaenger = new Verfuegung();
+		vorgaenger.setZeitabschnitte(zeitaschnitteVorgaenger);
+
+		List<VerfuegungZeitabschnitt> zeitaschnitteAktuell = Arrays.asList(
+			createZeitabschnittMitVergunstigung(
+				BigDecimal.valueOf(20),
+				august,
+				VerfuegungsZeitabschnittZahlungsstatus.NEU,
+				VerfuegungsZeitabschnittZahlungsstatus.NEU
+			),
+			createZeitabschnittMitVergunstigung(
+				BigDecimal.valueOf(30),
+				september,
+				VerfuegungsZeitabschnittZahlungsstatus.NEU,
+				VerfuegungsZeitabschnittZahlungsstatus.NEU
+			)
+		);
+		zeitaschnitteAktuell.forEach(za -> {
+			za.getRelevantBgCalculationResult().setAuszahlungAnEltern(true);
+			za.getRelevantBgCalculationResult()
+				.setHoehererBeitrag(BigDecimal.valueOf(12));
+		});
+
+		Verfuegung verfuegung = new Verfuegung();
+		verfuegung.setZeitabschnitte(zeitaschnitteAktuell);
+
+		Betreuung betreuung = initBetreuung(verfuegung, vorgaenger);
+
+		VeraenderungCalculator
+			.getVeranderungCalculator(false)
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+			);
+
+		// Vorgaenger ausbezahlt: 5 + 5 = 10 (hoehererBeitrag because auszahlungAnEltern=true and beitraegeTyp=AKTIVIERT_AUSZAHLUNG_INSTITUTION)
+		// Aktuell: 12 + 12 = 24
+		// Korrektur: 10 - 24 = -14
+		assertEquals(
+			BigDecimal.valueOf(-14),
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
 		assertEquals(
@@ -611,7 +691,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.valueOf(30),
@@ -663,7 +746,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.valueOf(20),
@@ -721,7 +807,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.valueOf(10),
@@ -779,7 +868,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.valueOf(-10),
@@ -839,7 +931,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.ZERO,
@@ -899,7 +994,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.valueOf(-70),
@@ -963,7 +1061,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.ZERO,
@@ -1027,7 +1128,10 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
 		VeraenderungCalculator
 			.getVeranderungCalculator(false)
-			.calculateKorrekturAusbezahlteVerguenstigung(betreuung);
+			.calculateKorrekturAusbezahlteVerguenstigung(
+				betreuung,
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
 
 		assertEquals(
 			BigDecimal.valueOf(-40),

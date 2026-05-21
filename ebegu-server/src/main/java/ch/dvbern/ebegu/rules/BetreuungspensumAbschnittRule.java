@@ -31,6 +31,7 @@ import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
 import ch.dvbern.ebegu.entities.ErweiterteBetreuung;
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
@@ -47,11 +48,13 @@ import ch.dvbern.ebegu.util.ServerMessageUtil;
 public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 
 	private final KitaxUebergangsloesungParameter kitaxParameter;
+	private final HoehereBeitraegeTyp hoehereBeitraegeTyp;
 
 	public BetreuungspensumAbschnittRule(
 		@Nonnull DateRange validityPeriod,
 		@Nonnull Locale locale,
-		KitaxUebergangsloesungParameter kitaxParameter
+		KitaxUebergangsloesungParameter kitaxParameter,
+		HoehereBeitraegeTyp hoehereBeitraegeTyp
 	) {
 		super(
 			RuleKey.BETREUUNGSPENSUM,
@@ -62,6 +65,7 @@ public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 		);
 
 		this.kitaxParameter = kitaxParameter;
+		this.hoehereBeitraegeTyp = hoehereBeitraegeTyp;
 	}
 
 	@Override
@@ -343,12 +347,17 @@ public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 				zeitabschnitt.setBedarfsstufeForAsivAndGemeinde(
 					betreuung.getBedarfsstufe()
 				);
+				MsgKey hoehereBeitraegeMsgKey = MsgKey.BEDARFSSTUFE_MSG;
+				if (HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+					== hoehereBeitraegeTyp) {
+					hoehereBeitraegeMsgKey = MsgKey.BEDARFSSTUFE_MSG_NEU;
+				}
 				zeitabschnitt.getBgCalculationInputAsiv()
 					.addBemerkung(
 						betreuung.getBedarfsstufe()
 							== Bedarfsstufe.KEINE ?
 								MsgKey.BEDARFSSTUFE_NICHT_GEWAEHRT_MSG :
-								MsgKey.BEDARFSSTUFE_MSG,
+								hoehereBeitraegeMsgKey,
 						getLocale(),
 						ServerMessageUtil.translateEnumValue(
 							betreuung.getBedarfsstufe(),

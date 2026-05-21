@@ -19,7 +19,7 @@ package ch.dvbern.ebegu.wizardx.ferienbetreuung;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainer;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.wizardx.Wizard;
 

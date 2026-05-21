@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {SharedModule} from '../../../../app/shared/shared.module';
+import {HoehereBeitraegeTyp} from '../../../../models/enums/HoehereBeitraegeTyp';
 import {TSBetreuungsangebotTyp} from '../../../../models/enums/TSBetreuungsangebotTyp';
-
 import {TSErweiterteBetreuung} from '../../../../models/TSErweiterteBetreuung';
 
 export type ErweiterteBeduerfnisseBestaetigenEinstellungen = {
@@ -37,6 +37,8 @@ export class ErweiterteBeduerfnisseBestaetigungComponent {
 
     readOnly = input.required<boolean>();
 
+    hoehereBeitraegeTyp = input.required<HoehereBeitraegeTyp>();
+
     labelKey = computed(() => {
         const einstellungen = this.einstellungenSig();
         const angebotTyp = this.angebotTypSig();
@@ -44,8 +46,27 @@ export class ErweiterteBeduerfnisseBestaetigungComponent {
         if (einstellungen.besondereBeduerfnisseAufwandKonfigurierbar) {
             return 'BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND_INST_WITHOUT_BETRAG';
         }
-        if (angebotTyp === TSBetreuungsangebotTyp.TAGESFAMILIEN) {
+        if (
+            angebotTyp === TSBetreuungsangebotTyp.TAGESFAMILIEN &&
+            this.hoehereBeitraegeTyp() !==
+                HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+        ) {
             return 'BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND_INST_WITH_FIX_BETRAG_PRO_STUNDE';
+        }
+
+        if (
+            angebotTyp === TSBetreuungsangebotTyp.TAGESFAMILIEN &&
+            this.hoehereBeitraegeTyp() ===
+                HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+        ) {
+            return 'BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND_INST_WITH_FIX_BETRAG_AUSZAHLUNG_INSTITUTION';
+        }
+
+        if (
+            this.hoehereBeitraegeTyp() ===
+            HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+        ) {
+            return 'BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND_INST_WITH_FIX_BETRAG_AUSZAHLUNG_INSTITUTION';
         }
 
         return 'BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND_INST_WITH_FIX_BETRAG';

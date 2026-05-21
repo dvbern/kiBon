@@ -82,6 +82,10 @@ public class FerienbetreuungExcelConverter implements ExcelConverter {
 				dataRow.getTimestampMutiert()
 			);
 			excelRowGroup.addValue(
+				MergeFieldFerienbetreuung.firstEinreicheDatum,
+				dataRow.getFirstEinreicheDatum()
+			);
+			excelRowGroup.addValue(
 				MergeFieldFerienbetreuung.traegerschaft,
 				dataRow.getTraegerschaft()
 			);

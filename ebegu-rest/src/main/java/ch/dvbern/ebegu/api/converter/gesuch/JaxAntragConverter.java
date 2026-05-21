@@ -37,6 +37,9 @@ import ch.dvbern.ebegu.api.dtos.JaxGesuch;
 import ch.dvbern.ebegu.api.dtos.JaxKindContainer;
 import ch.dvbern.ebegu.api.util.RestUtil;
 import ch.dvbern.ebegu.dto.JaxAntragDTO;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.entities.Auszahlungsdaten;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -54,12 +57,14 @@ import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.AntragStatusDTO;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.services.DossierService;
 import ch.dvbern.ebegu.services.EinkommensverschlechterungInfoService;
 import ch.dvbern.ebegu.services.FamiliensituationService;
+import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import ch.dvbern.ebegu.services.GesuchstellerService;
 import ch.dvbern.ebegu.services.InternePendenzService;
@@ -98,7 +103,19 @@ public class JaxAntragConverter extends AbstractBaseConverter {
 	private JaxKindConverter kindConverter;
 	@Inject
 	private JaxFallDossierConverter fallDossierConverter;
+	@Inject
+	private EinstellungService einstellungService;
+	@Inject
+	private GemeindeService gemeindeService;
 
+	/**
+	 * can convert JaxGesuch to Gesuch
+	 * e.x. Gesuch gesuch = converter.gesuchToEntity(completeGesuch, new Gesuch());
+	 *
+	 * @param antragJAXP
+	 * @param antrag
+	 * @return
+	 */
 	public Gesuch gesuchToEntity(
 		@Nonnull final JaxGesuch antragJAXP,
 		@Nonnull final Gesuch antrag
@@ -425,6 +442,16 @@ public class JaxAntragConverter extends AbstractBaseConverter {
 			antrag.setKinder(createKinderList(jaxKindContainers));
 		}
 
+		Einstellung einstellung = einstellungService.findEinstellung(
+			EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+			gesuch.extractGemeinde(),
+			gesuch.getGesuchsperiode()
+		);
+
+		boolean hoehereBeitraegeAnInstitutionAktiviert =
+			HoehereBeitraegeTyp.valueOf(einstellung.getValue())
+				== HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION;
+
 		if (EnumUtil.isOneOf(
 			userRole,
 			ADMIN_TRAEGERSCHAFT,
@@ -434,7 +461,8 @@ public class JaxAntragConverter extends AbstractBaseConverter {
 		)) {
 			RestUtil.purgeKinderAndBetreuungenOfInstitutionen(
 				jaxKindContainers,
-				allowedInst
+				allowedInst,
+				hoehereBeitraegeAnInstitutionAktiviert
 			);
 		}
 

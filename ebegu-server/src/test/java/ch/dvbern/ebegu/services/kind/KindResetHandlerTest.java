@@ -36,6 +36,7 @@ import ch.dvbern.ebegu.entities.InstitutionStammdaten;
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.KinderabzugTyp;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
@@ -98,7 +99,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 			)
 		).andReturn(Optional.of(schulErgaenzendeBetreuung));
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		expect(
 			einstellungService.getEinstellungByMandant(
 				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
@@ -148,7 +151,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 		Einstellung kinderabzugTyp = new Einstellung();
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
 		Einstellung schulErgaenzendeBetreuung = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		kinderabzugTyp.setValue("SCHWYZ");
 		schulErgaenzendeBetreuung.setValue(String.valueOf(true));
 		expect(
@@ -257,7 +262,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 		Einstellung kinderabzugTyp = new Einstellung();
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
 		Einstellung schulErgaenzendeBetreuung = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		kinderabzugTyp.setValue("SCHWYZ");
 		schulErgaenzendeBetreuung.setValue(String.valueOf(true));
 		expect(
@@ -312,7 +319,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 		Einstellung kinderabzugTypEinstellung = new Einstellung();
 		kinderabzugTypEinstellung.setValue(kinderabzugTyp.name());
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		expect(
 			einstellungService.getEinstellungByMandant(
 				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
@@ -353,7 +362,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 		);
 		Einstellung kinderabzugTyp = new Einstellung();
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		kinderabzugTyp.setValue("SCHWYZ");
 		expect(
 			einstellungService.getEinstellungByMandant(
@@ -395,7 +406,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 		);
 		Einstellung kinderabzugTyp = new Einstellung();
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		kinderabzugTyp.setValue("SCHWYZ");
 		expect(
 			einstellungService.getEinstellungByMandant(
@@ -521,7 +534,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 			.build();
 		Einstellung kinderabzugTyp = new Einstellung();
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		kinderabzugTyp.setValue("SCHWYZ");
 		expect(
 			einstellungService.getEinstellungByMandant(
@@ -569,7 +584,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 			.build();
 		Einstellung kinderabzugTyp = new Einstellung();
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		kinderabzugTyp.setValue("SCHWYZ");
 		expect(
 			einstellungService.getEinstellungByMandant(
@@ -612,7 +629,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 		Einstellung kinderabzugTyp = new Einstellung();
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
 		Einstellung schulErgaenzendeBetreuung = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		kinderabzugTyp.setValue("SCHWYZ");
 		schulErgaenzendeBetreuung.setValue(String.valueOf(true));
 		expect(
@@ -672,7 +691,6 @@ class KindResetHandlerTest extends EasyMockSupport {
 		);
 		kindContainer.getKindJA()
 			.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(false);
-
 		KindResetDecisionBasis dbKind = KindResetDecisionBasis.builder()
 			.einschulungTyp(EinschulungTyp.VORSCHULALTER)
 			.hoehereBeitraegeWegenBeeintraechtigungBeantragen(true)
@@ -680,7 +698,9 @@ class KindResetHandlerTest extends EasyMockSupport {
 		Einstellung kinderabzugTyp = new Einstellung();
 		Einstellung hoehereBeitraegeAktiviert = new Einstellung();
 		Einstellung schulErgaenzendeBetreuung = new Einstellung();
-		hoehereBeitraegeAktiviert.setValue(String.valueOf(true));
+		hoehereBeitraegeAktiviert.setValue(
+			HoehereBeitraegeTyp.AKTIVIERT.name()
+		);
 		kinderabzugTyp.setValue("SCHWYZ");
 		schulErgaenzendeBetreuung.setValue(String.valueOf(true));
 		expect(

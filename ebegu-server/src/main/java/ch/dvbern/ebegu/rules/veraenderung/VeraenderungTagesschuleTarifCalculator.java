@@ -14,6 +14,7 @@ import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.TSCalculationResult;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.types.DateRange;
 
 public class VeraenderungTagesschuleTarifCalculator extends
@@ -52,7 +53,8 @@ public class VeraenderungTagesschuleTarifCalculator extends
 
 	@Override
 	public void calculateKorrekturAusbezahlteVerguenstigung(
-		AbstractPlatz platz
+		AbstractPlatz platz,
+		HoehereBeitraegeTyp beitraegeTyp
 	) {
 		//no-op wir berechnen die korrektur für die tagesschulen noch nicht.
 	}

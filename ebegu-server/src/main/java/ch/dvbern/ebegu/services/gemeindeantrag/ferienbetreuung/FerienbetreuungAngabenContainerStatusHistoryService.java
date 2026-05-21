@@ -14,9 +14,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.Benutzer;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainerStatusHistory;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainerStatusHistory_;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainerStatusHistory;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainerStatusHistory_;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungAngabenStatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;

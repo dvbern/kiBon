@@ -161,6 +161,7 @@ public class DailyBatchBean implements DailyBatch {
 					"Es wurden {} Gesuche gefunden, die noch nicht freigegeben wurden",
 					anzahl
 				);
+				persistence.getEntityManager().clear();
 			});
 			LOGGER.info("... Job WarnungGesuchNichtFreigegeben finished");
 		} catch (RuntimeException e) {
@@ -185,6 +186,7 @@ public class DailyBatchBean implements DailyBatch {
 					anzahl,
 					mandant.getName()
 				);
+				persistence.getEntityManager().clear();
 			});
 			LOGGER.info("... Job WarnungFreigabequittungFehlt finished");
 		} catch (RuntimeException e) {

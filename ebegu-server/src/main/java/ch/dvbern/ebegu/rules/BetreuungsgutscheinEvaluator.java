@@ -42,6 +42,7 @@ import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
@@ -71,6 +72,7 @@ import static ch.dvbern.ebegu.einstellung.EinstellungKey.EINGEWOEHNUNG_TYP;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLEN_TYP;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.GESCHWISTERNBONUS_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT;
 
 /**
  * This is the Evaluator that runs all the rules and calculations for a given Antrag to determine the
@@ -332,10 +334,23 @@ public class BetreuungsgutscheinEvaluator {
 								(Betreuung) platz
 							);
 					}
+
+					Einstellung hoehereBeitraegeEinstellung =
+						kibonAbschlussRulesParameters.get(
+							HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT
+						);
+					HoehereBeitraegeTyp hoehereBeitraegeTyp =
+						HoehereBeitraegeTyp.valueOf(
+							hoehereBeitraegeEinstellung.getValue()
+						);
+
 					VeraenderungCalculator.getVeranderungCalculator(
 						isTagesschule
 					)
-						.calculateKorrekturAusbezahlteVerguenstigung(platz);
+						.calculateKorrekturAusbezahlteVerguenstigung(
+							platz,
+							hoehereBeitraegeTyp
+						);
 
 					if (!isTagesschule) {
 						setZahlungRelevanteDaten(
@@ -460,8 +475,16 @@ public class BetreuungsgutscheinEvaluator {
 			vorgaengerVerfuegung,
 			veranderung
 		);
+
+		Einstellung hoehereBeitraegeEinstellung = kibonAbschlussRulesParameters
+			.get(HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT);
+		HoehereBeitraegeTyp hoehereBeitraegeTyp = HoehereBeitraegeTyp.valueOf(
+			hoehereBeitraegeEinstellung.getValue()
+		);
+
 		veraenderungCalculator.calculateKorrekturAusbezahlteVerguenstigung(
-			verfuegungPreview.getPlatz()
+			verfuegungPreview.getPlatz(),
+			hoehereBeitraegeTyp
 		);
 
 		verfuegungPreview.setIgnorable(ignorable);
@@ -476,7 +499,8 @@ public class BetreuungsgutscheinEvaluator {
 			EINGEWOEHNUNG_TYP,
 			ANSPRUCH_MONATSWEISE,
 			FACHSTELLEN_TYP,
-			GESCHWISTERNBONUS_TYP
+			GESCHWISTERNBONUS_TYP,
+			HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT
 		);
 	}
 
@@ -536,6 +560,15 @@ public class BetreuungsgutscheinEvaluator {
 
 		// Den Zahlungsstatus aus der letzten *ausbezahlten* Verfuegung berechnen
 		if (vorgaengerAusbezahlteVerfuegungProAuszahlungstyp != null) {
+
+			Einstellung hoehereBeitrageTypEinstellung =
+				kibonAbschlussRulesParameters.get(
+					HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT
+				);
+			HoehereBeitraegeTyp beitraegeTyp = HoehereBeitraegeTyp.valueOf(
+				hoehereBeitrageTypEinstellung.getValue()
+			);
+
 			// sameAusbezahlteVerguenstigung wird benoetigt, um im GUI die Frage nach dem Ignorieren zu stellen (oder
 			// eben nicht)
 			VerfuegungUtil.setIsSameAusbezahlteVerguenstigung(
@@ -546,7 +579,8 @@ public class BetreuungsgutscheinEvaluator {
 				vorgaengerAusbezahlteVerfuegungProAuszahlungstyp.get(
 					ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER
 				),
-				bgRechnerParameterDTO.getMahlzeitenverguenstigungEnabled()
+				bgRechnerParameterDTO.getMahlzeitenverguenstigungEnabled(),
+				beitraegeTyp
 			);
 
 			if (onlySetIsSameAusbezahlteVerguenstigung) {
@@ -558,7 +592,8 @@ public class BetreuungsgutscheinEvaluator {
 			// die Mahlzeiten evtl. spaeter erst enabled werden!
 			VerfuegungUtil.setZahlungsstatusForAllZahlungslauftypes(
 				verfuegungZuBerechnen,
-				vorgaengerAusbezahlteVerfuegungProAuszahlungstyp
+				vorgaengerAusbezahlteVerfuegungProAuszahlungstyp,
+				beitraegeTyp
 			);
 
 		}

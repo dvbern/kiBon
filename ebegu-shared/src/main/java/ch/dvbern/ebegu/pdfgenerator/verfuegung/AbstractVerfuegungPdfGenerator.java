@@ -37,6 +37,7 @@ import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
@@ -49,6 +50,7 @@ import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.Gueltigkeit;
 import ch.dvbern.ebegu.util.KitaxUtil;
 import ch.dvbern.ebegu.util.MathUtil;
+import ch.dvbern.ebegu.util.zahlungslauf.ZahlungslaufGutscheinUtil;
 import ch.dvbern.lib.invoicegenerator.pdf.PdfElementGenerator;
 import ch.dvbern.lib.invoicegenerator.pdf.PdfGenerator;
 import ch.dvbern.lib.invoicegenerator.pdf.PdfUtilities;
@@ -594,25 +596,38 @@ public abstract class AbstractVerfuegungPdfGenerator extends
 		VerfuegungTable verfuegungTable,
 		List<VerfuegungZeitabschnitt> zeitabschnitte
 	) {
-		var hasHoeherenBeitrag =
-			zeitabschnitte.stream()
-				.anyMatch(
-					z -> z.getBedarfsstufe() != null
-						&& z.getBedarfsstufe()
-							!= Bedarfsstufe.KEINE
-				);
-		if (verfuegungPdfGeneratorKonfiguration.isHoehereBeitraegeConfigured
-			&& hasHoeherenBeitrag) {
+		HoehereBeitraegeTyp hoehereBeitraegeTyp =
+			verfuegungPdfGeneratorKonfiguration.getHoehereBeitraegeTyp();
+		boolean isHoehereBeitraegeActivated = HoehereBeitraegeTyp.AKTIVIERT
+			== hoehereBeitraegeTyp
+			|| HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+				== hoehereBeitraegeTyp;
+		if (isHoehereBeitraegeActivated
+			&& hasAuszuzahlendenHoeherenBeitrag(zeitabschnitte)) {
 			verfuegungTable.add(createHoehererGutscheinColumn());
 		}
 
-		if (showColumnAnInsitutionenAuszahlen(zeitabschnitte)) {
+		if (showColumnAnInsitutionenAuszahlen(
+			zeitabschnitte,
+			hoehereBeitraegeTyp
+		)) {
 			verfuegungTable.add(createGutscheinInstitutionColumn());
 		}
 
 		if (showColumnAnElternAuszahlen(zeitabschnitte)) {
 			verfuegungTable.add(createGutscheinElternColumn());
 		}
+	}
+
+	private static boolean hasAuszuzahlendenHoeherenBeitrag(
+		List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
+		return zeitabschnitte.stream()
+			.anyMatch(
+				z -> z.getBedarfsstufe() != null
+					&& z.getBedarfsstufe()
+						!= Bedarfsstufe.KEINE
+			);
 	}
 
 	@Nonnull
@@ -795,21 +810,55 @@ public abstract class AbstractVerfuegungPdfGenerator extends
 	}
 
 	@Nonnull
-	protected static BigDecimal getVerguenstigungAnInstitution(
+	protected BigDecimal getVerguenstigungAnInstitution(
 		VerfuegungZeitabschnitt zeitabschnitt
 	) {
-		return zeitabschnitt.isAuszahlungAnEltern() ?
-			BigDecimal.ZERO :
-			zeitabschnitt.getVerguenstigung();
+		if (!zeitabschnitt.isAuszahlungAnEltern()) {
+			return zeitabschnitt.getVerguenstigung();
+		}
+
+		HoehereBeitraegeTyp beitraegeTyp =
+			this.verfuegungPdfGeneratorKonfiguration.getHoehereBeitraegeTyp();
+		boolean isHoehererBeitragAnInstitution =
+			HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+				== beitraegeTyp;
+
+		if (isHoehererBeitragAnInstitution
+			&& zeitabschnitt.getHoehererBeitrag() != null) {
+			// Higher contributions are paid to the institution even if the base voucher goes to the parents
+			return zeitabschnitt.getHoehererBeitrag();
+		}
+
+		return BigDecimal.ZERO;
 	}
 
 	@Nonnull
-	protected static BigDecimal getVerguenstigungAnEltern(
+	protected BigDecimal getVerguenstigungAnEltern(
 		VerfuegungZeitabschnitt zeitabschnitt
 	) {
-		return zeitabschnitt.isAuszahlungAnEltern() ?
-			zeitabschnitt.getVerguenstigung() :
-			BigDecimal.ZERO;
+		if (!zeitabschnitt.isAuszahlungAnEltern()) {
+			return BigDecimal.ZERO;
+		}
+
+		BigDecimal auszahlungsBetrag =
+			ZahlungslaufGutscheinUtil.getAuszahlungsbetrag(
+				zeitabschnitt
+			);
+
+		HoehereBeitraegeTyp beitraegeTyp =
+			this.verfuegungPdfGeneratorKonfiguration.getHoehereBeitraegeTyp();
+
+		if (HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+			== beitraegeTyp
+			&& null != zeitabschnitt.getHoehererBeitrag()) {
+			// höhere Beiträge gehen direkt an die Institution
+			return MathUtil.DEFAULT.subtractNullSafe(
+				auszahlungsBetrag,
+				zeitabschnitt.getHoehererBeitrag()
+			);
+		}
+		return auszahlungsBetrag;
+
 	}
 
 	@Nonnull
@@ -1069,11 +1118,32 @@ public abstract class AbstractVerfuegungPdfGenerator extends
 	}
 
 	protected boolean showColumnAnInsitutionenAuszahlen(
-		List<VerfuegungZeitabschnitt> zeitabschnitte
+		List<VerfuegungZeitabschnitt> zeitabschnitte,
+		HoehereBeitraegeTyp hoehereBeitraegeTyp
 	) {
+		var hasAuszuzahlendenHoeherenBeitrag = hasAuszuzahlendenHoeherenBeitrag(
+			zeitabschnitte
+		);
 		return zeitabschnitte
 			.stream()
-			.anyMatch(abschnitt -> !abschnitt.isAuszahlungAnEltern());
+			.anyMatch(
+				abschnitt -> !abschnitt.isAuszahlungAnEltern()
+					|| hasAuszuzahlendenHoeherenBeitrag
+						&& isAuszahlungAnElternWithHoehererBeitragAnInstitution(
+							hoehereBeitraegeTyp,
+							abschnitt
+						)
+			);
+	}
+
+	private static boolean isAuszahlungAnElternWithHoehererBeitragAnInstitution(
+		HoehereBeitraegeTyp hoehereBeitraegeTyp,
+		VerfuegungZeitabschnitt abschnitt
+	) {
+		return abschnitt.isAuszahlungAnEltern()
+			&& abschnitt.getHoehererBeitrag() != null
+			&& hoehereBeitraegeTyp
+				== HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION;
 	}
 
 }

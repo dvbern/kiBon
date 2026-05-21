@@ -116,6 +116,7 @@ import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.zahlungslauf.ZahlungslaufHelper;
 import ch.dvbern.ebegu.util.zahlungslauf.ZahlungslaufHelperFactory;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,6 +187,9 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 
 	@Inject
 	private ApplicationPropertyService applicationPropertyService;
+
+	@Inject
+	private ZahlungslaufHelperFactory zahlungslaufHelperFactory;
 
 	@Override
 	@Nonnull
@@ -305,9 +309,15 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			);
 		}
 
+		Collection<VerfuegungZeitabschnitt> gueltigeVerfuegungZeitabschnitte =
+			getGueltigeVerfuegungZeitabschnitte(
+				gemeinde,
+				zeitabschnittVon,
+				zeitabschnittBis
+			);
+
 		Map<String, Zahlung> zahlungProInstitution = new HashMap<>();
-		ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory
-			.getZahlungslaufHelper(zahlungslaufTyp);
+		zahlungslaufHelperFactory.clearCache();
 
 		// "Normale" Zahlungen
 		if (!isRepetition) {
@@ -315,13 +325,15 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 				"Ermittle normale Zahlungen im Zeitraum {}",
 				zahlungsauftrag.getGueltigkeit().toRangeString()
 			);
-			Collection<VerfuegungZeitabschnitt> gueltigeVerfuegungZeitabschnitte =
-				getGueltigeVerfuegungZeitabschnitte(
-					gemeinde,
-					zeitabschnittVon,
-					zeitabschnittBis
-				);
+
 			for (VerfuegungZeitabschnitt zeitabschnitt : gueltigeVerfuegungZeitabschnitte) {
+
+				ZahlungslaufHelper zahlungslaufHelper =
+					zahlungslaufHelperFactory.getZahlungslaufHelper(
+						zeitabschnitt,
+						zahlungslaufTyp
+					);
+
 				if (zahlungslaufHelper.isAuszuzahlen(zeitabschnitt)
 					&& zahlungslaufHelper.getZahlungsstatus(
 						zeitabschnitt
@@ -330,8 +342,8 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 						zahlungslaufHelper,
 						zeitabschnitt,
 						zahlungsauftrag,
-						zahlungProInstitution,
-						isInfomaZahlung
+						isInfomaZahlung,
+						zahlungProInstitution
 					);
 				}
 			}
@@ -349,6 +361,13 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 				stichtagKorrekturen
 			);
 		for (VerfuegungZeitabschnitt zeitabschnitt : verfuegungsZeitabschnitte) {
+
+			ZahlungslaufHelper zahlungslaufHelper = zahlungslaufHelperFactory
+				.getZahlungslaufHelper(
+					zeitabschnitt,
+					zahlungslaufTyp
+				);
+
 			// Zu behandeln sind alle, die NEU, VERRECHNEND oder IGNORIEREND sind
 			if (zahlungslaufHelper.isAuszuzahlen(zeitabschnitt)
 				&& zahlungslaufHelper.getZahlungsstatus(zeitabschnitt)
@@ -590,8 +609,8 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		@Nonnull ZahlungslaufHelper helper,
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
 		@Nonnull Zahlungsauftrag zahlungsauftrag,
-		@Nonnull Map<String, Zahlung> zahlungProInstitution,
-		boolean isInfomaZahlung
+		boolean isInfomaZahlung,
+		@Nonnull Map<String, Zahlung> zahlungProInstitution
 	) {
 		Zahlungsposition zahlungsposition = new Zahlungsposition();
 		zahlungsposition.setVerfuegungZeitabschnitt(zeitabschnitt);
@@ -689,8 +708,8 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 				helper,
 				zeitabschnittNeu,
 				zahlungsauftrag,
-				zahlungProInstitution,
-				isInfomaZahlung
+				isInfomaZahlung,
+				zahlungProInstitution
 			);
 		}
 	}
@@ -762,7 +781,7 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 
 	}
 
-	private Auszahlungsdaten getAuszahlungsdatenFromGesuchOrBetreuung(
+	private @Nullable Auszahlungsdaten getAuszahlungsdatenFromGesuchOrBetreuung(
 		Gesuch gesuch,
 		Betreuung betreuung
 	) {

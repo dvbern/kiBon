@@ -15,6 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {CONSTANTS} from '@models/constants';
+import {KiBonMandant} from '@models/mandant';
 import {HybridFormBridgeService} from '@utils/hybrid-form-bridge';
 import {LogFactory} from '@utils/log';
 import {MandantService} from '@utils/mandant';
@@ -23,8 +25,9 @@ import {copy, IComponentOptions} from 'angular';
 import moment from 'moment';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '@models/constants';
 import {EinschulungTypesVisitor} from '../../../app/core/constants/EinschulungTypesVisitor';
 import {KindGeschlechtVisitor} from '../../../app/core/constants/KindGeschlechtVisitor';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
@@ -33,10 +36,9 @@ import {TSDateRange} from '../../../models/entity/TSDateRange';
 import {TSKind} from '../../../models/entity/TSKind';
 import {TSPensumAusserordentlicherAnspruch} from '../../../models/entity/TSPensumAusserordentlicherAnspruch';
 import {TSPensumFachstelle} from '../../../models/entity/TSPensumFachstelle';
+import {HoehereBeitraegeTyp} from '../../../models/enums/HoehereBeitraegeTyp';
 import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
 import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
 import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
@@ -48,7 +50,6 @@ import {
     getTSKinderabzugValues,
     TSKinderabzug
 } from '../../../models/enums/TSKinderabzug';
-import {KiBonMandant} from '@models/mandant';
 import {
     isKinderabzugTypFKJV,
     TSKinderabzugTyp
@@ -136,7 +137,8 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
     private fachstellenPensumOverlapsMessageKey: string = undefined;
     private sozialeIntegrationBisSchulstufe: TSEinschulungTyp;
     private sprachlicheIntegrationBisSchulstufe: TSEinschulungTyp;
-    private isHoehereBeitraegeBeeintraechtigungAktiviert = false;
+    private hoehereBeitrageTyp: HoehereBeitraegeTyp =
+        HoehereBeitraegeTyp.DEAKTIVIERT;
 
     private readonly unsubscribe$ = new Subject<void>();
 
@@ -537,6 +539,8 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
         tsKindContainer.kindGS = undefined;
         tsKindContainer.kindJA = new TSKind();
         tsKindContainer.kindNummer = kindNumber;
+        tsKindContainer.kindJA.hoehereBeitraegeWegenBeeintraechtigungBeantragen =
+            false;
         return tsKindContainer;
     }
 
@@ -799,8 +803,9 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
                 e.key ===
                 TSEinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT
         );
-        this.isHoehereBeitraegeBeeintraechtigungAktiviert =
-            einstellung.getValueAsBoolean();
+        this.hoehereBeitrageTyp =
+            (einstellung?.value as HoehereBeitraegeTyp) ??
+            HoehereBeitraegeTyp.DEAKTIVIERT;
     }
 
     public isEinschulungTypObligatorischerKindergarten(): boolean {
@@ -935,7 +940,11 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
     }
 
     public showHoehereBetraegeBeeintraechtigung(): boolean {
-        return this.isHoehereBeitraegeBeeintraechtigungAktiviert;
+        return (
+            this.hoehereBeitrageTyp === HoehereBeitraegeTyp.AKTIVIERT ||
+            this.hoehereBeitrageTyp ===
+                HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+        );
     }
 
     public hasGueltigkeitTerminiertReadPermission(): boolean {

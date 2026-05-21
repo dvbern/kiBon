@@ -166,6 +166,9 @@ public class Kind extends AbstractPersonEntity {
 	@Column(nullable = true)
 	@Nullable
 	private Boolean unterhaltspflichtig;
+
+	@Setter
+	@Getter
 	@Column(nullable = false)
 	@NotNull
 	private Boolean hoehereBeitraegeWegenBeeintraechtigungBeantragen = false;
@@ -632,17 +635,6 @@ public class Kind extends AbstractPersonEntity {
 
 	public void setUnterhaltspflichtig(@Nullable Boolean unterhaltspflichtig) {
 		this.unterhaltspflichtig = unterhaltspflichtig;
-	}
-
-	public Boolean getHoehereBeitraegeWegenBeeintraechtigungBeantragen() {
-		return hoehereBeitraegeWegenBeeintraechtigungBeantragen;
-	}
-
-	public void setHoehereBeitraegeWegenBeeintraechtigungBeantragen(
-		Boolean hoehereBeitraegeWegenBeeintraechtigungBeantragen
-	) {
-		this.hoehereBeitraegeWegenBeeintraechtigungBeantragen =
-			hoehereBeitraegeWegenBeeintraechtigungBeantragen;
 	}
 
 	@Nullable

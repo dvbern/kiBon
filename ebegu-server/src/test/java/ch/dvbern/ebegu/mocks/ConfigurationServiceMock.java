@@ -20,6 +20,7 @@ package ch.dvbern.ebegu.mocks;
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
 import ch.dvbern.ebegu.pdfgenerator.verfuegung.VerfuegungPdfGeneratorKonfiguration;
 import ch.dvbern.ebegu.services.ConfigurationService;
@@ -39,7 +40,7 @@ public class ConfigurationServiceMock extends ConfigurationService {
 			.betreuungspensumAnzeigeTyp(
 				BetreuungspensumAnzeigeTyp.NUR_PROZENT
 			)
-			.isHoehereBeitraegeConfigured(false)
+			.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 			.build();
 	}
 
@@ -54,7 +55,7 @@ public class ConfigurationServiceMock extends ConfigurationService {
 			.betreuungspensumAnzeigeTyp(
 				BetreuungspensumAnzeigeTyp.NUR_PROZENT
 			)
-			.isHoehereBeitraegeConfigured(false)
+			.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 			.build();
 	}
 }

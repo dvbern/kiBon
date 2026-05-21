@@ -16,8 +16,8 @@
 -->
 
 <div class="ferienbetreuung-container">
-    <div class="antrag-container">
-        <div class="side-nav">
+    <div class="flex flex-auto overflow-auto">
+        <div class="bg-white w-[35rem] side-nav">
             <dv-wizard-side-nav
                 [id]="ferienbetreuungId"
                 [wizardTyp]="wizardTyp"
@@ -27,7 +27,6 @@
                 [subHeader]="'FERIENBETREUUNG' | translate"
             >
             </dv-wizard-side-nav>
-            <div class="flex-spacing-6"></div>
             <div class="padding-left-20">
                 <dv-loading-button
                     (buttonClick)="downloadFerienbetreuungReport()"
@@ -35,11 +34,14 @@
                 >
             </div>
         </div>
-        <div class="antrag">
+        <div class="flex-1">
             <ui-view></ui-view>
         </div>
+
         @if (showKommentare()) {
-            <dv-ferienbetreuung-kommantar></dv-ferienbetreuung-kommantar>
+            <dv-ferienbetreuung-side-panel
+                class="w-[40rem]"
+            ></dv-ferienbetreuung-side-panel>
         }
     </div>
 </div>

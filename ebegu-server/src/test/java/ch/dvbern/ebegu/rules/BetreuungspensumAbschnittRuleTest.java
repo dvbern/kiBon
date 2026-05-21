@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
@@ -24,7 +25,8 @@ class BetreuungspensumAbschnittRuleTest {
 		new BetreuungspensumAbschnittRule(
 			Constants.DEFAULT_GUELTIGKEIT,
 			Constants.DEFAULT_LOCALE,
-			TestDataUtil.geKitaxUebergangsloesungParameter()
+			TestDataUtil.geKitaxUebergangsloesungParameter(),
+			HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
 		);
 
 	@Test

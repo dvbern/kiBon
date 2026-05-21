@@ -3284,10 +3284,10 @@
     "DOKUMENT_ZU_UEBERNEHMEN_TYPS": "Dokumente zu übernehmen",
     "DOK_FINANZIELLESITUATION": "Berechnung der finanziellen Verhältnisse",
     "DOK_SONSTIGE_NACHWEISE": "Sonstige Nachweise",
-    "KEINE_DOKUMENTE_ZU_UEBERNEHMEN": "Es können keine Belege aus dem letzten Antrag übernommen werden.",
+    "KEINE_DOKUMENTE_ZU_UEBERNEHMEN": "Es können keine Belege aus dem Antrag vom letzten Jahr übernommen werden.",
     "DOKUMENTE_UEBERNEHMEN_BUTTON": "Belege übernehmen",
-    "DOKUMENTE_UEBERNEHMEN": "Belege aus dem letzten Antrag übernehmen",
-    "DOKUMENTE_UEBERNEHMEN_HELPTEXT": "Wählen Sie die Belege aus, die Sie aus dem letzten Antrag übernehmen möchten. Belege, die Ihnen nicht angezeigt werden, können nicht übernommen werden.",
+    "DOKUMENTE_UEBERNEHMEN": "Belege aus dem Antrag vom letzten Jahr übernehmen",
+    "DOKUMENTE_UEBERNEHMEN_HELPTEXT": "Wählen Sie die Belege aus, die Sie aus dem Antrag vom letzten Jahr übernehmen möchten. Belege, die Ihnen nicht angezeigt werden, können nicht übernommen werden.",
     "DOKUMENTE_UEBERNEHMEN_WARNUNG": "Bitte prüfen Sie, dass die ausgewählten Belege aktuell sind. ",
     "DOKUMENT_GRUND_TYP_FAMILIENSITUATION": "Familiensituation",
     "DOKUMENT_GRUND_TYP_KINDER": "Kinder",
@@ -3338,5 +3338,7 @@
     "QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER": "Betreuungsgutscheine: Kinder Statistik",
     "QUARKUS_STATISTIK_MITARBEITENDE": "Mitarbeitende Statistik",
     "QUARKUS_STATISTIK_LASTENAUSGLEICH_BG": "Lastenausgleich BG Statistik",
+    "HOEHERE_BEITRAG_TOOLTIP_VERFUEGUNG": "Der höhere Beitrag gemäss § 17 KiBeV wird immer direkt an die Institution ausbezahlt.",
+    "KEINE_VERLAUF_DATEN": "Der Verlauf kann nur für Gemeindeanträge ab der Periode 24/25 angezeigt werden. Bei älteren Gemeindeanträge ist kein Verlauf verfügbar.",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

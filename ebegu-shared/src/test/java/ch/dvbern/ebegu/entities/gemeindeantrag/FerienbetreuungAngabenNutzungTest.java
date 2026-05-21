@@ -2,6 +2,7 @@ package ch.dvbern.ebegu.entities.gemeindeantrag;
 
 import java.math.BigDecimal;
 
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenNutzung;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

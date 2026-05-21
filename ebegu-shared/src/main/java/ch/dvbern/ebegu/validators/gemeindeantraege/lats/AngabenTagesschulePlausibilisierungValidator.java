@@ -6,7 +6,7 @@ import java.util.Objects;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitution;
+import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.LastenausgleichTagesschuleAngabenInstitution;
 
 public class AngabenTagesschulePlausibilisierungValidator implements
 	ConstraintValidator<AngabenTagesschulePlausibilisierung, LastenausgleichTagesschuleAngabenInstitution> {

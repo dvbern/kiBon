@@ -33,6 +33,7 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.AnspruchBeschaeftigungAbhaengigkeitTyp;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.KinderabzugTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
@@ -249,7 +250,11 @@ public class KindResetHandler {
 					gesuch.getGesuchsperiode().getId()
 				)
 			);
-		return hoehereBeitraegeAktiviert.getValueAsBoolean();
+
+		HoehereBeitraegeTyp typ = hoehereBeitraegeAktiviert.getValueAsEnum(
+			HoehereBeitraegeTyp.class
+		);
+		return typ != HoehereBeitraegeTyp.DEAKTIVIERT;
 	}
 
 	private boolean wechseltKindVonVorschulalterZuSchulstufe(

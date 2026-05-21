@@ -42,6 +42,8 @@ public enum MergeFieldFerienbetreuung implements MergeFieldProvider {
 		new SimpleMergeField<>("status", STRING_CONVERTER)
 	), timestampMutiert(
 		new SimpleMergeField<>("timestampMutiert", DATETIME_CONVERTER)
+	), firstEinreicheDatum(
+		new SimpleMergeField<>("firstEinreicheDatum", DATE_CONVERTER)
 	), traegerschaft(
 		new SimpleMergeField<>("traegerschaft", STRING_CONVERTER)
 	), weitereGemeinden(

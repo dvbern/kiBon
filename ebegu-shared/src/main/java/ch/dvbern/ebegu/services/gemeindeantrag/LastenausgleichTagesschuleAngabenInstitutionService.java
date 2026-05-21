@@ -27,8 +27,8 @@ import javax.annotation.Nonnull;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
-import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
-import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitutionContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.LastenausgleichTagesschuleAngabenGemeindeContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.LastenausgleichTagesschuleAngabenInstitutionContainer;
 
 /**
  * Service fuer den Lastenausgleich der Tagesschulen, Formulare der Institutionen
@@ -69,7 +69,7 @@ public interface LastenausgleichTagesschuleAngabenInstitutionService {
 
 	/**
 	 * Gibt den Lastenausgleich zum Lesen für die Kantone frei, inkl. Setzen des Status auf "GEPRUEFT".
-	 * 
+	 *
 	 * @return
 	 */
 	@Nonnull

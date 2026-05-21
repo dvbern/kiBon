@@ -26,6 +26,7 @@ import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.FachstellenTyp;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.KinderabzugTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungComparator;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
@@ -626,9 +627,10 @@ public enum EinstellungKey {
 
 	@NumberEinstellung SOZIALABZUG_PRO_KIND(MandantIdentifier.getAll()),
 
-	@BooleanEinstellung
 	// Aktiviert die Frage und Berechung "Höhere Beiträge für Kind mit Beeinträchtigung"
-	HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT(MandantIdentifier.getAll()),
+	@EnumEinstellung(HoehereBeitraegeTyp.class) HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT(
+		MandantIdentifier.getAll()
+	),
 
 	@BooleanEinstellung GESUCHFREIGABE_ONLINE(MandantIdentifier.getAll()),
 

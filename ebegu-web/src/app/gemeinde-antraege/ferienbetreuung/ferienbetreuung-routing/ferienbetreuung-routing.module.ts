@@ -28,6 +28,7 @@ import {FerienbetreuungKostenEinnahmenComponent} from '../ferienbetreuung-kosten
 import {FerienbetreuungNutzungComponent} from '../ferienbetreuung-nutzung/ferienbetreuung-nutzung.component';
 import {FerienbetreuungStammdatenGemeindeComponent} from '../ferienbetreuung-stammdaten-gemeinde/ferienbetreuung-stammdaten-gemeinde.component';
 import {FerienbetreuungUploadComponent} from '../ferienbetreuung-upload/ferienbetreuung-upload.component';
+import {FerienbetreuungVerlaufComponent} from '../ferienbetreuung-verlauf/ferienbetreuung-verlauf.component';
 import {FerienbetreuungComponent} from '../ferienbetreuung/ferienbetreuung.component';
 
 const states: NgHybridStateDeclaration[] = [
@@ -76,6 +77,11 @@ const states: NgHybridStateDeclaration[] = [
         name: 'FERIENBETREUUNG.ABSCHLUSS',
         url: '/verfuegung',
         component: FerienbetreuungAbschlussComponent
+    },
+    {
+        name: 'FERIENBETREUUNG.VERLAUF',
+        url: '/verlauf',
+        component: FerienbetreuungVerlaufComponent
     }
 ];
 

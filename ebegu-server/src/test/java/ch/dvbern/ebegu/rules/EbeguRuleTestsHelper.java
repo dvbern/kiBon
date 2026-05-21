@@ -629,6 +629,12 @@ public final class EbeguRuleTestsHelper {
 			gesuchsperiode
 		);
 
+		einstellungenMap.addEinstellung(
+			HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+			"AKTIVIERT",
+			gesuchsperiode
+		);
+
 		return einstellungenMap.getEinstellungen();
 	}
 

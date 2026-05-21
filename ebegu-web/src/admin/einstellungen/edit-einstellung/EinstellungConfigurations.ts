@@ -1,6 +1,7 @@
 import {TSApplicationPropertyKey} from '../../../models/einstellung/TSApplicationPropertyKey';
 import {BetreuungComparator} from '../../../models/enums/BetreuungComparator';
 import {TSGemeindeZusaetzlicherGutscheinTyp} from '../../../models/enums/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
+import {HoehereBeitraegeTyp} from '../../../models/enums/HoehereBeitraegeTyp';
 import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
 import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
 import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
@@ -53,7 +54,8 @@ const configEnums = [
     TSAusserordentlicherAnspruchTyp,
     TSBetreuungsangebotTyp,
     TSDokumentTyp,
-    BetreuungComparator
+    BetreuungComparator,
+    HoehereBeitraegeTyp
 ] as const;
 
 const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
@@ -196,7 +198,8 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
     GERES_ENABLED_FOR_MANDANT: createConfiguration(Boolean),
     GESUCHFREIGABE_ONLINE: createConfiguration(Boolean),
     GESUCH_BEENDEN_BEI_TAUSCH_GS2: createConfiguration(Boolean),
-    HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT: createConfiguration(Boolean),
+    HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT:
+        createConfiguration(HoehereBeitraegeTyp),
     INFOMA_ZAHLUNGEN: createConfiguration(Boolean),
     INSTITUTIONEN_DURCH_GEMEINDEN_EINLADEN: createConfiguration(Boolean),
     KESB_PLATZIERUNG_DEAKTIVIEREN: createConfiguration(Boolean),

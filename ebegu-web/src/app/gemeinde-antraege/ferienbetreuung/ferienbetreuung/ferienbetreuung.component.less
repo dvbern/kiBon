@@ -24,40 +24,15 @@
     flex-direction: column;
     height: 100%;
 
-    .antrag-container {
-        display: flex;
-        flex: auto;
-        flex-grow: 1;
-        overflow: auto;
-
-        .side-nav {
-            background-color: #ffffff;
-            width: 35.5rem;
-
-            dv-wizard-side-nav {
-                background-color: @contrast-lightest;
-                display: flex;
-                flex-direction: column;
-            }
-        }
-
-        .flex-spacing-6 {
-            height: 6rem;
-        }
-
-        .antrag {
-            box-sizing: border-box;
-            flex-basis: 0;
-            flex-grow: 1;
-
-            ::ng-deep ui-view > *:not(dv-tagesschulen-ui-view) {
-                padding: 5rem 2.5rem 0 5rem;
-            }
-        }
-
-        dv-ferienbetreuung-kommantar {
+    .side-nav {
+        dv-wizard-side-nav {
             background-color: @contrast-lightest;
-            width: 45rem;
+            display: flex;
+            flex-direction: column;
         }
+    }
+
+    ::ng-deep ui-view > *:not(dv-tagesschulen-ui-view) {
+        padding: 5rem 2.5rem 0 5rem;
     }
 }

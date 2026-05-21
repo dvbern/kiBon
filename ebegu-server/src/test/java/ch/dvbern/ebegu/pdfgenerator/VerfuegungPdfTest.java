@@ -41,6 +41,7 @@ import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
@@ -127,7 +128,7 @@ class VerfuegungPdfTest {
 				)
 				.kontingentierungEnabledAndEntwurf(false)
 				.stadtBernAsivConfigured(false)
-				.isHoehereBeitraegeConfigured(false)
+				.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 				.build(),
 			"WaeltiDagmar.pdf"
 		);
@@ -179,7 +180,7 @@ class VerfuegungPdfTest {
 				)
 				.kontingentierungEnabledAndEntwurf(false)
 				.stadtBernAsivConfigured(false)
-				.isHoehereBeitraegeConfigured(true)
+				.hoehereBeitraegeTyp(HoehereBeitraegeTyp.AKTIVIERT)
 				.build(),
 			"WaeltiDagmar_hoehererBeitrag.pdf"
 		);

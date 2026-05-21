@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {KiBonMandant, MANDANTS} from '@models/mandant';
 import {StateService} from '@uirouter/core';
 import {copy, IComponentOptions} from 'angular';
 import $ from 'jquery';
@@ -38,6 +39,7 @@ import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStamm
 import {TSInstitutionStammdatenSummary} from '../../../models/entity/TSInstitutionStammdatenSummary';
 import {TSBedarfsstufe} from '../../../models/enums/betreuung/TSBedarfsstufe';
 import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
+import {HoehereBeitraegeTyp} from '../../../models/enums/HoehereBeitraegeTyp';
 import {PERMISSIONS_BETREUUNG} from '../../../models/enums/permission-betreuung/PermissionBetreuung';
 import {TSAnmeldungMutationZustand} from '../../../models/enums/TSAnmeldungMutationZustand';
 import {
@@ -46,7 +48,6 @@ import {
     isVerfuegtOrSTV,
     TSAntragStatus
 } from '../../../models/enums/TSAntragStatus';
-import {KiBonMandant, MANDANTS} from '@models/mandant';
 import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
 import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
 import {
@@ -179,7 +180,8 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
     public readonly demoFeature = TSDemoFeature.FACHSTELLEN_UEBERGANGSLOESUNG;
     public texteSz25Enabled: boolean = false;
     public hoehereBeitraegeWegenBeeintraechtigungBeantragt: boolean = false;
-    public isHoehereBeitraegeEinstellungAktiviert: boolean = false;
+    public hoehereBeitraegeTyp: HoehereBeitraegeTyp =
+        HoehereBeitraegeTyp.DEAKTIVIERT;
     public canEditBedarfsstufen: boolean = false;
     protected minEintrittsdatum: moment.Moment;
     private eingewoehnungTyp: TSEingewoehnungTyp = TSEingewoehnungTyp.KEINE;
@@ -2890,8 +2892,7 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
                 gesuchsperiodeId
             )
             .subscribe(res => {
-                this.isHoehereBeitraegeEinstellungAktiviert =
-                    EbeguUtil.getBoolean(res.value);
+                this.hoehereBeitraegeTyp = res.value as HoehereBeitraegeTyp;
             });
     }
 
@@ -2947,5 +2948,9 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
 
     public getRolesForTabellarischeMaske() {
         return PERMISSIONS_BETREUUNG['TABELLARISCHE_BETREUUNG_MASKE'];
+    }
+
+    public isHoehereBeitraegeEinstellungAktiviert() {
+        return this.hoehereBeitraegeTyp !== HoehereBeitraegeTyp.DEAKTIVIERT;
     }
 }

@@ -32,6 +32,7 @@ import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.entities.Zahlung;
 import ch.dvbern.ebegu.entities.Zahlungsposition;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.util.MathUtil;
@@ -42,6 +43,16 @@ import ch.dvbern.ebegu.util.MathUtil;
 public class ZahlungslaufAntragstellerHelper implements ZahlungslaufHelper {
 
 	private static final long serialVersionUID = -3499105749075247695L;
+
+	private final HoehereBeitraegeTyp beitraegeTyp;
+
+	public ZahlungslaufAntragstellerHelper() {
+		this.beitraegeTyp = HoehereBeitraegeTyp.DEAKTIVIERT;
+	}
+
+	public ZahlungslaufAntragstellerHelper(HoehereBeitraegeTyp beitraegeTyp) {
+		this.beitraegeTyp = beitraegeTyp;
+	}
 
 	@Nonnull
 	@Override
@@ -78,6 +89,15 @@ public class ZahlungslaufAntragstellerHelper implements ZahlungslaufHelper {
 					zeitabschnitt
 				)
 			);
+			if (HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+				== beitraegeTyp
+				&& null != zeitabschnitt.getHoehererBeitrag()) {
+				// höhere Beiträge gehen direkt an die Institution
+				total = MathUtil.DEFAULT.subtractNullSafe(
+					total,
+					zeitabschnitt.getHoehererBeitrag()
+				);
+			}
 		}
 		if (ZahlungslaufMahlzeitenverguenstigungUtil.isAuszuzahlen(
 			zeitabschnitt

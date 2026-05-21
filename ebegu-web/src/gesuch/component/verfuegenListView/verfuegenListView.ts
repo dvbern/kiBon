@@ -30,6 +30,7 @@ import {
     isBetreuungsstatusStorniert,
     TSBetreuungsstatus
 } from '../../../models/enums/betreuung/TSBetreuungsstatus';
+import {HoehereBeitraegeTyp} from '../../../models/enums/HoehereBeitraegeTyp';
 import {
     isAnyStatusOfMahnung,
     isAnyStatusOfVerfuegt,
@@ -116,7 +117,8 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
     public mahnungList: TSMahnung[];
     public finSitStatus: Array<string>;
     public finSitStatusUpdateIsRunning: boolean = false;
-    public hoehereBeitraegeBeeintraechtigungAktiviert: boolean;
+    public hoehereBeitraegeTyp: HoehereBeitraegeTyp =
+        HoehereBeitraegeTyp.DEAKTIVIERT;
     public missingBedarfsstufeChildNames: string[] = [];
     public isErlaeuterungUploaded: boolean = false;
     private kinderWithBetreuungList: Array<TSKindContainer>;
@@ -1016,8 +1018,12 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         return !!(this.getGesuch() && this.getGesuch().finSitStatus);
     }
 
-    public isHoehereBeitraegeBeeintraechtigungAktiviert() {
-        return this.hoehereBeitraegeBeeintraechtigungAktiviert;
+    public isHoehereBeitraegeBeeintraechtigungAktiviert(): boolean {
+        return (
+            this.hoehereBeitraegeTyp === HoehereBeitraegeTyp.AKTIVIERT ||
+            this.hoehereBeitraegeTyp ===
+                HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+        );
     }
 
     public isBedarfsstufeNotSelected(): boolean {
@@ -1363,13 +1369,13 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                     this.gesuchModelManager.getDossier().gemeinde.id,
                     this.gesuchModelManager.getGesuchsperiode().id
                 )
-                .subscribe(
-                    response => {
-                        this.hoehereBeitraegeBeeintraechtigungAktiviert =
-                            JSON.parse(response.value);
+                .subscribe({
+                    next: response => {
+                        this.hoehereBeitraegeTyp =
+                            response.value as HoehereBeitraegeTyp;
                     },
-                    error => LOG.error(error)
-                );
+                    error: error => LOG.error(error)
+                });
         }
         this.missingBedarfsstufeChildNames = [];
         this.isBedarfsstufeNotSelected();

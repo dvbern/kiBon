@@ -17,6 +17,7 @@
 
 package ch.dvbern.ebegu.pdfgenerator.verfuegung;
 
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,6 +31,6 @@ public class VerfuegungPdfGeneratorKonfiguration {
 	boolean kontingentierungEnabledAndEntwurf;
 	boolean stadtBernAsivConfigured;
 	boolean FKJVTexte;
-	boolean isHoehereBeitraegeConfigured;
+	HoehereBeitraegeTyp hoehereBeitraegeTyp;
 	BetreuungspensumAnzeigeTyp betreuungspensumAnzeigeTyp;
 }

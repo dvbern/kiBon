@@ -30,6 +30,7 @@ import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.entities.Zahlung;
 import ch.dvbern.ebegu.entities.Zahlungsposition;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.util.MathUtil;
@@ -40,6 +41,16 @@ import ch.dvbern.ebegu.util.MathUtil;
 public class ZahlungslaufInstitutionenHelper implements ZahlungslaufHelper {
 
 	private static final long serialVersionUID = -4297840799469141643L;
+
+	private final HoehereBeitraegeTyp beitraegeTyp;
+
+	public ZahlungslaufInstitutionenHelper() {
+		this.beitraegeTyp = HoehereBeitraegeTyp.DEAKTIVIERT;
+	}
+
+	public ZahlungslaufInstitutionenHelper(HoehereBeitraegeTyp beitraegeTyp) {
+		this.beitraegeTyp = beitraegeTyp;
+	}
 
 	@Nonnull
 	@Override
@@ -68,6 +79,15 @@ public class ZahlungslaufInstitutionenHelper implements ZahlungslaufHelper {
 	public BigDecimal getAuszahlungsbetrag(
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
 	) {
+
+		if (zeitabschnitt.isAuszahlungAnEltern()
+			&& HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+				== beitraegeTyp
+			&& null != zeitabschnitt.getHoehererBeitrag()) {
+			// always pay them out, even if "Auszahlung an Eltern" is enabled.
+			return zeitabschnitt.getHoehererBeitrag();
+		}
+		// pay out, what ever BG-Rechner has calculated here.
 		return zeitabschnitt.getVerguenstigung();
 	}
 
@@ -162,6 +182,13 @@ public class ZahlungslaufInstitutionenHelper implements ZahlungslaufHelper {
 	public boolean isAuszuzahlen(
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
 	) {
-		return !zeitabschnitt.isAuszahlungAnEltern();
+		if (zeitabschnitt.isAuszahlungAnEltern()) {
+			// even if "Auszahlung an Eltern" is enabled, we must pay out at least "Hoeherer Beitrag" (if any)
+			return (HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+				== beitraegeTyp)
+				&& (null != zeitabschnitt.getHoehererBeitrag());
+		}
+		// if not "Auszahlung an Eltern" is enabled, "Auszahlung an Institution" is always "true"
+		return true;
 	}
 }

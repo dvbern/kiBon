@@ -191,6 +191,16 @@ public class DokumentGrundServiceBean extends AbstractBaseService implements
 		return dokumentGrunds;
 	}
 
+	/**
+	 * Finds all existing DokumentGrunds for a given {@link Gesuch}, matching the provided {@link DokumentGrundTyp}.
+	 * {@link DokumentTyp} and tag.
+	 *
+	 * @param gesuch the {@link Gesuch} to search for
+	 * @param dokumentGrundTyp the {@link DokumentGrundTyp} to match
+	 * @param dokumentTyp the {@link DokumentTyp} to match
+	 * @param tag the {@link String} to match
+	 * @return the found {@link DokumentGrund}s belonging to the {@link Gesuch} that match the provided criteria
+	 */
 	@Override
 	@Nonnull
 	public Collection<DokumentGrund> findAllDokumentGrundByGesuchDokumentTypeDokumentGrundTypeAndTag(
@@ -221,10 +231,9 @@ public class DokumentGrundServiceBean extends AbstractBaseService implements
 			root.get(DokumentGrund_.dokumentTyp),
 			dokumentTyp
 		);
-		Predicate sameTag = cb.equal(
-			root.get(DokumentGrund_.tag),
-			tag
-		);
+		Predicate sameTag = tag == null ?
+			cb.isNull(root.get(DokumentGrund_.tag)) :
+			cb.equal(root.get(DokumentGrund_.tag), tag);
 
 		query.where(
 			predicateGesuch,

@@ -68,7 +68,7 @@ public class DokumentUebernehmenService {
 			);
 
 		var optionalGesuchMitDokumenten =
-			findVerfugtesGesuchMitDokumentZuUebernehmen(
+			findLatestVerfuegtesGesuchOfLatestEingereichtErstgesuchOfVorperiode(
 				gesuch
 			);
 		if (optionalGesuchMitDokumenten.isEmpty()
@@ -95,50 +95,46 @@ public class DokumentUebernehmenService {
 		return toDokumentZuUebernehmen(grundeZuUbernehmen);
 	}
 
-	public Optional<Gesuch> findVerfugtesGesuchMitDokumentZuUebernehmen(
+	/**
+	 * Find the latest verfuegt gesuch/mutations of the latest eingereicht erstgesuch of the vorperiode.
+	 * If multiple dossiers have verfuegt erstgesuch, the newest verfuegt mutation/gesuch of the latest eingereicht
+	 * erstgesuch is returned.
+	 *
+	 * @param gesuch the gesuch to find the latest verfuegt gesuch/mutations of the latest eingereicht erstgesuch of the
+	 * vorperiode for
+	 * @return the latest verfuegt gesuch/mutations of the latest eingereicht erstgesuch of the vorperiode, if found,
+	 * otherwise empty
+	 */
+	public Optional<Gesuch> findLatestVerfuegtesGesuchOfLatestEingereichtErstgesuchOfVorperiode(
 		Gesuch gesuch
 	) {
-		var optionalGesuchMitDokumenten = getVorjahrGesuch(
-			gesuch
-		);
-
-		if (optionalGesuchMitDokumenten.isEmpty()) {
-			optionalGesuchMitDokumenten =
-				findLatestVerfuegtesGesuchInOtherDossierWithEarlierOrSamePeriode(
-					gesuch
-				);
-		}
-		return optionalGesuchMitDokumenten;
-	}
-
-	private Optional<Gesuch> findLatestVerfuegtesGesuchInOtherDossierWithEarlierOrSamePeriode(
-		Gesuch gesuch
-	) {
-		List<Gesuch> otherDossierGesuche = gesuchService.getAllGesuchsForFall(
+		List<Gesuch> allGesucheOfFall = gesuchService.getAllGesuchsForFall(
 			gesuch.getFall().getId()
 		);
-		// Such ob es Verfügte Gesuchen gibt, mit dasselbe sonst kleinere GP aber in andere Dossier
-		return otherDossierGesuche.stream()
-			.filter(g -> g.getTimestampVerfuegt() != null)
-			.filter(g -> !g.getDossier().equals(gesuch.getDossier()))
+		var periodeVorjahr = gesuchsperiodeService.getVorjahrGesuchsperiode(
+			gesuch.getGesuchsperiode()
+		).orElseThrow();
+
+		var latestEingereichterErstantrag = allGesucheOfFall.stream()
+			.filter(g -> g.getStatus().isAnyStatusOfVerfuegt())
+			.filter(g -> !g.isMutation())
 			.filter(
-				g -> gesuch.getGesuchsperiode()
-					.getGueltigkeit()
-					.endsAfterOrSame(
-						g.getGesuchsperiode().getGueltigkeit().getGueltigBis()
-					)
+				g -> g.getGesuchsperiode().isSame(periodeVorjahr)
 			)
-			.sorted(
+			.max(
 				Comparator
 					.comparing(
-						(Gesuch g) -> g.getGesuchsperiode()
-							.getGueltigkeit()
-							.getGueltigBis()
+						Gesuch::getEingangsdatum
 					)
-					.thenComparing(Gesuch::getTimestampVerfuegt)
-					.reversed()
-			)
-			.findFirst();
+			);
+
+		return latestEingereichterErstantrag.flatMap(
+			value -> allGesucheOfFall.stream()
+				.filter(g -> g.getDossier().isSame(value.getDossier()))
+				.filter(g -> g.getGesuchsperiode().isSame(periodeVorjahr))
+				.filter(g -> g.getStatus().isAnyStatusOfVerfuegt())
+				.max(Comparator.comparing(Gesuch::getLaufnummer))
+		);
 	}
 
 	private Set<DokumentGrund> getUploadableDokumente(Gesuch gesuch) {
@@ -148,20 +144,6 @@ public class DokumentUebernehmenService {
 			dokumentGrundsNeeded
 		);
 		return dokumentGrundsNeeded;
-	}
-
-	private Optional<Gesuch> getVorjahrGesuch(Gesuch gesuch) {
-		var vorjahrPeriode = gesuchsperiodeService.getVorjahrGesuchsperiode(
-			gesuch.getGesuchsperiode()
-		);
-		return vorjahrPeriode.flatMap(
-			gesuchsperiode -> gesuchService
-				.getNeustesVerfuegtesGesuchFuerGesuch(
-					gesuchsperiode,
-					gesuch.getDossier(),
-					true
-				)
-		);
 	}
 
 	private List<DokumentTyp> getAllowedDokumentTypsZuUebernehmenFromEinstellung(
@@ -199,6 +181,19 @@ public class DokumentUebernehmenService {
 			.toList();
 	}
 
+	/**
+	 * Takes over the documents from the given list to the {@link Gesuch} provided.
+	 * <p>
+	 * First, the documents are checked to be valid candidates to be taken over.
+	 * Then, for each document, a new {@link DokumentGrund} is created or retrieved if it already exists.
+	 * The document is then copied and associated with the new {@link DokumentGrund}. This also makes
+	 * a copy of the file in the file system.
+	 * </p>
+	 *
+	 * @param gesuch the {@link Gesuch} to which the documents should be taken over
+	 * @param dokumenteToErneuern the list of {@link DokumentZuUebernehmen} to be taken over
+	 * @return the list of {@link DokumentZuUebernehmen} that were successfully taken over
+	 */
 	public List<DokumentZuUebernehmen> dokumenteUebernehmen(
 		Gesuch gesuch,
 		List<DokumentZuUebernehmen> dokumenteToErneuern

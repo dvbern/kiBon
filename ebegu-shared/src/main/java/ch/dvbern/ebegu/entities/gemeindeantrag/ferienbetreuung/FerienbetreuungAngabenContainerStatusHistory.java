@@ -15,8 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.dvbern.ebegu.entities.gemeindeantrag;
+package ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -32,29 +33,33 @@ import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Benutzer;
-import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatus;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.hibernate.envers.Audited;
+import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungAngabenStatus;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Audited
 @Entity
-public class LastenausgleichTagesschuleAngabenGemeindeStatusHistory extends
+@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+public class FerienbetreuungAngabenContainerStatusHistory extends
 	AbstractEntity {
 
+	@Serial
 	private static final long serialVersionUID = 7772645713958975926L;
 
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
 	@JoinColumn(foreignKey = @ForeignKey(
-		name = "FK_lats_statushistory_fall_id"), nullable = false)
-	private LastenausgleichTagesschuleAngabenGemeindeContainer angabenGemeindeContainer;
+		name = "FK_fb_statushistory_id"), nullable = false)
+	private FerienbetreuungAngabenContainer container;
 
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
 	@JoinColumn(foreignKey = @ForeignKey(
-		name = "FK_lats_statushistory_benutzer_id"), nullable = false)
+		name = "FK_fb_statushistory_benutzer_id"), nullable = false)
 	private Benutzer benutzer;
 
 	@NotNull
@@ -62,81 +67,30 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistory extends
 	@Column(nullable = false)
 	private LocalDateTime timestampVon;
 
-	@Column(nullable = true)
+	@Column()
 	private LocalDateTime timestampBis;
 
 	@NotNull
 	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private LastenausgleichTagesschuleAngabenGemeindeStatus status;
-
-	@Nonnull
-	public LastenausgleichTagesschuleAngabenGemeindeContainer getAngabenGemeindeContainer() {
-		return angabenGemeindeContainer;
-	}
-
-	public void setAngabenGemeindeContainer(
-		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer fall
-	) {
-		this.angabenGemeindeContainer = fall;
-	}
-
-	@Nonnull
-	public Benutzer getBenutzer() {
-		return benutzer;
-	}
-
-	public void setBenutzer(@Nonnull Benutzer benutzer) {
-		this.benutzer = benutzer;
-	}
-
-	@Nonnull
-	public LocalDateTime getTimestampVon() {
-		return timestampVon;
-	}
-
-	public void setTimestampVon(@Nonnull LocalDateTime timestampVon) {
-		this.timestampVon = timestampVon;
-	}
-
-	public LocalDateTime getTimestampBis() {
-		return timestampBis;
-	}
-
-	public void setTimestampBis(LocalDateTime timestampBis) {
-		this.timestampBis = timestampBis;
-	}
-
-	@Nonnull
-	public LastenausgleichTagesschuleAngabenGemeindeStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(
-		@Nonnull LastenausgleichTagesschuleAngabenGemeindeStatus status
-	) {
-		this.status = status;
-	}
+	private FerienbetreuungAngabenStatus status;
 
 	@Override
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
-	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
 		if (this == other) {
 			return true;
 		}
-		if (!(other instanceof LastenausgleichTagesschuleAngabenGemeindeStatusHistory)) {
+		if (!(other instanceof FerienbetreuungAngabenContainerStatusHistory that)) {
 			return false;
 		}
 		if (!super.equals(other)) {
 			return false;
 		}
-		LastenausgleichTagesschuleAngabenGemeindeStatusHistory that =
-			(LastenausgleichTagesschuleAngabenGemeindeStatusHistory) other;
-		return getAngabenGemeindeContainer().equals(
-			that.getAngabenGemeindeContainer()
+		return getContainer().equals(
+			that.getContainer()
 		)
 			&&
 			getBenutzer().equals(that.getBenutzer())
@@ -147,4 +101,5 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistory extends
 			&&
 			getStatus() == that.getStatus();
 	}
+
 }

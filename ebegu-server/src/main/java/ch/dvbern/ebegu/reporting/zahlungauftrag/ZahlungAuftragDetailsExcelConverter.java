@@ -256,7 +256,8 @@ public class ZahlungAuftragDetailsExcelConverter implements ExcelConverter {
 							== ZahlungspositionStatus.KORREKTUR;
 				})
 				.findFirst();
-			if (!inverted.isPresent()) {
+			if (inverted.isEmpty()
+				&& !MathUtil.isZero(zahlungposition.getBetrag())) {
 				resultat.add(zahlungposition);
 			}
 		}

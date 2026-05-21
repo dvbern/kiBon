@@ -24,7 +24,7 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.api.dtos.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainerStatusHistoryDTO;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainerStatusHistory;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainerStatusHistory;
 
 @Dependent
 public class JaxFerienbetreuungStatusHistoryConverter extends

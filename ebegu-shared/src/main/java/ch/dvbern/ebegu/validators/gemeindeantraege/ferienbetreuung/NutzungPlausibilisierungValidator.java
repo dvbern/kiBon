@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenNutzung;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenNutzung;
 
 public class NutzungPlausibilisierungValidator implements
 	ConstraintValidator<NutzungPlausibilisierung, FerienbetreuungAngabenNutzung> {

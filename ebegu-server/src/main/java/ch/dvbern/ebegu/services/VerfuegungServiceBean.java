@@ -57,6 +57,7 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.FinSitStatus;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.enums.WizardStepName;
@@ -507,8 +508,25 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		boolean ignorieren
 	) {
 
+		Betreuung betreuung = zeitabschnitt.getVerfuegung().getBetreuung();
+		if (null == betreuung) {
+			throw new IllegalStateException(
+				"Unable to set Zahlungsstatus for a Verfügung that has no Betreuung."
+			);
+		}
+		Einstellung hoehereBeitraegeEinstellung = einstellungService
+			.findEinstellung(
+				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+				betreuung.extractGemeinde(),
+				betreuung.extractGesuchsperiode()
+			);
+
+		HoehereBeitraegeTyp beitraegeTyp = HoehereBeitraegeTyp.valueOf(
+			hoehereBeitraegeEinstellung.getValue()
+		);
+
 		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory
-			.getZahlungslaufHelper(zahlungslaufTyp);
+			.getZahlungslaufHelper(zahlungslaufTyp, beitraegeTyp);
 
 		Optional<VerfuegungZeitabschnitt> zeitabschnittSameGueltigkeitSameBetrag =
 			VerfuegungUtil.findZeitabschnittSameGueltigkeitSameBetrag(
@@ -1028,8 +1046,21 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		if (betreuung.getVerfuegung() == null) {
 			return false;
 		}
+
+		Einstellung hoehereBeitraegeEinstellung = einstellungService
+			.findEinstellung(
+				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+				betreuung.extractGemeinde(),
+				betreuung.extractGesuchsperiode()
+			);
+
+		HoehereBeitraegeTyp beitraegeTyp = HoehereBeitraegeTyp.valueOf(
+			hoehereBeitraegeEinstellung.getValue()
+		);
+
 		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory
-			.getZahlungslaufHelper(zahlungslaufTyp);
+			.getZahlungslaufHelper(zahlungslaufTyp, beitraegeTyp);
+
 		return betreuung.getVerfuegung()
 			.getZeitabschnitte()
 			.stream()
@@ -1068,8 +1099,20 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		@Nonnull Betreuung betreuungNeu,
 		@Nonnull List<VerfuegungZeitabschnitt> vorgaengerZeitabschnitte
 	) {
+
+		Einstellung hoehereBeitraegeEinstellung = einstellungService
+			.findEinstellung(
+				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+				betreuungNeu.extractGemeinde(),
+				betreuungNeu.extractGesuchsperiode()
+			);
+
+		HoehereBeitraegeTyp beitraegeTyp = HoehereBeitraegeTyp.valueOf(
+			hoehereBeitraegeEinstellung.getValue()
+		);
+
 		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory
-			.getZahlungslaufHelper(zahlungslaufTyp);
+			.getZahlungslaufHelper(zahlungslaufTyp, beitraegeTyp);
 
 		findVorgaengerAusbezahlteVerfuegung(zahlungslaufTyp, betreuungNeu)
 			.map(
@@ -1128,8 +1171,20 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		@Nonnull Betreuung betreuungNeu,
 		@Nonnull List<VerfuegungZeitabschnitt> vorgaengerZeitabschnitte
 	) {
+
+		Einstellung hoehereBeitraegeEinstellung = einstellungService
+			.findEinstellung(
+				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+				betreuungNeu.extractGemeinde(),
+				betreuungNeu.extractGesuchsperiode()
+			);
+
+		HoehereBeitraegeTyp beitraegeTyp = HoehereBeitraegeTyp.valueOf(
+			hoehereBeitraegeEinstellung.getValue()
+		);
+
 		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory
-			.getZahlungslaufHelper(zahlungslaufTyp);
+			.getZahlungslaufHelper(zahlungslaufTyp, beitraegeTyp);
 
 		findVorgaengerAusbezahlteVerfuegung(zahlungslaufTyp, betreuungNeu)
 			.map(

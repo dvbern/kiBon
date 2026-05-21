@@ -103,13 +103,13 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt_;
 import ch.dvbern.ebegu.entities.Verfuegung_;
 import ch.dvbern.ebegu.entities.Zahlung;
 import ch.dvbern.ebegu.entities.Zahlungsauftrag;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngaben;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenAngebot;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenKostenEinnahmen;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenNutzung;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenStammdaten;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungBerechnungen;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngaben;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenAngebot;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenKostenEinnahmen;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenNutzung;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenStammdaten;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungBerechnungen;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.UserRole;
@@ -2213,6 +2213,9 @@ public class ReportServiceBean extends AbstractReportServiceBean implements
 		);
 		ferienbetreuungDataRow.setTimestampMutiert(
 			ferienbetreuungAngabenContainer.getTimestampMutiert()
+		);
+		ferienbetreuungDataRow.setFirstEinreicheDatum(
+			ferienbetreuungAngabenContainer.getEinreichedatum()
 		);
 		ferienbetreuungDataRow.setKommentar(
 			ferienbetreuungAngabenContainer.getInternerKommentar()

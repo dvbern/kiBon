@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.LastenausgleichTagesschuleAngabenGemeindeContainer;
 import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.errors.MergeDocException;
 

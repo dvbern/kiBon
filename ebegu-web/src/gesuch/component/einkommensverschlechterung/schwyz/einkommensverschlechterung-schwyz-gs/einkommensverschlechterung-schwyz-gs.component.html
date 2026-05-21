@@ -13,7 +13,10 @@
         </div>
     </div>
 
-    @if (model.finanzielleSituationTyp === 'SCHWYZ_ERWEITERT') {
+    @if (
+        model.finanzielleSituationTyp === 'SCHWYZ_ERWEITERT' &&
+        !model.getFiSiConToWorkWith().finanzielleSituationJA.quellenbesteuert
+    ) {
         <div class="row margin-bottom-3rem">
             <div class="col-md-12">
                 <span

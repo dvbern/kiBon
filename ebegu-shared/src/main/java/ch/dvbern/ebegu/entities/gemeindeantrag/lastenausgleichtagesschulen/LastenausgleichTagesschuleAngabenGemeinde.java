@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.dvbern.ebegu.entities.gemeindeantrag;
+package ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen;
 
 import java.math.BigDecimal;
 

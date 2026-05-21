@@ -53,6 +53,9 @@ import ch.dvbern.ebegu.api.dtos.JaxVerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.api.resource.util.ResourceHelper;
 import ch.dvbern.ebegu.api.util.RestUtil;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractAnmeldung;
 import ch.dvbern.ebegu.entities.AnmeldungFerieninsel;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
@@ -61,6 +64,7 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.services.BetreuungService;
@@ -106,13 +110,18 @@ public class VerfuegungResource {
 
 	@Inject
 	private JaxVerfuegungConverter converter;
+
 	@Inject
 	private JaxKindConverter kindConverter;
+
 	@Inject
 	private JaxBetreuungAnmeldungPlatzConverter betreuungAnmeldungPlatzConverter;
 
 	@Inject
 	private PrincipalBean principalBean;
+
+	@Inject
+	private EinstellungService einstellungService;
 
 	@Operation(
 		summary = "Calculates the Verfuegung of the Gesuch with the given id, does nothing if the Gesuch "
@@ -160,9 +169,21 @@ public class VerfuegungResource {
 			Collection<Institution> instForCurrBenutzer =
 				institutionService
 					.getInstitutionenReadableForCurrentBenutzer(false);
+
+			Einstellung einstellung = einstellungService.findEinstellung(
+				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+				gesuch.extractGemeinde(),
+				gesuch.getGesuchsperiode()
+			);
+
+			boolean hoehereBeitraegeAnInstitutionAktiviert =
+				HoehereBeitraegeTyp.valueOf(einstellung.getValue())
+					== HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION;
+
 			RestUtil.purgeKinderAndBetreuungenOfInstitutionen(
 				kindContainers,
-				instForCurrBenutzer
+				instForCurrBenutzer,
+				hoehereBeitraegeAnInstitutionAktiviert
 			);
 		}
 		return Response.ok(kindContainers).build();

@@ -2200,6 +2200,81 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		@Nested
 		class EinkommensverschlechterungDokumenteTest {
 
+			@Nested
+			class EKVDokumenteTagsTest {
+
+				@Test
+				void ekvOneGSQuellbesteuertBruttolohn_tagShouldBeNull() {
+					Gesuch testGesuch = setUpGesuchForEKV();
+					setUpFamiliensituationAlleine(testGesuch);
+					setUpEkvInfoContainer(true, testGesuch);
+					final Einkommensverschlechterung ekv =
+						new Einkommensverschlechterung();
+					ekv.setBruttoLohn(BigDecimal.valueOf(120000));
+					setUpEkvGS(ekv, testGesuch.getGesuchsteller1());
+
+					final Set<DokumentGrund> dokumentGruende = evaluator
+						.calculate(
+							testGesuch,
+							Constants.DEFAULT_LOCALE
+						);
+
+					dokumentGruende.forEach(
+						dg -> assertThat(dg.getTag(), is(nullValue()))
+					);
+				}
+
+				@Test
+				void ekvOneGSNotQuellbesteuertBruttolohn_tagShouldBeNullForAllFields() {
+					Gesuch testGesuch = setUpGesuchForEKV();
+					setUpFamiliensituationAlleine(testGesuch);
+					setUpEkvInfoContainer(true, testGesuch);
+					final Einkommensverschlechterung ekv =
+						new Einkommensverschlechterung();
+					ekv.setSteuerbaresEinkommen(BigDecimal.valueOf(120000));
+					ekv.setSteuerbaresVermoegen(BigDecimal.valueOf(100000));
+					ekv.setEinkaeufeVorsorge(BigDecimal.valueOf(0));
+					ekv.setAbzuegeLiegenschaft(BigDecimal.valueOf(0));
+					setUpEkvGS(ekv, testGesuch.getGesuchsteller1());
+
+					final Set<DokumentGrund> dokumentGruende = evaluator
+						.calculate(
+							testGesuch,
+							Constants.DEFAULT_LOCALE
+						);
+
+					dokumentGruende.forEach(
+						dg -> assertThat(dg.getTag(), is(nullValue()))
+					);
+				}
+
+				@Test
+				void ekvTwoGSQuellbesteuertBruttolohn_tagShouldBeNullForBothGS() {
+					Gesuch testGesuch = setUpGesuchForEKV();
+					setUpFamiliensituationZuZweit(false, testGesuch);
+					setUpEkvInfoContainer(true, testGesuch);
+					testGesuch.setGesuchsteller2(new GesuchstellerContainer());
+					setUpEkvGS(
+						setUpEkvQuellbesteuert(),
+						testGesuch.getGesuchsteller1()
+					);
+					setUpEkvGS(
+						setUpEkvQuellbesteuert(),
+						testGesuch.getGesuchsteller2()
+					);
+
+					final Set<DokumentGrund> dokumentGruende = evaluator
+						.calculate(
+							testGesuch,
+							Constants.DEFAULT_LOCALE
+						);
+
+					dokumentGruende.forEach(
+						dg -> assertThat(dg.getTag(), is(nullValue()))
+					);
+				}
+			}
+
 			@Test
 			void noEKVInfoContainer_shouldNotRequireAnyNachweis() {
 				Gesuch testGesuch = setUpGesuchForEKV();

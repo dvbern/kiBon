@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.util.zahlungslauf.ZahlungslaufHelper;
@@ -95,14 +96,16 @@ public final class VerfuegungUtil {
 		@Nonnull Verfuegung verfuegung,
 		@Nullable Verfuegung letzteAusbezahlteVerfuegung,
 		@Nullable Verfuegung letzteAusbezahlteVerfuegungMahlzeiten,
-		boolean mahlzeitenverguenstigungEnabled
+		boolean mahlzeitenverguenstigungEnabled,
+		@Nonnull HoehereBeitraegeTyp hoehereBeitraegeTyp
 	) {
 		// "Normale" Auszahlungen
 		if (letzteAusbezahlteVerfuegung != null) {
 			setIsSameAusbezahlteVerguenstigungForZahlungslaufTyp(
 				verfuegung,
 				letzteAusbezahlteVerfuegung,
-				ZahlungslaufTyp.GEMEINDE_INSTITUTION
+				ZahlungslaufTyp.GEMEINDE_INSTITUTION,
+				hoehereBeitraegeTyp
 			);
 		} else {
 			// Wenn es noch gar nie eine Auszahlung gab, gibt es auch nichts zu ignorieren
@@ -122,7 +125,8 @@ public final class VerfuegungUtil {
 			setIsSameAusbezahlteVerguenstigungForZahlungslaufTyp(
 				verfuegung,
 				letzteAusbezahlteVerfuegungMahlzeiten,
-				ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER
+				ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER,
+				hoehereBeitraegeTyp
 			);
 		} else {
 			// Wenn es noch gar nie eine Auszahlung gab, gibt es auch nichts zu ignorieren
@@ -139,7 +143,8 @@ public final class VerfuegungUtil {
 	private static void setIsSameAusbezahlteVerguenstigungForZahlungslaufTyp(
 		@Nonnull Verfuegung verfuegung,
 		@Nonnull Verfuegung letzteAusbezahlteVerfuegungForZahlungslauftyp,
-		@Nonnull ZahlungslaufTyp zahlungslaufTyp
+		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
+		@Nonnull HoehereBeitraegeTyp hoehereBeitraegeTyp
 	) {
 		final List<VerfuegungZeitabschnitt> newZeitabschnitte = verfuegung
 			.getZeitabschnitte();
@@ -149,7 +154,7 @@ public final class VerfuegungUtil {
 				.getZeitabschnitte();
 
 		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory
-			.getZahlungslaufHelper(zahlungslaufTyp);
+			.getZahlungslaufHelper(zahlungslaufTyp, hoehereBeitraegeTyp);
 
 		for (VerfuegungZeitabschnitt newZeitabschnitt : newZeitabschnitte) {
 			// "Normale" Auszahlungen
@@ -204,7 +209,8 @@ public final class VerfuegungUtil {
 
 	public static void setZahlungsstatusForAllZahlungslauftypes(
 		@Nonnull Verfuegung verfuegung,
-		@Nullable Map<ZahlungslaufTyp, Verfuegung> verfuegungOnGesuchForMutationForAllZahlungslaufTypes
+		@Nullable Map<ZahlungslaufTyp, Verfuegung> verfuegungOnGesuchForMutationForAllZahlungslaufTypes,
+		@Nonnull HoehereBeitraegeTyp hoehereBeitraegeTyp
 	) {
 		if (verfuegungOnGesuchForMutationForAllZahlungslaufTypes == null) {
 			return;
@@ -227,7 +233,8 @@ public final class VerfuegungUtil {
 						final ZahlungslaufHelper zahlungslaufHelper =
 							ZahlungslaufHelperFactory
 								.getZahlungslaufHelper(
-									zahlungslaufTyp
+									zahlungslaufTyp,
+									hoehereBeitraegeTyp
 								);
 						final Optional<VerfuegungZeitabschnitt> oldZeitabschnitt =
 							findOldZeitabschnitt(

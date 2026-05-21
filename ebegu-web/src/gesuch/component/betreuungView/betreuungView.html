@@ -998,7 +998,7 @@
                         class="row margin-bottom-20"
                         ng-if="
                             vm.hoehereBeitraegeWegenBeeintraechtigungBeantragt &&
-                            vm.isHoehereBeitraegeEinstellungAktiviert
+                            vm.isHoehereBeitraegeEinstellungAktiviert()
                         "
                     >
                         <div class="well well-status-warten">
@@ -1021,6 +1021,7 @@
                             [read-only]="
                                 !vm.isBestaetigungBesondereBeduerfnisseEnabled()
                             "
+                            [hoehere-beitraege-typ]="vm.hoehereBeitraegeTyp"
                         ></erweiterte-beduerfnisse-bestaetigung>
                     </div>
 
@@ -1029,7 +1030,7 @@
                         class="row margin-bottom-20"
                         ng-if="
                             vm.hoehereBeitraegeWegenBeeintraechtigungBeantragt &&
-                            vm.isHoehereBeitraegeEinstellungAktiviert
+                            vm.isHoehereBeitraegeEinstellungAktiviert()
                         "
                     >
                         <div class="col-sm-12 dv-input-container-medium">

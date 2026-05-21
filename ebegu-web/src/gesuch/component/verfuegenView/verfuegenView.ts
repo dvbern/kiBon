@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {MANDANTS} from '@models/mandant';
 import {TSZahlungslaufTyp} from '@models/zahlung';
 import {StateService, TransitionPromise} from '@uirouter/core';
 import {
@@ -26,10 +27,13 @@ import {
     IWindowService
 } from 'angular';
 import {map} from 'rxjs/operators';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {DemoFeatureRS} from '../../../app/core/service/demoFeatureRS.rest';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
+import {VerfuegungRS} from '../../../app/core/service/verfuegungRS.rest';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
@@ -38,13 +42,12 @@ import {TSModulTagesschuleGroup} from '../../../models/entity/TSModulTagesschule
 import {TSBedarfsstufe} from '../../../models/enums/betreuung/TSBedarfsstufe';
 import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
 import {TSGemeindeZusaetzlicherGutscheinTyp} from '../../../models/enums/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
+import {HoehereBeitraegeTyp} from '../../../models/enums/HoehereBeitraegeTyp';
 import {
     getTSAbholungTagesschuleValues,
     TSAbholungTagesschule
 } from '../../../models/enums/TSAbholungTagesschule';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {MANDANTS} from '@models/mandant';
 import {TSBrowserLanguage} from '../../../models/enums/TSBrowserLanguage';
 import {
     getWeekdaysValues,
@@ -53,11 +56,11 @@ import {
 import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
 import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
 import {TSRole} from '../../../models/enums/TSRole';
+import {TSVerfuegungZeitabschnittZahlungsstatus} from '../../../models/enums/TSVerfuegungZeitabschnittZahlungsstatus';
 import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
 import {TSBelegungTagesschuleModulGroup} from '../../../models/TSBelegungTagesschuleModulGroup';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
-import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGesuch} from '../../../models/TSGesuch';
 import {TSVerfuegung} from '../../../models/TSVerfuegung';
 import {TSVerfuegungZeitabschnitt} from '../../../models/TSVerfuegungZeitabschnitt';
@@ -77,8 +80,6 @@ import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {GesuchRS} from '../../service/gesuchRS.rest';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
-import {VerfuegungRS} from '../../../app/core/service/verfuegungRS.rest';
-import {TSVerfuegungZeitabschnittZahlungsstatus} from '../../../models/enums/TSVerfuegungZeitabschnittZahlungsstatus';
 import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;
 
@@ -139,14 +140,14 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     public modulGroups: TSBelegungTagesschuleModulGroup[] = [];
     public tagesschuleZeitabschnitteMitBetreuung: Array<TSVerfuegungZeitabschnitt>;
     public tagesschuleZeitabschnitteOhneBetreuung: Array<TSVerfuegungZeitabschnitt>;
-    public isHoehereBeitraegeBeeintraechtigungAktiviert = false;
+    public hoehereBeitraegeTyp: HoehereBeitraegeTyp =
+        HoehereBeitraegeTyp.DEAKTIVIERT;
 
     private isVerfuegungExportEnabled: boolean;
     private isLuzern: boolean;
     private isAppenzell: boolean;
     private isSchwyz: boolean;
     private isAuszahlungAnAntragstellerEnabled: boolean = false;
-    private showAuszahlungAnInstitutionen: boolean;
     private showAuszahlungAnEltern: boolean;
     private demoFeatureZahlungsstatusAllowed: boolean = false;
     public vorgaengerZeitabschnitteSchulamt: TSVerfuegungZeitabschnitt[];
@@ -348,14 +349,40 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                 this.gesuchModelManager.getGesuchsperiode().id
             )
             .subscribe(response => {
-                this.isHoehereBeitraegeBeeintraechtigungAktiviert = JSON.parse(
-                    response.value
-                );
+                this.hoehereBeitraegeTyp =
+                    response.value as HoehereBeitraegeTyp;
+            });
+
+        this.einstellungRS
+            .findEinstellung(
+                TSEinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+                this.gesuchModelManager.getDossier().gemeinde.id,
+                this.gesuchModelManager.getGesuchsperiode().id
+            )
+            .subscribe(e => {
+                if ('AKTIVIERT' === e.value) {
+                    this.hoehereBeitraegeTyp = HoehereBeitraegeTyp.AKTIVIERT;
+                } else if ('AKTIVIERT_AUSZAHLUNG_INSTITUTION' === e.value) {
+                    this.hoehereBeitraegeTyp =
+                        HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION;
+                } else {
+                    this.hoehereBeitraegeTyp = HoehereBeitraegeTyp.DEAKTIVIERT;
+                }
             });
     }
 
     public cancel(): void {
         this.form.$setPristine();
+    }
+
+    /**
+     * @returns true if "Periodeneinstellung" "Höhere Beiträge" is: AKTIVIERT_AUSZAHLUNG_INSTITUTION.
+     */
+    public isHoehereBeitraegeTypAktiviertAuszahlungInstitution(): boolean {
+        return (
+            HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION ===
+            this.hoehereBeitraegeTyp
+        );
     }
 
     private setSameVerfuegteVerfuegungsrelevanteDaten(): void {
@@ -928,20 +955,89 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         return !this.isBetreuungInStatus(TSBetreuungsstatus.NICHT_EINGETRETEN);
     }
 
-    public hasBetreuungOnlyAuszahlungenAnElternAndInstitutionRole(): boolean {
-        if (
-            !this.authServiceRs.isOneOfRoles(
-                TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
-            )
-        ) {
+    public isHoehereBeitraegeAuszahlungInstitutionAktiviert(): boolean {
+        return (
+            this.hoehereBeitraegeTyp ===
+            HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+        );
+    }
+
+    public isAuszahlungAnEltern(): boolean {
+        return this.gesuchModelManager.getBetreuungToWorkWith()
+            .auszahlungAnEltern;
+    }
+
+    public isInstitutionRole(): boolean {
+        return this.authServiceRs.isOneOfRoles(
+            TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
+        );
+    }
+
+    public areHoehereBeitraegeGewaehrt(): boolean {
+        const verfuegungZeitabschnitte: Array<TSVerfuegungZeitabschnitt> =
+            this.getVerfuegungZeitabschnitte();
+        if (!verfuegungZeitabschnitte) {
             return false;
         }
         return (
-            this.gesuchModelManager.getBetreuungToWorkWith()
-                .auszahlungAnEltern &&
-            EbeguUtil.isEmptyArrayNullOrUndefined(
-                this.getVerfuegungZeitabschnitte()
-            )
+            this.hoehereBeitraegeTyp !== HoehereBeitraegeTyp.DEAKTIVIERT &&
+            verfuegungZeitabschnitte.findIndex(
+                z =>
+                    EbeguUtil.isNotNullOrUndefined(z.bedarfsstufe) &&
+                    z.bedarfsstufe !== TSBedarfsstufe.KEINE
+            ) >= 0
+        );
+    }
+
+    /**
+     * shows verfügen table for non-institution/trägerschaften roles
+     */
+    public shouldShowVerfuegenTable(): boolean {
+        if (this.shouldShowWarningInstitution()) {
+            return false;
+        }
+
+        return !this.shouldShowHoehereBeitrageInstitutionTable();
+    }
+
+    /**
+     * will show a infobox warning instead of verfügen table
+     * for institution and trägerschaften when no Höhere Beiträge
+     * have been granted and isAuszahlungAnEltern is true
+     */
+    public shouldShowWarningInstitution(): boolean {
+        return (
+            !this.areHoehereBeitraegeGewaehrt() &&
+            this.isAuszahlungAnEltern() &&
+            this.isInstitutionRole()
+        );
+    }
+
+    /**
+     * will show the new table for only institution and traegerschaft role
+     * when periodeneinstellung
+     * 'Höhere Beiträge aktiviert' is set to 'AKTIVIERT_AUSZAHLUNG_INSTITUTION'
+     * and Höhere Beitrag haven actually been granted
+     * and isAuszahlungAnEltern is true
+     */
+    public shouldShowHoehereBeitrageInstitutionTable(): boolean {
+        if (!this.isHoehereBeitraegeAuszahlungInstitutionAktiviert()) {
+            return false;
+        }
+
+        if (!this.isInstitutionRole()) {
+            return false;
+        }
+
+        return this.getVerfuegungZeitabschnitte().some(
+            zeitabschnitt =>
+                zeitabschnitt.auszahlungAnEltern &&
+                EbeguUtil.isNotNullOrUndefined(zeitabschnitt.bedarfsstufe) &&
+                zeitabschnitt.bedarfsstufe !== TSBedarfsstufe.KEINE
+        );
+
+        return (
+            this.areHoehereBeitraegeGewaehrt() && this.isAuszahlungAnEltern()
         );
     }
 
@@ -1219,16 +1315,29 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
 
         // Wenn Vergünstigung in mindestens einem Zeitabschnitt nicht an die Eltern ausbezahlt wird soll die
         // Auszahlung an Insitutionen Row angezeigt werden
-        if (EbeguUtil.isNullOrUndefined(this.showAuszahlungAnInstitutionen)) {
-            this.showAuszahlungAnInstitutionen =
-                this.getVerfuegungZeitabschnitte().some(
-                    zeitabschnitt =>
-                        !zeitabschnitt.auszahlungAnEltern &&
-                        this.hasBetreuungInZeitabschnitt(zeitabschnitt)
-                );
-        }
+        const showAuszahlungAnInstitutionen =
+            this.getVerfuegungZeitabschnitte().some(
+                zeitabschnitt =>
+                    this.hasBetreuungInZeitabschnitt(zeitabschnitt) &&
+                    (!zeitabschnitt.auszahlungAnEltern ||
+                        this.isPayedToElternWithHoehererBeitragToInsitution(
+                            zeitabschnitt
+                        ))
+            );
 
-        return this.showAuszahlungAnInstitutionen;
+        return showAuszahlungAnInstitutionen;
+    }
+
+    private isPayedToElternWithHoehererBeitragToInsitution(
+        zeitabschnitt: TSVerfuegungZeitabschnitt
+    ): boolean {
+        return (
+            zeitabschnitt.auszahlungAnEltern &&
+            EbeguUtil.isNotNullOrUndefined(zeitabschnitt.bedarfsstufe) &&
+            this.hoehereBeitraegeTyp ===
+                HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION &&
+            zeitabschnitt.bedarfsstufe !== TSBedarfsstufe.KEINE
+        );
     }
 
     private showZahlungsstatusCol(): boolean {
@@ -1270,6 +1379,15 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     public showAuszahlungAnElternCol(): boolean {
+        // Nur Antragsteller, Gemeinde und Sozialdienste dürfen diese Spalte sehen
+        if (
+            !this.authServiceRs.isOneOfRoles(
+                TSRoleUtil.getGesuchstellerSozialdienstJugendamtSchulamtRoles()
+            )
+        ) {
+            return false;
+        }
+
         // falls die Auszahlung zuletzt an die Eltern gemacht wird, soll die Spalte gezeigt werden.
         if (this.getBetreuung().auszahlungAnEltern) {
             return true;
@@ -1296,22 +1414,43 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     public getVerguenstigungAnInstitution(
-        zeiabschnitt: TSVerfuegungZeitabschnitt
+        zeitabschnitt: TSVerfuegungZeitabschnitt
     ): number {
-        if (!zeiabschnitt.auszahlungAnEltern) {
-            return zeiabschnitt.verguenstigung;
+        if (
+            zeitabschnitt.auszahlungAnEltern &&
+            HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION ==
+                this.hoehereBeitraegeTyp &&
+            null != zeitabschnitt.hoehererBeitrag
+        ) {
+            // always pay them out, even if "Auszahlung an Eltern" is enabled.
+            return zeitabschnitt.hoehererBeitrag;
         }
-
-        return 0;
+        return zeitabschnitt.auszahlungAnEltern
+            ? 0
+            : zeitabschnitt.verguenstigung;
     }
 
     public getVerguenstigungAnEltern(
-        zeiabschnitt: TSVerfuegungZeitabschnitt
+        zeitabschnitt: TSVerfuegungZeitabschnitt
     ): number {
-        if (zeiabschnitt.auszahlungAnEltern) {
-            return zeiabschnitt.verguenstigung;
+        if (zeitabschnitt.auszahlungAnEltern) {
+            if (
+                // höhere Beiträge gehen direkt an die Institution, wenn diese Einstellung aktiviert ist
+                HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION ===
+                    this.hoehereBeitraegeTyp &&
+                null !== zeitabschnitt.hoehererBeitrag &&
+                undefined !== zeitabschnitt.hoehererBeitrag
+            ) {
+                return (
+                    // weil die höheren Beiträge schon in den Vergünstigungen enthalten sind, müssen wir sie abziehen
+                    zeitabschnitt.verguenstigung - zeitabschnitt.hoehererBeitrag
+                );
+            }
+            // Wenn die Einstellung NICHT AKTIVIERT_AUSZAHLUNG_INSTITUTION ist, dann dürfen die höheren Beiträge auch an die Eltern gezahlt werden
+            return zeitabschnitt.verguenstigung;
         }
 
+        // keine Auszahlung an Eltern
         return 0;
     }
 
@@ -1559,22 +1698,6 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         return this.isAppenzell;
     }
 
-    public areHoehereBeitraegeGewaehrt(): boolean {
-        const verfuegungZeitabschnitte: Array<TSVerfuegungZeitabschnitt> =
-            this.getVerfuegungZeitabschnitte();
-        if (!verfuegungZeitabschnitte) {
-            return false;
-        }
-        return (
-            this.isHoehereBeitraegeBeeintraechtigungAktiviert &&
-            verfuegungZeitabschnitte.findIndex(
-                z =>
-                    EbeguUtil.isNotNullOrUndefined(z.bedarfsstufe) &&
-                    z.bedarfsstufe !== TSBedarfsstufe.KEINE
-            ) >= 0
-        );
-    }
-
     private getEinstellungenElternbeitrag(): void {
         this.einstellungRS
             .findEinstellung(
@@ -1594,5 +1717,27 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
             .subscribe(e => {
                 this.minVerguenstigungProStunde = e.value;
             });
+    }
+
+    public getVerguenstigungOhneBeruecksichtigungMinimalbeitragForInstiHoehererBeitrag(
+        verfuegungZeitabschnitt: TSVerfuegungZeitabschnitt
+    ) {
+        return verfuegungZeitabschnitt.auszahlungAnEltern
+            ? 0
+            : verfuegungZeitabschnitt.verguenstigungOhneBeruecksichtigungMinimalbeitrag;
+    }
+
+    public getMinimalerElternbeitragGekuerztForInstiHoehererBeitrag(
+        verfuegungZeitabschnitt: TSVerfuegungZeitabschnitt
+    ) {
+        return verfuegungZeitabschnitt.auszahlungAnEltern
+            ? 0
+            : verfuegungZeitabschnitt.minimalerElternbeitragGekuerzt;
+    }
+
+    public isAnyZeitabschnittAnInstiutionAusbezahlt() {
+        return this.getVerfuegungZeitabschnitte().some(
+            zeitabschnitt => !zeitabschnitt.auszahlungAnEltern
+        );
     }
 }

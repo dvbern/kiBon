@@ -2,7 +2,7 @@ package ch.dvbern.ebegu.api.resource.util.gemeindeantrag;
 
 import java.time.LocalDate;
 
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainer;
 import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlen;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

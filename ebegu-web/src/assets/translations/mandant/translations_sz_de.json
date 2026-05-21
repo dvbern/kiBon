@@ -15,6 +15,7 @@
     "KORREKTE_KOSTEN_BESTAETIGUNG_4": "",
     "ERWEITERTE_BEDUERFNISSE_HINT": "Ein zusätzlicher Beitrag aufgrund besonderer Bedürfnisse muss durch den Heilpädagogischen Dienst des Kantons Solothurn oder die zuständige Sozialregion bestätigt werden.",
     "BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND_INST_WITH_FIX_BETRAG": "Hiermit bestätigen wir als Betreuungsinstitution, dass für das Kind ein erhöhter Betreuungsaufwand anfällt.<br> Sollte ein höherer Beitrag gemäss § 17 KiBeV gewährt und direkt an die Eltern ausgezahlt werden, stellen wir den entsprechenden Betrag den Eltern in Rechnung.",
+    "BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND_INST_WITH_FIX_BETRAG_AUSZAHLUNG_INSTITUTION": "Hiermit bestätigen wir als Betreuungsinstitution, dass für das Kind ein erhöhter Betreuungsaufwand gemäss § 17 KiBeV anfällt.",
     "BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND_INST_WITH_FIX_BETRAG_PRO_STUNDE": "Hiermit bestätigen wir als Betreuungsinstitution, dass für das Kind ein erhöhter Betreuungsaufwand anfällt.<br> Sollte ein höherer Beitrag gemäss § 17 KiBeV gewährt und direkt an die Eltern ausgezahlt werden, stellen wir den entsprechenden Betrag den Eltern in Rechnung.",
     "UMZUG_IN_NEUE_GEMEINDE": "<p class=\"margin-bottom-10\"><b>Die Beiträge werden immer von Ihrer Wohnsitzgemeinde ausbezahlt.</b> </p><p class=\"margin-bottom-10\">Wenn Sie in eine neue Gemeinde im Kanton Schwyz umgezogen sind oder umziehen werden, klicken Sie oben neben Ihrer Gemeinde auf «+ Gemeinde hinzufügen» und klicken Sie durch das Gesuch. <b>Danach müssen Sie das Gesuch bei der neuen Gemeinde erneut einreichen.</b> </p><p class=\"margin-bottom-10\">Erfassen Sie unten Ihre neue Adresse.</p>",
     "FAM_ERGAENZENDE_BETREUUNG": "Wird dieses Kind extern betreut?",
@@ -292,5 +293,9 @@
     "CONFIRM_GESUCH_STATUS_IGNORIEREN_BESCHREIBUNG_BG": "Die Mutation erhält den Status \"ignoriert\". Die Gemeinde kann die Mutation ignorieren, wenn sie zu einer geringfügigen Reduktion des Betreuungsbeitrags führt.",
     "BETREUUNGSPENSUM_HINT2": "Ohne ausgewählte Institution können Sie das Gesuch vollständig ausfüllen und sich unter \"Provisorische Berechnung\" einen Entwurf des Beitrags anzeigen lassen. Löschen Sie vor der Freigabe alle Betreuungen mit dem Status \"Unbekannte Institution\". Die Freigabe kann erst erfolgen, wenn ein Vertrag mit einer Institution vorliegt und diese den Platz bestätigt hat.",
     "DOKUMENT_GRUND_TYP_TAG_FINANZIELLESITUATION": "",
+    "KEINE_DOKUMENTE_ZU_UEBERNEHMEN": "Es können keine Belege aus dem letzten Antrag übernommen werden. Eine Übernahme der Belege ist nur möglich, sofern die Angaben gegenüber dem letzten Gesuch unverändert geblieben sind und im kiBon entsprechend gleich erfasst werden",
+    "DOKUMENTE_UEBERNEHMEN_HELPTEXT": "Wählen Sie die Belege aus, die Sie aus dem letzten Antrag übernehmen möchten. Belege, die Ihnen nicht angezeigt werden, können nicht übernommen werden. Eine Übernahme der Belege ist nur möglich, sofern die Angaben gegenüber dem letzten Gesuch unverändert geblieben sind und im kiBon entsprechend gleich erfasst werden.",
+    "DOK_HINT_DOKUMENTE": "Bitte laden Sie die notwendigen Belege hoch. Sie können auch später Belege hinzufügen oder per Post nachreichen. <br> Belege aus dem letzten Antrag übernehmen:",
+    "DOKUMENT_GRUND_TYP_TAG_EINKOMMENSVERSCHLECHTERUNG": "",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

@@ -320,7 +320,7 @@ public interface GesuchService {
 	 */
 	void warnGesuchNichtFreigegeben(
 		Integer anzahlTageBisLoeschungNachWarnungFreigabe,
-		Gesuch gesuch
+		String gesuchId
 	);
 
 	/**

@@ -2166,10 +2166,18 @@ public class GesuchServiceBean extends AbstractBaseService implements
 
 		int anzahl = gesucheNichtAbgeschlossenSeit.size();
 		for (Gesuch gesuch : gesucheNichtAbgeschlossenSeit) {
-			self.warnGesuchNichtFreigegeben(
-				anzahlTageBisLoeschungNachWarnungFreigabe,
-				gesuch
-			);
+			try {
+				self.warnGesuchNichtFreigegeben(
+					anzahlTageBisLoeschungNachWarnungFreigabe,
+					gesuch.getId()
+				);
+			} catch (Exception e) {
+				logExceptionAccordingToEnvironment(
+					e,
+					"Die Warnung GesuchNichtFreigegeben konnte nicht erstellt werden für Gesuch",
+					gesuch.getId()
+				);
+			}
 		}
 		return anzahl;
 	}
@@ -2178,22 +2186,15 @@ public class GesuchServiceBean extends AbstractBaseService implements
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void warnGesuchNichtFreigegeben(
 		Integer anzahlTageBisLoeschungNachWarnungFreigabe,
-		Gesuch gesuch
+		@Nonnull String gesuchId
 	) {
-		try {
-			gesuch.setDatumGewarntNichtFreigegeben(LocalDate.now());
-			updateGesuch(gesuch, false, null);
-			mailService.sendWarnungGesuchNichtFreigegeben(
-				gesuch,
-				anzahlTageBisLoeschungNachWarnungFreigabe
-			);
-		} catch (Exception e) {
-			logExceptionAccordingToEnvironment(
-				e,
-				"Mail WarnungGesuchNichtFreigegeben konnte nicht verschickt werden fuer Gesuch",
-				gesuch.getId()
-			);
-		}
+		var gesuch = findGesuch(gesuchId).orElseThrow();
+		gesuch.setDatumGewarntNichtFreigegeben(LocalDate.now());
+		updateGesuch(gesuch, false, null);
+		mailService.sendWarnungGesuchNichtFreigegeben(
+			gesuch,
+			anzahlTageBisLoeschungNachWarnungFreigabe
+		);
 	}
 
 	@Override
@@ -2267,10 +2268,18 @@ public class GesuchServiceBean extends AbstractBaseService implements
 
 		int anzahl = gesucheNichtAbgeschlossenSeit.size();
 		for (Gesuch gesuch : gesucheNichtAbgeschlossenSeit) {
-			self.sendWarnungFreigabequittung(
-				anzahlTageBisLoeschungNachWarnungFreigabe,
-				gesuch
-			);
+			try {
+				self.sendWarnungFreigabequittung(
+					anzahlTageBisLoeschungNachWarnungFreigabe,
+					gesuch
+				);
+			} catch (Exception e) {
+				logExceptionAccordingToEnvironment(
+					e,
+					"Die Warnung Freigabequittung konnte nicht erstellt werden für das Gesuch",
+					gesuch.getId()
+				);
+			}
 		}
 		return anzahl;
 	}

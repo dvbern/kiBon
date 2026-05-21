@@ -139,7 +139,7 @@ public class SchwyzEinkommensverschlechterungDokumente
 			dokumentTyp,
 			einkommensverschlechterung,
 			gesuch.extractFamiliensituation(),
-			String.valueOf(gesuch.getGesuchsperiode().getBasisJahrPlus1()),
+			null,
 			DokumentGrundPersonType.GESUCHSTELLER,
 			gesuchstellerNummer,
 			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,

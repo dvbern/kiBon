@@ -3124,10 +3124,10 @@
     "DOK_FINANZIELLESITUATION": "Calcul de la situation financière",
     "DOK_SONSTIGE_NACHWEISE": "Autres justificatifs",
     "DOKUMENTE_UEBERNEHMEN_BUTTON": "Reprendre les justificatifs",
-    "DOKUMENTE_UEBERNEHMEN": "Reprendre les justificatifs de la demande précédente",
-    "DOKUMENTE_UEBERNEHMEN_HELPTEXT": "Sélectionnez les justificatifs que vous souhaitez reprendre de la demande précédente. Les justificatifs qui ne s’affichent pas ne peuvent pas être repris.",
+    "DOKUMENTE_UEBERNEHMEN": "Reprendre les justificatifs de la demande de l’année précédente",
+    "DOKUMENTE_UEBERNEHMEN_HELPTEXT": "Sélectionnez les justificatifs que vous souhaitez reprendre de l’année dernière.\nLes justificatifs qui ne s’affichent pas ne peuvent pas être repris.",
     "DOKUMENTE_UEBERNEHMEN_WARNUNG": "Veuillez vérifier que les justificatifs sélectionnés sont à jour.",
-    "KEINE_DOKUMENTE_ZU_UEBERNEHMEN": "Aucun justificatif de la demande précédente ne peut être repris.",
+    "KEINE_DOKUMENTE_ZU_UEBERNEHMEN": "Aucun justificatif de la demande de l’année dernière ne peut être repris.",
     "DOKUMENT_GRUND_TYP_FAMILIENSITUATION": "Situation familiale",
     "DOKUMENT_GRUND_TYP_KINDER": "Enfants",
     "DOKUMENT_GRUND_TYP_FINANZIELLESITUATION": "Calcul de la situation financière",
@@ -3169,5 +3169,6 @@
     "DATEPICKER_PREV_MONTH_LABEL": "Mois précédent",
     "DATEPICKER_NEXT_MULTIYEAR_LABEL": "Les 24 prochaines années",
     "DATEPICKER_PREV_MULTIYEAR_LABEL": "Les 24 années précédentes",
+    "KEINE_VERLAUF_DATEN": "L'historique ne peut être affiché que pour les demandes communales à partir de la période 2024/25. Pour les demandes communales plus anciennes, l'historique n'est pas disponible.",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

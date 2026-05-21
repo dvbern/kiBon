@@ -155,7 +155,9 @@ public class DokumenteResource {
 				)
 			);
 		return dokumentUebernehmenService
-			.findVerfugtesGesuchMitDokumentZuUebernehmen(gesuch)
+			.findLatestVerfuegtesGesuchOfLatestEingereichtErstgesuchOfVorperiode(
+				gesuch
+			)
 			.isPresent();
 	}
 

@@ -209,6 +209,10 @@ public class Einstellung extends AbstractEntity implements HasMandant {
 		return Boolean.parseBoolean(value);
 	}
 
+	public <E extends Enum<E>> E getValueAsEnum(Class<E> enumClass) {
+		return Enum.valueOf(enumClass, value);
+	}
+
 	@Override
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")

@@ -22,7 +22,7 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungDokument;
+import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungDokument;
 import ch.dvbern.ebegu.enums.Sprache;
 
 /**

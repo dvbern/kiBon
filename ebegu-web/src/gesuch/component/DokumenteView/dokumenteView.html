@@ -25,7 +25,8 @@
                 dv-show-expression="
                     vm.anyGesuchForUebernahmePresent &&
                     !vm.isDokumenteUploadDisabled() &&
-                    vm.anyTypForUebernahmeAllowed
+                    vm.anyTypForUebernahmeAllowed &&
+                    !vm.getGesuch().isMutation()
                 "
                 dv-show-allowed-roles="vm.rolesAllowedForUebernahme"
                 (dokumente-uebernehmen)="vm.reloadDokumente()"

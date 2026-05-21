@@ -1,0 +1,19 @@
+<div class="flex flex-col justify-center">
+    @if (history.length > 0) {
+        <dv-simple-table
+            [columns]="columns"
+            [data]="history"
+            [config]="tableConfig"
+        ></dv-simple-table>
+    } @else {
+        <dv-warning [text]="'KEINE_VERLAUF_DATEN' | translate"></dv-warning>
+    }
+    <button
+        (click)="navigateBack()"
+        type="button"
+        class="dv-btn self-center cancel-button"
+        translate
+    >
+        ZURUECK_ONLY
+    </button>
+</div>

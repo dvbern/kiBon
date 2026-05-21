@@ -19,7 +19,7 @@ package ch.dvbern.ebegu.testfaelle.testantraege;
 
 import java.math.BigDecimal;
 
-import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitution;
+import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.LastenausgleichTagesschuleAngabenInstitution;
 
 @SuppressWarnings("PMD.ClassNamingConventions")
 public class Testantrag_LastenausgleichTagesschuleAngabenInstitution {
