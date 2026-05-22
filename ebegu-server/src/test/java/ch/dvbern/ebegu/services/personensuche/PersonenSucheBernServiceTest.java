@@ -71,7 +71,8 @@ class PersonenSucheBernServiceTest extends EasyMockSupport {
 					.getKindJA()
 			)
 		);
-		gesuch.getDossier().getGemeinde().setBfsNummer(351L);
+		long bfsNummer = 351L;
+		gesuch.getDossier().getGemeinde().setBfsNummer(bfsNummer);
 		Assertions.assertNotNull(
 			gesuch.getDossier().getGemeinde().getBfsNummer(),
 			"bfs nummer muss gesetzt sein fuer suche"
@@ -85,7 +86,7 @@ class PersonenSucheBernServiceTest extends EasyMockSupport {
 				gs1.getVorname(),
 				gs1.getGeburtsdatum(),
 				gs1.getGeschlecht(),
-				351L
+				bfsNummer
 			)
 		).andReturn(
 			value
@@ -95,7 +96,8 @@ class PersonenSucheBernServiceTest extends EasyMockSupport {
 				gs1.getNachname(),
 				gs1.getVorname(),
 				gs1.getGeburtsdatum(),
-				gs1.getGeschlecht()
+				gs1.getGeschlecht(),
+				bfsNummer
 			)
 		).andReturn(new EWKResultat());
 		expect(
@@ -103,7 +105,8 @@ class PersonenSucheBernServiceTest extends EasyMockSupport {
 				kind1.getNachname(),
 				kind1.getVorname(),
 				kind1.getGeburtsdatum(),
-				kind1.getGeschlecht()
+				kind1.getGeschlecht(),
+				bfsNummer
 			)
 		).andReturn(new EWKResultat());
 

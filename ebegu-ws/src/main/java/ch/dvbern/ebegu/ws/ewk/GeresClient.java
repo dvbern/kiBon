@@ -46,18 +46,6 @@ public interface GeresClient {
 		PersonenSucheServiceBusinessException;
 
 	/**
-	 * Sucht eine Person im EWK, mit allen Angaben, aber ohne bfsNummer
-	 */
-	@Nonnull
-	EWKResultat suchePersonMitFallbackOhneVorname(
-		@Nonnull String name,
-		@Nonnull String vorname,
-		@Nonnull LocalDate geburtsdatum,
-		@Nonnull Geschlecht geschlecht
-	) throws PersonenSucheServiceException,
-		PersonenSucheServiceBusinessException;
-
-	/**
 	 * Sucht alle Personen in einem Haushalt
 	 */
 	@Nonnull

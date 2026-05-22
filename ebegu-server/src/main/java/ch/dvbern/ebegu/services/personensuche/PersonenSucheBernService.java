@@ -94,19 +94,22 @@ public class PersonenSucheBernService implements PersonenSucheService {
 					);
 			}
 		}
-		sucheGesuchstellerInHaushaltOderSonstOhneBfsEinschraenkung(
+		sucheGesuchstellerInHaushaltOderFallback(
 			resultat,
-			gesuch.getGesuchsteller1()
+			gesuch.getGesuchsteller1(),
+			gesuch.getDossier().getGemeinde().getBfsNummer()
 		);
-		sucheGesuchstellerInHaushaltOderSonstOhneBfsEinschraenkung(
+		sucheGesuchstellerInHaushaltOderFallback(
 			resultat,
-			gesuch.getGesuchsteller2()
+			gesuch.getGesuchsteller2(),
+			gesuch.getDossier().getGemeinde().getBfsNummer()
 		);
 		if (gesuch.getKindContainers() != null) {
 			for (KindContainer kindContainer : gesuch.getKindContainers()) {
-				sucheKindInHaushaltOderSonstOhneBfsEinschraenkung(
+				sucheKindInHaushaltOderFallback(
 					resultat,
-					kindContainer.getKindJA()
+					kindContainer.getKindJA(),
+					gesuch.getDossier().getGemeinde().getBfsNummer()
 				);
 			}
 		}
@@ -140,23 +143,23 @@ public class PersonenSucheBernService implements PersonenSucheService {
 
 	/**
 	 * Suche in den bisher gefundenen Haushaltspersonen nach den uebergebenen Personendaten.
-	 * Wenn wir sie finden setzen wir die ensprechenden Flags. Wen nicht suchen wir die Person ueber EWK
+	 * Falls wir sie finden, setzen wir die entsprechenden Flags. Wen nicht suchen wir die Person ueber EWK
+	 * innerhalb der Gemeinde.
 	 *
-	 * @param resultat bereits bekantne personen
-	 * @param name der gesuchten Person
-	 * @param vorname vorname der gesuchten Person
-	 * @param geburtsdatum geburtsdatum der gesuchten Person
-	 * @param geschlecht geschlecht der gesuchten person
-	 * @param isGesuchsteller true wenn die gesuchte person Gesuchsteller ist
-	 * @param isKind true wenn die gescuhte Person ein Kind ist
+	 * @param resultat bereits bekannte personen aus vorheriger Abfrage
+	 * @param personEntity die Daten der zu suchenden Person
+	 * @param isGesuchsteller true, wenn die gesuchte person Gesuchsteller ist
+	 * @param isKind true, wenn die gesuchte Person ein Kind ist
+	 * @param bfsNummer BFS Nummer, der Gemeinde, in der zu suchen sit
 	 * @throws PersonenSucheServiceException
 	 * @throws PersonenSucheServiceBusinessException
 	 */
-	private void suchePersonInHaushaltOderSonstOhneBfsEinschraenkung(
+	private void suchePersonInHaushaltOderFallback(
 		@Nonnull EWKResultat resultat,
 		AbstractPersonEntity personEntity,
 		boolean isGesuchsteller,
-		boolean isKind
+		boolean isKind,
+		Long bfsNummer
 	) throws PersonenSucheServiceException,
 		PersonenSucheServiceBusinessException {
 		Objects.requireNonNull(resultat, "resultat darf nicht null sein");
@@ -180,7 +183,7 @@ public class PersonenSucheBernService implements PersonenSucheService {
 		List<EWKPerson> personenInHaushalt = resultat.getPersonen()
 			.stream()
 			.filter(GeresUtil.matches(personEntity))
-			.collect(Collectors.toList());
+			.toList();
 		personenInHaushalt.forEach(person -> {
 			person.setGesuchsteller(isGesuchsteller);
 			person.setKind(isKind);
@@ -192,7 +195,8 @@ public class PersonenSucheBernService implements PersonenSucheService {
 					personEntity.getNachname(),
 					personEntity.getVorname(),
 					personEntity.getGeburtsdatum(),
-					personEntity.getGeschlecht()
+					personEntity.getGeschlecht(),
+					bfsNummer
 				);
 			// add "not-found" resultat
 			if (personenOhneBfs.getPersonen().isEmpty()) {
@@ -208,35 +212,39 @@ public class PersonenSucheBernService implements PersonenSucheService {
 		}
 	}
 
-	private void sucheGesuchstellerInHaushaltOderSonstOhneBfsEinschraenkung(
+	private void sucheGesuchstellerInHaushaltOderFallback(
 		@Nonnull EWKResultat resultat,
-		@Nullable GesuchstellerContainer gesuchstellerContainer
+		@Nullable GesuchstellerContainer gesuchstellerContainer,
+		Long bfsNummer
 	) throws PersonenSucheServiceException,
 		PersonenSucheServiceBusinessException {
 		if (gesuchstellerContainer != null
 			&& gesuchstellerContainer.getGesuchstellerJA() != null) {
 			Gesuchsteller gesuchsteller = gesuchstellerContainer
 				.getGesuchstellerJA();
-			suchePersonInHaushaltOderSonstOhneBfsEinschraenkung(
+			suchePersonInHaushaltOderFallback(
 				resultat,
 				gesuchsteller,
 				true,
-				false
+				false,
+				bfsNummer
 			);
 		}
 	}
 
-	private void sucheKindInHaushaltOderSonstOhneBfsEinschraenkung(
+	private void sucheKindInHaushaltOderFallback(
 		@Nonnull EWKResultat resultat,
-		@Nullable Kind kind
+		@Nullable Kind kind,
+		Long bfsNummer
 	) throws PersonenSucheServiceException,
 		PersonenSucheServiceBusinessException {
 		if (kind != null) {
-			suchePersonInHaushaltOderSonstOhneBfsEinschraenkung(
+			suchePersonInHaushaltOderFallback(
 				resultat,
 				kind,
 				false,
-				true
+				true,
+				bfsNummer
 			);
 		}
 	}

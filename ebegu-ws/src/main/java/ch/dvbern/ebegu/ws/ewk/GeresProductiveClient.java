@@ -257,23 +257,6 @@ public class GeresProductiveClient implements GeresClient {
 
 	@Nonnull
 	@Override
-	public EWKResultat suchePersonMitFallbackOhneVorname(
-		@Nonnull String name,
-		@Nonnull String vorname,
-		@Nonnull LocalDate geburtsdatum,
-		@Nonnull Geschlecht geschlecht
-	) throws PersonenSucheServiceException {
-		return suchePersonMitFallbackOhneVorname(
-			name,
-			vorname,
-			geburtsdatum,
-			geschlecht,
-			null
-		);
-	}
-
-	@Nonnull
-	@Override
 	public EWKResultat suchePersonenInHaushalt(Long wohnungsId, Long gebaeudeId)
 		throws PersonenSucheServiceException {
 		ResidentInfoParametersType parameters =

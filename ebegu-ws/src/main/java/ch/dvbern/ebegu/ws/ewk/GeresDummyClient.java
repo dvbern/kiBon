@@ -46,17 +46,6 @@ public class GeresDummyClient implements GeresClient {
 		return suchePerson(name, vorname, geburtsdatum, geschlecht, bfsNummer);
 	}
 
-	@Nonnull
-	@Override
-	public EWKResultat suchePersonMitFallbackOhneVorname(
-		@Nonnull String name,
-		@Nonnull String vorname,
-		@Nonnull LocalDate geburtsdatum,
-		@Nonnull Geschlecht geschlecht
-	) {
-		return suchePerson(name, vorname, geburtsdatum, geschlecht, null);
-	}
-
 	private EWKResultat suchePerson(
 		String name,
 		String vorname,
