@@ -1572,6 +1572,7 @@ public class GesuchResource {
 
 		return kibonAnfrageService.getSteuerDaten(
 			kibonAnfrage.getZpvNummer(),
+			kibonAnfrage.getAhvNummer(),
 			kibonAnfrage.getGeburtsdatum(),
 			kibonAnfrage.getAntragId(),
 			kibonAnfrage.getGesuchsperiodeBeginnJahr()

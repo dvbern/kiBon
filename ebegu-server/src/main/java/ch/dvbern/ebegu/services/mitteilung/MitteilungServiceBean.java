@@ -2105,18 +2105,17 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 	) throws EbeguException {
 		Objects.requireNonNull(mitteilung.getSteuerdatenResponse());
 		Objects.requireNonNull(
-			mitteilung.getSteuerdatenResponse().getZpvNrAntragsteller()
-		);
-		Objects.requireNonNull(
 			mitteilung.getSteuerdatenResponse()
 				.getGeburtsdatumAntragsteller()
 		);
 		authorizer.checkWriteAuthorization(gesuch);
 		authorizer.checkReadAuthorizationMitteilung(mitteilung);
 
-		if (!KibonAnfrageUtil.hasGesuchSteuerdatenResponseWithZpvNummer(
+		if (!KibonAnfrageUtil.hasGesuchSteuerdatenResponseWithZpvOrAHVNummer(
 			gesuch,
-			mitteilung.getSteuerdatenResponse().getZpvNrAntragsteller()
+			mitteilung.getSteuerdatenResponse().getZpvNrAntragsteller(),
+			mitteilung.getSteuerdatenResponse()
+				.getSozialversicherungsNrAntragsteller()
 		)) {
 			throw new EbeguRuntimeException(
 				"neueVeranlagungsMitteilungImAntragErsetzen",
@@ -2151,7 +2150,8 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		KibonAnfrageContext kibonAnfrageContext = new KibonAnfrageContext(
 			gesuch,
 			gesuchstellerTyp,
-			KibonAnfrageUtil.getZpvFromBesitzer(gesuch)
+			KibonAnfrageUtil.getZpvFromBesitzer(gesuch),
+			KibonAnfrageUtil.getAhvFromBesitzer(gesuch)
 		);
 		kibonAnfrageContext.setSteuerdatenAnfrageStatus(
 			SteuerdatenAnfrageStatus.RECHTSKRAEFTIG
@@ -2167,7 +2167,8 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 
 		// GEMEINSAME STEUERERKLÄRUNG (VERHEIRATET, ...)
 		if (kibonAnfrageContext.hasGS2() && kibonAnfrageContext.isGemeinsam()) {
-			if (mitteilung.getSteuerdatenResponse().getZpvNrPartner() == null) {
+			if (mitteilung.getSteuerdatenResponse()
+				.isSteuerdatenResponseAllein()) {
 				throw new EbeguException(
 					"neueVeranlagungsMitteilungImAntragErsetzen",
 					ErrorCodeEnum.ERROR_FIN_SIT_GEMEINSAM_NEUE_VERANLAGUNG_ALLEIN,
@@ -2192,7 +2193,8 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 				gesuch.getId()
 			);
 		} else {
-			if (mitteilung.getSteuerdatenResponse().getZpvNrPartner() != null) {
+			if (mitteilung.getSteuerdatenResponse()
+				.isSteuerdatenResponseGemeinsam()) {
 				throw new EbeguException(
 					"neueVeranlagungsMitteilungImAntragErsetzen",
 					ErrorCodeEnum.ERROR_FIN_SIT_ALLEIN_NEUE_VERANLAGUNG_GEMEINSAM,

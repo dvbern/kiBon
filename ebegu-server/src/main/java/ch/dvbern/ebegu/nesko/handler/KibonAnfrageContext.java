@@ -43,6 +43,9 @@ public class KibonAnfrageContext {
 	@Nullable
 	private Integer zpvNummerForRequest = null;
 
+	@Nullable
+	private Long ahvNummerForRequest = null;
+
 	@Nonnull
 	private GesuchstellerTyp gesuchstellerTyp;
 
@@ -59,13 +62,15 @@ public class KibonAnfrageContext {
 	public KibonAnfrageContext(
 		@Nonnull Gesuch gesuch,
 		@Nonnull GesuchstellerTyp gesuchstellerTyp,
-		@Nullable String zpvBesizter
+		@Nullable String zpvBesitzer,
+		@Nullable String ahvBesitzer
 	) {
 		this.gesuch = gesuch;
 
 		initGemeinsam();
 		initGesuchstellerTyp(gesuchstellerTyp);
-		initZpvNummerForRequest(zpvBesizter);
+		initZpvNummerForRequest(zpvBesitzer);
+		initAhvNummerForRequest(ahvBesitzer);
 	}
 
 	private void initZpvNummerForRequest(@Nullable String zpvBesitzer) {
@@ -94,10 +99,45 @@ public class KibonAnfrageContext {
 		return zpvBesitzer;
 	}
 
+	private void initAhvNummerForRequest(@Nullable String ahvBesitzer) {
+		String ahvNummer = null;
+
+		if (gesuchstellerTyp == GesuchstellerTyp.GESUCHSTELLER_2) {
+			ahvNummer = getAhvNummerFromGS2();
+		} else {
+			ahvNummer = getAhvNummerFromGS1OrBesitzer(ahvBesitzer);
+		}
+
+		if (StringUtils.isNotEmpty(ahvNummer)) {
+			this.ahvNummerForRequest = Long.parseLong(ahvNummer);
+		}
+	}
+
+	@Nullable
+	private String getAhvNummerFromGS1OrBesitzer(@Nullable String ahvBesitzer) {
+		if (gesuch.extractGesuchsteller1().isPresent()) {
+			String ahvNr = gesuch.extractGesuchsteller1().get().getAhvNummer();
+			if (StringUtils.isNotEmpty(ahvNr)) {
+				return ahvNr;
+			}
+		}
+
+		return ahvBesitzer;
+	}
+
 	@Nullable
 	private String getZpvNummerFromGS2() {
 		if (gesuch.extractGesuchsteller2().isPresent()) {
 			return gesuch.extractGesuchsteller2().get().getZpvNummer();
+		}
+
+		return null;
+	}
+
+	@Nullable
+	private String getAhvNummerFromGS2() {
+		if (gesuch.extractGesuchsteller2().isPresent()) {
+			return gesuch.extractGesuchsteller2().get().getAhvNummer();
 		}
 
 		return null;
@@ -198,6 +238,10 @@ public class KibonAnfrageContext {
 		return Optional.ofNullable(zpvNummerForRequest);
 	}
 
+	public Optional<Long> getAhvNummerForRequest() {
+		return Optional.ofNullable(ahvNummerForRequest);
+	}
+
 	public void useGeburtrsdatumFromOtherGesuchsteller() {
 		this.useGeburtrsdatumFromOtherGesuchsteller = true;
 	}
@@ -280,14 +324,14 @@ public class KibonAnfrageContext {
 			.getFinanzielleSituationJA();
 	}
 
-	public void setSteuerdatenAnfrageStatusFailedNoZPV() {
+	public void setSteuerdatenAnfrageStatusFailedNoNummer() {
 		if (this.gesuchstellerTyp == GesuchstellerTyp.GESUCHSTELLER_2) {
 			this.setSteuerdatenAnfrageStatus(
-				SteuerdatenAnfrageStatus.FAILED_KEINE_ZPV_NUMMER_GS2
+				SteuerdatenAnfrageStatus.FAILED_KEINE_NUMMER_GS2
 			);
 		} else {
 			this.setSteuerdatenAnfrageStatus(
-				SteuerdatenAnfrageStatus.FAILED_KEINE_ZPV_NUMMER
+				SteuerdatenAnfrageStatus.FAILED_KEINE_NUMMER
 			);
 		}
 	}

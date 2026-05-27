@@ -35,6 +35,7 @@ import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.Gesuchsteller;
 import ch.dvbern.ebegu.entities.NeueVeranlagungsMitteilung;
 import ch.dvbern.ebegu.entities.SteuerdatenResponse;
 import ch.dvbern.ebegu.entities.VeranlagungEventLog;
@@ -122,24 +123,27 @@ public class NeueVeranlagungEventHandler extends
 		VeranlagungEventLog veranlagungEventLog = new VeranlagungEventLog(
 			key,
 			dto.getZpvNummer(),
+			dto.getSozialversicherungsNummer(),
 			dto.getGeburtsdatum(),
 			dto.getGesuchsperiodeBeginnJahr()
 		);
 		if (!processing.isProcessingSuccess()) {
 			String message = processing.getMessage();
 			LOG.warn(
-				"NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} und Gesuch: {} nicht "
+				"NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} or AHV Nummer {} und Gesuch: {} nicht "
 					+ "verarbeitet: {}",
 				dto.getZpvNummer(),
+				dto.getSozialversicherungsNummer(),
 				key,
 				message
 			);
 			veranlagungEventLog.setResult(processing.getMessage());
 		} else {
 			LOG.info(
-				"NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} und Gesuch: {} "
+				"NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} or AHV-Nummer {} und Gesuch: {} "
 					+ "verarbeitet",
 				dto.getZpvNummer(),
+				dto.getSozialversicherungsNummer(),
 				key
 			);
 			veranlagungEventLog.setResult(
@@ -170,14 +174,20 @@ public class NeueVeranlagungEventHandler extends
 			);
 		}
 
-		if (!KibonAnfrageUtil.hasGesuchSteuerdatenResponseWithZpvNummer(
+		if (!KibonAnfrageUtil.hasGesuchSteuerdatenResponseWithZpvOrAHVNummer(
 			gesuch,
-			dto.getZpvNummer()
+			dto.getZpvNummer(),
+			dto.getSozialversicherungsNummer()
 		)) {
+			String message = String.format(
+				"Die neue Veranlagung mit ZPV-Nummer: %s und mit AHV-Nummer: %s, konnte nicht mit einem gültigen Antragstellenden verlinkt werden.",
+				dto.getZpvNummer() != null ? dto.getZpvNummer().toString() : "",
+				dto.getSozialversicherungsNummer() != null ?
+					dto.getSozialversicherungsNummer().toString() :
+					""
+			);
 			return Processing.failure(
-				"Die neue Veranlagung mit ZPV-Nummer: "
-					+ dto.getZpvNummer()
-					+ ", konnte nicht mit einer gueltige Antragstellende verlinkt werden."
+				message
 			);
 		}
 
@@ -269,14 +279,16 @@ public class NeueVeranlagungEventHandler extends
 		if (isAnyOfInBearbeitungGSOrFreigegeben(gesuch.getStatus())) {
 			return updateWizardStepStatusAndGS(
 				key,
-				dto.getZpvNummer()
+				dto.getZpvNummer(),
+				dto.getSozialversicherungsNummer()
 			);
 		} else {
 			getAndRefreschGesuchFromDB(key);
 		}
 		return createAndSendNeueVeranlagungsMitteilung(
 			kibonAnfrageContext,
-			dto.getZpvNummer()
+			dto.getZpvNummer(),
+			dto.getSozialversicherungsNummer()
 		);
 	}
 
@@ -288,7 +300,8 @@ public class NeueVeranlagungEventHandler extends
 
 	private Processing updateWizardStepStatusAndGS(
 		@Nonnull String gesuchId,
-		int zpvNummer
+		Integer zpvNummer,
+		Long sozialversicherungsNummer
 	) {
 		WizardStep wizardStep = wizardStepService.findWizardStepFromGesuch(
 			gesuchId,
@@ -305,17 +318,12 @@ public class NeueVeranlagungEventHandler extends
 					.getFamiliensituationJA()
 					.getGemeinsameSteuererklaerung()
 			)
-			|| (gesuchFromDB.getGesuchsteller1()
-				.getGesuchstellerJA()
-				.getZpvNummer()
-				!= null
-				&& zpvNummer
-					==
-					Integer.parseInt(
-						gesuchFromDB.getGesuchsteller1()
-							.getGesuchstellerJA()
-							.getZpvNummer()
-					))) {
+			|| (gesuchFromDB.getGesuchsteller1().getGesuchstellerJA() != null
+				&& compareZpvAndAHVNummerWithGesuchsteller(
+					gesuchFromDB.getGesuchsteller1().getGesuchstellerJA(),
+					zpvNummer,
+					sozialversicherungsNummer
+				))) {
 			gesuchFromDB.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 				.getFinanzielleSituationJA()
@@ -342,6 +350,29 @@ public class NeueVeranlagungEventHandler extends
 		}
 
 		return Processing.success();
+	}
+
+	private boolean compareZpvAndAHVNummerWithGesuchsteller(
+		Gesuchsteller gesuchsteller,
+		Integer zpvNummer,
+		Long sozialversicherungsNummer
+	) {
+		return (gesuchsteller
+			.getZpvNummer()
+			!= null
+			&& zpvNummer != null
+			&& Integer.parseInt(
+				gesuchsteller
+					.getZpvNummer()
+			) == zpvNummer)
+			|| (gesuchsteller
+				.getAhvNummer()
+				!= null
+				&& sozialversicherungsNummer != null
+				&& Long.parseLong(
+					gesuchsteller
+						.getAhvNummer()
+				) == sozialversicherungsNummer);
 	}
 
 	private boolean hasNoSteuerschnittstelleZugriff(
@@ -390,7 +421,8 @@ public class NeueVeranlagungEventHandler extends
 
 	private Processing createAndSendNeueVeranlagungsMitteilung(
 		@Nonnull KibonAnfrageContext kibonAnfrageContext,
-		int zpvNummer
+		Integer zpvNummer,
+		Long ahvNummer
 	) {
 		Gesuch gesuch = kibonAnfrageContext.getGesuch();
 		List<String> gesuchIds = gesuchService
@@ -406,7 +438,7 @@ public class NeueVeranlagungEventHandler extends
 				);
 
 		Optional<NeueVeranlagungsMitteilung> latest =
-			findRelevantNeueVzpveranlagungsMitteilung(open, zpvNummer);
+			findRelevantNeueVeranlagungsMitteilung(open, zpvNummer, ahvNummer);
 
 		Locale locale = EbeguUtil.extractKorrespondenzsprache(
 			gesuch,
@@ -486,19 +518,10 @@ public class NeueVeranlagungEventHandler extends
 			);
 		}
 		if (gesuch.getGesuchsteller1() != null
-			&& gesuch.getGesuchsteller1()
-				.getGesuchstellerJA()
-				.getZpvNummer()
-				!= null
-			&&
-			steuerdatenResponse.getZpvNrAntragsteller()
-				.equals(
-					Integer.parseInt(
-						gesuch.getGesuchsteller1()
-							.getGesuchstellerJA()
-							.getZpvNummer()
-					)
-				)) {
+			&& checkGS1MatchWithZPVOrAHVNummer(
+				gesuch.getGesuchsteller1().getGesuchstellerJA(),
+				steuerdatenResponse
+			)) {
 			return gesuch.getGesuchsteller1()
 				.getGesuchstellerJA()
 				.getFullName();
@@ -506,19 +529,66 @@ public class NeueVeranlagungEventHandler extends
 		return gesuch.getGesuchsteller2().getGesuchstellerJA().getFullName();
 	}
 
-	private Optional<NeueVeranlagungsMitteilung> findRelevantNeueVzpveranlagungsMitteilung(
+	private boolean checkGS1MatchWithZPVOrAHVNummer(
+		@Nonnull Gesuchsteller gs1,
+		SteuerdatenResponse steuerdatenResponse
+	) {
+		return (gs1.getZpvNummer() != null
+			&&
+			steuerdatenResponse.getZpvNrAntragsteller() != null
+			&&
+			steuerdatenResponse.getZpvNrAntragsteller()
+				.equals(
+					Integer.parseInt(
+						gs1.getZpvNummer()
+					)
+				))
+			|| (gs1.getAhvNummer() != null
+				&&
+				steuerdatenResponse.getSozialversicherungsNrAntragsteller()
+					!= null
+				&&
+				steuerdatenResponse.getSozialversicherungsNrAntragsteller()
+					.equals(
+						Long.parseLong(
+							gs1.getAhvNummer()
+						)
+					));
+	}
+
+	private Optional<NeueVeranlagungsMitteilung> findRelevantNeueVeranlagungsMitteilung(
 		@Nonnull Collection<NeueVeranlagungsMitteilung> open,
-		Integer zpvNummer
+		Integer zpvNummer,
+		Long ahvNummer
 	) {
 		return open.stream()
 			.filter(
-				neueVeranlagungsMitteilung -> zpvNummer.equals(
-					neueVeranlagungsMitteilung
-						.getSteuerdatenResponse()
-						.getZpvNrAntragsteller()
+				neueVeranlagungsMitteilung -> filterNeueVeranlagungsMitteilungByZPVOrAHVNummer(
+					neueVeranlagungsMitteilung,
+					zpvNummer,
+					ahvNummer
 				)
 			)
 			.findFirst();
+	}
+
+	private boolean filterNeueVeranlagungsMitteilungByZPVOrAHVNummer(
+		NeueVeranlagungsMitteilung neueVeranlagungsMitteilung,
+		Integer zpvNummer,
+		Long ahvNummer
+	) {
+		return (zpvNummer != null
+			&& zpvNummer.equals(
+				neueVeranlagungsMitteilung
+					.getSteuerdatenResponse()
+					.getZpvNrAntragsteller()
+			))
+			|| (ahvNummer != null
+				&& ahvNummer.equals(
+					neueVeranlagungsMitteilung
+						.getSteuerdatenResponse()
+						.getSozialversicherungsNrAntragsteller()
+				));
 	}
 
 	private BigDecimal getEinstelungMinUnterschiedEinkommen(

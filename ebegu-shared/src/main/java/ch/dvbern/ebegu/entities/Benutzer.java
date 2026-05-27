@@ -157,6 +157,10 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 	@Column
 	private String zpvNummer = null;
 
+	@Nullable
+	@Column
+	private String ahvNummer = null;
+
 	@Getter
 	@Setter
 	private transient String initialPassword;
@@ -404,5 +408,14 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 
 	public void setMarkedForDeletion(boolean markedForDeletion) {
 		this.markedForDeletion = markedForDeletion;
+	}
+
+	@Nullable
+	public String getAhvNummer() {
+		return ahvNummer;
+	}
+
+	public void setAhvNummer(@Nullable String ahvNummer) {
+		this.ahvNummer = ahvNummer;
 	}
 }

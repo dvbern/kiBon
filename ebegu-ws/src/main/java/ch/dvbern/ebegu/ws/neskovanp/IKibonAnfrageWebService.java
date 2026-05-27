@@ -27,6 +27,7 @@ public interface IKibonAnfrageWebService {
 
 	SteuerdatenResponse getSteuerDaten(
 		Integer zpvNummer,
+		Long ahvNummer,
 		LocalDate geburtsdatum,
 		String gesuchId,
 		Integer gesuchsperiodeBeginnJahr

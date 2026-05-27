@@ -83,6 +83,7 @@ public class KibonAnfrageWebService implements IKibonAnfrageWebService {
 	@Override
 	public SteuerdatenResponse getSteuerDaten(
 		Integer zpvNummer,
+		Long ahvNummer,
 		LocalDate geburtsdatum,
 		String gesuchId,
 		Integer gesuchsperiodeBeginnJahr
@@ -96,6 +97,7 @@ public class KibonAnfrageWebService implements IKibonAnfrageWebService {
 			SteuerDatenResponseType steuerDatenResponseType = getServicePort()
 				.getSteuerdaten(
 					zpvNummer,
+					ahvNummer,
 					geburtsdatum,
 					gesuchId,
 					gesuchsperiodeBeginnJahr
@@ -182,6 +184,7 @@ public class KibonAnfrageWebService implements IKibonAnfrageWebService {
 		} finally {
 			writeAuditLogForKibonAnfrageCall(
 				zpvNummer,
+				ahvNummer,
 				geburtsdatum,
 				gesuchId,
 				gesuchsperiodeBeginnJahr,
@@ -193,7 +196,8 @@ public class KibonAnfrageWebService implements IKibonAnfrageWebService {
 	}
 
 	private void writeAuditLogForKibonAnfrageCall(
-		Integer zpvNummer,
+		@Nullable Integer zpvNummer,
+		@Nullable Long ahvNummer,
 		LocalDate geburtsdatum,
 		String kibonAntragId,
 		Integer gesuchsperiodeBeginnJahr,
@@ -205,6 +209,7 @@ public class KibonAnfrageWebService implements IKibonAnfrageWebService {
 		SteuerdatenRequest request =
 			new SteuerdatenRequest(
 				zpvNummer,
+				ahvNummer,
 				geburtsdatum,
 				kibonAntragId,
 				gesuchsperiodeBeginnJahr

@@ -33,15 +33,17 @@ public final class KibonAnfrageUtil {
 	private KibonAnfrageUtil() {
 	}
 
-	public static boolean hasGesuchSteuerdatenResponseWithZpvNummer(
+	public static boolean hasGesuchSteuerdatenResponseWithZpvOrAHVNummer(
 		@Nonnull Gesuch gesuch,
-		int zpvNummer
+		@Nullable Integer zpvNummer,
+		@Nullable Long ahvNummer
 	) {
 		Objects.requireNonNull(gesuch.getGesuchsteller1());
 
-		if (isZpvNrFromAntragsteller(
+		if (isZpvOrAHVNrFromAntragsteller(
 			gesuch.getGesuchsteller1().getFinanzielleSituationContainer(),
-			zpvNummer
+			zpvNummer,
+			ahvNummer
 		)) {
 			return true;
 		}
@@ -50,19 +52,21 @@ public final class KibonAnfrageUtil {
 			&&
 			gesuch.getGesuchsteller2().getFinanzielleSituationContainer()
 				!= null) {
-			return isZpvNrFromAntragsteller(
+			return isZpvOrAHVNrFromAntragsteller(
 				gesuch.getGesuchsteller2()
 					.getFinanzielleSituationContainer(),
-				zpvNummer
+				zpvNummer,
+				ahvNummer
 			);
 		}
 
 		return false;
 	}
 
-	private static boolean isZpvNrFromAntragsteller(
+	private static boolean isZpvOrAHVNrFromAntragsteller(
 		@Nullable FinanzielleSituationContainer finanzielleSituationContainer,
-		int zpvNummer
+		@Nullable Integer zpvNummer,
+		@Nullable Long ahvNummer
 	) {
 		if (finanzielleSituationContainer == null) {
 			return false;
@@ -74,11 +78,18 @@ public final class KibonAnfrageUtil {
 				.getSteuerdatenResponse();
 
 		if (steuerdatenResponse == null
-			|| steuerdatenResponse.getZpvNrAntragsteller() == null) {
+			|| (steuerdatenResponse.getZpvNrAntragsteller() == null
+				&& steuerdatenResponse.getSozialversicherungsNrAntragsteller()
+					== null)) {
 			return false;
 		}
 
-		return steuerdatenResponse.getZpvNrAntragsteller().equals(zpvNummer);
+		return (steuerdatenResponse.getZpvNrAntragsteller() != null
+			&& steuerdatenResponse.getZpvNrAntragsteller().equals(zpvNummer))
+			|| (steuerdatenResponse.getSozialversicherungsNrAntragsteller()
+				!= null
+				&& steuerdatenResponse.getSozialversicherungsNrAntragsteller()
+					.equals(ahvNummer));
 	}
 
 	public static GesuchstellerTyp getGesuchstellerTypByGeburtsdatum(
@@ -110,5 +121,11 @@ public final class KibonAnfrageUtil {
 		//Online Fall hat immer ein Besitzer
 		Objects.requireNonNull(gesuch.getFall().getBesitzer());
 		return gesuch.getFall().getBesitzer().getZpvNummer();
+	}
+
+	public static String getAhvFromBesitzer(Gesuch gesuch) {
+		//Online Fall hat immer ein Besitzer
+		Objects.requireNonNull(gesuch.getFall().getBesitzer());
+		return gesuch.getFall().getBesitzer().getAhvNummer();
 	}
 }

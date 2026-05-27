@@ -42,6 +42,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 
 	@Nullable
 	@Column(nullable = true)
+	private Long sozialversicherungsNrAntragsteller;
+
+	@Nullable
+	@Column(nullable = true)
 	private LocalDate geburtsdatumAntragsteller;
 
 	@Nullable
@@ -58,11 +62,19 @@ public class SteuerdatenResponse extends AbstractEntity {
 
 	@Nullable
 	@Column(nullable = true)
+	private Long sozialversicherungsNrDossiertraeger;
+
+	@Nullable
+	@Column(nullable = true)
 	private LocalDate geburtsdatumDossiertraeger;
 
 	@Nullable
 	@Column(nullable = true)
 	private Integer zpvNrPartner;
+
+	@Nullable
+	@Column(nullable = true)
+	private Long sozialversicherungsNrPartner;
 
 	@Nullable
 	@Column(nullable = true)
@@ -607,6 +619,41 @@ public class SteuerdatenResponse extends AbstractEntity {
 		this.veraendertePartnerschaft = veraendertePartnerschaft;
 	}
 
+	@Nullable
+	public Long getSozialversicherungsNrAntragsteller() {
+		return sozialversicherungsNrAntragsteller;
+	}
+
+	public void setSozialversicherungsNrAntragsteller(
+		@Nullable Long sozialversicherungsNrAntragsteller
+	) {
+		this.sozialversicherungsNrAntragsteller =
+			sozialversicherungsNrAntragsteller;
+	}
+
+	@Nullable
+	public Long getSozialversicherungsNrDossiertraeger() {
+		return sozialversicherungsNrDossiertraeger;
+	}
+
+	public void setSozialversicherungsNrDossiertraeger(
+		@Nullable Long sozialversicherungsNrDossiertraeger
+	) {
+		this.sozialversicherungsNrDossiertraeger =
+			sozialversicherungsNrDossiertraeger;
+	}
+
+	@Nullable
+	public Long getSozialversicherungsNrPartner() {
+		return sozialversicherungsNrPartner;
+	}
+
+	public void setSozialversicherungsNrPartner(
+		@Nullable Long sozialversicherungsNrPartner
+	) {
+		this.sozialversicherungsNrPartner = sozialversicherungsNrPartner;
+	}
+
 	@Override
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
@@ -766,7 +813,22 @@ public class SteuerdatenResponse extends AbstractEntity {
 			&&
 			isSame(this.liegenschaftsAbzuege, o.liegenschaftsAbzuege)
 			&&
-			isSame(this.nettovermoegen, o.nettovermoegen);
+			isSame(this.nettovermoegen, o.nettovermoegen)
+			&&
+			Objects.equals(
+				this.sozialversicherungsNrAntragsteller,
+				o.sozialversicherungsNrAntragsteller
+			)
+			&&
+			Objects.equals(
+				this.sozialversicherungsNrPartner,
+				o.sozialversicherungsNrPartner
+			)
+			&&
+			Objects.equals(
+				this.sozialversicherungsNrDossiertraeger,
+				o.sozialversicherungsNrDossiertraeger
+			);
 	}
 
 	private boolean isSame(
@@ -874,5 +936,14 @@ public class SteuerdatenResponse extends AbstractEntity {
 
 	public enum SteuerdatenDatenTraeger {
 		DOSSIERTRAEGER, PARTNER
+	}
+
+	public boolean isSteuerdatenResponseGemeinsam() {
+		return this.getZpvNrPartner() != null
+			|| this.getSozialversicherungsNrPartner() != null;
+	}
+
+	public boolean isSteuerdatenResponseAllein() {
+		return !isSteuerdatenResponseGemeinsam();
 	}
 }

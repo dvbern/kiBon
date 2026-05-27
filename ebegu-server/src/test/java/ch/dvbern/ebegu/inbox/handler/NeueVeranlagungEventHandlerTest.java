@@ -191,7 +191,8 @@ public class NeueVeranlagungEventHandlerTest extends EasyMockSupport {
 		kibonAnfrageContext = new KibonAnfrageContext(
 			gesuch_1GS,
 			GesuchstellerTyp.GESUCHSTELLER_1,
-			zpvNummer
+			zpvNummer,
+			null
 		);
 	}
 

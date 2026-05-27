@@ -175,12 +175,12 @@ export class SteuerabfrageResponseHintsComponent
                 return this.translate.instant(
                     'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_UNREGELMAESSIGKEIT'
                 );
-            case TSSteuerdatenAnfrageStatus.FAILED_KEINE_ZPV_NUMMER:
+            case TSSteuerdatenAnfrageStatus.FAILED_KEINE_NUMMER:
                 return this.translate.instant(
                     'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_KEINE_ZPV',
                     {email: this.getEmailBesitzende()}
                 );
-            case TSSteuerdatenAnfrageStatus.FAILED_KEINE_ZPV_NUMMER_GS2:
+            case TSSteuerdatenAnfrageStatus.FAILED_KEINE_NUMMER_GS2:
                 return this.translate.instant(
                     'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_KEINE_ZPV_GS2',
                     {gs2: this.getGS2name()}
@@ -240,23 +240,19 @@ export class SteuerabfrageResponseHintsComponent
         );
     }
 
-    public showZugriffKeineZPVNummer(): boolean {
+    public showZugriffKeineNummer(): boolean {
         return (
-            this.showZugriffKeineZpvNummerGS1() ||
-            this.showZugriffKeineZpvNummerGS2()
+            this.showZugriffKeineNummerGS1() || this.showZugriffKeineNummerGS2()
         );
     }
 
-    private showZugriffKeineZpvNummerGS1(): boolean {
-        return (
-            this.status === TSSteuerdatenAnfrageStatus.FAILED_KEINE_ZPV_NUMMER
-        );
+    private showZugriffKeineNummerGS1(): boolean {
+        return this.status === TSSteuerdatenAnfrageStatus.FAILED_KEINE_NUMMER;
     }
 
-    private showZugriffKeineZpvNummerGS2(): boolean {
+    private showZugriffKeineNummerGS2(): boolean {
         return (
-            this.status ===
-            TSSteuerdatenAnfrageStatus.FAILED_KEINE_ZPV_NUMMER_GS2
+            this.status === TSSteuerdatenAnfrageStatus.FAILED_KEINE_NUMMER_GS2
         );
     }
 

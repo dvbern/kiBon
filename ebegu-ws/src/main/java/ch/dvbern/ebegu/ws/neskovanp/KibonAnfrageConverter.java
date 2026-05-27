@@ -290,6 +290,15 @@ public class KibonAnfrageConverter {
 				new BigDecimal(steuerdatenResponseType.getSchuldzinsen())
 			);
 		}
+		steuerdatenResponse.setSozialversicherungsNrAntragsteller(
+			steuerdatenResponseType.getSozialversicherungsNrAntragsteller()
+		);
+		steuerdatenResponse.setSozialversicherungsNrPartner(
+			steuerdatenResponseType.getSozialversicherungsNrPartner()
+		);
+		steuerdatenResponse.setSozialversicherungsNrDossiertraeger(
+			steuerdatenResponseType.getSozialversicherungsNrDossiertraeger()
+		);
 
 		return steuerdatenResponse;
 	}

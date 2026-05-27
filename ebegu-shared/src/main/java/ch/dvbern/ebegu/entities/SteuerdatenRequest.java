@@ -18,7 +18,9 @@
 package ch.dvbern.ebegu.entities;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotNull;
@@ -31,9 +33,13 @@ public class SteuerdatenRequest extends AbstractEntity {
 
 	private static final long serialVersionUID = -7036966734761773954L;
 
-	@NotNull
-	@Column(nullable = false)
-	private int zpvNummer;
+	@Nullable
+	@Column(nullable = true)
+	private Integer zpvNummer;
+
+	@Nullable
+	@Column(nullable = true)
+	private Long ahvNummer;
 
 	@NotNull
 	@Column(nullable = false)
@@ -51,23 +57,35 @@ public class SteuerdatenRequest extends AbstractEntity {
 	}
 
 	public SteuerdatenRequest(
-		int zpvNummer,
+		@Nullable Integer zpvNummer,
+		@Nullable Long ahvNummer,
 		LocalDate geburtsdatumAntragsteller,
 		String antragId,
 		int gesuchsperiodeBeginnJahr
 	) {
 		this.zpvNummer = zpvNummer;
+		this.ahvNummer = ahvNummer;
 		this.geburtsdatumAntragsteller = geburtsdatumAntragsteller;
 		this.antragId = antragId;
 		this.gesuchsperiodeBeginnJahr = gesuchsperiodeBeginnJahr;
 	}
 
-	public int getZpvNummer() {
+	@Nullable
+	public Integer getZpvNummer() {
 		return zpvNummer;
 	}
 
-	public void setZpvNummer(int zpvNummer) {
+	public void setZpvNummer(Integer zpvNummer) {
 		this.zpvNummer = zpvNummer;
+	}
+
+	@Nullable
+	public Long getAhvNummer() {
+		return ahvNummer;
+	}
+
+	public void setAhvNummer(Long ahvNummer) {
+		this.ahvNummer = ahvNummer;
 	}
 
 	public int getGesuchsperiodeBeginnJahr() {
@@ -117,7 +135,8 @@ public class SteuerdatenRequest extends AbstractEntity {
 			this.gesuchsperiodeBeginnJahr
 				== otherRequest.gesuchsperiodeBeginnJahr
 			&&
-			this.zpvNummer == otherRequest.zpvNummer;
-
+			Objects.equals(this.zpvNummer, otherRequest.zpvNummer)
+			&&
+			Objects.equals(this.ahvNummer, otherRequest.ahvNummer);
 	}
 }

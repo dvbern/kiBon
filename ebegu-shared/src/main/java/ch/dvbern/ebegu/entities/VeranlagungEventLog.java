@@ -20,6 +20,7 @@ package ch.dvbern.ebegu.entities;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -40,8 +41,11 @@ public class VeranlagungEventLog extends AbstractEntity {
 	@Column(nullable = false)
 	private String antragId;
 
-	@NotNull
+	@Nullable
 	private Integer zpvNummer;
+
+	@Nullable
+	private Long sozialversicherungsNummer;
 
 	@NotNull
 	private LocalDate geburtsdatum;
@@ -54,11 +58,13 @@ public class VeranlagungEventLog extends AbstractEntity {
 	public VeranlagungEventLog(
 		String antragId,
 		Integer zpvNummer,
+		Long sozialversicherungsNummer,
 		LocalDate geburtsdatum,
 		Integer gesuchsperiodeBeginnJahr
 	) {
 		this.antragId = antragId;
 		this.zpvNummer = zpvNummer;
+		this.sozialversicherungsNummer = sozialversicherungsNummer;
 		this.geburtsdatum = geburtsdatum;
 		this.gesuchsperiodeBeginnJahr = gesuchsperiodeBeginnJahr;
 	}
@@ -86,6 +92,11 @@ public class VeranlagungEventLog extends AbstractEntity {
 			Objects.equals(geburtsdatum, veranlagungEventLog.geburtsdatum)
 			&&
 			Objects.equals(zpvNummer, veranlagungEventLog.zpvNummer)
+			&&
+			Objects.equals(
+				sozialversicherungsNummer,
+				veranlagungEventLog.sozialversicherungsNummer
+			)
 			&&
 			Objects.equals(
 				gesuchsperiodeBeginnJahr,

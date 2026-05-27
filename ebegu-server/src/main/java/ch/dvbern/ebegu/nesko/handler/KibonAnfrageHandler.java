@@ -46,10 +46,12 @@ public class KibonAnfrageHandler {
 		GesuchstellerTyp gesuchstellerTyp
 	) throws OIDCServiceException {
 		String zpvBesitzer = findZpvNummerFromGesuchBesitzer(gesuch);
+		String ahvBesitzer = findAhvNummerFromGesuchBesitzer(gesuch);
 		KibonAnfrageContext kibonAnfrageContext = new KibonAnfrageContext(
 			gesuch,
 			gesuchstellerTyp,
-			zpvBesitzer
+			zpvBesitzer,
+			ahvBesitzer
 		);
 
 		try {
@@ -91,8 +93,9 @@ public class KibonAnfrageHandler {
 
 		kibonAnfrageContext.setSteuerdatenAbfrageTimestampNow();
 
-		if (kibonAnfrageContext.getZpvNummerForRequest().isEmpty()) {
-			kibonAnfrageContext.setSteuerdatenAnfrageStatusFailedNoZPV();
+		if (kibonAnfrageContext.getZpvNummerForRequest().isEmpty()
+			&& kibonAnfrageContext.getAhvNummerForRequest().isEmpty()) {
+			kibonAnfrageContext.setSteuerdatenAnfrageStatusFailedNoNummer();
 			return;
 		}
 
@@ -105,7 +108,8 @@ public class KibonAnfrageHandler {
 
 		SteuerdatenResponse steuerdatenResponseGS = kibonAnfrageService
 			.getSteuerDaten(
-				kibonAnfrageContext.getZpvNummerForRequest().get(),
+				kibonAnfrageContext.getZpvNummerForRequest().orElse(null),
+				kibonAnfrageContext.getAhvNummerForRequest().orElse(null),
 				kibonAnfrageContext.getGeburstdatumForRequest().get(),
 				kibonAnfrageContext.getGesuch().getId(),
 				kibonAnfrageContext.getGesuch()
@@ -138,6 +142,19 @@ public class KibonAnfrageHandler {
 
 		//wenn user role nicht gemeinde, dann soll nur der aktuelle benutzer die steuerdaten abfragen können
 		return principalBean.getBenutzer().getZpvNummer();
+	}
+
+	@Nullable
+	private String findAhvNummerFromGesuchBesitzer(Gesuch gesuch) {
+		if (principalBean.isCallerInAnyOfRole(
+			UserRole.getSuperadminAllGemeindeRoles()
+		)
+			|| principalBean.isKibonServiceAccount()) {
+			return KibonAnfrageUtil.getAhvFromBesitzer(gesuch);
+		}
+
+		//wenn user role nicht gemeinde, dann soll nur der aktuelle benutzer die steuerdaten abfragen können
+		return principalBean.getBenutzer().getAhvNummer();
 	}
 
 }

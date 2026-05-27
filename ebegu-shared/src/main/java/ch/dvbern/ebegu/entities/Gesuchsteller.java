@@ -86,6 +86,11 @@ public class Gesuchsteller extends AbstractPersonEntity {
 	@Column
 	private String zpvNummer = null;
 
+	//AHV Nummer is linked with the Agov account information when needed. It differ from the sozialversicherungsnummer feld that is a user input required for some mandants
+	@Nullable
+	@Column
+	private String ahvNummer = null;
+
 	@Nullable
 	@Column
 	@CheckAhvFormat
@@ -175,6 +180,7 @@ public class Gesuchsteller extends AbstractPersonEntity {
 		target.setSozialversicherungsnummer(
 			this.getSozialversicherungsnummer()
 		);
+		target.setAhvNummer(this.getAhvNummer());
 		return target;
 	}
 
@@ -231,5 +237,14 @@ public class Gesuchsteller extends AbstractPersonEntity {
 		@Nullable String sozialversicherungsnummer
 	) {
 		this.sozialversicherungsnummer = sozialversicherungsnummer;
+	}
+
+	@Nullable
+	public String getAhvNummer() {
+		return ahvNummer;
+	}
+
+	public void setAhvNummer(@Nullable String ahvNummer) {
+		this.ahvNummer = ahvNummer;
 	}
 }

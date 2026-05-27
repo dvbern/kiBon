@@ -20,6 +20,7 @@ package ch.dvbern.ebegu.services;
 import java.time.LocalDate;
 
 import javax.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.SteuerdatenResponse;
 import ch.dvbern.ebegu.errors.KiBonAnfrageServiceException;
@@ -29,7 +30,8 @@ public interface KibonAnfrageService {
 
 	@Nonnull
 	SteuerdatenResponse getSteuerDaten(
-		Integer zpvNummer,
+		@Nullable Integer zpvNummer,
+		@Nullable Long ahvNummer,
 		LocalDate geburtsdatum,
 		String gesuchId,
 		Integer gesuchsperiodeBeginnJahr

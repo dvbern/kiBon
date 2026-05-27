@@ -16,9 +16,7 @@
 -->
 
 @if (
-    showWarningRetry() ||
-    showWarningWithoutRetry() ||
-    showZugriffKeineZPVNummer()
+    showWarningRetry() || showWarningWithoutRetry() || showZugriffKeineNummer()
 ) {
     <div class="well well-status-warten minus-margin">
         <p class="ebegu-h3" [innerHTML]="getWarningText()"></p>
@@ -32,9 +30,7 @@
             >
         }
         @if (
-            showZugriffKeineZPVNummer() &&
-            isGesuchsteller() &&
-            !isGesuchReadonly()
+            showZugriffKeineNummer() && isGesuchsteller() && !isGesuchReadonly()
         ) {
             <a
                 class="pointer-cursor"

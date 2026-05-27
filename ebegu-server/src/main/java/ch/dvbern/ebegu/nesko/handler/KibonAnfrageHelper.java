@@ -60,7 +60,7 @@ public class KibonAnfrageHelper {
 			);
 			return;
 		}
-		if (steuerdatenResponse.getZpvNrPartner() != null) {
+		if (steuerdatenResponse.isSteuerdatenResponseGemeinsam()) {
 			kibonAnfrageContext.setSteuerdatenAnfrageStatus(
 				SteuerdatenAnfrageStatus.FAILED_PARTNER_NICHT_GEMEINSAM
 			);
@@ -115,7 +115,7 @@ public class KibonAnfrageHelper {
 			);
 			return;
 		}
-		if (steuerdatenResponse.getZpvNrPartner() == null) {
+		if (steuerdatenResponse.isSteuerdatenResponseAllein()) {
 			kibonAnfrageContext.setSteuerdatenAnfrageStatus(
 				SteuerdatenAnfrageStatus.FAILED_KEIN_PARTNER_GEMEINSAM
 			);
@@ -142,7 +142,7 @@ public class KibonAnfrageHelper {
 		FinanzielleSituation finSit,
 		SteuerdatenResponse steuerdatenResponse
 	) {
-		assert steuerdatenResponse.getZpvNrPartner() == null;
+		assert steuerdatenResponse.isSteuerdatenResponseAllein() == true;
 		finSit.setSteuerdatenResponse(steuerdatenResponse);
 		setValuesToFinSit(
 			finSit,
@@ -193,7 +193,7 @@ public class KibonAnfrageHelper {
 			.getFinanzielleSituationForGSTyp(
 				GesuchstellerTyp.GESUCHSTELLER_2
 			);
-		assert steuerdatenResponse.getZpvNrPartner() != null;
+		assert steuerdatenResponse.isSteuerdatenResponseGemeinsam() == true;
 		finSitGS1.setSteuerdatenResponse(steuerdatenResponse);
 		finSitGS2.setSteuerdatenResponse(steuerdatenResponse);
 		finSitGS2.setSteuerdatenZugriff(true);

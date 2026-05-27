@@ -20,6 +20,7 @@ package ch.dvbern.ebegu.dto.neskovanp;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -37,8 +38,11 @@ public class KibonAnfrageDTO implements Serializable {
 	@NotNull
 	private String antragId = null;
 
-	@NotNull
-	private int zpvNummer;
+	@Nullable
+	private Integer zpvNummer;
+
+	@Nullable
+	private Long ahvNummer;
 
 	@NotNull
 	private int gesuchsperiodeBeginnJahr;
@@ -55,12 +59,22 @@ public class KibonAnfrageDTO implements Serializable {
 		this.antragId = antragId;
 	}
 
-	public int getZpvNummer() {
+	@Nullable
+	public Integer getZpvNummer() {
 		return zpvNummer;
 	}
 
-	public void setZpvNummer(int zpvNummer) {
+	public void setZpvNummer(@Nullable Integer zpvNummer) {
 		this.zpvNummer = zpvNummer;
+	}
+
+	@Nullable
+	public Long getAhvNummer() {
+		return ahvNummer;
+	}
+
+	public void setAhvNummer(@Nullable Long ahvNummer) {
+		this.ahvNummer = ahvNummer;
 	}
 
 	public int getGesuchsperiodeBeginnJahr() {
