@@ -90,72 +90,6 @@ public class ZahlungslaufHelperFactoryTest extends EasyMockSupport {
 	}
 
 	@Test
-	public void testGetZahlungslaufHelper_CacheMissAndHit_SameInstanceReturned() {
-		LocalDate gueltigBis = LocalDate.of(2023, 12, 31);
-
-		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
-		gesuchsperiode.setGueltigkeit(
-			new DateRange(LocalDate.of(2023, 1, 1), gueltigBis)
-		);
-
-		Gemeinde gemeinde = new Gemeinde();
-
-		Betreuung betreuung = new Betreuung() {
-			@Override
-			public Gesuchsperiode extractGesuchsperiode() {
-				return gesuchsperiode;
-			}
-
-			@Override
-			public Gemeinde extractGemeinde() {
-				return gemeinde;
-			}
-		};
-
-		Verfuegung verfuegung = new Verfuegung();
-		verfuegung.setBetreuung(betreuung);
-
-		VerfuegungZeitabschnitt zeitabschnitt = new VerfuegungZeitabschnitt();
-		zeitabschnitt.setVerfuegung(verfuegung);
-
-		Einstellung einstellung = new Einstellung();
-		einstellung.setValue(HoehereBeitraegeTyp.DEAKTIVIERT.name());
-
-		// Expect only one call to einstellungService for the first invocation
-		expect(
-			einstellungServiceMock.findEinstellung(
-				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
-				gemeinde,
-				gesuchsperiode
-			)
-		).andReturn(einstellung);
-
-		replayAll();
-
-		// First call - Cache miss
-		ZahlungslaufHelper helper1 = factory.getZahlungslaufHelper(
-			zeitabschnitt,
-			ZahlungslaufTyp.GEMEINDE_INSTITUTION
-		);
-		assertNotNull(helper1);
-
-		// Second call - Cache hit
-		ZahlungslaufHelper helper2 = factory.getZahlungslaufHelper(
-			zeitabschnitt,
-			ZahlungslaufTyp.GEMEINDE_INSTITUTION
-		);
-		assertNotNull(helper2);
-
-		assertSame(
-			helper1,
-			helper2,
-			"Should return the same instance from cache"
-		);
-
-		verifyAll();
-	}
-
-	@Test
 	public void testGetZahlungslaufHelper_DifferentTypes_CorrectHelperReturned() {
 		LocalDate gueltigBis = LocalDate.of(2023, 12, 31);
 		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
@@ -205,9 +139,6 @@ public class ZahlungslaufHelperFactoryTest extends EasyMockSupport {
 			ZahlungslaufInstitutionenHelper.class,
 			instHelper.getClass()
 		);
-
-		// Clear cache to test next type properly
-		factory.clearCache();
 
 		ZahlungslaufHelper antrHelper = factory.getZahlungslaufHelper(
 			zeitabschnitt,

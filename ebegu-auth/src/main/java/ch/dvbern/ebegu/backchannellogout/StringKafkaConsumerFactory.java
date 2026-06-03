@@ -37,6 +37,10 @@ public class StringKafkaConsumerFactory {
 	 * @return A appropriate instance of {@link KafkaConsumer} for consuming string messages from a Kafka event queue.
 	 */
 	public KafkaConsumer<String, String> createKafkaConsumer() {
+		if (configurationProvider.getKibonIameventqueueHost() == null
+			|| configurationProvider.getKibonIameventqueueHost().isEmpty()) {
+			return null;
+		}
 		return new KafkaConsumer<>(getProperties());
 	}
 

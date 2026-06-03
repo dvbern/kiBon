@@ -1491,6 +1491,7 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
 
         for (let i = 0; i < this.getBetreuungspensen().length; i++) {
             this.getBetreuungspensum(i).betreuungspensumJA.pensum = 0;
+            this.getBetreuungspensum(i).betreuungspensumJA.betreuteTage = 0;
             this.getBetreuungspensum(i).betreuungspensumJA.nichtEingetreten =
                 true;
         }

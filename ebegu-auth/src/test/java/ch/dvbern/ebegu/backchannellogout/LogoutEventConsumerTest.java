@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import jakarta.servlet.ServletContextEvent;
 
@@ -52,9 +51,6 @@ class LogoutEventConsumerTest {
 	SessionRegistry sessionRegistry;
 
 	@Mock
-	ExecutorServiceFactory executorServiceFactory;
-
-	@Mock
 	StringKafkaConsumerFactory kafkaConsumerFactory;
 
 	@Mock
@@ -70,8 +66,6 @@ class LogoutEventConsumerTest {
 
 	ServletContextEvent servletContextEvent;
 
-	ExecutorService executorService;
-
 	ObjectMapper objectMapper = new ObjectMapper();
 
 	@BeforeEach
@@ -85,18 +79,13 @@ class LogoutEventConsumerTest {
 
 		servletContextEvent = Mockito.mock(ServletContextEvent.class);
 
-		executorService = Mockito.mock(ExecutorService.class);
-		Mockito.when(executorServiceFactory.createExecutorService())
-			.thenReturn(executorService);
-
 		Mockito.when(objectMapperFactory.create()).thenReturn(objectMapper);
+
+		eventConsumer.initialize();
 	}
 
 	@Test
 	void consumeLoop() throws JsonProcessingException {
-
-		eventConsumer.postConstruct();
-
 		String subject = "abc";
 
 		LogoutEvent event = LogoutEvent.builder()
@@ -137,14 +126,9 @@ class LogoutEventConsumerTest {
 
 	@Test
 	void cleanup() {
-
-		eventConsumer.postConstruct();
-
+		eventConsumer.consumeAndHandleLogoutEvent();
 		eventConsumer.cleanup();
-
-		Mockito.verify(kafkaConsumer).wakeup();
-		Mockito.verify(executorService).shutdown();
-
+		Mockito.verify(kafkaConsumer).close();
 		Assertions.assertFalse(eventConsumer.isRunning());
 	}
 }

@@ -414,6 +414,59 @@ class TagesfamilienSchwyzRechnerTest {
 		assertEquals(new BigDecimal("221.40"), result.getElternbeitrag());
 	}
 
+	@Test
+	void getVermittlungsKosten_EffektiveBetreuungsstundenAreZero_ReturnsZero() {
+		// given
+		// this test should ensure that "division by zero" is avoided.
+		var testee = new TagesfamilienSchwyzRechner();
+		var verfuegungZeitabschnitt = new VerfuegungZeitabschnitt();
+		var input = verfuegungZeitabschnitt.getRelevantBgCalculationInput();
+
+		// Set pensum to 0 to make effektiveBetreuungsstunden zero
+		input.setBetreuungspensumProzent(BigDecimal.ZERO);
+		input.setAnwesenheitsTageProMonat(BigDecimal.TEN);
+
+		var parameter = TestUtils.getRechnerParamterSchwyz();
+		parameter.setOeffnungstageTFO(new BigDecimal(240));
+		parameter.setOeffnungsstundenTFO(new BigDecimal(10));
+
+		// when
+		var vermittlungsKosten = testee.getVermittlungsKosten(input, parameter);
+
+		// then
+		assertEquals(BigDecimal.ZERO, vermittlungsKosten);
+	}
+
+	@Test
+	void getVermittlungsKosten_CalculationIsCorrect() {
+		// given
+		var testee = new TagesfamilienSchwyzRechner();
+		var verfuegungZeitabschnitt = new VerfuegungZeitabschnitt();
+		var input = verfuegungZeitabschnitt.getRelevantBgCalculationInput();
+
+		// Formula:
+		// oeffnungsTageProMonat = 240 / 12 = 20
+		// effektiveBetreuungsstunden = 20 * 10 * (50 / 100) = 100
+		// vermittlungsKosten = (anwesenheitsTageProMonat / effektiveBetreuungsstunden) * 4
+		// If anwesenheitsTageProMonat = 10:
+		// vermittlungsKosten = (10 / 100) * 4 = 0.4
+
+		input.setBetreuungspensumProzent(new BigDecimal(50));
+		input.setAnwesenheitsTageProMonat(new BigDecimal(10));
+
+		var parameter = TestUtils.getRechnerParamterSchwyz();
+		parameter.setOeffnungstageTFO(new BigDecimal(240));
+		parameter.setOeffnungsstundenTFO(new BigDecimal(10));
+
+		// when
+		var vermittlungsKosten = testee.getVermittlungsKosten(input, parameter);
+
+		// then
+		// EXACT.divide(10, 100) -> 0.1
+		// 0.1 * 4 -> 0.4
+		assertEquals(new BigDecimal("0.4000000000"), vermittlungsKosten);
+	}
+
 	// Bug report: KIBON-3555
 	@Test
 	void mustCalculateTarifProZeiteinheitCorrectlyForUntermonatlicheZeitabschnitte() {

@@ -46,12 +46,12 @@ public class ZahlungslaufAntragstellerHelper implements ZahlungslaufHelper {
 
 	private final HoehereBeitraegeTyp beitraegeTyp;
 
-	public ZahlungslaufAntragstellerHelper() {
-		this.beitraegeTyp = HoehereBeitraegeTyp.DEAKTIVIERT;
-	}
-
-	public ZahlungslaufAntragstellerHelper(HoehereBeitraegeTyp beitraegeTyp) {
-		this.beitraegeTyp = beitraegeTyp;
+	public ZahlungslaufAntragstellerHelper(
+		@Nullable HoehereBeitraegeTyp beitraegeTyp
+	) {
+		this.beitraegeTyp = beitraegeTyp != null ?
+			beitraegeTyp :
+			HoehereBeitraegeTyp.DEAKTIVIERT;
 	}
 
 	@Nonnull

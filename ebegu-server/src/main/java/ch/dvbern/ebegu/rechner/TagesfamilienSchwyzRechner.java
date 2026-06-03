@@ -125,17 +125,21 @@ public class TagesfamilienSchwyzRechner extends AbstractSchwyzRechner {
 		BGCalculationInput input,
 		BGRechnerParameterDTO parameter
 	) {
-		if (input.getAnwesenheitsTageProMonat().compareTo(BigDecimal.ZERO)
+
+		BigDecimal effektiveBetreuungsstunden =
+			calculateEffektiveBetreuungsStundenProMonat(
+				input,
+				parameter
+			);
+
+		if (effektiveBetreuungsstunden.compareTo(BigDecimal.ZERO)
 			== 0) {
 			return BigDecimal.ZERO;
 		}
 		return EXACT.multiply(
 			EXACT.divide(
 				input.getAnwesenheitsTageProMonat(),
-				calculateEffektiveBetreuungsStundenProMonat(
-					input,
-					parameter
-				)
+				effektiveBetreuungsstunden
 			),
 			VERMITTLUNGSGEBUEHR
 		);

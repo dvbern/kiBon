@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
@@ -44,12 +45,12 @@ public class ZahlungslaufInstitutionenHelper implements ZahlungslaufHelper {
 
 	private final HoehereBeitraegeTyp beitraegeTyp;
 
-	public ZahlungslaufInstitutionenHelper() {
-		this.beitraegeTyp = HoehereBeitraegeTyp.DEAKTIVIERT;
-	}
-
-	public ZahlungslaufInstitutionenHelper(HoehereBeitraegeTyp beitraegeTyp) {
-		this.beitraegeTyp = beitraegeTyp;
+	public ZahlungslaufInstitutionenHelper(
+		@Nullable HoehereBeitraegeTyp beitraegeTyp
+	) {
+		this.beitraegeTyp = beitraegeTyp != null ?
+			beitraegeTyp :
+			HoehereBeitraegeTyp.DEAKTIVIERT;
 	}
 
 	@Nonnull

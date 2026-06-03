@@ -19,7 +19,6 @@ package ch.dvbern.ebegu.backchannellogout;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
 
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
@@ -65,18 +64,6 @@ public class LogoutEventConsumer {
 	private EbeguConfiguration ebeguConfiguration;
 
 	/**
-	 * Used to create an appropriate {@link ExecutorService} which is used to execute the consume loop
-	 * asychronously.
-	 */
-	@Inject
-	private ExecutorServiceFactory executorServiceFactory;
-
-	/**
-	 * Used to execute the consume loop asynchronously.
-	 */
-	private ExecutorService executorService = null;
-
-	/**
 	 * Terminates this listener if set to false. For a clean termination of this serice, use
 	 * {@link LogoutEventConsumer#cleanup()}.
 	 */
@@ -113,20 +100,19 @@ public class LogoutEventConsumer {
 	private SessionRegistry sessionRegistry;
 
 	@PostConstruct
-	public void postConstruct() {
-		initialize();
+	void initialize() {
+		this.objectMapper = objectMapperFactory.create();
+		tryToInitializeConsumer();
 	}
 
-	private void initialize() {
-
-		assert objectMapperFactory != null;
-		this.objectMapper = objectMapperFactory.create();
-		assert executorServiceFactory != null;
-		executorService = executorServiceFactory.createExecutorService();
-
-		assert kafkaConsumerFactory != null;
+	private void tryToInitializeConsumer() {
 		consumer = kafkaConsumerFactory.createKafkaConsumer();
-		assert ebeguConfiguration != null;
+		if (consumer == null) {
+			LOGGER.debug(
+				"Kafka consumer not initialized, missing kiBon properties"
+			);
+			return;
+		}
 		consumer.subscribe(
 			Collections.singletonList(
 				ebeguConfiguration.getKibonIameventqueueTopicLogout()
@@ -145,11 +131,25 @@ public class LogoutEventConsumer {
 		hour = "*",
 		persistent = false)
 	public void consumeAndHandleLogoutEvent() {
-		ConsumerRecords<String, String> records = consumer.poll(
-			Duration.ofMillis(1000)
-		);
-		for (ConsumerRecord<String, String> rec : records) {
-			handleLogoutEvent(rec.value());
+		if (consumer == null) {
+			tryToInitializeConsumer();
+			return;
+		}
+		try {
+
+			ConsumerRecords<String, String> records = consumer.poll(
+				Duration.ofMillis(1000)
+			);
+			for (ConsumerRecord<String, String> rec : records) {
+				handleLogoutEvent(rec.value());
+			}
+		} catch (Exception e) {
+			LOGGER.error(
+				"Kafka logout consumer failed during poll. Recreating consumer.",
+				e
+			);
+			cleanup();
+			consumer = null;
 		}
 	}
 
@@ -165,7 +165,6 @@ public class LogoutEventConsumer {
 
 	@Nullable
 	private String extractSubject(String json) {
-
 		try {
 			LogoutEvent logoutEvent = objectMapper.readValue(
 				json,
@@ -184,11 +183,13 @@ public class LogoutEventConsumer {
 	@PreDestroy
 	public void cleanup() {
 		running = false;
-		if (consumer != null) {
-			consumer.wakeup();
+		if (consumer == null) {
+			return;
 		}
-		if (executorService != null) {
-			executorService.shutdown();
+		try {
+			consumer.close();
+		} catch (Exception e) {
+			LOGGER.warn("Error while closing Kafka consumer.", e);
 		}
 	}
 }

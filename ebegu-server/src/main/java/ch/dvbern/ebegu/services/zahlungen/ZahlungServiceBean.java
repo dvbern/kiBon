@@ -317,7 +317,6 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			);
 
 		Map<String, Zahlung> zahlungProInstitution = new HashMap<>();
-		zahlungslaufHelperFactory.clearCache();
 
 		// "Normale" Zahlungen
 		if (!isRepetition) {
