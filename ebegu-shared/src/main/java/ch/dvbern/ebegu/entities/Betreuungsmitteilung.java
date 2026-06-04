@@ -16,7 +16,7 @@
 package ch.dvbern.ebegu.entities;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Entitaet zum Speichern von Betreuungsmitteilung in der Datenbank.
@@ -76,6 +77,11 @@ public class Betreuungsmitteilung extends Mitteilung implements
 	@Setter
 	private boolean schliessungMitteilung = false;
 
+	@Override
+	public @NotNull Betreuung extractBetreuung() {
+		return Objects.requireNonNull(getBetreuung());
+	}
+
 	@Nonnull
 	@Override
 	public List<BetreuungsmitteilungPensum> getBetreuungenGS() {
@@ -87,12 +93,6 @@ public class Betreuungsmitteilung extends Mitteilung implements
 	@Override
 	public List<BetreuungsmitteilungPensum> getBetreuungenJA() {
 		return List.copyOf(betreuungspensen);
-	}
-
-	@Nonnull
-	@Override
-	public Optional<Betreuung> findBetreuung() {
-		return Optional.ofNullable(getBetreuung());
 	}
 
 	public Set<BetreuungsmitteilungPensum> getBetreuungspensen() {
@@ -148,4 +148,5 @@ public class Betreuungsmitteilung extends Mitteilung implements
 	public void setBetreuungStornieren(boolean betreuungStornieren) {
 		this.betreuungStornieren = betreuungStornieren;
 	}
+
 }

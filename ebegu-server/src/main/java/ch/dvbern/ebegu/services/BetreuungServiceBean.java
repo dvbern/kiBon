@@ -2158,7 +2158,7 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 
 	@Nonnull
 	@Override
-	public Set<BetreuungsmitteilungPensum> capBetreuungspensenToGueltigkeit(
+	public void capBetreuungspensenToGueltigkeit(
 		@Nonnull Set<BetreuungsmitteilungPensum> pensen,
 		@Nonnull DateRange gueltigkeit
 	) {
@@ -2177,8 +2177,6 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 				betreuungsmitteilungPensum
 			);
 		}
-
-		return pensen;
 	}
 
 	@Nonnull

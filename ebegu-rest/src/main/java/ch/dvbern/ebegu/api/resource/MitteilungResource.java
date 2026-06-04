@@ -237,7 +237,6 @@ public class MitteilungResource {
 		betreuungsmitteilung.setMessage(
 			mitteilungService.createNachrichtForMutationsmeldung(
 				betreuungsmitteilung,
-				betreuungsmitteilung.getBetreuungspensen(),
 				locale
 			)
 		);

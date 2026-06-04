@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -255,7 +254,6 @@ class MitteilungSharedServiceBean {
 
 	String createNachrichtForMutationsmeldung(
 		@Nonnull Betreuungsmitteilung mitteilung,
-		@Nonnull Set<BetreuungsmitteilungPensum> changedBetreuungen,
 		@Nonnull Locale locale
 	) {
 
@@ -263,7 +261,6 @@ class MitteilungSharedServiceBean {
 			String message = !mitteilung.isSchliessungMitteilung() ?
 				createZeitabschnittNachrichtForMutationsmeldung(
 					mitteilung,
-					changedBetreuungen,
 					locale
 				) + StringUtils.LF + StringUtils.LF :
 				"";
@@ -272,7 +269,6 @@ class MitteilungSharedServiceBean {
 
 		return createZeitabschnittNachrichtForMutationsmeldung(
 			mitteilung,
-			changedBetreuungen,
 			locale
 		);
 	}
@@ -321,11 +317,12 @@ class MitteilungSharedServiceBean {
 
 	private String createZeitabschnittNachrichtForMutationsmeldung(
 		@Nonnull Betreuungsmitteilung mitteilung,
-		@Nonnull Set<BetreuungsmitteilungPensum> changedBetreuungen,
 		@Nonnull Locale locale
 	) {
 
-		List<BetreuungsmitteilungPensum> sorted = changedBetreuungen.stream()
+		List<BetreuungsmitteilungPensum> sorted = mitteilung
+			.getBetreuungspensen()
+			.stream()
 			.sorted(Gueltigkeit.GUELTIG_AB_COMPARATOR)
 			.collect(Collectors.toList());
 

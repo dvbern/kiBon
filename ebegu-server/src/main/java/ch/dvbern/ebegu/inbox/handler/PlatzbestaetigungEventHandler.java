@@ -663,7 +663,6 @@ public class PlatzbestaetigungEventHandler extends
 		);
 		String msg = mitteilungService.createNachrichtForMutationsmeldung(
 			mitteilung,
-			mitteilung.getBetreuungspensen(),
 			locale
 		);
 		mitteilung.setMessage(msg);

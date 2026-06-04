@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -555,6 +554,11 @@ public class Betreuung extends AbstractPlatz implements
 		return target;
 	}
 
+	@Override
+	public @org.jetbrains.annotations.NotNull Betreuung extractBetreuung() {
+		return this;
+	}
+
 	@CheckGueltigkeiten(message = "{invalid_betreuungspensen_dates}")
 	@Nonnull
 	@Override
@@ -578,12 +582,6 @@ public class Betreuung extends AbstractPlatz implements
 	@CheckMittagstischPensum(message = "{invalid_mittagstisch_pensum}")
 	public BetreuungAbweichung asAbweichungPensumContainer() {
 		return new BetreuungAbweichung(this, this.betreuungspensumAbweichungen);
-	}
-
-	@Nonnull
-	@Override
-	public Optional<Betreuung> findBetreuung() {
-		return Optional.of(this);
 	}
 
 	@Override

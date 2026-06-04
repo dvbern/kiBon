@@ -50,24 +50,22 @@ public class CheckBetreuungZeitraumInstitutionsStammdatenZeitraumValidator
 		if (container.isMarkedForDeletion()) {
 			return true;
 		}
-		return container.findBetreuung()
-			.map(betreuung -> {
-				if (hasPensenGueltigkeitWithinInstitutionStammdatenGueltigkeit(
-					betreuung,
-					container.getBetreuungenJA()
-				)) {
-					return true;
-				}
 
-				setConstraintViolationMessage(
-					betreuung.getInstitutionStammdaten()
-						.getGueltigkeit(),
-					context
-				);
+		if (hasPensenGueltigkeitWithinInstitutionStammdatenGueltigkeit(
+			container.extractBetreuung(),
+			container.getBetreuungenJA()
+		)) {
+			return true;
+		}
 
-				return false;
-			})
-			.orElse(true);
+		setConstraintViolationMessage(
+			container.extractBetreuung()
+				.getInstitutionStammdaten()
+				.getGueltigkeit(),
+			context
+		);
+
+		return false;
 	}
 
 	private boolean hasPensenGueltigkeitWithinInstitutionStammdatenGueltigkeit(

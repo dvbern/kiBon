@@ -94,6 +94,7 @@ public abstract class KibonPdfGenerator {
 		getPageConfiguration().setMultipliedLeadingAddress(
 			DEFAULT_MULTIPLIED_LEADING
 		);
+		overwritePageConfigurations(getPdfGenerator().getConfiguration());
 		getPdfGenerator().generate(
 			outputStream,
 			getDocumentTitle(),
@@ -105,6 +106,19 @@ public abstract class KibonPdfGenerator {
 	@Nonnull
 	protected PdfGenerator getPdfGenerator() {
 		return pdfGenerator;
+	}
+
+	/**
+	 * Entrypoint to adapt the initialized {@link PageConfiguration} after the
+	 * {@link PdfGenerator} has been initialized and before the pdf
+	 * is generated.
+	 *
+	 * @param configuration the {@link PageConfiguration} to adapt
+	 */
+	protected void overwritePageConfigurations(
+		PdfLayoutConfiguration configuration
+	) {
+		// no-op
 	}
 
 	@Nonnull

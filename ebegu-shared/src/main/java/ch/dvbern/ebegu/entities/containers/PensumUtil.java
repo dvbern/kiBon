@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.AbstractMahlzeitenPensum;
-import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.util.BetreuungUtil;
 import lombok.experimental.UtilityClass;
@@ -34,24 +33,23 @@ public final class PensumUtil {
 		@Nonnull BetreuungAndPensumContainer container,
 		@Nonnull BigDecimal oeffnungstagMittagstisch
 	) {
-		container.findBetreuung()
-			.filter(Betreuung::isAngebotMittagstisch)
-			.ifPresent(b -> {
-				container.getBetreuungenGS()
-					.forEach(
-						abstractMahlzeitenPensum -> transformMittagstischPensum(
-							abstractMahlzeitenPensum,
-							oeffnungstagMittagstisch
-						)
-					);
-				container.getBetreuungenJA()
-					.forEach(
-						abstractMahlzeitenPensum -> transformMittagstischPensum(
-							abstractMahlzeitenPensum,
-							oeffnungstagMittagstisch
-						)
-					);
-			});
+		if (container.extractBetreuung().isAngebotMittagstisch()) {
+
+			container.getBetreuungenGS()
+				.forEach(
+					abstractMahlzeitenPensum -> transformMittagstischPensum(
+						abstractMahlzeitenPensum,
+						oeffnungstagMittagstisch
+					)
+				);
+			container.getBetreuungenJA()
+				.forEach(
+					abstractMahlzeitenPensum -> transformMittagstischPensum(
+						abstractMahlzeitenPensum,
+						oeffnungstagMittagstisch
+					)
+				);
+		}
 	}
 
 	public static void transformMittagstischPensum(

@@ -18,7 +18,6 @@
 package ch.dvbern.ebegu.entities.containers;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -29,6 +28,7 @@ import ch.dvbern.ebegu.entities.BetreuungspensumAbweichung;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
 
 @Value
 public class BetreuungAbweichung implements BetreuungAndPensumContainer {
@@ -41,6 +41,11 @@ public class BetreuungAbweichung implements BetreuungAndPensumContainer {
 	@Setter
 	private boolean markedForDeletion = false;
 
+	@Override
+	public @NotNull Betreuung extractBetreuung() {
+		return betreuung;
+	}
+
 	@Nonnull
 	@Override
 	public List<BetreuungspensumAbweichung> getBetreuungenGS() {
@@ -51,11 +56,5 @@ public class BetreuungAbweichung implements BetreuungAndPensumContainer {
 	@Override
 	public List<BetreuungspensumAbweichung> getBetreuungenJA() {
 		return List.copyOf(abweichungen);
-	}
-
-	@Nonnull
-	@Override
-	public Optional<Betreuung> findBetreuung() {
-		return Optional.of(betreuung);
 	}
 }

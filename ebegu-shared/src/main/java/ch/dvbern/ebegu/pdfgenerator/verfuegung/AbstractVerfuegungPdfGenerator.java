@@ -619,7 +619,7 @@ public abstract class AbstractVerfuegungPdfGenerator extends
 		}
 	}
 
-	private static boolean hasAuszuzahlendenHoeherenBeitrag(
+	protected static boolean hasAuszuzahlendenHoeherenBeitrag(
 		List<VerfuegungZeitabschnitt> zeitabschnitte
 	) {
 		return zeitabschnitte.stream()

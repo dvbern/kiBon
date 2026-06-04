@@ -27,7 +27,7 @@ import ch.dvbern.ebegu.types.DateRange;
  */
 public interface MitteilungGueltigkeitChangeService {
 
-	void adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(
+	void adaptBetreuungenToInstitutionGueltigkeitChange(
 		@Nonnull Institution institution,
 		@Nonnull DateRange gueltigkeit
 	);

@@ -31,7 +31,6 @@ import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractMahlzeitenPensum;
-import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.containers.BetreuungAndPensumContainer;
@@ -65,27 +64,24 @@ public class CheckMittagstischPensumValidator
 		BetreuungAndPensumContainer betreuungAndPensumContainer,
 		ConstraintValidatorContext context
 	) {
-		return betreuungAndPensumContainer.findBetreuung()
-			.filter(Betreuung::isAngebotMittagstisch)
-			.map(
-				b -> betreuungAndPensumContainer.findBetreuung()
-					.stream()
-					.allMatch(
-						betreuung -> validateBetreuung(
-							betreuung,
-							betreuungAndPensumContainer
-						)
-					)
-			)
-			.orElse(true);
+		if (!betreuungAndPensumContainer.extractBetreuung()
+			.isAngebotMittagstisch()) {
+			return true;
+		}
+		return validateBetreuung(
+			betreuungAndPensumContainer
+		);
+
 	}
 
 	private boolean validateBetreuung(
-		Betreuung betreuung,
 		BetreuungAndPensumContainer betreuungAndPensumContainer
 	) {
-		Gesuchsperiode gesuchsperiode = betreuung.extractGesuchsperiode();
-		Gemeinde gemeinde = betreuung.extractGemeinde();
+		Gesuchsperiode gesuchsperiode = betreuungAndPensumContainer
+			.extractBetreuung()
+			.extractGesuchsperiode();
+		Gemeinde gemeinde = betreuungAndPensumContainer.extractBetreuung()
+			.extractGemeinde();
 		try (EntityManager em = createEntityManager()) {
 			Einstellung oeffnungstagMittagstischEinstellung =
 				einstellungService.findEinstellung(

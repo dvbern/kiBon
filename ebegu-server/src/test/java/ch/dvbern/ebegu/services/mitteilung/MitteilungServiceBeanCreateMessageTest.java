@@ -513,7 +513,6 @@ class MitteilungServiceBeanCreateMessageTest extends EasyMockSupport {
 		String result = mitteilungSharedServiceBean
 			.createNachrichtForMutationsmeldung(
 				mitteilung,
-				Set.of(pensen),
 				DEUTSCH_LOCALE
 			);
 

@@ -93,7 +93,7 @@ public interface BetreuungService {
 
 	/**
 	 * Setzt die Betreuungsplatzanfrage auf ABGEWIESEN und sendet dem Gesuchsteller eine E-Mail.
-	 * 
+	 *
 	 * @param betreuung Referenz auf die abzuweisende Betreuung.
 	 * @param externalClient Referenz auf die externe Applikation, welche die Abweisung ausgelöst hat.
 	 * @param begruendung Die Begrüngung der Abweisung.
@@ -334,7 +334,7 @@ public interface BetreuungService {
 	);
 
 	@Nonnull
-	Set<BetreuungsmitteilungPensum> capBetreuungspensenToGueltigkeit(
+	void capBetreuungspensenToGueltigkeit(
 		@Nonnull Set<BetreuungsmitteilungPensum> pensen,
 		@Nonnull DateRange gueltigkeit
 	);

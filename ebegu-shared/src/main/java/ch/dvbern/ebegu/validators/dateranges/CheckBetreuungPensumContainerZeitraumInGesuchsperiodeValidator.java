@@ -35,17 +35,13 @@ public class CheckBetreuungPensumContainerZeitraumInGesuchsperiodeValidator
 		BetreuungAndPensumContainer container,
 		ConstraintValidatorContext context
 	) {
-		return container.findBetreuung()
-			.map(betreuung -> {
-				var gueltigkeitGesuchsperiode = betreuung
-					.extractGesuchsperiode()
-					.getGueltigkeit();
+		var gueltigkeitGesuchsperiode = container.extractBetreuung()
+			.extractGesuchsperiode()
+			.getGueltigkeit();
 
-				return GueltigkeitsUtil.intersects(
-					container.getBetreuungenJA(),
-					gueltigkeitGesuchsperiode
-				);
-			})
-			.orElse(true);
+		return GueltigkeitsUtil.intersects(
+			container.getBetreuungenJA(),
+			gueltigkeitGesuchsperiode
+		);
 	}
 }

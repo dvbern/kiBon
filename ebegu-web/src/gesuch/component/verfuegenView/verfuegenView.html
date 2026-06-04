@@ -1179,7 +1179,8 @@
                 </div>
                 <div
                     ng-if="
-                        !vm.isTagesschuleVerfuegung() && !vm.isInstitutionRole()
+                        !vm.isTagesschuleVerfuegung() &&
+                        !vm.hasBetreuungOnlyAuszahlungenAnElternAndInstitutionRole()
                     "
                 >
                     <!--bemerkungen-->
@@ -1399,6 +1400,11 @@
                                                 text="'EFFEKTIVE_BETREUUNG_HELP' | translate"
                                             ></dv-tooltip>
                                         </td>
+                                        <td ng-if="vm.showHours">
+                                            <dv-tooltip
+                                                text="'EFFEKTIVE_BETREUUNG_IN_H_HELP' | translate"
+                                            ></dv-tooltip>
+                                        </td>
                                         <td ng-if="vm.showDays">
                                             <dv-tooltip
                                                 text="'EFFEKTIVE_BETREUUNG_IN_D_HELP' | translate"
@@ -1409,6 +1415,11 @@
                                                 text="'ANSPRUCH_HELP' | translate"
                                             ></dv-tooltip>
                                         </td>
+                                        <td ng-if="vm.showHours">
+                                            <dv-tooltip
+                                                text="'ANSPRUCH_IN_H_HELP' | translate"
+                                            ></dv-tooltip>
+                                        </td>
                                         <td ng-if="vm.showDays">
                                             <dv-tooltip
                                                 text="'ANSPRUCH_IN_D_HELP' | translate"
@@ -1417,6 +1428,11 @@
                                         <td>
                                             <dv-tooltip
                                                 text="'VERGUENSTIGT_HELP' | translate"
+                                            ></dv-tooltip>
+                                        </td>
+                                        <td ng-if="vm.showHours">
+                                            <dv-tooltip
+                                                text="'VERGUENSTIGT_IN_H_HELP' | translate"
                                             ></dv-tooltip>
                                         </td>
                                         <td ng-if="vm.showDays">
@@ -1485,27 +1501,42 @@
                                             data-translate="EFFEKTIVE_BETREUUNG"
                                         ></th>
                                         <th
-                                            ng-if="vm.showDays"
+                                            scope="col"
+                                            data-translate="EFFEKTIVE_BETREUUNG_IN_H"
+                                            ng-if="vm.showHours"
+                                        ></th>
+                                        <th
                                             scope="col"
                                             data-translate="EFFEKTIVE_BETREUUNG_IN_D"
+                                            ng-if="vm.showDays"
                                         ></th>
                                         <th
                                             scope="col"
                                             data-translate="ANSPRUCH"
                                         ></th>
                                         <th
-                                            ng-if="vm.showDays"
+                                            scope="col"
+                                            data-translate="ANSPRUCH_IN_H"
+                                            ng-if="vm.showHours"
+                                        ></th>
+                                        <th
                                             scope="col"
                                             data-translate="ANSPRUCH_IN_D"
+                                            ng-if="vm.showDays"
                                         ></th>
                                         <th
                                             scope="col"
                                             data-translate="VERGUENSTIGT"
                                         ></th>
                                         <th
-                                            ng-if="vm.showDays"
+                                            scope="col"
+                                            data-translate="VERGUENSTIGT_IN_H"
+                                            ng-if="vm.showHours"
+                                        ></th>
+                                        <th
                                             scope="col"
                                             data-translate="VERGUENSTIGT_IN_D"
+                                            ng-if="vm.showDays"
                                         ></th>
                                         <th
                                             scope="col"
@@ -1572,8 +1603,16 @@
                                             >%
                                         </td>
                                         <td
-                                            ng-if="vm.showDays || vm.showHours"
                                             data-test="betreuungspensumZeiteinheit"
+                                            ng-if="vm.showHours"
+                                        >
+                                            <span
+                                                ng-bind="verfuegungZeitabschnitt.betreuungspensumZeiteinheit"
+                                            ></span>
+                                        </td>
+                                        <td
+                                            data-test="betreuungspensumZeiteinheit"
+                                            ng-if="vm.showDays"
                                         >
                                             <span
                                                 ng-bind="verfuegungZeitabschnitt.betreuungspensumZeiteinheit"
@@ -1589,8 +1628,16 @@
                                             >%
                                         </td>
                                         <td
-                                            ng-if="vm.showDays || vm.showHours"
                                             data-test="anspruchsberechtigteAnzahlZeiteinheiten"
+                                            ng-if="vm.showHours"
+                                        >
+                                            <span
+                                                ng-bind="verfuegungZeitabschnitt.anspruchsberechtigteAnzahlZeiteinheiten"
+                                            ></span>
+                                        </td>
+                                        <td
+                                            data-test="anspruchsberechtigteAnzahlZeiteinheiten"
+                                            ng-if="vm.showDays"
                                         >
                                             <span
                                                 ng-bind="verfuegungZeitabschnitt.anspruchsberechtigteAnzahlZeiteinheiten"
@@ -1603,7 +1650,15 @@
                                             ></span
                                             >%
                                         </td>
-                                        <td ng-if="vm.showDays || vm.showHours">
+                                        <td
+                                            data-test="verfuegteAnzahlZeiteinheiten"
+                                            ng-if="vm.showHours"
+                                        >
+                                            <span
+                                                ng-bind="verfuegungZeitabschnitt.verfuegteAnzahlZeiteinheiten"
+                                            ></span>
+                                        </td>
+                                        <td ng-if="vm.showDays">
                                             <span
                                                 ng-bind="verfuegungZeitabschnitt.verfuegteAnzahlZeiteinheiten"
                                             ></span>
@@ -1635,6 +1690,7 @@
                                             class="result"
                                             ng-bind="verfuegungZeitabschnitt.hoehererBeitrag | currency : '' : 2"
                                         ></td>
+                                        <!-- An Kita überwiesen (Gutschein) -->
                                         <td
                                             class="result"
                                             data-test="showZahlungsstatusInstitutionen"

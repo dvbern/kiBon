@@ -21,7 +21,6 @@ package ch.dvbern.ebegu.services.mitteilung;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -87,8 +86,13 @@ public class MitteilungGueltigkeitServiceBean implements
 	@Inject
 	private ApplicationPropertyService applicationPropertyService;
 
+	/**
+	 * After an institution set a new daterange we need to:
+	 * - Check all the opened Mutationsmitteilung and adpat the one that are have Pensen outside the daterange
+	 * - Create new Schliessmitteilung for the Betreuung that are have Pensen outside the daterange
+	 */
 	@Override
-	public void adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(
+	public void adaptBetreuungenToInstitutionGueltigkeitChange(
 		@Nonnull Institution institution,
 		@Nonnull DateRange gueltigkeit
 	) {
@@ -117,43 +121,82 @@ public class MitteilungGueltigkeitServiceBean implements
 			);
 		}
 
-		offeneMutationsmitteilungenForInstitution.forEach(mitteilung -> {
-
-			if (!hasPensenInInstitutionGueltigkeit(
-				mitteilung.getBetreuungspensen(),
+		offeneMutationsmitteilungenForInstitution.forEach(
+			mitteilung -> adaptOffeneMutationsmitteilungenIfNeeded(
+				mitteilung,
 				gueltigkeit
 			)
-				&& mitteilung.getBetreuung() != null
-				&& mitteilung.getBetreuung()
+		);
+	}
+
+	private void adaptOffeneMutationsmitteilungenIfNeeded(
+		@Nonnull Betreuungsmitteilung mitteilung,
+		@Nonnull DateRange gueltigkeit
+	) {
+		if (shouldDeleteMitteilung(mitteilung, gueltigkeit)) {
+			mitteilung.setMarkedForDeletion(true);
+			persistence.remove(mitteilung);
+		} else {
+			adaptOffeneMutationsmitteilung(mitteilung, gueltigkeit);
+		}
+	}
+
+	/**
+	 * If Mitteilung Period date range intersect with the Institution validity date range
+	 * But there is no Pensen inside the Institution validity date range
+	 * Return -> true
+	 * Otherwise -> false
+	 */
+	private boolean shouldDeleteMitteilung(
+		Betreuungsmitteilung mitteilung,
+		DateRange gueltigkeit
+	) {
+		return !hasPensenInInstitutionGueltigkeit(
+			mitteilung.getBetreuungspensen(),
+			gueltigkeit
+		)
+			&& mitteilung.extractBetreuung()
+				.extractGesuchsperiode()
+				.getGueltigkeit()
+				.intersects(gueltigkeit);
+	}
+
+	/**
+	 * The selected Mitteilung will be adapted first to the institution Gueltigkeit
+	 * Then we adapt it to the Gesuchsperiode Gueltigkeit when needed
+	 * And we recreate the message inside the Mitteilung in order to match the new cutted Pensen
+	 *
+	 * @param mitteilung
+	 * @param gueltigkeit
+	 */
+	private void adaptOffeneMutationsmitteilung(
+		Betreuungsmitteilung mitteilung,
+		DateRange gueltigkeit
+	) {
+		betreuungService
+			.capBetreuungspensenToGueltigkeit(
+				mitteilung.getBetreuungspensen(),
+				gueltigkeit
+			);
+		betreuungService
+			.capBetreuungspensenToGueltigkeit(
+				mitteilung.getBetreuungspensen(),
+				mitteilung.extractBetreuung()
 					.extractGesuchsperiode()
 					.getGueltigkeit()
-					.intersects(gueltigkeit)) {
-				mitteilung.setMarkedForDeletion(true);
-				persistence.remove(mitteilung);
-			} else {
-				Set<BetreuungsmitteilungPensum> betreuungspensen =
-					betreuungService
-						.capBetreuungspensenToGueltigkeit(
-							mitteilung.getBetreuungspensen(),
-							gueltigkeit
-						);
-				mitteilung.setBetreuungspensen(betreuungspensen);
-				Objects.requireNonNull(mitteilung.getBetreuung());
-				final Locale locale =
-					EbeguUtil.extractKorrespondenzsprache(
-						mitteilung.getBetreuung().extractGesuch(),
-						gemeindeService
-					).getLocale();
-				mitteilung.setMessage(
-					mitteilungService.createNachrichtForMutationsmeldung(
-						mitteilung,
-						betreuungspensen,
-						locale
-					)
-				);
-				persistence.merge(mitteilung);
-			}
-		});
+			);
+		final Locale locale =
+			EbeguUtil.extractKorrespondenzsprache(
+				mitteilung.extractBetreuung().extractGesuch(),
+				gemeindeService
+			).getLocale();
+		mitteilung.setMessage(
+			mitteilungService.createNachrichtForMutationsmeldung(
+				mitteilung,
+				locale
+			)
+		);
+		persistence.merge(mitteilung);
 	}
 
 	private boolean hasPensenInInstitutionGueltigkeit(
@@ -195,11 +238,13 @@ public class MitteilungGueltigkeitServiceBean implements
 				gueltigkeit
 			);
 		//dann schauen wir welche noch keine Mutationsmitteilung haben und erstellen wir eine
+		//fuer die wo die Gesuchsperiode ist nicht vollstaendig in der Institution Gueltigkeit
 		betreuungen.forEach(betreuung -> {
 			if (
-				betreuung.extractGesuchsperiode()
-					.getGueltigkeit()
-					.intersects(gueltigkeit)
+				!gueltigkeit.contains(
+					betreuung.extractGesuchsperiode()
+						.getGueltigkeit()
+				)
 					&& !offeneMutationsmitteilungenForInstitution.stream()
 						.anyMatch(
 							betreuungsmitteilung -> betreuung.equals(
@@ -213,7 +258,6 @@ public class MitteilungGueltigkeitServiceBean implements
 						gueltigkeit
 					);
 				persistence.persist(betreuungsmitteilung);
-
 			}
 		});
 	}
@@ -244,13 +288,18 @@ public class MitteilungGueltigkeitServiceBean implements
 			betreuungsmitteilung.getBetreuungspensen()
 				.add(betreuungsmitteilungPensum);
 		});
-		Set<BetreuungsmitteilungPensum> betreuungspensen =
-			betreuungService
-				.capBetreuungspensenToGueltigkeit(
-					betreuungsmitteilung.getBetreuungspensen(),
-					gueltigkeit
-				);
-		betreuungsmitteilung.setBetreuungspensen(betreuungspensen);
+		betreuungService
+			.capBetreuungspensenToGueltigkeit(
+				betreuungsmitteilung.getBetreuungspensen(),
+				gueltigkeit
+			);
+		betreuungService
+			.capBetreuungspensenToGueltigkeit(
+				betreuungsmitteilung.getBetreuungspensen(),
+				betreuungsmitteilung.extractBetreuung()
+					.extractGesuchsperiode()
+					.getGueltigkeit()
+			);
 		final Locale locale =
 			EbeguUtil.extractKorrespondenzsprache(
 				betreuung.extractGesuch(),
@@ -259,7 +308,6 @@ public class MitteilungGueltigkeitServiceBean implements
 		String msg = mitteilungSharedServiceBean
 			.createNachrichtForMutationsmeldung(
 				betreuungsmitteilung,
-				betreuungsmitteilung.getBetreuungspensen(),
 				locale
 			);
 		betreuungsmitteilung.setMessage(msg);

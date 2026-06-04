@@ -17,17 +17,23 @@
 
 package ch.dvbern.ebegu.entities.containers;
 
-import java.util.Optional;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.entities.AbstractMahlzeitenPensum;
 import ch.dvbern.ebegu.entities.Betreuung;
 
-public interface BetreuungAndPensumContainer extends
-	AbstractMahlzeitenPensumContainer {
+public interface BetreuungAndPensumContainer {
 
 	@Nonnull
-	Optional<Betreuung> findBetreuung();
+	Betreuung extractBetreuung();
+
+	@Nonnull
+	List<? extends AbstractMahlzeitenPensum> getBetreuungenGS();
+
+	@Nonnull
+	List<? extends AbstractMahlzeitenPensum> getBetreuungenJA();
 
 	boolean isMarkedForDeletion();
 }

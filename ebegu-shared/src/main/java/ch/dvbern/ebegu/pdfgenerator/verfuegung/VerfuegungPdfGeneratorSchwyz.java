@@ -26,9 +26,12 @@ import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
+import ch.dvbern.ebegu.pdfgenerator.PdfLayoutConfiguration;
 import ch.dvbern.ebegu.pdfgenerator.PdfUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.lib.invoicegenerator.dto.PageConfiguration;
 import ch.dvbern.lib.invoicegenerator.pdf.PdfGenerator;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -36,6 +39,8 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
+
+import static com.lowagie.text.Utilities.millimetersToPoints;
 
 public class VerfuegungPdfGeneratorSchwyz extends
 	AbstractVerfuegungPdfGenerator {
@@ -182,5 +187,46 @@ public class VerfuegungPdfGeneratorSchwyz extends
 	@Override
 	protected void addSuperTextForKeinAnspruchAbschnitt(Paragraph paragraph) {
 		// wird nicht beim Schwyz angezeigt als keine Fussnotiz
+	}
+
+	@Override
+	protected void overwritePageConfigurations(
+		PdfLayoutConfiguration configuration
+	) {
+		if (needsExtraSpace()) {
+			var extraSpaceInMM = 9f;
+
+			configuration.setLeftPageMarginInPoints(
+				millimetersToPoints(
+					PageConfiguration.LEFT_PAGE_DEFAULT_MARGIN_MM
+						- (extraSpaceInMM / 2)
+				)
+			);
+			configuration.setRightPageMarginInPoints(
+				millimetersToPoints(
+					PageConfiguration.RIGHT_PAGE_DEFAULT_MARGIN_MM
+						- (extraSpaceInMM / 2)
+				)
+			);
+		}
+	}
+
+	private boolean needsExtraSpace() {
+		HoehereBeitraegeTyp hoehereBeitraegeTyp =
+			verfuegungPdfGeneratorKonfiguration.getHoehereBeitraegeTyp();
+		boolean isHoehereBeitraegeActivated = HoehereBeitraegeTyp.AKTIVIERT
+			== hoehereBeitraegeTyp
+			|| HoehereBeitraegeTyp.AKTIVIERT_AUSZAHLUNG_INSTITUTION
+				== hoehereBeitraegeTyp;
+
+		return showColumnAnInsitutionenAuszahlen(
+			getVerfuegungZeitabschnitt(),
+			hoehereBeitraegeTyp
+		)
+			&&
+			showColumnAnElternAuszahlen(getVerfuegungZeitabschnitt())
+			&&
+			isHoehereBeitraegeActivated
+			&& hasAuszuzahlendenHoeherenBeitrag(getVerfuegungZeitabschnitt());
 	}
 }

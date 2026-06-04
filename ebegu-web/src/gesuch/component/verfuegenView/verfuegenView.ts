@@ -973,6 +973,24 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         );
     }
 
+    public hasBetreuungOnlyAuszahlungenAnElternAndInstitutionRole(): boolean {
+        if (
+            !this.authServiceRs.isOneOfRoles(
+                TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
+            )
+        ) {
+            return false;
+        }
+
+        return (
+            this.gesuchModelManager.getBetreuungToWorkWith()
+                .auszahlungAnEltern &&
+            EbeguUtil.isEmptyArrayNullOrUndefined(
+                this.getVerfuegungZeitabschnitte()
+            )
+        );
+    }
+
     public areHoehereBeitraegeGewaehrt(): boolean {
         const verfuegungZeitabschnitte: Array<TSVerfuegungZeitabschnitt> =
             this.getVerfuegungZeitabschnitte();
@@ -1001,24 +1019,28 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     /**
-     * will show a infobox warning instead of verfügen table
-     * for institution and trägerschaften when no Höhere Beiträge
-     * have been granted and isAuszahlungAnEltern is true
+     * Will show an infobox warning instead of verfügen table
+     * for institution and trägerschaft roles.
+     *
+     * These roles are not allowed to see the table when no zeitabschnitt
+     * has any payment to the institution. Such a payment can come either from
+     * the gutschein itself or from the hoeherer beitrag that is paid to the
+     * institution even though the gutschein is paid to the eltern.
+     *
+     * @return true when no zeitabschnitt has any auszahlung an institution
      */
     public shouldShowWarningInstitution(): boolean {
         return (
-            !this.areHoehereBeitraegeGewaehrt() &&
-            this.isAuszahlungAnEltern() &&
+            !this.hasAnyZeitabschnittAnyAuszahlungAnInstitution() &&
             this.isInstitutionRole()
         );
     }
 
     /**
-     * will show the new table for only institution and traegerschaft role
+     * will show the new table for only institution and traegerschaft roles
      * when periodeneinstellung
      * 'Höhere Beiträge aktiviert' is set to 'AKTIVIERT_AUSZAHLUNG_INSTITUTION'
      * and Höhere Beitrag haven actually been granted
-     * and isAuszahlungAnEltern is true
      */
     public shouldShowHoehereBeitrageInstitutionTable(): boolean {
         if (!this.isHoehereBeitraegeAuszahlungInstitutionAktiviert()) {
@@ -1034,10 +1056,6 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                 zeitabschnitt.auszahlungAnEltern &&
                 EbeguUtil.isNotNullOrUndefined(zeitabschnitt.bedarfsstufe) &&
                 zeitabschnitt.bedarfsstufe !== TSBedarfsstufe.KEINE
-        );
-
-        return (
-            this.areHoehereBeitraegeGewaehrt() && this.isAuszahlungAnEltern()
         );
     }
 
@@ -1315,20 +1333,21 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
 
         // Wenn Vergünstigung in mindestens einem Zeitabschnitt nicht an die Eltern ausbezahlt wird soll die
         // Auszahlung an Insitutionen Row angezeigt werden
-        const showAuszahlungAnInstitutionen =
-            this.getVerfuegungZeitabschnitte().some(
-                zeitabschnitt =>
-                    this.hasBetreuungInZeitabschnitt(zeitabschnitt) &&
-                    (!zeitabschnitt.auszahlungAnEltern ||
-                        this.isPayedToElternWithHoehererBeitragToInsitution(
-                            zeitabschnitt
-                        ))
-            );
-
-        return showAuszahlungAnInstitutionen;
+        return this.hasAnyZeitabschnittAnyAuszahlungAnInstitution();
     }
 
-    private isPayedToElternWithHoehererBeitragToInsitution(
+    private hasAnyZeitabschnittAnyAuszahlungAnInstitution(): boolean {
+        return this.getVerfuegungZeitabschnitte()?.some(
+            zeitabschnitt =>
+                this.hasBetreuungInZeitabschnitt(zeitabschnitt) &&
+                (!zeitabschnitt.auszahlungAnEltern ||
+                    this.isPaidToElternWithHoehererBeitragToInsitution(
+                        zeitabschnitt
+                    ))
+        );
+    }
+
+    private isPaidToElternWithHoehererBeitragToInsitution(
         zeitabschnitt: TSVerfuegungZeitabschnitt
     ): boolean {
         return (
@@ -1379,10 +1398,12 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     public showAuszahlungAnElternCol(): boolean {
-        // Nur Antragsteller, Gemeinde und Sozialdienste dürfen diese Spalte sehen
+        // Nur Antragsteller, Gemeinde, Mandant und Sozialdienste dürfen diese Spalte sehen
         if (
             !this.authServiceRs.isOneOfRoles(
-                TSRoleUtil.getGesuchstellerSozialdienstJugendamtSchulamtRoles()
+                TSRoleUtil.getGesuchstellerSozialdienstJugendamtSchulamtRoles().concat(
+                    TSRoleUtil.getMandantOnlyRoles()
+                )
             )
         ) {
             return false;

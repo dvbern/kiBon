@@ -1331,7 +1331,6 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		mitteilung.setMessage(
 			createNachrichtForMutationsmeldung(
 				mitteilung,
-				pensenFromAbweichungen,
 				locale
 			)
 		);
@@ -1496,12 +1495,10 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 	@Override
 	public String createNachrichtForMutationsmeldung(
 		@Nonnull Betreuungsmitteilung mitteilung,
-		@Nonnull Set<BetreuungsmitteilungPensum> changedBetreuungen,
 		@Nonnull Locale locale
 	) {
 		return mitteilungSharedServiceBean.createNachrichtForMutationsmeldung(
 			mitteilung,
-			changedBetreuungen,
 			locale
 		);
 	}

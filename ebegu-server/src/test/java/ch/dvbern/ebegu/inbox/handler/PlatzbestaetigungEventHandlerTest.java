@@ -2183,7 +2183,6 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			expect(
 				mitteilungService.createNachrichtForMutationsmeldung(
 					anyObject(),
-					anyObject(),
 					anyObject()
 				)
 			)

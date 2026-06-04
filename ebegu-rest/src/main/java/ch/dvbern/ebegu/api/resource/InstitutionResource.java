@@ -434,7 +434,7 @@ public class InstitutionResource {
 			stammdaten.getGueltigkeit()
 		)) {
 			mitteilungGueltigkeitChangeService
-				.adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(
+				.adaptBetreuungenToInstitutionGueltigkeitChange(
 					stammdaten.getInstitution(),
 					stammdaten.getGueltigkeit()
 				);
