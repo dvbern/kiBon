@@ -309,14 +309,10 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			);
 		}
 
-		Collection<VerfuegungZeitabschnitt> gueltigeVerfuegungZeitabschnitte =
-			getGueltigeVerfuegungZeitabschnitte(
-				gemeinde,
-				zeitabschnittVon,
-				zeitabschnittBis
-			);
-
 		Map<String, Zahlung> zahlungProInstitution = new HashMap<>();
+
+		//Hasmap for helper
+		Map<String, ZahlungslaufHelper> zahlungslaufHelperMap = new HashMap<>();
 
 		// "Normale" Zahlungen
 		if (!isRepetition) {
@@ -325,10 +321,18 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 				zahlungsauftrag.getGueltigkeit().toRangeString()
 			);
 
+			Collection<VerfuegungZeitabschnitt> gueltigeVerfuegungZeitabschnitte =
+				getGueltigeVerfuegungZeitabschnitte(
+					gemeinde,
+					zeitabschnittVon,
+					zeitabschnittBis
+				);
+
 			for (VerfuegungZeitabschnitt zeitabschnitt : gueltigeVerfuegungZeitabschnitte) {
 
 				ZahlungslaufHelper zahlungslaufHelper =
-					zahlungslaufHelperFactory.getZahlungslaufHelper(
+					getZahlungslaufHelperForZahlungslauf(
+						zahlungslaufHelperMap,
 						zeitabschnitt,
 						zahlungslaufTyp
 					);
@@ -361,8 +365,9 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			);
 		for (VerfuegungZeitabschnitt zeitabschnitt : verfuegungsZeitabschnitte) {
 
-			ZahlungslaufHelper zahlungslaufHelper = zahlungslaufHelperFactory
-				.getZahlungslaufHelper(
+			ZahlungslaufHelper zahlungslaufHelper =
+				getZahlungslaufHelperForZahlungslauf(
+					zahlungslaufHelperMap,
 					zeitabschnitt,
 					zahlungslaufTyp
 				);
@@ -392,6 +397,22 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		Zahlungsauftrag persistedAuftrag = persistence.merge(zahlungsauftrag);
 
 		return persistedAuftrag;
+	}
+
+	private ZahlungslaufHelper getZahlungslaufHelperForZahlungslauf(
+		Map<String, ZahlungslaufHelper> zahlungslaufHelperMap,
+		VerfuegungZeitabschnitt zeitabschnitt,
+		ZahlungslaufTyp zahlungslaufTyp
+	) {
+		String key = zeitabschnitt.getGueltigkeit().toRangeString();
+
+		return zahlungslaufHelperMap.computeIfAbsent(
+			key,
+			k -> zahlungslaufHelperFactory.getZahlungslaufHelper(
+				zeitabschnitt,
+				zahlungslaufTyp
+			)
+		);
 	}
 
 	private boolean isInfomaZahlung(@Nonnull Gemeinde gemeinde) {
