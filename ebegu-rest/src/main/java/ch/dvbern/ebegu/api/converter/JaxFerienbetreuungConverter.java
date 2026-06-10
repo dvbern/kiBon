@@ -274,31 +274,26 @@ public class JaxFerienbetreuungConverter extends AbstractBaseConverter {
 		stammdaten.setStammdatenKontaktpersonEmail(
 			jaxStammdaten.getStammdatenKontaktpersonEmail()
 		);
-		if (jaxStammdaten.getIban() != null
-			&& jaxStammdaten.getKontoinhaber() != null) {
-			Auszahlungsdaten auszahlungsdaten = stammdaten
-				.getAuszahlungsdaten();
-			if (auszahlungsdaten == null) {
-				auszahlungsdaten = new Auszahlungsdaten();
-			}
-			auszahlungsdaten.setIban(new IBAN(jaxStammdaten.getIban()));
-			auszahlungsdaten.setKontoinhaber(jaxStammdaten.getKontoinhaber());
-			if (jaxStammdaten.getAdresseKontoinhaber() != null) {
-				Adresse adresse = auszahlungsdaten.getAdresseKontoinhaber();
-				if (adresse == null) {
-					adresse = new Adresse();
-				}
-				auszahlungsdaten.setAdresseKontoinhaber(
-					super.adresseToEntity(
-						jaxStammdaten.getAdresseKontoinhaber(),
-						adresse
-					)
-				);
-			}
-			stammdaten.setAuszahlungsdaten(auszahlungsdaten);
-		} else {
-			stammdaten.setAuszahlungsdaten(null);
+		Auszahlungsdaten auszahlungsdaten = stammdaten
+			.getAuszahlungsdaten();
+		if (auszahlungsdaten == null) {
+			auszahlungsdaten = new Auszahlungsdaten();
 		}
+		auszahlungsdaten.setIban(new IBAN(jaxStammdaten.getIban()));
+		auszahlungsdaten.setKontoinhaber(jaxStammdaten.getKontoinhaber());
+		if (jaxStammdaten.getAdresseKontoinhaber() != null) {
+			Adresse adresse = auszahlungsdaten.getAdresseKontoinhaber();
+			if (adresse == null) {
+				adresse = new Adresse();
+			}
+			auszahlungsdaten.setAdresseKontoinhaber(
+				super.adresseToEntity(
+					jaxStammdaten.getAdresseKontoinhaber(),
+					adresse
+				)
+			);
+		}
+		stammdaten.setAuszahlungsdaten(auszahlungsdaten);
 		stammdaten.setVermerkAuszahlung(jaxStammdaten.getVermerkAuszahlung());
 
 		return stammdaten;

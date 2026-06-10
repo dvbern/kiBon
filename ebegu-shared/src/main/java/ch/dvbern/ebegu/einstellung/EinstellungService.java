@@ -186,4 +186,10 @@ public interface EinstellungService {
 
 		return findEinstellung(key, gemeinde, periode);
 	}
+
+	Einstellung findEinstellungCached(
+		@Nonnull EinstellungKey key,
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 }

@@ -26,30 +26,30 @@ import {
 import {NgForm, NgModel} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
-import {MomentUtil} from '@utils/moment';
-import {Observable} from 'rxjs';
+import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {CONSTANTS} from '@models/constants';
-import {LogFactory} from '@utils/log';
-import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
+import {LogFactory} from '@utils/log';
+import {MomentUtil} from '@utils/moment';
 import moment from 'moment';
+import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {InstitutionNameStammdatenIdDto} from '../../../models/dto/InstitutionNameStammdatenIdDto.interface';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';
-import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
-import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
-import {TSRole} from '../../../models/enums/TSRole';
 import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSInstitution} from '../../../models/entity/TSInstitution';
+import {TSInstitutionStammdaten} from '../../../models/entity/TSInstitutionStammdaten';
 import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotTyp';
+import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
+import {TSRole} from '../../../models/enums/TSRole';
 import {TSStatistikParameterType} from '../../../models/enums/TSStatistikParameterType';
 import {TSStatistikParameter} from '../../../models/TSStatistikParameter';
 import {TSWorkJob} from '../../../models/TSWorkJob';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BatchJobRS} from '../../core/service/batchRS.rest';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
@@ -116,6 +116,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
     public gemeindenMahlzeitenverguenstigungen: TSGemeinde[];
     public flagShowErrorNoGesuchSelected: boolean = false;
     public showKantonStatistik: boolean = false;
+    public showKinderStatistik: boolean = false;
     public ferienbetreuungActive: boolean = false;
     public lastenausgleichActive: boolean = false;
     public lastenausgleichTagesschulenActive: boolean = false;
@@ -190,6 +191,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
                 this.lastenausgleichTagesschulenActive =
                     res.lastenausgleichTagesschulenAktiv;
                 this.updateShowKantonStatistik();
+                this.updateShowKinderStatistik();
                 this.tagesschulenActive = res.angebotTSActivated;
             });
 
@@ -766,21 +768,26 @@ export class StatistikComponent implements OnInit, OnDestroy {
         ]);
     }
 
-    public showKinderStatistik(): boolean {
-        return this.authServiceRS.isOneOfRoles([
-            TSRole.SACHBEARBEITER_BG,
-            TSRole.ADMIN_BG,
-            TSRole.SUPER_ADMIN,
-            TSRole.REVISOR,
-            TSRole.ADMIN_GEMEINDE,
-            TSRole.SACHBEARBEITER_GEMEINDE,
-            TSRole.ADMIN_MANDANT,
-            TSRole.SACHBEARBEITER_MANDANT,
-            TSRole.ADMIN_INSTITUTION,
-            TSRole.SACHBEARBEITER_INSTITUTION,
-            TSRole.ADMIN_TRAEGERSCHAFT,
-            TSRole.SACHBEARBEITER_TRAEGERSCHAFT
-        ]);
+    public updateShowKinderStatistik(): void {
+        this.showKinderStatistik = false;
+        if (
+            this.authServiceRS.isOneOfRoles([
+                TSRole.ADMIN_TS,
+                TSRole.SACHBEARBEITER_TS
+            ])
+        ) {
+            return;
+        }
+        this.institutionStammdatenRS
+            .getBetreuungsangeboteForInstitutionenOfCurrentBenutzer()
+            .then(response => {
+                response.forEach(angebottyp => {
+                    if (angebottyp !== TSBetreuungsangebotTyp.TAGESSCHULE) {
+                        this.showKinderStatistik = true;
+                    }
+                });
+                this.cd.markForCheck();
+            });
     }
 
     public showGesuchstellerStatistik(): boolean {

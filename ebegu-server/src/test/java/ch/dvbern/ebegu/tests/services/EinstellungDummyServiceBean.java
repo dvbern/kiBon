@@ -42,6 +42,7 @@ import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.services.AbstractBaseService;
 import ch.dvbern.ebegu.test.TestDataUtil;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANGEBOT_SCHULSTUFE;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLE_MAX_PENSUM_SOZIALE_INTEGRATION;
@@ -321,5 +322,14 @@ public class EinstellungDummyServiceBean extends AbstractBaseService implements
 				)
 			);
 		return result;
+	}
+
+	@Override
+	public Einstellung findEinstellungCached(
+		@NonNull EinstellungKey key,
+		@NonNull Gemeinde gemeinde,
+		@NonNull Gesuchsperiode gesuchsperiode
+	) {
+		return findEinstellung(key, gemeinde, gesuchsperiode);
 	}
 }

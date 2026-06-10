@@ -72,6 +72,9 @@ public class ZahlungslaufInstitutionenHelper implements ZahlungslaufHelper {
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
 		@Nonnull VerfuegungsZeitabschnittZahlungsstatus status
 	) {
+		if (zeitabschnitt.getZahlungsstatusInstitution() == status) {
+			return; // NOOP
+		}
 		zeitabschnitt.setZahlungsstatusInstitution(status);
 	}
 

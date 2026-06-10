@@ -82,6 +82,9 @@ public class EinstellungServiceBean extends AbstractBaseService implements
 	@Inject
 	private PrincipalBean principalBean;
 
+	@Inject
+	private EinstellungCachedServiceBean einstellungCachedServiceBean;
+
 	@Override
 	@Nonnull
 	@CanIgnoreReturnValue
@@ -160,19 +163,44 @@ public class EinstellungServiceBean extends AbstractBaseService implements
 		return Optional.ofNullable(a);
 	}
 
-	@Override
-	@Nonnull
 	public Einstellung findEinstellung(
 		@Nonnull EinstellungKey key,
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull Gesuchsperiode gesuchsperiode
 	) {
+
 		return findEinstellung(
 			key,
 			gemeinde,
 			gesuchsperiode,
 			persistence.getEntityManager()
 		);
+	}
+
+	@Override
+	@Nonnull
+	public Einstellung findEinstellungCached(
+		@Nonnull EinstellungKey key,
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
+
+		Objects.requireNonNull(key, "key muss gesetzt sein");
+		Objects.requireNonNull(gemeinde, "gemeinde muss gesetzt sein");
+		Objects.requireNonNull(
+			gesuchsperiode,
+			"gesuchsperiode muss gesetzt sein"
+		);
+
+		String keyString = key.name()
+			+ gemeinde.getId()
+			+ gesuchsperiode.getId();
+
+		return einstellungCachedServiceBean.getEinstellungCache()
+			.computeIfAbsent(
+				keyString,
+				k -> findEinstellung(key, gemeinde, gesuchsperiode)
+			);
 	}
 
 	@Override
@@ -541,7 +569,7 @@ public class EinstellungServiceBean extends AbstractBaseService implements
 
 	/**
 	 * Gets all Einstellungen of gemeinde that are activated for the {@link Mandant} of the {@link Gemeinde}
-	 * 
+	 *
 	 * @param gemeinde the {@link Gemeinde} to be retrieved for
 	 * @param gesuchsperiode the {@link Gesuchsperiode} to be retrieved for
 	 * @return all {@link Einstellung} activated for provided {@link Gemeinde} in {@link Gesuchsperiode}

@@ -15,6 +15,10 @@
 
 package ch.dvbern.ebegu.enums;
 
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Zahlungsstatus fuer VerfuegungsZeitabschnitte
  */
@@ -66,11 +70,23 @@ public enum VerfuegungsZeitabschnittZahlungsstatus {
 		return !isZuBehandelnInZahlungslauf();
 	}
 
+	private static final Set<VerfuegungsZeitabschnittZahlungsstatus> ZU_BEHANDELN_IN_ZAHLUNGSLAUF =
+		Collections.unmodifiableSet(
+			EnumSet.of(
+				NEU,
+				VERRECHNEND,
+				IGNORIEREND,
+				IGNORIEREND_DEFINITIV,
+				IGNORIERT
+			)
+		);
+
 	public boolean isZuBehandelnInZahlungslauf() {
-		return isNeu()
-			|| isVerrechnend()
-			|| isIgnorierend()
-			|| this == IGNORIERT;
+		return ZU_BEHANDELN_IN_ZAHLUNGSLAUF.contains(this);
+	}
+
+	public static Set<VerfuegungsZeitabschnittZahlungsstatus> getStatusForKorrekturUndNachzahlungZahlungslauf() {
+		return ZU_BEHANDELN_IN_ZAHLUNGSLAUF;
 	}
 
 	public boolean hasZeitabschnittOrVorgaengerBeenAusbezahlt() {

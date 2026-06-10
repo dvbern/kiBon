@@ -23,7 +23,7 @@ import {
     OnInit,
     inject
 } from '@angular/core';
-import {FormBuilder, ValidatorFn, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {UIRouterGlobals} from '@uirouter/core';
@@ -279,6 +279,22 @@ export class FerienbetreuungAngebotComponent
         this.form.controls.angebot.setValidators(Validators.required);
         this.enableAdressValidation();
 
+        this.form.controls.angebotAdresse.controls.strasse.setValidators(
+            Validators.required
+        );
+        this.form.controls.angebotAdresse.controls.ort.setValidators(
+            Validators.required
+        );
+        this.form.controls.angebotAdresse.controls.plz.setValidators(
+            Validators.required
+        );
+        this.form.controls.angebotAdresse.controls.kontaktpersonVorname.setValidators(
+            Validators.required
+        );
+        this.form.controls.angebotAdresse.controls.kontaktpersonNachname.setValidators(
+            Validators.required
+        );
+
         this.form.controls.anzahlFerienwochenHerbstferien.setValidators([
             Validators.required,
             numberValidator(ValidationType.INTEGER)
@@ -332,6 +348,12 @@ export class FerienbetreuungAngebotComponent
         this.form.controls.gemeindeBeauftragtExterneAnbieter.setValidators([
             Validators.required
         ]);
+
+        this.form.controls.angebotAdresse.controls.strasse.updateValueAndValidity();
+        this.form.controls.angebotAdresse.controls.ort.updateValueAndValidity();
+        this.form.controls.angebotAdresse.controls.plz.updateValueAndValidity();
+        this.form.controls.angebotAdresse.controls.kontaktpersonVorname.updateValueAndValidity();
+        this.form.controls.angebotAdresse.controls.kontaktpersonNachname.updateValueAndValidity();
     }
 
     public async save(): Promise<void> {
@@ -554,59 +576,7 @@ export class FerienbetreuungAngebotComponent
             );
     }
 
-    private adressValidValidator(): ValidatorFn {
-        return control => {
-            const strasse = control.get('strasse');
-            const ort = control.get('ort');
-            const plz = control.get('plz');
-            const vorname = control.get('kontaktpersonVorname');
-            const nachname = control.get('kontaktpersonNachname');
-
-            let formErroneous = false;
-
-            if (
-                this.formAbschliessenTriggered ||
-                strasse.value ||
-                ort.value ||
-                plz.value ||
-                vorname.value ||
-                nachname.value
-            ) {
-                if (!strasse.value) {
-                    strasse.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!ort.value) {
-                    ort.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!plz.value) {
-                    plz.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!vorname.value) {
-                    vorname.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!nachname.value) {
-                    nachname.setErrors({required: true});
-                    formErroneous = true;
-                }
-            } else {
-                strasse.setErrors(null);
-                ort.setErrors(null);
-                plz.setErrors(null);
-                vorname.setErrors(null);
-                nachname.setErrors(null);
-            }
-            return formErroneous ? {adressInvalid: true} : null;
-        };
-    }
-
     protected enableAdressValidation(): void {
-        this.form.controls.angebotAdresse.setValidators(
-            this.adressValidValidator()
-        );
         this.form.controls.angebotAdresse.markAllAsTouched();
 
         this.triggerFormValidation();

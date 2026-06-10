@@ -119,6 +119,17 @@
                             >
                             </dv-bisher-x>
                         </mat-form-field>
+                        @if (
+                            form.value.amAngebotBeteiligteGemeinden.length > 0
+                        ) {
+                            <label class="pl-4"
+                                >({{
+                                    form.value.amAngebotBeteiligteGemeinden
+                                        ?.sort()
+                                        .join(', ')
+                                }})</label
+                            >
+                        }
                     }
                 </dv-input-container-x>
                 <div class="margin-bottom-20 label-black">
@@ -179,7 +190,10 @@
                         </dv-tooltip>
                     </span>
                     <span class="flex-whitespace-item"></span>
-                    @if (fillActionsVisible() | async) {
+                    @if (
+                        isInBearbeitungGemeindeAndKantonUser() &&
+                            fillActionsVisible() | async
+                    ) {
                         <button
                             type="button"
                             (click)="fillAdress()"
@@ -472,7 +486,10 @@
                         </dv-tooltip>
                     </span>
                     <span class="flex-whitespace-item"></span>
-                    @if (fillActionsVisible() | async) {
+                    @if (
+                        isInBearbeitungGemeindeAndKantonUser() &&
+                            fillActionsVisible() | async
+                    ) {
                         <button
                             type="button"
                             (click)="fillBenutzer()"
@@ -618,7 +635,7 @@
                 <div class="row">
                     <dv-input-container-x
                         [verticalAlign]="true"
-                        class="col-xs-6"
+                        class="col-xs-3"
                     >
                         <label
                             for="stammdaten_kontakt_telefon_id"
@@ -639,6 +656,10 @@
                                 matInput
                                 formControlName="stammdatenKontaktpersonTelefon"
                                 class="form-control dv-input"
+                                [pattern]="CONSTANTS.PATTERN_PHONE"
+                                placeholder="{{
+                                    'BEISPIEL_TELEFON_NUMMER' | translate
+                                }}"
                             />
                             @if (
                                 formValidationTriggered &&
@@ -674,7 +695,7 @@
                     </dv-input-container-x>
                     <dv-input-container-x
                         [verticalAlign]="true"
-                        class="col-xs-6"
+                        class="col-xs-9"
                     >
                         <label
                             for="stammdaten_kontakt_email_id"
@@ -965,7 +986,7 @@
                                             .errors?.required
                                     ) {
                                         <mat-error translate
-                                            >ERROR_REQUIRED
+                                            >ERROR_AUSZAHLUNGSDATEN_NICHT_VOLLSTAENDING
                                         </mat-error>
                                     }
                                     <dv-bisher-x
@@ -1077,7 +1098,7 @@
                                             .iban.errors?.required
                                     ) {
                                         <mat-error translate
-                                            >ERROR_ADRESSE_NICHT_VOLLSTAENDING
+                                            >ERROR_AUSZAHLUNGSDATEN_NICHT_VOLLSTAENDING
                                         </mat-error>
                                     }
                                     @if (

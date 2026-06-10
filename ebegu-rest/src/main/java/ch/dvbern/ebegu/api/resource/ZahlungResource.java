@@ -67,6 +67,8 @@ import ch.dvbern.ebegu.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
@@ -90,6 +92,10 @@ import static java.util.Objects.requireNonNull;
 @Stateless
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class ZahlungResource {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		ZahlungResource.class
+	);
 
 	@Inject
 	private ZahlungService zahlungService;
@@ -409,6 +415,16 @@ public class ZahlungResource {
 		@Nullable @QueryParam("datumGeneriert") String stringDatumGeneriert
 	) throws EbeguRuntimeException {
 
+		LOGGER.info(
+			"Zahlungsauftrag abgefordert für zahlungslaufTyp: {}, gemeindeId: {}, faelligkeitsdatum: {}, auszahlungInZukunft: {}, "
+				+ "datumGeneriert: {}",
+			sZahlungslaufTyp,
+			gemeindeId,
+			stringFaelligkeitsdatum,
+			auszahlungInZukunft,
+			stringDatumGeneriert
+		);
+
 		ZahlungslaufTyp zahlungslaufTyp = ZahlungslaufTyp.valueOf(
 			sZahlungslaufTyp
 		);
@@ -435,6 +451,11 @@ public class ZahlungResource {
 				datumGeneriert,
 				requireNonNull(principalBean.getMandant())
 			);
+
+		LOGGER.info(
+			"Zahlungsauftrag erstellt für gemeindeId: {}, starte Überprüfung.",
+			gemeindeId
+		);
 
 		workjobZahlungUeberpruefungService.startZahlungUeberpruefungWorkjob(
 			zahlungslaufTyp,

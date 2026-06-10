@@ -179,7 +179,7 @@ public class ZahlungUeberpruefungServiceBean extends AbstractBaseService {
 		for (Gesuchsperiode gesuchsperiode : containedGesuchsperioden) {
 
 			Einstellung hoehereBeitraegeAktiviert = einstellungService
-				.findEinstellung(
+				.findEinstellungCached(
 					EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
 					gemeinde,
 					gesuchsperiode

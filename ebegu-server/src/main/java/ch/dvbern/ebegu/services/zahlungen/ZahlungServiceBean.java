@@ -46,6 +46,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.ws.rs.BadRequestException;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
@@ -251,9 +252,13 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		}
 
 		LOGGER.info(
-			"Erstelle Zahlungsauftrag mit Faelligkeit: {}",
-			Constants.DATE_FORMATTER.format(datumFaelligkeit)
+			"Erstelle Zahlungsauftrag für Gemeinde {} ({}), Fälligkeit: {}, Datum generiert: {}",
+			gemeinde.getName(),
+			gemeindeId,
+			Constants.DATE_FORMATTER.format(datumFaelligkeit),
+			Constants.DATE_FORMATTER.format(datumGeneriert)
 		);
+
 		Zahlungsauftrag zahlungsauftrag = new Zahlungsauftrag();
 		zahlungsauftrag.setZahlungslaufTyp(zahlungslaufTyp);
 		zahlungsauftrag.setStatus(ZahlungauftragStatus.ENTWURF);
@@ -311,13 +316,15 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 
 		Map<String, Zahlung> zahlungProInstitution = new HashMap<>();
 
-		//Hasmap for helper
+		//Hashmap for helper
 		Map<String, ZahlungslaufHelper> zahlungslaufHelperMap = new HashMap<>();
 
 		// "Normale" Zahlungen
 		if (!isRepetition) {
 			LOGGER.info(
-				"Ermittle normale Zahlungen im Zeitraum {}",
+				"Ermittle normale Zahlungen für Gemeinde {} ({}) im Zeitraum {}. Identifiziere relevante Zeitabschnitte.",
+				gemeinde.getName(),
+				gemeindeId,
 				zahlungsauftrag.getGueltigkeit().toRangeString()
 			);
 
@@ -327,6 +334,13 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 					zeitabschnittVon,
 					zeitabschnittBis
 				);
+
+			LOGGER.info(
+				"{} Zeitabschnitte für normale Zahlungen für Gemeinde {} ({}) identifiziert. Erstelle Zahlungspositionen.",
+				gueltigeVerfuegungZeitabschnitte.size(),
+				gemeinde.getName(),
+				gemeindeId
+			);
 
 			for (VerfuegungZeitabschnitt zeitabschnitt : gueltigeVerfuegungZeitabschnitte) {
 
@@ -350,7 +364,20 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 					);
 				}
 			}
+
+			LOGGER.info(
+				"Zahlungspositionen für normale Zahlungen für Gemeinde {} ({}) erstellt.",
+				gemeinde.getName(),
+				gemeindeId
+			);
 		}
+
+		LOGGER.info(
+			"Identifiziere Zeitabschnitte für Korrekturzahlungen für Gemeinde {} ({}).",
+			gemeinde.getName(),
+			gemeindeId
+		);
+
 		// Korrekturen und Nachzahlungen
 		// Stichtag: Falls es eine Wiederholung des Auftrags ist, wurde der aktuelle Monat bereits ausbezahlt.
 		LocalDate stichtagKorrekturen =
@@ -361,8 +388,15 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		Collection<VerfuegungZeitabschnitt> verfuegungsZeitabschnitte =
 			getVerfuegungsZeitabschnitteFuerLetzteGueltigeBetreuung(
 				gemeinde,
-				stichtagKorrekturen
+				stichtagKorrekturen,
+				zahlungslaufTyp
 			);
+		LOGGER.info(
+			"{} Zeitabschnitte für Korrekturzahlungen für Gemeinde {} ({}) identifiziert. Erstelle Zahlungspositionen.",
+			verfuegungsZeitabschnitte.size(),
+			gemeinde.getName(),
+			gemeindeId
+		);
 		for (VerfuegungZeitabschnitt zeitabschnitt : verfuegungsZeitabschnitte) {
 
 			ZahlungslaufHelper zahlungslaufHelper =
@@ -386,15 +420,22 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			}
 		}
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("Zahlungsauftrag generiert: ")
-			.append(zahlungsauftrag.getGueltigkeit().toRangeString());
-		if (isRepetition) {
-			sb.append(" [Repetition]");
-		}
-		LOGGER.info(sb.toString());
+		LOGGER.info(
+			"Zahlungsauftrag{} für Gemeinde {} ({}) und Gültigkeit {} erstellt. Auftrag wird gespeichert.",
+			(isRepetition ? "-Repetition" : ""),
+			gemeinde.getName(),
+			gemeindeId,
+			zahlungsauftrag.getGueltigkeit().toRangeString()
+		);
+
 		calculateZahlungsauftrag(zahlungsauftrag);
 		Zahlungsauftrag persistedAuftrag = persistence.merge(zahlungsauftrag);
+
+		LOGGER.info(
+			"Zahlungsauftrag für Gemeinde {} ({}) wurde gespeichert.",
+			gemeinde.getName(),
+			gemeindeId
+		);
 
 		return persistedAuftrag;
 	}
@@ -546,7 +587,8 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 	@Nonnull
 	private Collection<VerfuegungZeitabschnitt> getVerfuegungsZeitabschnitteFuerLetzteGueltigeBetreuung(
 		@Nonnull Gemeinde gemeinde,
-		@Nonnull LocalDate zeitabschnittBis
+		@Nonnull LocalDate zeitabschnittBis,
+		@Nonnull ZahlungslaufTyp zahlungslaufTyp
 	) {
 		requireNonNull(zeitabschnittBis, "zeitabschnittBis muss gesetzt sein");
 
@@ -578,6 +620,17 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		Join<Gesuch, Dossier> joinDossier = joinGesuch.join(Gesuch_.dossier);
 
 		List<Predicate> predicates = new ArrayList<>();
+
+		// Nur VerfuegungZeitabschnitt die noch behandelt werden müssen
+		Predicate predicateZuBehandeln = root.get(
+			getZahlungsstatusAttribute(zahlungslaufTyp)
+		)
+			.in(
+				VerfuegungsZeitabschnittZahlungsstatus
+					.getStatusForKorrekturUndNachzahlungZahlungslauf()
+			);
+
+		predicates.add(predicateZuBehandeln);
 
 		// Datum Bis muss VOR dem regulaeren Auszahlungszeitraum sein (sonst ist es keine Korrektur und schon im
 		// obigen Statement enthalten)
@@ -620,6 +673,17 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		);
 		query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));
 		return persistence.getCriteriaResults(query);
+	}
+
+	private SingularAttribute<VerfuegungZeitabschnitt, VerfuegungsZeitabschnittZahlungsstatus> getZahlungsstatusAttribute(
+		@Nonnull ZahlungslaufTyp zahlungslaufTyp
+	) {
+		return switch (zahlungslaufTyp) {
+		case GEMEINDE_INSTITUTION ->
+			VerfuegungZeitabschnitt_.zahlungsstatusInstitution;
+		case GEMEINDE_ANTRAGSTELLER ->
+			VerfuegungZeitabschnitt_.zahlungsstatusAntragsteller;
+		};
 	}
 
 	/**

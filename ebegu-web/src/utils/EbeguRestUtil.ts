@@ -7727,7 +7727,7 @@ export class EbeguRestUtil {
             stammdatenTS.stammdatenKontaktpersonEmail
                 ? stammdatenTS.stammdatenKontaktpersonEmail
                 : null;
-        restStammdaten.iban = !!stammdatenTS.iban ? stammdatenTS.iban : null;
+        restStammdaten.iban = stammdatenTS.iban;
         restStammdaten.kontoinhaber = stammdatenTS.kontoinhaber;
         restStammdaten.adresseKontoinhaber = this.adresseToRestObject(
             {},

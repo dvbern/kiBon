@@ -121,7 +121,7 @@ public class ZahlungslaufHelperFactoryTest extends EasyMockSupport {
 		einstellung.setValue(HoehereBeitraegeTyp.DEAKTIVIERT.name());
 
 		expect(
-			einstellungServiceMock.findEinstellung(
+			einstellungServiceMock.findEinstellungCached(
 				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
 				gemeinde,
 				gesuchsperiode
@@ -185,7 +185,7 @@ public class ZahlungslaufHelperFactoryTest extends EasyMockSupport {
 		einstellung.setValue(HoehereBeitraegeTyp.AKTIVIERT.name());
 
 		expect(
-			einstellungServiceMock.findEinstellung(
+			einstellungServiceMock.findEinstellungCached(
 				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
 				gemeinde,
 				gesuchsperiode

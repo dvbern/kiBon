@@ -96,7 +96,7 @@ public class ZahlungslaufHelperFactory {
 		ZahlungslaufHelper zahlungslaufHelper = null;
 
 		if (null != betreuung) {
-			Einstellung e = einstellungService.findEinstellung(
+			Einstellung e = einstellungService.findEinstellungCached(
 				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
 				betreuung.extractGemeinde(),
 				betreuung.extractGesuchsperiode()

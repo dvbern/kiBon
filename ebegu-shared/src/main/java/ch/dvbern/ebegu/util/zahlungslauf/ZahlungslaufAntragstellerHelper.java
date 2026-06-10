@@ -73,6 +73,9 @@ public class ZahlungslaufAntragstellerHelper implements ZahlungslaufHelper {
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
 		@Nonnull VerfuegungsZeitabschnittZahlungsstatus status
 	) {
+		if (zeitabschnitt.getZahlungsstatusAntragsteller() == status) {
+			return; // NOOP
+		}
 		zeitabschnitt.setZahlungsstatusAntragsteller(status);
 	}
 

@@ -515,7 +515,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 			);
 		}
 		Einstellung hoehereBeitraegeEinstellung = einstellungService
-			.findEinstellung(
+			.findEinstellungCached(
 				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
 				betreuung.extractGemeinde(),
 				betreuung.extractGesuchsperiode()
@@ -1047,19 +1047,8 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 			return false;
 		}
 
-		Einstellung hoehereBeitraegeEinstellung = einstellungService
-			.findEinstellung(
-				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
-				betreuung.extractGemeinde(),
-				betreuung.extractGesuchsperiode()
-			);
-
-		HoehereBeitraegeTyp beitraegeTyp = HoehereBeitraegeTyp.valueOf(
-			hoehereBeitraegeEinstellung.getValue()
-		);
-
 		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory
-			.getZahlungslaufHelper(zahlungslaufTyp, beitraegeTyp);
+			.getZahlungslaufHelper(zahlungslaufTyp, null);
 
 		return betreuung.getVerfuegung()
 			.getZeitabschnitte()
@@ -1101,7 +1090,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 	) {
 
 		Einstellung hoehereBeitraegeEinstellung = einstellungService
-			.findEinstellung(
+			.findEinstellungCached(
 				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
 				betreuungNeu.extractGemeinde(),
 				betreuungNeu.extractGesuchsperiode()
@@ -1173,7 +1162,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 	) {
 
 		Einstellung hoehereBeitraegeEinstellung = einstellungService
-			.findEinstellung(
+			.findEinstellungCached(
 				EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
 				betreuungNeu.extractGemeinde(),
 				betreuungNeu.extractGesuchsperiode()

@@ -23,16 +23,11 @@ import {
     OnInit,
     inject
 } from '@angular/core';
-import {
-    FormBuilder,
-    FormControl,
-    FormGroup,
-    ValidatorFn,
-    Validators
-} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {MAT_DATE_FORMATS} from '@angular/material/core';
 import {MatDatepicker} from '@angular/material/datepicker';
 import {MatDialog} from '@angular/material/dialog';
+import {getUser} from '@dv-e2e/types';
 import {TranslateService} from '@ngx-translate/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import moment from 'moment';
@@ -42,11 +37,13 @@ import {combineLatest, Observable, Subscription} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {TSAdresse} from '../../../../models/entity/TSAdresse';
+import {FerienbetreuungAngabenStatus} from '../../../../models/enums/FerienbetreuungAngabenStatus';
 import {TSFerienbetreuungFormularStatus} from '../../../../models/enums/TSFerienbetreuungFormularStatus';
+import {TSRole} from '../../../../models/enums/TSRole';
 import {TSFerienbetreuungAngabenStammdaten} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenStammdaten';
 import {TSBfsGemeinde} from '../../../../models/TSBfsGemeinde';
-import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {CONSTANTS} from '@models/constants';
+import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
 import {LogFactory} from '@utils/log';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
@@ -88,6 +85,9 @@ export class FerienbetreuungStammdatenGemeindeComponent
     protected readonly dialog: MatDialog;
     protected readonly uiRouterGlobals: UIRouterGlobals;
     protected readonly wizardRS: WizardStepXRS;
+    protected readonly CONSTANTS = CONSTANTS;
+    protected readonly getUser = getUser;
+    protected readonly TSRole = TSRole;
     private readonly ferienbetreuungService = inject(FerienbetreuungService);
     private readonly fb = inject(FormBuilder);
     private readonly gemeindeRS = inject(GemeindeRS);
@@ -205,23 +205,23 @@ export class FerienbetreuungStammdatenGemeindeComponent
             stammdatenKontaktpersonFunktion:
                 stammdaten?.stammdatenKontaktpersonFunktion,
             auszahlungsdaten: {
-                kontoinhaber: stammdaten?.kontoinhaber,
+                kontoinhaber: stammdaten?.kontoinhaber || '',
                 vermerkAuszahlung: stammdaten?.vermerkAuszahlung,
-                iban: stammdaten?.iban,
+                iban: stammdaten?.iban || '',
                 adresseKontoinhaber: {
-                    strasse: stammdaten?.adresseKontoinhaber?.strasse,
-                    plz: stammdaten?.adresseKontoinhaber?.plz,
+                    strasse: stammdaten?.adresseKontoinhaber?.strasse || '',
+                    plz: stammdaten?.adresseKontoinhaber?.plz || '',
                     hausnummer: stammdaten?.adresseKontoinhaber?.hausnummer,
                     zusatzzeile: stammdaten?.adresseKontoinhaber?.zusatzzeile,
-                    ort: stammdaten?.adresseKontoinhaber?.ort
+                    ort: stammdaten?.adresseKontoinhaber?.ort || ''
                 }
             },
             stammdatenAdresse: {
-                strasse: stammdaten?.stammdatenAdresse?.strasse,
-                plz: stammdaten?.stammdatenAdresse?.plz,
+                strasse: stammdaten?.stammdatenAdresse?.strasse || '',
+                plz: stammdaten?.stammdatenAdresse?.plz || '',
                 hausnummer: stammdaten?.stammdatenAdresse?.hausnummer,
                 zusatzzeile: stammdaten?.stammdatenAdresse?.zusatzzeile,
-                ort: stammdaten?.stammdatenAdresse?.ort,
+                ort: stammdaten?.stammdatenAdresse?.ort || '',
                 organisation: stammdaten?.stammdatenAdresse?.organisation
             }
         });
@@ -242,119 +242,20 @@ export class FerienbetreuungStammdatenGemeindeComponent
         this.triggerFormValidation();
     }
 
-    private adressValidValidator(): ValidatorFn {
-        return (
-            control: FormGroup<{
-                strasse: FormControl<null | string>;
-                ort: FormControl<null | string>;
-                plz: FormControl<null | string>;
-                organisation: FormControl<null | string>;
-            }>
-        ) => {
-            const strasse = control.controls.strasse;
-            const ort = control.controls.ort;
-            const plz = control.controls.plz;
-            const organisation = control.controls.organisation;
-
-            let formErroneous = false;
-
-            if (
-                this.formAbschliessenTriggered ||
-                strasse.value ||
-                ort.value ||
-                plz.value ||
-                organisation.value
-            ) {
-                if (!strasse.value) {
-                    strasse.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!ort.value) {
-                    ort.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!plz.value) {
-                    plz.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!organisation.value) {
-                    organisation.setErrors({required: true});
-                    formErroneous = true;
-                }
-            } else {
-                strasse.setErrors(null);
-                ort.setErrors(null);
-                plz.setErrors(null);
-                organisation.setErrors(null);
-            }
-            return formErroneous ? {adressInvalid: true} : null;
-        };
-    }
-
-    private auszahlungsdatenValidation(): ValidatorFn {
-        return (
-            control: FormGroup<{
-                kontoinhaber: FormControl<null | string>;
-                iban: FormControl<null | string>;
-                adresseKontoinhaber: FormGroup<{
-                    strasse: FormControl<null | string>;
-                    hausnummer: FormControl<null | string>;
-                    ort: FormControl<null | string>;
-                    plz: FormControl<null | string>;
-                    zusatzzeile: FormControl<null | string>;
-                }>;
-            }>
-        ) => {
-            const kontoinhaber = control.controls.kontoinhaber;
-            const strasse =
-                control.controls.adresseKontoinhaber.controls.strasse;
-            const plz = control.controls.adresseKontoinhaber.controls.plz;
-            const ort = control.controls.adresseKontoinhaber.controls.ort;
-            const iban = control.controls.iban;
-
-            let formErroneous = false;
-
-            if (
-                this.formAbschliessenTriggered ||
-                strasse.value ||
-                ort.value ||
-                plz.value ||
-                kontoinhaber.value ||
-                iban.value
-            ) {
-                if (!strasse.value) {
-                    strasse.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!kontoinhaber.value) {
-                    kontoinhaber.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!ort.value) {
-                    ort.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!plz.value) {
-                    plz.setErrors({required: true});
-                    formErroneous = true;
-                }
-                if (!iban.value) {
-                    iban.setErrors({required: true});
-                    formErroneous = true;
-                }
-            } else {
-                strasse.setErrors(null);
-                ort.setErrors(null);
-                plz.setErrors(null);
-                kontoinhaber.setErrors(null);
-                iban.setErrors(null);
-            }
-            return formErroneous ? {adressInvalid: true} : null;
-        };
-    }
-
     protected enableFormValidation(): void {
-        this.enableStammdatenAuszahlungValidation();
+        this.form.controls.stammdatenAdresse.controls.strasse.setValidators(
+            Validators.required
+        );
+        this.form.controls.stammdatenAdresse.controls.ort.setValidators(
+            Validators.required
+        );
+        this.form.controls.stammdatenAdresse.controls.plz.setValidators(
+            Validators.required
+        );
+        this.form.controls.stammdatenAdresse.controls.organisation.setValidators(
+            Validators.required
+        );
+
         this.form.controls.stammdatenKontaktpersonVorname.setValidators([
             Validators.required
         ]);
@@ -369,6 +270,34 @@ export class FerienbetreuungStammdatenGemeindeComponent
             Validators.required,
             Validators.email
         ]);
+
+        this.form.controls.auszahlungsdaten.controls.kontoinhaber.setValidators(
+            Validators.required
+        );
+        this.form.controls.auszahlungsdaten.controls.adresseKontoinhaber.controls.strasse.setValidators(
+            Validators.required
+        );
+        this.form.controls.auszahlungsdaten.controls.adresseKontoinhaber.controls.plz.setValidators(
+            Validators.required
+        );
+        this.form.controls.auszahlungsdaten.controls.adresseKontoinhaber.controls.ort.setValidators(
+            Validators.required
+        );
+        this.form.controls.auszahlungsdaten.controls.iban.setValidators([
+            Validators.required,
+            Validators.pattern(CONSTANTS.QR_IBAN_PATTERN)
+        ]);
+
+        this.form.controls.stammdatenAdresse.controls.strasse.updateValueAndValidity();
+        this.form.controls.stammdatenAdresse.controls.ort.updateValueAndValidity();
+        this.form.controls.stammdatenAdresse.controls.plz.updateValueAndValidity();
+        this.form.controls.stammdatenAdresse.controls.organisation.updateValueAndValidity();
+        this.form.controls.auszahlungsdaten.controls.kontoinhaber.updateValueAndValidity();
+        this.form.controls.auszahlungsdaten.controls.adresseKontoinhaber.controls.strasse.updateValueAndValidity();
+        this.form.controls.auszahlungsdaten.controls.adresseKontoinhaber.controls.plz.updateValueAndValidity();
+        this.form.controls.auszahlungsdaten.controls.adresseKontoinhaber.controls.ort.updateValueAndValidity();
+        this.form.controls.auszahlungsdaten.controls.iban.updateValueAndValidity();
+        this.enableStammdatenAuszahlungValidation();
     }
 
     public save(): void {
@@ -406,11 +335,8 @@ export class FerienbetreuungStammdatenGemeindeComponent
         const adresse = new TSAdresse().from(this.form.value.stammdatenAdresse);
         adresse.id = this.stammdaten.stammdatenAdresse?.id;
         adresse.version = this.stammdaten.stammdatenAdresse?.version;
-        // Felder der Adresse sind required in Backend. Deshalb müssen entweder alle oder keine gesetzt sein.
-        this.stammdaten.stammdatenAdresse = EbeguUtil.adresseValid(adresse)
-            ? adresse
-            : null;
 
+        this.stammdaten.stammdatenAdresse = adresse;
         this.stammdaten.stammdatenKontaktpersonVorname =
             this.form.value.stammdatenKontaktpersonVorname;
         this.stammdaten.stammdatenKontaktpersonNachname =
@@ -432,12 +358,7 @@ export class FerienbetreuungStammdatenGemeindeComponent
         adresseKontoinhaber.id = this.stammdaten.adresseKontoinhaber?.id;
         adresseKontoinhaber.version =
             this.stammdaten.adresseKontoinhaber?.version;
-        // Felder der Adresse sind required in Backend. Deshalb müssen entweder alle oder keine gesetzt sein.
-        this.stammdaten.adresseKontoinhaber = EbeguUtil.adresseValid(
-            adresseKontoinhaber
-        )
-            ? adresseKontoinhaber
-            : null;
+        this.stammdaten.adresseKontoinhaber = adresseKontoinhaber;
 
         this.stammdaten.vermerkAuszahlung =
             this.form.value.auszahlungsdaten.vermerkAuszahlung;
@@ -516,14 +437,8 @@ export class FerienbetreuungStammdatenGemeindeComponent
     }
 
     private enableStammdatenAuszahlungValidation(): void {
-        this.form.controls.stammdatenAdresse.setValidators(
-            this.adressValidValidator()
-        );
         this.form.controls.stammdatenAdresse.markAllAsTouched();
         this.form.controls.stammdatenAdresse.controls.organisation.markAllAsTouched();
-        this.form.controls.auszahlungsdaten.setValidators(
-            this.auszahlungsdatenValidation()
-        );
         this.form.controls.auszahlungsdaten.markAllAsTouched();
 
         this.triggerFormValidation();
@@ -573,5 +488,11 @@ export class FerienbetreuungStammdatenGemeindeComponent
         );
     }
 
-    protected readonly CONSTANTS = CONSTANTS;
+    public isInBearbeitungGemeindeAndKantonUser(): boolean {
+        return !(
+            this.authServiceRS.isOneOfRoles(TSRoleUtil.getMandantOnlyRoles()) &&
+            this.container.status ===
+                FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE
+        );
+    }
 }

@@ -1096,6 +1096,17 @@
                             >
                             </dv-bisher-x>
                         </mat-form-field>
+                        @if (
+                            form.value.finanziellBeteiligteGemeinden.length > 0
+                        ) {
+                            <label class="pl-4"
+                                >({{
+                                    form.value.finanziellBeteiligteGemeinden
+                                        ?.sort()
+                                        .join(', ')
+                                }})</label
+                            >
+                        }
                     }
                 </dv-input-container-x>
                 <p class="margin-bottom-30">

@@ -59,7 +59,7 @@ export class PendenzenBetreuungenListViewController implements IController {
         'AuthServiceRS'
     ];
 
-    private pendenzenList: Array<TSPendenzBetreuung>;
+    public pendenzenList: Array<TSPendenzBetreuung>;
     public selectedBetreuungsangebotTyp: string;
     public selectedInstitution: string;
     public selectedGesuchsperiode: string;

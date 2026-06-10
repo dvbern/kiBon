@@ -71,14 +71,14 @@
 
                 <ng-container matColumnDef="name">
                     <mat-header-cell
-                        mat-sort-header="name"
+                        mat-sort-header="nachname"
                         *matHeaderCellDef
                         class="ellipsis"
                     >
                         <span class="no-padding-left" translate>NAME</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let element" class="ellipsis">
-                        <span [title]="element.name">{{
+                        <span [title]="element.nachname">{{
                             element.nachname
                         }}</span>
                     </mat-cell>
