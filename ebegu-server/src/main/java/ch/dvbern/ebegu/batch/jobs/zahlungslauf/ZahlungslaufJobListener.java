@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.dvbern.ebegu.batch.jobs.zahlungueberpruefen;
+package ch.dvbern.ebegu.batch.jobs.zahlungslauf;
 
 import jakarta.batch.api.listener.AbstractJobListener;
 import jakarta.batch.runtime.context.JobContext;
@@ -24,12 +24,12 @@ import jakarta.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Named("zahlungUeberpruefenJobListener")
+@Named("zahlungslaufJobListener")
 @Dependent
-public class ZahlungUeberpruefenJobListener extends AbstractJobListener {
+public class ZahlungslaufJobListener extends AbstractJobListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(
-		ZahlungUeberpruefenJobListener.class
+		ZahlungslaufJobListener.class
 	);
 
 	@Inject
@@ -37,16 +37,16 @@ public class ZahlungUeberpruefenJobListener extends AbstractJobListener {
 
 	@Override
 	public void beforeJob() {
-		LOG.debug(
-			"ZahlungUeberpruefenJobListener started: {}",
+		LOG.info(
+			"ZahlungslaufJobListener started: {}",
 			ctx.getExecutionId()
 		);
 	}
 
 	@Override
 	public void afterJob() {
-		LOG.debug(
-			"ZahlungUeberpruefenJobListener finished: {}, status: {},{}",
+		LOG.info(
+			"ZahlungslaufJobListener finished: {}, status: {},{}",
 			ctx.getExecutionId(),
 			ctx.getBatchStatus(),
 			ctx.getExitStatus()

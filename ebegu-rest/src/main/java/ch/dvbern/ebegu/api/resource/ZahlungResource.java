@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -40,6 +39,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import ch.dvbern.ebegu.api.converter.JaxZahlungConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
@@ -57,16 +57,16 @@ import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.errors.KibonLogLevel;
+import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.GeneratedDokumentService;
 import ch.dvbern.ebegu.services.InstitutionService;
 import ch.dvbern.ebegu.services.ZahlungService;
-import ch.dvbern.ebegu.services.zahlungen.WorkjobZahlungUeberpruefungService;
-import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.services.zahlungen.WorkjobZahlungslaufService;
 import ch.dvbern.ebegu.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +116,10 @@ public class ZahlungResource {
 	private GemeindeService gemeindeService;
 
 	@Inject
-	private WorkjobZahlungUeberpruefungService workjobZahlungUeberpruefungService;
+	private WorkjobZahlungslaufService workjobZahlungslaufService;
+
+	@Inject
+	private Authorizer authorizer;
 
 	@Operation(summary = "Gibt alle Zahlungsauftraege zurueck.")
 	@Nullable
@@ -404,9 +407,7 @@ public class ZahlungResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
 		SACHBEARBEITER_GEMEINDE })
-	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES,
-		unit = TimeUnit.MINUTES)
-	public JaxZahlungsauftrag createZahlung(
+	public Response createZahlung(
 		@QueryParam("zahlungslaufTyp") String sZahlungslaufTyp,
 		@QueryParam("gemeindeId") String gemeindeId,
 		@QueryParam("faelligkeitsdatum") String stringFaelligkeitsdatum,
@@ -431,39 +432,53 @@ public class ZahlungResource {
 		LocalDate faelligkeitsdatum = DateUtil.parseStringToDateOrReturnNow(
 			stringFaelligkeitsdatum
 		);
-		LocalDateTime datumGeneriert;
-		if (stringDatumGeneriert != null) {
-			datumGeneriert = DateUtil.parseStringToDateOrReturnNow(
-				stringDatumGeneriert
-			).atStartOfDay();
-			validateDatumGeneriert(datumGeneriert);
-		} else {
-			datumGeneriert = LocalDateTime.now();
-		}
 
-		final Zahlungsauftrag zahlungsauftrag = zahlungService
-			.zahlungsauftragErstellen(
-				zahlungslaufTyp,
-				gemeindeId,
-				faelligkeitsdatum,
-				beschrieb,
-				auszahlungInZukunft,
-				datumGeneriert,
-				requireNonNull(principalBean.getMandant())
+		Gemeinde gemeinde = gemeindeService.findGemeinde(gemeindeId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"zahlungsauftragErstellen",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gemeindeId
+				)
 			);
 
+		// Es darf immer nur ein Zahlungsauftrag im Status ENTWURF sein
+		Optional<Zahlungsauftrag> lastZahlungsauftragOptional =
+			zahlungService.findLastZahlungsauftrag(zahlungslaufTyp, gemeinde);
+		if (lastZahlungsauftragOptional.isPresent()
+			&& lastZahlungsauftragOptional.get().getStatus().isEntwurf()) {
+			throw new EbeguRuntimeException(
+				KibonLogLevel.DEBUG,
+				"zahlungsauftragErstellen called from zahlungResource",
+				ErrorCodeEnum.ERROR_ZAHLUNG_ERSTELLEN
+			);
+		}
+
+		// Validation before to start Job
+		authorizer.checkWriteAuthorization(gemeinde);
+		if (stringDatumGeneriert != null) {
+			validateDatumGeneriert(
+				DateUtil.parseStringToDateOrReturnNow(
+					stringDatumGeneriert
+				).atStartOfDay()
+			);
+		}
+
 		LOGGER.info(
-			"Zahlungsauftrag erstellt für gemeindeId: {}, starte Überprüfung.",
-			gemeindeId
+			"Zahlungsauftrag erstellung gestartet für gemeinde: {}",
+			gemeinde.getName()
 		);
 
-		workjobZahlungUeberpruefungService.startZahlungUeberpruefungWorkjob(
+		long jobId = workjobZahlungslaufService.startZahlungslaufWorkjob(
 			zahlungslaufTyp,
 			gemeindeId,
-			auszahlungInZukunft
+			auszahlungInZukunft,
+			faelligkeitsdatum,
+			beschrieb,
+			stringDatumGeneriert
 		);
 
-		return converter.zahlungsauftragToJAX(zahlungsauftrag, false);
+		return Response.accepted(jobId).build();
 	}
 
 	private void validateDatumGeneriert(LocalDateTime datumGeneriert) {

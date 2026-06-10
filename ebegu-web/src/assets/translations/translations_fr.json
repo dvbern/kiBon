@@ -1401,7 +1401,7 @@
     "ZAHLUNG_BESCHRIEB": "Description",
     "ZAHLUNG_DETAILPOSITIONEN": "Fichier de versement (Excel)",
     "ZAHLUNG_ERSTELLEN": "ÉTABLIR UN VERSEMENT",
-    "ZAHLUNG_ERSTELLT": "Versement créé",
+    "ZAHLUNG_ERSTELLT": "Le versement va être créé. Veuillez patienter un moment et ne pas générer de nouveau versement",
     "ZAHLUNG_UEBERSICHT": "Aperçu",
     "ZAHLUNGSLAUF_INFO_1": "Le premier cycle de paiements d’un mois civil contient l’ensemble des demandes ayant fait l’objet d’une décision pour ce même mois (paiement ordinaire). En outre, toutes les demandes ayant fait l’objet d’une décision depuis le dernier cycle de paiement sont contrôlées pour voir si elles contiennent des corrections rétroactives. Ces dernières sont, le cas échéant, également prises en compte dans le cycle de paiement. Elles peuvent être négatives, mais sont facturées dans le cadre du paiement ordinaire. En cas de cycle de paiements additionnel au cours du même mois, seules les corrections apportées depuis le dernier cycle de paiement sont exécutées. Nous recommandons donc de créer un cycle de paiement uniquement une fois par mois, faute de quoi le total peut être négatif.",
     "ZAHLUNGSLAUF_INFO_2": "Les paiements négatifs doivent être réglés ou réclamés en dehors de kiBon.",

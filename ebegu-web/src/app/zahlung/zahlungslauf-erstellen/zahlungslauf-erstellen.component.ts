@@ -96,13 +96,15 @@ export class ZahlungslaufErstellenComponent {
                             this.model.auszahlungInZukunft!
                         )
                         .subscribe(
-                            (response: TSZahlungsauftrag) => {
+                            (response: string) => {
                                 this.errorService.clearAll();
                                 this.errorService.addMesageAsInfo(
                                     this.translate.instant('ZAHLUNG_ERSTELLT')
                                 );
+                                LOG.info(
+                                    'batch job started with jobId: ' + response
+                                );
                                 this.form().resetForm();
-                                this.zahlungslaufErstellen.emit(response);
                             },
                             error => LOG.error(error)
                         );

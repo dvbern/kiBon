@@ -187,7 +187,7 @@ export class ZahlungService {
         faelligkeitsdatum: moment.Moment,
         datumGeneriert: moment.Moment | undefined,
         auszahlungInZukunft: boolean
-    ): Observable<TSZahlungsauftrag> {
+    ): Observable<string> {
         const params: any = {
             zahlungslaufTyp: zahlungslaufTyp.toString(),
             gemeindeId: gemeinde.id,
@@ -200,18 +200,9 @@ export class ZahlungService {
                 MomentUtil.momentToLocalDate(datumGeneriert);
         }
 
-        return this.http
-            .get(`${this.serviceURL}/create`, {
-                params
-            })
-            .pipe(
-                map((httpresponse: any) =>
-                    this.ebeguRestUtil.parseZahlungsauftrag(
-                        new TSZahlungsauftrag(),
-                        httpresponse
-                    )
-                )
-            );
+        return this.http.get<string>(`${this.serviceURL}/create`, {
+            params
+        });
     }
 
     public updateZahlungsauftrag(

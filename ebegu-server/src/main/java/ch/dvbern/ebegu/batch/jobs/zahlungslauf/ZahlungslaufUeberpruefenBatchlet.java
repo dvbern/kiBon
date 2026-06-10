@@ -1,4 +1,4 @@
-package ch.dvbern.ebegu.batch.jobs.zahlungueberpruefen;
+package ch.dvbern.ebegu.batch.jobs.zahlungslauf;
 
 import java.util.Optional;
 import java.util.Properties;

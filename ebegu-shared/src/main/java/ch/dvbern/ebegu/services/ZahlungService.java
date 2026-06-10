@@ -39,22 +39,6 @@ public interface ZahlungService {
 	 * Ermittelt alle im aktuellen Monat gueltigen Verfuegungen, sowie aller seit dem letzten Auftrag eingeganegenen
 	 * Mutationen.
 	 * Der Zahlungsauftrag hat den initialen Status ENTWURF
-	 * Als datumGeneriert wird "Jetzt" verwendet
-	 */
-	@Nonnull
-	Zahlungsauftrag zahlungsauftragErstellen(
-		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
-		@Nonnull String gemeindeId,
-		@Nonnull LocalDate datumFaelligkeit,
-		@Nonnull String beschreibung,
-		@Nonnull Boolean auszahlungInZukunft,
-		@Nonnull Mandant mandant
-	);
-
-	/**
-	 * Ermittelt alle im aktuellen Monat gueltigen Verfuegungen, sowie aller seit dem letzten Auftrag eingeganegenen
-	 * Mutationen.
-	 * Der Zahlungsauftrag hat den initialen Status ENTWURF
 	 */
 	@Nonnull
 	Zahlungsauftrag zahlungsauftragErstellen(

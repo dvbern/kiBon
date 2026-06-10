@@ -194,27 +194,6 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 
 	@Override
 	@Nonnull
-	public Zahlungsauftrag zahlungsauftragErstellen(
-		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
-		@Nonnull String gemeindeId,
-		@Nonnull LocalDate datumFaelligkeit,
-		@Nonnull String beschreibung,
-		@Nonnull Boolean auszahlungInZukunft,
-		@Nonnull Mandant mandant
-	) {
-		return zahlungsauftragErstellen(
-			zahlungslaufTyp,
-			gemeindeId,
-			datumFaelligkeit,
-			beschreibung,
-			auszahlungInZukunft,
-			LocalDateTime.now(),
-			mandant
-		);
-	}
-
-	@Override
-	@Nonnull
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES,
 		unit = TimeUnit.MINUTES)
@@ -235,7 +214,6 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 					gemeindeId
 				)
 			);
-		authorizer.checkWriteAuthorization(gemeinde);
 
 		boolean isInfomaZahlung = isInfomaZahlung(gemeinde);
 
@@ -246,7 +224,7 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			&& lastZahlungsauftragOptional.get().getStatus().isEntwurf()) {
 			throw new EbeguRuntimeException(
 				KibonLogLevel.DEBUG,
-				"zahlungsauftragErstellen",
+				"zahlungsauftragErstellen called from ZahlungsServiceBean",
 				ErrorCodeEnum.ERROR_ZAHLUNG_ERSTELLEN
 			);
 		}

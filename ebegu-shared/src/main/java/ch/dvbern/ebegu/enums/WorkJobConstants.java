@@ -48,6 +48,9 @@ public final class WorkJobConstants {
 	public static final String REPORT_MANDANT_IDENTIFIER = "mandantIdentifier";
 	public static final String ZAHLUNGSLAUFTYP = "zahlungslauftyp";
 	public static final String AUSZAHLUNG_IN_ZUKUNFT = "zahlungInZukunft";
+	public static final String DATUM_FAELLIGKEIT = "datumFaelligkeit";
+	public static final String BESCHREIBUNG = "beschreibung";
+	public static final String DATUM_GENERIERT = "datumGeneriert";
 
 	private WorkJobConstants() {
 	}
