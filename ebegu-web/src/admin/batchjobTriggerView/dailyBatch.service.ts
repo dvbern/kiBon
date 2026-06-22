@@ -22,17 +22,13 @@ import {CoreModule} from '../../app/core/core.module';
 @Injectable({
     providedIn: CoreModule
 })
-export class DailyBatchRS {
+export class DailyBatchService {
     $http = inject(HttpClient);
 
     public readonly serviceURL: string;
 
     public constructor() {
         this.serviceURL = `${CONSTANTS.REST_API}dailybatch`;
-    }
-
-    public getServiceName(): string {
-        return 'DailyBatchRS';
     }
 
     public runBatchCleanDownloadFiles(): Observable<string> {

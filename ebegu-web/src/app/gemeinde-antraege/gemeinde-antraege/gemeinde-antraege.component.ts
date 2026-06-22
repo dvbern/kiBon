@@ -332,7 +332,10 @@ export class GemeindeAntraegeComponent implements OnInit {
             this.triedSending = true;
             return;
         }
-        this.openRemoveDialog$()
+        const selectedGesuchsperiode = this.gesuchsperioden.find(
+            gesuchsperiode => gesuchsperiode.id === this.formGroup.value.periode
+        );
+        this.openRemoveDialog$(selectedGesuchsperiode.gesuchsperiodeString)
             .pipe(
                 concatMap(answer => {
                     if (!answer) {
@@ -359,7 +362,7 @@ export class GemeindeAntraegeComponent implements OnInit {
     }
 
     public deleteGemeindeAntrag(antrag: DVAntragListItem): void {
-        this.openRemoveDialog$()
+        this.openRemoveDialog$(antrag.periode.gesuchsperiodeString)
             .pipe(
                 concatMap(answer => {
                     if (!answer) {
@@ -396,11 +399,12 @@ export class GemeindeAntraegeComponent implements OnInit {
             );
     }
 
-    private openRemoveDialog$(): Observable<boolean> {
+    private openRemoveDialog$(periode: string): Observable<boolean> {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = {
-            title: 'WIRKLICH_LOESCHEN',
-            text: ''
+            title: this.translate.instant('WIRKLICH_LOESCHEN', {
+                periode: periode
+            })
         };
         return this.dialog
             .open(DvNgRemoveDialogComponent, dialogConfig)

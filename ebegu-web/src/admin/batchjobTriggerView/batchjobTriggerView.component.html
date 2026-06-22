@@ -64,6 +64,35 @@
                     </dv-loading-button>
                 </div>
             </div>
+            <h2 class="margin-top-40">Jährlich ausgeführte Batchjobs</h2>
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>
+                        Gemeinde-Kennzahlen: Erstellen und Reminder versenden
+                    </div>
+                    <dv-loading-button
+                        (buttonClick)="
+                            runBatchCreateGemeindeKennzahlenAndSendReminder()
+                        "
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>Gemeinde-Kennzahlen: Zweiten Reminder versenden</div>
+                    <dv-loading-button
+                        (buttonClick)="
+                            runBatchGemeindeKenzahlenSendSecondReminder()
+                        "
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
 
             <!-- Manuelle Skripts ausfuehren -->
             <h2 class="margin-top-40">Manuelle Skripts ausführen</h2>

@@ -15,10 +15,11 @@
 
 import {Component, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {LogFactory} from '@utils/log';
-import {DailyBatchRS} from '../../service/dailyBatchRS.rest';
-import {DatabaseMigrationRS} from '../../service/databaseMigrationRS.rest';
+import {DvNgOkDialogComponent} from '../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
+import {DatabaseMigrationRS} from '../service/databaseMigrationRS.rest';
+import {DailyBatchService} from './dailyBatch.service';
+import {YearlyBatchService} from './yearlyBatch.service';
 
 const LOG = LogFactory.createLog('BatchjobTriggerViewComponent');
 
@@ -31,7 +32,8 @@ const LOG = LogFactory.createLog('BatchjobTriggerViewComponent');
 export class BatchjobTriggerViewComponent {
     private readonly dialog = inject(MatDialog);
     private readonly databaseMigrationRS = inject(DatabaseMigrationRS);
-    private readonly dailyBatchRS = inject(DailyBatchRS);
+    private readonly dailyBatchRS = inject(DailyBatchService);
+    private readonly yearlyBatchRS = inject(YearlyBatchService);
 
     public processScript(script: string): void {
         this.databaseMigrationRS.processScript(script);
@@ -71,6 +73,32 @@ export class BatchjobTriggerViewComponent {
             },
             error => LOG.error(error)
         );
+    }
+
+    public runBatchCreateGemeindeKennzahlenAndSendReminder(): void {
+        this.yearlyBatchRS
+            .runBatchCreateGemeindeKennzahlenAndSendReminder()
+            .subscribe({
+                next: res => {
+                    this.createAndOpenDialog(
+                        'GEMEINDE_KENNZAHLEN_BATCHJOB_RESULT_' + res
+                    );
+                },
+                error: err => this.createAndOpenDialog(err)
+            });
+    }
+
+    public runBatchGemeindeKenzahlenSendSecondReminder(): void {
+        this.yearlyBatchRS
+            .runBatchGemeindeKennzahlenSendSecondReminder()
+            .subscribe({
+                next: res => {
+                    this.createAndOpenDialog(
+                        'GEMEINDE_KENNZAHLEN_BATCHJOB_RESULT_' + res
+                    );
+                },
+                error: err => this.createAndOpenDialog(err)
+            });
     }
 
     private createAndOpenDialog(title: string): void {

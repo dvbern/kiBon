@@ -7,10 +7,8 @@ import jakarta.ejb.Startup;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.enums.UserRoleName;
 import ch.dvbern.ebegu.services.MandantService;
-import ch.dvbern.ebegu.services.gemeindeantrag.GemeindeKennzahlenMailService;
 import lombok.extern.log4j.Log4j;
 import org.jboss.ejb3.annotation.RunAsPrincipal;
 
@@ -21,61 +19,37 @@ import org.jboss.ejb3.annotation.RunAsPrincipal;
 @Log4j
 public class YearlyBatchScheduler {
 
-	private static final String MANDANT_INFO_MAIL =
-		"info.bg@be.ch";
-
 	@Inject
-	GemeindeKennzahlenMailService gemeindeKennzahlenMailService;
-
-	@Inject
-	ApplicationPropertyService applicationPropertyService;
-
+	private YearlyBatchService yearlyBatchService;
 	@Inject
 	MandantService mandantService;
 
 	@Schedule(dayOfMonth = "15", month = "9")
-	public void sendGemeindeKennzahlenFirstReminder() {
-		if (isGemeindeKennzahlenReminderDeactivated()) {
-			LOG.info(
-				"Batchjob sendGemeindeKennzahlenFirstReminder nicht durchgefuehrt, Einstellung ist nicht aktiviert"
-			);
-			return;
-		}
-		gemeindeKennzahlenMailService
-			.sendFirstErinnerungsmailToAllAdminBGOfMandant(
-				mandantService.getMandantBern(),
-				MANDANT_INFO_MAIL
+	public void createGemeindeKennzahlenForCurrentGPForAllActiveGemeindenAndSendReminder() {
+		LOG.info(
+			"Batchjob createGemeindeKennzahlenForCurrentGPForAllActiveGemeindenAndSendReminder started"
+		);
+		mandantService.getAll()
+			.forEach(
+				mandant -> yearlyBatchService
+					.createGemeindeKennzahlenForCurrentGPForAllActiveGemeindenAndSendReminder(
+						mandant
+					)
 			);
 		LOG.info(
-			"Batchjob sendGemeindeKennzahlenFirstReminder durchgefuehrt"
+			"Batchjob createGemeindeKennzahlenForCurrentGPForAllActiveGemeindenAndSendReminder finished"
 		);
 	}
 
 	@Schedule(dayOfMonth = "16", month = "10")
 	public void sendGemeindeKennzahlenSecondReminder() {
-		if (isGemeindeKennzahlenReminderDeactivated()) {
-			LOG.info(
-				"Batchjob sendGemeindeKennzahlenSecondtReminder nicht durchgefuehrt, Einstellung ist nicht aktiviert"
+		LOG.info("Batchjob sendGemeindeKennzahlenSecondReminder started");
+		mandantService.getAll()
+			.forEach(
+				mandant -> yearlyBatchService
+					.sendGemeindeKennzahlenSecondReminder(mandant)
 			);
-			return;
-		}
-		gemeindeKennzahlenMailService
-			.sendSecondErinnerungsmailToAllAdminBGOfMandant(
-				mandantService.getMandantBern(),
-				MANDANT_INFO_MAIL
-			);
-		LOG.info(
-			"Batchjob sendGemeindeKennzahlenSecondReminder durchgefuehrt"
-		);
+		LOG.info("Batchjob sendGemeindeKennzahlenSecondReminder finished");
 	}
 
-	private boolean isGemeindeKennzahlenReminderDeactivated() {
-		return !applicationPropertyService.isGemeindeKennzahlenAktiviert(
-			mandantService.getMandantBern()
-		)
-			||
-			!applicationPropertyService.isReminderGemeindeKennzahlenAktiviert(
-				mandantService.getMandantBern()
-			);
-	}
 }

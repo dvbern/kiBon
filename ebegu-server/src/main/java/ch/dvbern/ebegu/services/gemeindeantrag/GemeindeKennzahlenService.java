@@ -58,6 +58,8 @@ import ch.dvbern.ebegu.outbox.ExportedEvent;
 import ch.dvbern.ebegu.outbox.gemeindekennzahlen.GemeindeKennzahlenEventConverter;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.AbstractBaseService;
+import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import ch.dvbern.ebegu.services.util.PredicateHelper;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.EnumUtil;
@@ -87,6 +89,12 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 
 	@Inject
 	private EinstellungService einstellungService;
+
+	@Inject
+	private GesuchsperiodeService gesuchsperiodeService;
+
+	@Inject
+	GemeindeService gemeindeService;
 
 	private static final Logger LOG = LoggerFactory.getLogger(
 		GemeindeKennzahlenService.class
@@ -440,5 +448,40 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 			null
 		)
 			.forEach(this::deleteGemeindeKennzahlenIfNotAbgeschlossen);
+	}
+
+	/**
+	 * Creates {@link GemeindeKennzahlen} records for all active {@link Gemeinde}n for the
+	 * {@link Gesuchsperiode} of the provided {@link Mandant} that was active in the current Gesuchsperiode.
+	 * <p>
+	 * If no {@link Gesuchsperiode} currently exists for the provided {@link Mandant},
+	 * the process is not executed.
+	 *
+	 * @param mandant The {@link Mandant} entity for which the {@link GemeindeKennzahlen}
+	 * should be generated. Must not be null.
+	 */
+	public void createGemeindeKennzahlenInCurrentGPForActiveGemeinden(
+		@Nonnull Mandant mandant
+	) {
+		Optional<Gesuchsperiode> gesuchsperiodeAtYearStart =
+			gesuchsperiodeService.getGesuchsperiodeAm(
+				LocalDate.now(),
+				mandant
+			);
+		if (gesuchsperiodeAtYearStart.isEmpty()) {
+			LOG.info(
+				"Batchjob sendGemeindeKennzahlenFirstReminder nicht durchgefuehrt, keine Gesuchsperiode am Jahrstart vorhanden"
+			);
+			return;
+
+		}
+		Gesuchsperiode gesuchsperiode = gesuchsperiodeAtYearStart.get();
+		var activeGemeinden =
+			(List<Gemeinde>) this.gemeindeService.getAktiveGemeindenGueltigAm(
+				gesuchsperiode.getGueltigkeit().getGueltigAb(),
+				mandant
+			);
+
+		this.createGemeindeKennzahlen(gesuchsperiode, activeGemeinden);
 	}
 }

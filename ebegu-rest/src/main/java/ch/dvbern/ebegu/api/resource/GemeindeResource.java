@@ -224,8 +224,6 @@ public class GemeindeResource {
 				);
 		}
 
-		gemeindeService.fireGemeindeChangedEvent(persistedGemeinde);
-
 		return converter.gemeindeToJAX(persistedGemeinde);
 	}
 

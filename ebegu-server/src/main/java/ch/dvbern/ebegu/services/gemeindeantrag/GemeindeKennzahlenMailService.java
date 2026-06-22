@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 
+import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Mandant;
@@ -49,9 +50,11 @@ public class GemeindeKennzahlenMailService extends AbstractMailServiceBean {
 	@Inject
 	private GemeindeKennzahlenService gemeindeKennzahlenService;
 
+	@Inject
+	private EbeguConfiguration ebeguConfiguration;
+
 	public void sendFirstErinnerungsmailToAllAdminBGOfMandant(
-		Mandant mandant,
-		String mandantInfoMail
+		Mandant mandant
 	) {
 		Collection<Benutzer> activeBenutzerInRolesOfActiveGemeinden =
 			benutzerService
@@ -62,7 +65,6 @@ public class GemeindeKennzahlenMailService extends AbstractMailServiceBean {
 				);
 
 		getBenutzerAndMandantInfoMails(
-			mandantInfoMail,
 			activeBenutzerInRolesOfActiveGemeinden
 		).forEach(
 			email -> sendFirstErinnerungsmailToEmpfaenger(mandant, email)
@@ -79,8 +81,7 @@ public class GemeindeKennzahlenMailService extends AbstractMailServiceBean {
 	}
 
 	public void sendSecondErinnerungsmailToAllAdminBGOfMandant(
-		Mandant mandant,
-		String mandantInfoMail
+		Mandant mandant
 	) {
 		List<Gemeinde> gemeindenWithOpenGemeindeKennzahlen =
 			gemeindeKennzahlenService.getOffeneGemeindeKennzahlen(
@@ -99,7 +100,6 @@ public class GemeindeKennzahlenMailService extends AbstractMailServiceBean {
 			);
 
 		getBenutzerAndMandantInfoMails(
-			mandantInfoMail,
 			activeBgAdminsOfGemeinden
 		).forEach(
 			email -> sendSecondErinnerungsmailToEmpfaenger(mandant, email)
@@ -116,14 +116,13 @@ public class GemeindeKennzahlenMailService extends AbstractMailServiceBean {
 	}
 
 	private List<String> getBenutzerAndMandantInfoMails(
-		String mandantInfoMail,
 		Collection<Benutzer> baseBenutzer
 	) {
 		List<String> receipientList = baseBenutzer
 			.stream()
 			.map(Benutzer::getEmail)
 			.collect(Collectors.toList());
-		receipientList.add(mandantInfoMail);
+		receipientList.add(ebeguConfiguration.getSenderAddress());
 		return receipientList;
 	}
 }

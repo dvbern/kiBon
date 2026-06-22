@@ -37,7 +37,8 @@ export class LoginController implements IController {
     public static $inject: string[] = [
         'AuthServiceRS',
         'DvDialog',
-        'MandantService'
+        'MandantService',
+        '$state'
     ];
 
     private isBern: boolean = false;
@@ -48,7 +49,8 @@ export class LoginController implements IController {
     public constructor(
         private readonly authService: AuthServiceRS,
         private readonly dvDialog: DvDialog,
-        private readonly mandantsService: MandantService
+        private readonly mandantsService: MandantService,
+        private readonly $state: any
     ) {}
 
     public $onInit(): void {
@@ -59,7 +61,8 @@ export class LoginController implements IController {
                 .showDialog(dialogTemplate, RedirectWarningDialogController, {})
                 .then(() =>
                     this.authService.initLoginReturnToTargetState(this.returnTo)
-                );
+                )
+                .catch(() => this.$state.go('onboarding.anmeldung'));
         } else {
             this.authService.initLoginReturnToTargetState(this.returnTo);
         }
