@@ -272,7 +272,7 @@ public class NeueVeranlagungEventHandlerTest extends EasyMockSupport {
 		replayAll();
 		Processing processing = handler.attemptProcessing(
 			gesuch_1GS.getId(),
-			dto
+			handler.convertNeueVeranlagungEventDTOToDomainDTO(dto)
 		);
 		assertThat(processing.getState(), is(ProcessingState.FAILURE));
 	}
@@ -300,7 +300,7 @@ public class NeueVeranlagungEventHandlerTest extends EasyMockSupport {
 		replayAll();
 		Processing processing = handler.attemptProcessing(
 			gesuch_1GS.getId(),
-			dto
+			handler.convertNeueVeranlagungEventDTOToDomainDTO(dto)
 		);
 		assertThat(
 			processing.getMessage(),
@@ -531,7 +531,10 @@ public class NeueVeranlagungEventHandlerTest extends EasyMockSupport {
 	private void testIgnored(@Nonnull String message) {
 		replayAll();
 
-		Processing result = handler.attemptProcessing(gesuch_1GS.getId(), dto);
+		Processing result = handler.attemptProcessing(
+			gesuch_1GS.getId(),
+			handler.convertNeueVeranlagungEventDTOToDomainDTO(dto)
+		);
 		assertThat(result, failed(stringContainsInOrder(message)));
 		verifyAll();
 	}
@@ -650,7 +653,10 @@ public class NeueVeranlagungEventHandlerTest extends EasyMockSupport {
 
 	private void testProcessingSuccess() {
 		replayAll();
-		Processing result = handler.attemptProcessing(gesuch_1GS.getId(), dto);
+		Processing result = handler.attemptProcessing(
+			gesuch_1GS.getId(),
+			handler.convertNeueVeranlagungEventDTOToDomainDTO(dto)
+		);
 		assertThat(result.isProcessingSuccess(), is(true));
 		verifyAll();
 	}

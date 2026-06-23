@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 DV Bern AG, Switzerland
+ * Copyright (C) 2026 DV Bern AG, Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -13,27 +13,16 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
-package ch.dvbern.ebegu.validators.iban;
+package ch.dvbern.ebegu.inbox.handler;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import java.time.LocalDate;
 
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-@Target(FIELD)
-@Retention(RUNTIME)
-@Constraint(validatedBy = CheckIBANStringValidator.class)
-public @interface CheckIBANString {
-
-	String message() default "{ungueltige.iban}";
-
-	Class<?>[] groups() default {};
-
-	Class<? extends Payload>[] payload() default {};
+public record NeueVeranlagungEventDomainDTO(Integer zpvNummer,
+											Long sozialversicherungsNummer,
+											LocalDate geburtsdatum,
+											String kibonAntragId,
+											int gesuchsperiodeBeginnJahr) {
 }

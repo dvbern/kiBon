@@ -119,21 +119,61 @@ public class NeueVeranlagungEventHandler extends
 		@Nonnull NeueVeranlagungEventDTO dto,
 		@Nonnull String clientName
 	) {
+		NeueVeranlagungEventDomainDTO neueVeranlagungEventDomainDTO =
+			convertNeueVeranlagungEventDTOToDomainDTO(dto);
+		processEvent(
+			key,
+			neueVeranlagungEventDomainDTO
+		);
+	}
+
+	/**
+	 * Converts the AVRO DTO into the internal domain representation.
+	 *
+	 * <p>For schema compatibility reasons, the AVRO contract requires the ZPV
+	 * number to be present. Since the field is defined as an integer, its default
+	 * value is {@code 0}. However, a ZPV number must be unique, therefore
+	 * {@code 0} cannot be used to represent an unknown or unspecified value.
+	 *
+	 * <p>To model the business semantics correctly, the domain object allows both
+	 * the ZPV number and the AHV number to be {@code null}. A {@code null} value
+	 * indicates that the identifier is not specified, whereas {@code 0} would be
+	 * interpreted as an actual identifier value.
+	 *
+	 * @param dto the AVRO DTO received from the event
+	 * @return the domain DTO representing the business model
+	 */
+	protected NeueVeranlagungEventDomainDTO convertNeueVeranlagungEventDTOToDomainDTO(
+		NeueVeranlagungEventDTO dto
+	) {
+		return new NeueVeranlagungEventDomainDTO(
+			dto.getZpvNummer() != 0 ? dto.getZpvNummer() : null,
+			dto.getSozialversicherungsNummer(),
+			dto.getGeburtsdatum(),
+			dto.getKibonAntragId(),
+			dto.getGesuchsperiodeBeginnJahr()
+		);
+	}
+
+	private void processEvent(
+		@Nonnull String key,
+		@Nonnull NeueVeranlagungEventDomainDTO dto
+	) {
 		Processing processing = attemptProcessing(key, dto);
 		VeranlagungEventLog veranlagungEventLog = new VeranlagungEventLog(
 			key,
-			dto.getZpvNummer(),
-			dto.getSozialversicherungsNummer(),
-			dto.getGeburtsdatum(),
-			dto.getGesuchsperiodeBeginnJahr()
+			dto.zpvNummer(),
+			dto.sozialversicherungsNummer(),
+			dto.geburtsdatum(),
+			dto.gesuchsperiodeBeginnJahr()
 		);
 		if (!processing.isProcessingSuccess()) {
 			String message = processing.getMessage();
 			LOG.warn(
 				"NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} or AHV Nummer {} und Gesuch: {} nicht "
 					+ "verarbeitet: {}",
-				dto.getZpvNummer(),
-				dto.getSozialversicherungsNummer(),
+				dto.zpvNummer(),
+				dto.sozialversicherungsNummer(),
 				key,
 				message
 			);
@@ -142,8 +182,8 @@ public class NeueVeranlagungEventHandler extends
 			LOG.info(
 				"NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} or AHV-Nummer {} und Gesuch: {} "
 					+ "verarbeitet",
-				dto.getZpvNummer(),
-				dto.getSozialversicherungsNummer(),
+				dto.zpvNummer(),
+				dto.sozialversicherungsNummer(),
 				key
 			);
 			veranlagungEventLog.setResult(
@@ -156,7 +196,7 @@ public class NeueVeranlagungEventHandler extends
 	@Nonnull
 	protected Processing attemptProcessing(
 		@Nonnull String key,
-		@Nonnull NeueVeranlagungEventDTO dto
+		@Nonnull NeueVeranlagungEventDomainDTO dto
 	) {
 		Optional<Gesuch> gesuchOpt = gesuchService.findGesuch(key);
 
@@ -176,14 +216,14 @@ public class NeueVeranlagungEventHandler extends
 
 		if (!KibonAnfrageUtil.hasGesuchSteuerdatenResponseWithZpvOrAHVNummer(
 			gesuch,
-			dto.getZpvNummer(),
-			dto.getSozialversicherungsNummer()
+			dto.zpvNummer(),
+			dto.sozialversicherungsNummer()
 		)) {
 			String message = String.format(
 				"Die neue Veranlagung mit ZPV-Nummer: %s und mit AHV-Nummer: %s, konnte nicht mit einem gültigen Antragstellenden verlinkt werden.",
-				dto.getZpvNummer() != null ? dto.getZpvNummer().toString() : "",
-				dto.getSozialversicherungsNummer() != null ?
-					dto.getSozialversicherungsNummer().toString() :
+				dto.zpvNummer() != null ? dto.zpvNummer() : "",
+				dto.sozialversicherungsNummer() != null ?
+					dto.sozialversicherungsNummer().toString() :
 					""
 			);
 			return Processing.failure(
@@ -194,13 +234,13 @@ public class NeueVeranlagungEventHandler extends
 		GesuchstellerTyp gesuchstellerTyp = KibonAnfrageUtil
 			.getGesuchstellerTypByGeburtsdatum(
 				gesuch,
-				dto.getGeburtsdatum()
+				dto.geburtsdatum()
 			);
 
 		if (gesuchstellerTyp == null) {
 			return Processing.failure(
 				"Die neue Veranlagung mit Geburtsdatum: "
-					+ dto.getGeburtsdatum()
+					+ dto.geburtsdatum()
 					+ ", konnte nicht mit einer gueltige Antragstellende verlinkt werden."
 			);
 		}
@@ -279,16 +319,17 @@ public class NeueVeranlagungEventHandler extends
 		if (isAnyOfInBearbeitungGSOrFreigegeben(gesuch.getStatus())) {
 			return updateWizardStepStatusAndGS(
 				key,
-				dto.getZpvNummer(),
-				dto.getSozialversicherungsNummer()
+				dto.zpvNummer(),
+				dto.sozialversicherungsNummer()
 			);
-		} else {
-			getAndRefreschGesuchFromDB(key);
 		}
+
+		getAndRefreschGesuchFromDB(key);
+
 		return createAndSendNeueVeranlagungsMitteilung(
 			kibonAnfrageContext,
-			dto.getZpvNummer(),
-			dto.getSozialversicherungsNummer()
+			dto.zpvNummer(),
+			dto.sozialversicherungsNummer()
 		);
 	}
 

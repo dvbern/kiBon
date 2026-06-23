@@ -28,7 +28,6 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
 import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
-import ch.dvbern.ebegu.validators.iban.CheckIBANString;
 import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
@@ -74,7 +73,6 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 	private boolean keineMahlzeitenverguenstigungBeantragtEditable;
 
 	@Nullable
-	@CheckIBANString
 	private String iban;
 
 	@Nullable

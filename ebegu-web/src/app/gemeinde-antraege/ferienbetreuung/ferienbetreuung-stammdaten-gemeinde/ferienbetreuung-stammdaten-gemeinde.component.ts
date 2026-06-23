@@ -23,16 +23,21 @@ import {
     OnInit,
     inject
 } from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
+import {
+    AbstractControl,
+    FormBuilder,
+    ValidationErrors,
+    Validators
+} from '@angular/forms';
 import {MAT_DATE_FORMATS} from '@angular/material/core';
 import {MatDatepicker} from '@angular/material/datepicker';
 import {MatDialog} from '@angular/material/dialog';
 import {getUser} from '@dv-e2e/types';
 import {TranslateService} from '@ngx-translate/core';
 import {UIRouterGlobals} from '@uirouter/core';
+import {electronicFormatIBAN, isValidIBAN} from 'ibantools';
 import moment from 'moment';
 import {Moment} from 'moment';
-import {ibanValidator} from 'ngx-iban';
 import {combineLatest, Observable, Subscription} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
@@ -43,6 +48,7 @@ import {TSRole} from '../../../../models/enums/TSRole';
 import {TSFerienbetreuungAngabenStammdaten} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenStammdaten';
 import {TSBfsGemeinde} from '../../../../models/TSBfsGemeinde';
 import {CONSTANTS} from '@models/constants';
+import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
 import {LogFactory} from '@utils/log';
@@ -127,7 +133,18 @@ export class FerienbetreuungStammdatenGemeindeComponent
                 plz: [<null | string>null],
                 zusatzzeile: [<null | string>null]
             }),
-            iban: [<null | string>null, ibanValidator()],
+            iban: [
+                <null | string>null,
+                (control: AbstractControl): ValidationErrors | null => {
+                    const value = control.value;
+                    if (EbeguUtil.isEmptyStringNullOrUndefined(value)) {
+                        return null;
+                    }
+                    return isValidIBAN(electronicFormatIBAN(value))
+                        ? null
+                        : {iban: true};
+                }
+            ],
             vermerkAuszahlung: [<null | string>null]
         })
     });
@@ -285,7 +302,15 @@ export class FerienbetreuungStammdatenGemeindeComponent
         );
         this.form.controls.auszahlungsdaten.controls.iban.setValidators([
             Validators.required,
-            Validators.pattern(CONSTANTS.QR_IBAN_PATTERN)
+            (control: AbstractControl): ValidationErrors | null => {
+                const value = control.value;
+                if (EbeguUtil.isEmptyStringNullOrUndefined(value)) {
+                    return null;
+                }
+                return isValidIBAN(electronicFormatIBAN(value))
+                    ? null
+                    : {iban: true};
+            }
         ]);
 
         this.form.controls.stammdatenAdresse.controls.strasse.updateValueAndValidity();

@@ -1086,9 +1086,10 @@
                                         type="text"
                                         id="iban_id"
                                         matInput
-                                        formControlName="iban"
                                         isNotQrIbanN
                                         ngxIban
+                                        formControlName="iban"
+                                        data-test="iban"
                                         placeholder="CHXX XXXX XXXX XXXX XXXX X"
                                         class="form-control dv-input"
                                     />
@@ -1109,16 +1110,6 @@
                                     ) {
                                         <mat-error translate
                                             >ERROR_IBAN
-                                        </mat-error>
-                                    }
-                                    @if (
-                                        form.controls.auszahlungsdaten.controls
-                                            .iban.errors?.qrIban &&
-                                        form.controls.auszahlungsdaten.controls
-                                            .iban.dirty
-                                    ) {
-                                        <mat-error translate
-                                            >ERROR_QR_IBAN
                                         </mat-error>
                                     }
                                     <dv-bisher-x
