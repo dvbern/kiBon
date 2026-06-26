@@ -267,6 +267,12 @@ public enum ApplicationPropertyKey {
 	@BooleanEinstellung GEMEINDE_KENNZAHLEN_REMINDER_ACTIVATED,
 
 	/**
+	 * Default = false
+	 * Wenn dies aktiviert ist, werden jegliche E-Mails, die an GS1 versendet werden, auch an GS2 versendet.
+	 */
+	@BooleanEinstellung MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2,
+
+	/**
 	 * We can switch for everysteps to the new angular non javascript implemention:
 	 * True => new version when provided
 	 * False => old version

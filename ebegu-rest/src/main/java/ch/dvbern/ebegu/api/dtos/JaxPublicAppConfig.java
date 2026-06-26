@@ -36,6 +36,7 @@ public class JaxPublicAppConfig {
 	private String primaryColorLight;
 	private boolean multimandantAktiv;
 	private final boolean infomaZahlungen;
+	private boolean mailVersandAllerMailsAuchAnGS2;
 	private boolean frenchEnabled;
 	private boolean geresEnabledForMandant;
 	private boolean ebeguKibonAnfrageTestGuiEnabled;

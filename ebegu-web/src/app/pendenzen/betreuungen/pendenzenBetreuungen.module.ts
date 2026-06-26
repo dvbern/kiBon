@@ -13,19 +13,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {downgradeComponent} from '@angular/upgrade/static';
 import * as angular from 'angular';
+import {PendenzBetreuungenService} from '../../../hybrid/gesuch/betreuung/pendenz/pendenzenBetreuungen.service';
 import {CORE_JS_MODULE} from '../../core/core.angularjs.module';
-import {PendenzenBetreuungenListViewComponentConfig} from './component/pendenzenBetreuungenListView/pendenzenBetreuungenListView';
+import {PendenzenBetreuungenListView} from './component/pendenzen-betreuungen-list-view/pendenzen-betreuungen-list-view.component';
 import {pendenzBetreuungenFilter} from './filter/pendenzBetreuungenFilter';
 import {pendenzRun} from './pendenzenBetreuungen.route';
-import {PendenzBetreuungenRS} from './service/PendenzBetreuungenRS.rest';
+import {downgradeInjectable} from '@angular/upgrade/static';
 
 export const PENDENZEN_BETREUUNGEN_JS_MODULE = angular
     .module('ebeguWeb.pendenzenBetreuungen', [CORE_JS_MODULE.name])
     .run(pendenzRun)
-    .service('PendenzBetreuungenRS', PendenzBetreuungenRS)
+    .factory(
+        'PendenzBetreuungenRS',
+        downgradeInjectable(PendenzBetreuungenService)
+    )
     .filter('pendenzBetreuungenFilter', pendenzBetreuungenFilter)
-    .component(
-        'pendenzenBetreuungenListView',
-        new PendenzenBetreuungenListViewComponentConfig()
+    .directive(
+        'dvPendenzenBetreuungenListView',
+        downgradeComponent({
+            component: PendenzenBetreuungenListView,
+            propagateDigest: false
+        })
     );

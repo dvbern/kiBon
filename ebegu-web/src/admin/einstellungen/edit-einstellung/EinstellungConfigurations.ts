@@ -63,6 +63,7 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
     FKJV_MAX_DIFFERENZ_BESCHAEFTIGUNGSPENSUM: createConfiguration(Number),
     FKJV_PAUSCHALE_BEI_ANSPRUCH: createConfiguration(Boolean),
     GESCHWISTERNBONUS_TYP: createConfiguration(TSGeschwisterbonusTyp),
+    MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2: createConfiguration(Boolean),
     MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG: createConfiguration(Number),
     MAX_TARIF_OHNE_PAEDAGOGISCHER_BETREUUNG: createConfiguration(Number),
     MIN_ERWERBSPENSUM_EINGESCHULT: createConfiguration(Number),

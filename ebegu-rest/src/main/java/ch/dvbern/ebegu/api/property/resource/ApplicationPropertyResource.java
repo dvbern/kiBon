@@ -554,6 +554,13 @@ public class ApplicationPropertyResource {
 			)
 		);
 
+		applicationPropertyContext.setMailVersandAllerMailsAuchAnGS2(
+			getApplicationProperty(
+				mandant,
+				ApplicationPropertyKey.MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2
+			)
+		);
+
 		JaxPublicAppConfig pubAppConf = applicationPropertyContext
 			.buildJaxPublicAppConfig();
 		return Response.ok(pubAppConf).build();

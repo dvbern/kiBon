@@ -215,7 +215,6 @@ export class NewAntragListComponent
 
     /**
      * Does the table show pendenzen or general fälle
-     * TODO: is this necessary?
      */
     @Input()
     public pendenz: boolean = false;
@@ -574,7 +573,6 @@ export class NewAntragListComponent
         return this.searchRS.searchAntraege(body);
     }
 
-    // TODO: Doctor: Refactor totalItems into Observable for smoother subscription handling
     private loadTotalCount(body: {
         search: {predicateObject: DVAntragListFilter};
         pagination: {number: any; start: number};

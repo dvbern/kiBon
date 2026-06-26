@@ -27,6 +27,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jakarta.ejb.AsyncResult;
 import jakarta.ejb.Asynchronous;
 import jakarta.ejb.Local;
@@ -38,6 +39,8 @@ import jakarta.inject.Inject;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.dto.SupportAnfrageDTO;
 import ch.dvbern.ebegu.einladung.Einladung;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.AbstractAnmeldung;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Betreuung;
@@ -110,25 +113,53 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	@Inject
 	private GesuchService gesuchService;
 
+	@Inject
+	private ApplicationPropertyService applicationPropertyService;
+
+	private void addInfoLog(String message, Object... args) {
+		LOG.info(message, args);
+	}
+
+	private void logSentEmail(String template, @Nullable String email) {
+		addInfoLog("Sent Email {} to {}", template, email);
+	}
+
+	private void logEmailVersendet(String label, @Nullable String email) {
+		addInfoLog("Email fuer {} wird versendet an {}", label, email);
+	}
+
 	@Override
 	public void sendInfoBetreuungenBestaetigt(@Nonnull Gesuch gesuch) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
 			gesuch,
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoBetreuungenBestaetigt(
+				gesuch,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			gesuch,
 			"InfoBetreuungBestaetigt",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoBetreuungenBestaetigt(
-					gesuch,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.IN_BEARBEITUNG_GS,
 			AntragStatus.IN_BEARBEITUNG_SOZIALDIENST
 		);
+		if (shouldSendEmailToGS2(gesuch)) {
+			sendMailGS2(
+				gesuch,
+				"InfoBetreuungBestaetigt",
+				messageProvider,
+				AntragStatus.IN_BEARBEITUNG_GS,
+				AntragStatus.IN_BEARBEITUNG_SOZIALDIENST
+			);
+		}
 	}
 
 	@Override
@@ -137,18 +168,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			betreuung.extractGesuch(),
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoBetreuungAbgelehnt(
+				betreuung,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			betreuung.extractGesuch(),
 			"InfoBetreuungAbgelehnt",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoBetreuungAbgelehnt(
-					betreuung,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(betreuung.extractGesuch())) {
+			sendMailGS2(
+				betreuung.extractGesuch(),
+				"InfoBetreuungAbgelehnt",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -159,18 +202,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			abstractAnmeldung.extractGesuch(),
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoSchulamtAnmeldungTagesschuleUebernommen(
+				abstractAnmeldung,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			abstractAnmeldung.extractGesuch(),
 			"InfoSchulamtAnmeldungTagesschuleUebernommen",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoSchulamtAnmeldungTagesschuleUebernommen(
-					abstractAnmeldung,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(abstractAnmeldung.extractGesuch())) {
+			sendMailGS2(
+				abstractAnmeldung.extractGesuch(),
+				"InfoSchulamtAnmeldungTagesschuleUebernommen",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -181,18 +236,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			abstractAnmeldung.extractGesuch(),
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoSchulamtAnmeldungAbgelehnt(
+				abstractAnmeldung,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			abstractAnmeldung.extractGesuch(),
 			"InfoSchulamtAnmeldungAbgelehnt",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoSchulamtAnmeldungAbgelehnt(
-					abstractAnmeldung,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(abstractAnmeldung.extractGesuch())) {
+			sendMailGS2(
+				abstractAnmeldung.extractGesuch(),
+				"InfoSchulamtAnmeldungAbgelehnt",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -203,18 +270,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			abstractAnmeldung.extractGesuch(),
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoSchulamtAnmeldungFerieninselUebernommen(
+				abstractAnmeldung,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			abstractAnmeldung.extractGesuch(),
 			"InfoSchulamtAnmeldungFerieninselUebernommen",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoSchulamtAnmeldungFerieninselUebernommen(
-					abstractAnmeldung,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(abstractAnmeldung.extractGesuch())) {
+			sendMailGS2(
+				abstractAnmeldung.extractGesuch(),
+				"InfoSchulamtAnmeldungFerieninselUebernommen",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -228,26 +307,48 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			String mailaddress = fallService.getCurrentEmailAddress(
 				mitteilung.getFall().getId()
 			).orElse(null);
+			Mandant mandant = mitteilung.getFall().getMandant();
+
 			if (StringUtils.isNotEmpty(mailaddress)) {
 				String message = mailTemplateConfig.getInfoMitteilungErhalten(
 					mitteilung,
 					mailaddress,
 					sprachen
 				);
-				Mandant mandant = mitteilung.getFall().getMandant();
 				toOutboxMail(
 					message,
 					mailaddress,
 					mandant.getMandantIdentifier()
 				);
-				LOG.debug(
-					"Email fuer InfoMitteilungErhalten wird versendet an {}",
-					mailaddress
-				);
+				logEmailVersendet("InfoMitteilungErhalten", mailaddress);
 			} else {
 				LOG.warn(
 					"skipping sendInfoMitteilungErhalten because Mitteilungsempfaenger is null"
 				);
+			}
+
+			if (mitteilung.getBetreuung() != null) {
+				Gesuch gesuch = mitteilung.getBetreuung().extractGesuch();
+				if (shouldSendEmailToGS2(gesuch)) {
+					Gesuchsteller gs2 = gesuch.extractGesuchsteller2()
+						.get();
+					String mail2 = gs2.getMail();
+					if (mail2 != null) {
+						toOutboxMail(
+							mailTemplateConfig.getInfoMitteilungErhalten(
+								mitteilung,
+								mail2,
+								sprachen
+							),
+							mail2,
+							gesuch.extractMandant().getMandantIdentifier()
+						);
+					}
+					logSentEmail(
+						"InfoMitteilungErhalten",
+						mail2
+					);
+				}
 			}
 		}
 	}
@@ -258,18 +359,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			gesuch,
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoVerfuegtGesuch(
+				gesuch,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			gesuch,
 			"InfoVerfuegtGesuch",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoVerfuegtGesuch(
-					gesuch,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(gesuch)) {
+			sendMailGS2(
+				gesuch,
+				"InfoVerfuegtGesuch",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -278,18 +391,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			gesuch,
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoVerfuegtMutation(
+				gesuch,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			gesuch,
 			"InfoVerfuegtMutation",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoVerfuegtMutation(
-					gesuch,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(gesuch)) {
+			sendMailGS2(
+				gesuch,
+				"InfoVerfuegtMutation",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -298,18 +423,29 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			gesuch,
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig.getInfoMahnung(
+			gesuch,
+			gesuchsteller,
+			adr,
+			sprache
+		);
+		sendMailGS1Sozialdienst(
 			gesuch,
 			"InfoMahnung",
-			(gesuchsteller, adr) -> mailTemplateConfig.getInfoMahnung(
-				gesuch,
-				gesuchsteller,
-				adr,
-				sprache
-			),
-			true,
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(gesuch)) {
+			sendMailGS2(
+				gesuch,
+				"InfoMahnung",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -322,19 +458,31 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			gesuch,
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getWarnungGesuchNichtFreigegeben(
+				gesuch,
+				gesuchsteller,
+				adr,
+				anzahlTageBisLoeschung,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			gesuch,
 			"WarnungGesuchNichtFreigegeben",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getWarnungGesuchNichtFreigegeben(
-					gesuch,
-					gesuchsteller,
-					adr,
-					anzahlTageBisLoeschung,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(gesuch)) {
+			sendMailGS2(
+				gesuch,
+				"WarnungGesuchNichtFreigegeben",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -347,19 +495,31 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			gesuch,
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getWarnungFreigabequittungFehlt(
+				gesuch,
+				gesuchsteller,
+				adr,
+				anzahlTageBisLoeschung,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			gesuch,
 			"WarnungFreigabequittungFehlt",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getWarnungFreigabequittungFehlt(
-					gesuch,
-					gesuchsteller,
-					adr,
-					anzahlTageBisLoeschung,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(gesuch)) {
+			sendMailGS2(
+				gesuch,
+				"WarnungFreigabequittungFehlt",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -368,18 +528,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			gesuch,
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoGesuchGeloescht(
+				gesuch,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			gesuch,
 			"InfoGesuchGeloescht",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoGesuchGeloescht(
-					gesuch,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(gesuch)) {
+			sendMailGS2(
+				gesuch,
+				"InfoGesuchGeloescht",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -430,14 +602,39 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 						gesuch.extractMandant().getMandantIdentifier()
 					);
 
-					LOG.debug(
-						"Email fuer InfoFreischaltungGesuchsperiode wird versendet an {}",
+					logEmailVersendet(
+						"InfoFreischaltungGesuchsperiode",
 						adr
 					);
+
+					if (shouldSendEmailToGS2(gesuch)) {
+						Gesuchsteller gs2 = gesuch.extractGesuchsteller2()
+							.orElseThrow();  //WHY THROWING AN ERROR HERE
+						String mail2 = gs2.getMail();
+						if (mail2 != null) {
+							toOutboxMail(
+								mailTemplateConfig
+									.getInfoFreischaltungGesuchsperiode(
+										gesuchsperiode,
+										gs2,
+										mail2,
+										gesuch,
+										sprache
+									),
+								mail2,
+								gesuch.extractMandant().getMandantIdentifier()
+							);
+						}
+						logSentEmail(
+							"InfoFreischaltungGesuchsperiode",
+							mail2
+						);
+					}
+
 					return true;
 				}
 
-				LOG.info(
+				addInfoLog(
 					"skipping InfoFreischaltungGesuchsperiode because Gesuchsteller 1 or email address are null: "
 						+ "{} : {}",
 					gesuchsteller,
@@ -512,8 +709,8 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 								mailaddress,
 								mandant.getMandantIdentifier()
 							);
-							LOG.info(
-								"Email fuer InfoBetreuungGeloescht wird versendet an {}",
+							logEmailVersendet(
+								"InfoBetreuungGeloescht",
 								mailaddress
 							);
 						}
@@ -541,8 +738,8 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 								mailaddress,
 								mandant.getMandantIdentifier()
 							);
-							LOG.info(
-								"Email fuer InfoBetreuungGeloescht wird versendet an {}",
+							logEmailVersendet(
+								"InfoBetreuungGeloescht",
 								mailaddress
 							);
 						}
@@ -556,8 +753,8 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 							mailaddress,
 							mandant.getMandantIdentifier()
 						);
-						LOG.info(
-							"Email fuer InfoBetreuungGeloescht wird versendet an {}",
+						logEmailVersendet(
+							"InfoBetreuungGeloescht",
 							mailaddress
 						);
 					}
@@ -615,10 +812,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			mailaddress,
 			mandant.getMandantIdentifier()
 		);
-		LOG.info(
-			"Email fuer InfoBetreuungVerfuegt wird versendet an {}",
-			mailaddress
-		);
+		logEmailVersendet("InfoBetreuungVerfuegt", mailaddress);
 	}
 
 	@Override
@@ -644,8 +838,8 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			receiverEmail,
 			mandant.getMandantIdentifier()
 		);
-		LOG.info(
-			"Email fuer InfoStatistikGeneriert wird versendet an {}",
+		logEmailVersendet(
+			"InfoStatistikGeneriert",
 			removeNewLineChar(receiverEmail)
 		);
 	}
@@ -666,7 +860,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			einladender,
 			einladung
 		);
-		LOG.info(
+		addInfoLog(
 			"Benutzereinladung wird gesendet an {}",
 			einladung.getEingeladener().getEmail()
 		);
@@ -786,8 +980,8 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 					mailaddress,
 					mandant.getMandantIdentifier()
 				);
-				LOG.info(
-					"Email fuer InfoOffenePendenzenInstitution wird versendet an {}",
+				logEmailVersendet(
+					"InfoOffenePendenzenInstitution",
 					mailaddress
 				);
 			} else {
@@ -805,13 +999,13 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 		}
 	}
 
-	private void sendMail(
+	private void sendMailGS1Sozialdienst(
 		@Nonnull Gesuch gesuch,
 		@Nonnull String mailTemplate,
 		@Nonnull BiFunction<Gesuchsteller, String, String> messageProvider,
 		@Nonnull AntragStatus... statusInWhichToSendMail
 	) {
-		sendMail(
+		sendMailGS1Sozialdienst(
 			gesuch,
 			mailTemplate,
 			messageProvider,
@@ -820,16 +1014,79 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 		);
 	}
 
-	private void sendMail(
+	private void sendMailGS2(
+		@Nonnull Gesuch gesuch,
+		@Nonnull String mailTemplate,
+		@Nonnull BiFunction<Gesuchsteller, String, String> messageProvider,
+		@Nonnull AntragStatus... statusInWhichToSendMail
+	) {
+		sendMailGS2(
+			gesuch,
+			mailTemplate,
+			messageProvider,
+			false,
+			statusInWhichToSendMail
+		);
+	}
+
+	private void sendMailGS1Sozialdienst(
 		@Nonnull Gesuch gesuch,
 		@Nonnull String mailTemplate,
 		@Nonnull BiFunction<Gesuchsteller, String, String> messageProvider,
 		boolean useErstgesuchAsFallback,
 		@Nonnull AntragStatus... statusInWhichToSendMail
 	) {
-
-		if (!doSendMail(gesuch, useErstgesuchAsFallback)) {
+		if (!doSendGSOrSozialdienstEmail(
+			gesuch,
+			useErstgesuchAsFallback,
+			statusInWhichToSendMail
+		)) {
 			return;
+		}
+		Optional<Gesuchsteller> gesuchsteller = gesuch.extractGesuchsteller1();
+		Optional<String> emailAddress = findEMailAddress(gesuch);
+
+		sendMail(
+			gesuch,
+			mailTemplate,
+			messageProvider,
+			gesuchsteller,
+			emailAddress
+		);
+	}
+
+	private void sendMailGS2(
+		@Nonnull Gesuch gesuch,
+		@Nonnull String mailTemplate,
+		@Nonnull BiFunction<Gesuchsteller, String, String> messageProvider,
+		boolean useErstgesuchAsFallback,
+		@Nonnull AntragStatus... statusInWhichToSendMail
+	) {
+		if (!doSendGSOrSozialdienstEmail(
+			gesuch,
+			useErstgesuchAsFallback,
+			statusInWhichToSendMail
+		)) {
+			return;
+		}
+		Optional<Gesuchsteller> gesuchsteller = gesuch.extractGesuchsteller2();
+		Optional<String> emailAddress = findEMailAddressGS2(gesuch);
+		sendMail(
+			gesuch,
+			mailTemplate,
+			messageProvider,
+			gesuchsteller,
+			emailAddress
+		);
+	}
+
+	private boolean doSendGSOrSozialdienstEmail(
+		@Nonnull Gesuch gesuch,
+		boolean useErstgesuchAsFallback,
+		@Nonnull AntragStatus... statusInWhichToSendMail
+	) {
+		if (!doSendMail(gesuch, useErstgesuchAsFallback)) {
+			return false;
 		}
 		// Gewisse Mails sollen nur in bestimmten Status gesendet werden.
 		if (ArrayUtils.isNotEmpty(statusInWhichToSendMail)
@@ -837,12 +1094,18 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 				gesuch.getStatus(),
 				statusInWhichToSendMail
 			)) {
-			return;
+			return false;
 		}
+		return true;
+	}
 
-		Optional<Gesuchsteller> gesuchsteller = gesuch.extractGesuchsteller1();
-		Optional<String> emailAddress = findEMailAddress(gesuch);
-
+	private void sendMail(
+		@Nonnull Gesuch gesuch,
+		@Nonnull String mailTemplate,
+		@Nonnull BiFunction<Gesuchsteller, String, String> messageProvider,
+		@Nonnull Optional<Gesuchsteller> gesuchsteller,
+		@Nonnull Optional<String> emailAddress
+	) {
 		Mandant mandant = gesuch.extractMandant();
 
 		if (gesuchsteller.isPresent() && emailAddress.isPresent()) {
@@ -856,19 +1119,28 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 				mandant.getMandantIdentifier()
 			);
 
-			LOG.info("Sent Email {} to {}", mailTemplate, emailAddress.get());
-
-			return;
-		}
-
-		if (gesuch.getEingangsart().isOnlineGesuch()) {
-			LOG.info(
+			logSentEmail(mailTemplate, emailAddress.get());
+		} else if (gesuch.getEingangsart().isOnlineGesuch()) {
+			addInfoLog(
 				"Not sending Email {} because Gesuchsteller or Email Address is NULL: {}, {}",
 				mailTemplate,
 				gesuchsteller,
 				emailAddress
 			);
 		}
+	}
+
+	private boolean shouldSendEmailToGS2(@Nonnull Gesuch gesuch) {
+		boolean propertyEnabled = Boolean.TRUE.equals(
+			applicationPropertyService.findApplicationPropertyAsBoolean(
+				ApplicationPropertyKey.MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2,
+				gesuch.extractMandant()
+			)
+		);
+
+		return propertyEnabled
+			&& !gesuch.getDossier().getFall().isSozialdienstFall()
+			&& gesuch.extractGesuchsteller2().isPresent();
 	}
 
 	/**
@@ -909,6 +1181,15 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			.filter(StringUtils::isNotEmpty);
 	}
 
+	@Nonnull
+	private Optional<String> findEMailAddressGS2(@Nonnull Gesuch gesuch) {
+		return gesuch.extractGesuchsteller2().isPresent() ?
+			Optional.ofNullable(
+				gesuch.extractGesuchsteller2().get().getMail()
+			) :
+			Optional.empty();
+	}
+
 	@Override
 	public void sendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
 		@Nonnull AbstractAnmeldung abstractAnmeldung
@@ -917,18 +1198,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			abstractAnmeldung.extractGesuch(),
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoSchulamtAnmeldungTagesschuleAkzeptiert(
+				abstractAnmeldung,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			abstractAnmeldung.extractGesuch(),
 			"InfoSchulamtAnmeldungTagesschuleAkzeptiert",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoSchulamtAnmeldungTagesschuleAkzeptiert(
-					abstractAnmeldung,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(abstractAnmeldung.extractGesuch())) {
+			sendMailGS2(
+				abstractAnmeldung.extractGesuch(),
+				"InfoSchulamtAnmeldungTagesschuleAkzeptiert",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -965,8 +1258,8 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 					mailaddress,
 					mandant.getMandantIdentifier()
 				);
-				LOG.debug(
-					"Email fuer InfoGemeineAngebotAktiviert wird versendet an {}",
+				logEmailVersendet(
+					"InfoGemeineAngebotAktiviert",
 					mailaddress
 				);
 			} catch (Exception e) {
@@ -996,7 +1289,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 				gemeindeService
 			);
 		if (verantwortlicherTS.getStatus() == BenutzerStatus.EINGELADEN) {
-			LOG.info(
+			addInfoLog(
 				"Benutzer {} ist gesperrt, Mail InfoGesuchVerfuegtVerantwortlicherTS wird nicht gesendet",
 				verantwortlicherTS.getId()
 			);
@@ -1016,8 +1309,8 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 				mailaddressTS,
 				mandant.getMandantIdentifier()
 			);
-			LOG.info(
-				"Email fuer InfoGesuchVerfuegtVerantwortlicherSCH wird versendet an {}",
+			logEmailVersendet(
+				"InfoGesuchVerfuegtVerantwortlicherSCH",
 				mailaddressTS
 			);
 		} else {
@@ -1034,7 +1327,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 		@Nonnull Lastenausgleich lastenausgleich
 	) {
 		try {
-			LOG.info("Sende Mail für Gemeinde " + gemeinde.getName());
+			addInfoLog("Sende Mail für Gemeinde " + gemeinde.getName());
 			List<Sprache> sprachen =
 				EbeguUtil.extractGemeindeSprachen(
 					gemeinde,
@@ -1055,8 +1348,8 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 					mailaddress,
 					mandant.getMandantIdentifier()
 				);
-				LOG.debug(
-					"Email fuer InfoGemeindeLastenausgleichDurch wird versendet an {}",
+				logEmailVersendet(
+					"InfoGemeindeLastenausgleichDurch",
 					mailaddress
 				);
 			} else {
@@ -1084,18 +1377,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			abstractAnmeldung.extractGesuch(),
 			gemeindeService
 		);
-		sendMail(
+		BiFunction<Gesuchsteller, String, String> messageProvider = (
+			gesuchsteller,
+			adr
+		) -> mailTemplateConfig
+			.getInfoSchulamtAnmeldungTagesschuleAkzeptiert(
+				abstractAnmeldung,
+				gesuchsteller,
+				adr,
+				sprache
+			);
+		sendMailGS1Sozialdienst(
 			abstractAnmeldung.extractGesuch(),
 			"InfoSchulamtAnmeldungStorniert",
-			(gesuchsteller, adr) -> mailTemplateConfig
-				.getInfoSchulamtAnmeldungStorniert(
-					abstractAnmeldung,
-					gesuchsteller,
-					adr,
-					sprache
-				),
+			messageProvider,
 			AntragStatus.values()
 		);
+		if (shouldSendEmailToGS2(abstractAnmeldung.extractGesuch())) {
+			sendMailGS2(
+				abstractAnmeldung.extractGesuch(),
+				"InfoSchulamtAnmeldungStorniert",
+				messageProvider,
+				AntragStatus.values()
+			);
+		}
 	}
 
 	@Override
@@ -1109,7 +1414,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 		final Gemeinde gemeinde = wiederEroeffnet.getGemeinde();
 		final Mandant mandant = gemeinde.getMandant();
 		try {
-			LOG.info("Sende Mail für Gemeinde {}", gemeinde.getName());
+			addInfoLog("Sende Mail für Gemeinde {}", gemeinde.getName());
 
 			String mailaddress = findGemeindeMailAddress(gemeinde);
 			if (StringUtils.isNotEmpty(mailaddress)) {
@@ -1125,8 +1430,8 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 					mailaddress,
 					mandant.getMandantIdentifier()
 				);
-				LOG.debug(
-					"Email fuer InfoGemeindeLastenausgleichDurch wird versendet an {}",
+				logEmailVersendet(
+					"InfoGemeindeLastenausgleichDurch",
 					mailaddress
 				);
 			} else {
@@ -1159,7 +1464,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 		String korrespondenzSprache
 	) {
 
-		LOG.info(
+		addInfoLog(
 			"Sende Init ZPV Nr. Mail für GS {}",
 			gesuchstellerContainer.getGesuchstellerJA().getId()
 		);
@@ -1170,10 +1475,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			email
 		);
 		toOutboxMail(message, email, mandantIdentifier);
-		LOG.debug(
-			"Email fuer sendInitGSZPVNr wird versendet an {}",
-			removeNewLineChar(email)
-		);
+		logEmailVersendet("sendInitGSZPVNr", removeNewLineChar(email));
 	}
 
 	@Override
@@ -1181,7 +1483,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 		InstitutionStammdaten institutionStammdaten,
 		@Nonnull String email
 	) {
-		LOG.info(
+		addInfoLog(
 			"Sende Info Bankdaten von Instiution {} hat geändert.",
 			institutionStammdaten.getInstitution().getId()
 		);
@@ -1198,10 +1500,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 				.getMandant()
 				.getMandantIdentifier()
 		);
-		LOG.debug(
-			"Email fuer sendInfoAuszahlungsdatenChanged wird versendet an {}",
-			email
-		);
+		logEmailVersendet("sendInfoAuszahlungsdatenChanged", email);
 	}
 
 	@Override

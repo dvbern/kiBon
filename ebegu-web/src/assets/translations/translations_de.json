@@ -2002,6 +2002,7 @@
     "UPLOAD_FILETYPES_WHITELIST": "Dateitypen-Whitelist",
     "ACTIVATED_DEMO_FEATURES": "Aktivierte Demo Features",
     "CHECKBOX_AUSZAHLEN_IN_ZUKUNFT": "Checkbox Auszahlen in Zukunft einblenden",
+    "MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2": "Mailversand aller Mails auch an GS 2",
     "INFOMA_ZAHLUNGEN": "Infoma Zahlungen",
     "INFOMA_ZAHLUNGEN_JA": "Infoma Zahlungen aktiviert",
     "AUSZAHLUNGEN_AN_ELTERN": "Auszahlung an Eltern",

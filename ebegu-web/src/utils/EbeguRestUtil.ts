@@ -4672,7 +4672,9 @@ export class EbeguRestUtil {
         pendenzTS.kindId = pendenzFromServer.kindId;
         pendenzTS.name = pendenzFromServer.name;
         pendenzTS.vorname = pendenzFromServer.vorname;
-        pendenzTS.geburtsdatum = pendenzFromServer.geburtsdatum;
+        pendenzTS.geburtsdatum = MomentUtil.localDateToMoment(
+            pendenzFromServer.geburtsdatum
+        );
         pendenzTS.typ = pendenzFromServer.typ;
         pendenzTS.gesuchsperiodeString = pendenzFromServer.gesuchsperiodeString;
         pendenzTS.eingangsdatum = MomentUtil.localDateToMoment(
@@ -6723,6 +6725,8 @@ export class EbeguRestUtil {
         publicAppConfigTS.gemeindeVereinfachteKonfigAktiv =
             data.gemeindeVereinfachteKonfigAktiv;
         publicAppConfigTS.testfaelleEnabled = data.testfaelleEnabled;
+        publicAppConfigTS.mailVersandAllerMailsAuchAnGS2 =
+            data.mailVersandAllerMailsAuchAnGS2;
 
         return publicAppConfigTS;
     }

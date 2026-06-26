@@ -1,0 +1,537 @@
+<div class="dv-view">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dv-table">
+                    <div class="row view-title">
+                        <div class="col-md-12">
+                            <h2>
+                                {{ 'PENDENZEN_LIST' | translate }} ({{
+                                    totalItems
+                                }})
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="row margin-top-10">
+                        <div class="col-md-8">
+                            <button
+                                (click)="resetFilter()"
+                                class="dv-btn"
+                                id="refreshIcon"
+                            >
+                                <i class="fa fa-undo"></i>
+                                {{ 'FILTER_ZURUECKSETZEN' | translate }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- Warnung, falls noch Institutionen im Status EINGELADEN -->
+                            @if (hasInstitutionenInStatusAngemeldet) {
+                                <div class="well well-status-abgewiesen">
+                                    <span translate
+                                        >WARNUNG_INSTITUTIONEN_IN_STATUS_ANMELDUNG</span
+                                    >
+                                    <p>
+                                        <a uiSref="gemeinde.list" translate
+                                            >ZUR_LISTE</a
+                                        >
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mat-elevation-z0">
+                        <mat-table
+                            [dataSource]="datasource"
+                            matSort
+                            matSortActive="eingangsdatum"
+                            matSortDirection="desc"
+                        >
+                            <!-- ID Column -->
+                            <ng-container matColumnDef="betreuungsNummer">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="betreuungsNummer"
+                                    translate
+                                    class="ellipsis"
+                                >
+                                    <span class="no-padding-left">ID</span>
+                                </mat-header-cell>
+                                <mat-cell
+                                    *matCellDef="let element"
+                                    class="ellipsis"
+                                >
+                                    <span [title]="element.betreuungsNummer">{{
+                                        element.betreuungsNummer
+                                    }}</span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Gemeinde Column -->
+                            <ng-container matColumnDef="gemeinde">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="gemeinde"
+                                    translate
+                                    class="ellipsis"
+                                    >GEMEINDE</mat-header-cell
+                                >
+                                <mat-cell
+                                    *matCellDef="let element"
+                                    class="ellipsis"
+                                >
+                                    <span [title]="element.gemeinde">{{
+                                        element.gemeinde
+                                    }}</span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Name Column -->
+                            <ng-container matColumnDef="name">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="name"
+                                    translate
+                                    class="ellipsis"
+                                    >NAME</mat-header-cell
+                                >
+                                <mat-cell
+                                    *matCellDef="let element"
+                                    class="ellipsis"
+                                >
+                                    <span [title]="element.name">{{
+                                        element.name
+                                    }}</span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Vorname Column -->
+                            <ng-container matColumnDef="vorname">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="vorname"
+                                    translate
+                                    class="ellipsis"
+                                    >VORNAME</mat-header-cell
+                                >
+                                <mat-cell
+                                    *matCellDef="let element"
+                                    class="ellipsis"
+                                >
+                                    <span [title]="element.vorname">{{
+                                        element.vorname
+                                    }}</span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Geburtsdatum Column -->
+                            <ng-container matColumnDef="geburtsdatum">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="geburtsdatum"
+                                    translate
+                                    class="ellipsis"
+                                    >GEBURTSDATUM</mat-header-cell
+                                >
+                                <mat-cell
+                                    *matCellDef="let element"
+                                    class="ellipsis"
+                                >
+                                    <span
+                                        [title]="
+                                            element.geburtsdatum
+                                                | date: 'dd.MM.yyyy'
+                                        "
+                                        >{{
+                                            element.geburtsdatum
+                                                | date: 'dd.MM.yyyy'
+                                        }}</span
+                                    >
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- AntragTyp Column -->
+                            <ng-container matColumnDef="antragTyp">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="antragTyp"
+                                    translate
+                                    >TYP</mat-header-cell
+                                >
+                                <mat-cell *matCellDef="let element">
+                                    <span
+                                        class="margin-left-5"
+                                        [title]="element.antragTyp | translate"
+                                    >
+                                        {{
+                                            getAntragTypBezeichnung(element)
+                                        }}</span
+                                    >
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- PeriodenString Column -->
+                            <ng-container matColumnDef="periodenString">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="periodenString"
+                                    translate
+                                    >PERIODE</mat-header-cell
+                                >
+                                <mat-cell *matCellDef="let element">
+                                    <span [title]="element.periodenString">{{
+                                        element.periodenString
+                                    }}</span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Eingangsdatum Column -->
+                            <ng-container matColumnDef="eingangsdatum">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="eingangsdatum"
+                                    translate
+                                    >EINGANG</mat-header-cell
+                                >
+                                <mat-cell *matCellDef="let element">
+                                    <span
+                                        [title]="
+                                            element.eingangsdatum
+                                                | date: 'dd.MM.yyyy'
+                                        "
+                                        >{{
+                                            element.eingangsdatum
+                                                | date: 'dd.MM.yyyy'
+                                        }}</span
+                                    >
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Angebote Column -->
+                            <ng-container matColumnDef="angebote">
+                                <mat-header-cell *matHeaderCellDef translate
+                                    >ANGEBOTE</mat-header-cell
+                                >
+                                <mat-cell
+                                    *matCellDef="let element"
+                                    class="ellipsis"
+                                >
+                                    <span
+                                        [title]="
+                                            createAngeboteString(
+                                                element.angebote
+                                            )
+                                        "
+                                        >{{
+                                            createAngeboteString(
+                                                element.angebote
+                                            )
+                                        }}</span
+                                    >
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Institutionen Column -->
+                            <ng-container matColumnDef="institutionen">
+                                <mat-header-cell *matHeaderCellDef translate
+                                    >INSTITUTION</mat-header-cell
+                                >
+                                <mat-cell
+                                    *matCellDef="let element"
+                                    class="ellipsis"
+                                >
+                                    <span
+                                        [title]="
+                                            element.institutionen?.join(', ')
+                                        "
+                                        >{{
+                                            element.institutionen?.join(', ')
+                                        }}</span
+                                    >
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Filter Columns -->
+                            <ng-container
+                                matColumnDef="betreuungsNummer-filter"
+                            >
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <input
+                                            [value]="
+                                                filterPredicate.betreuungsNummer ||
+                                                null
+                                            "
+                                            matInput
+                                            #betreuungsNummer
+                                            (keyup)="
+                                                filterBetreuung(
+                                                    betreuungsNummer.value
+                                                )
+                                            "
+                                        />
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="gemeinde-filter">
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <mat-select
+                                            [value]="filterPredicate.gemeinde"
+                                            (selectionChange)="
+                                                filterGemeinde($event.value)
+                                            "
+                                            panelClass="mat-select-panel1"
+                                            [placeholder]="'ALLE' | translate"
+                                        >
+                                            <mat-option selected
+                                                ><span translate
+                                                    >ALLE</span
+                                                ></mat-option
+                                            >
+                                            @for (
+                                                gemeinde of gemeindenList;
+                                                track gemeinde
+                                            ) {
+                                                <mat-option
+                                                    [value]="gemeinde.name"
+                                                    >{{
+                                                        gemeinde.name
+                                                    }}</mat-option
+                                                >
+                                            }
+                                        </mat-select>
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="name-filter">
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <input
+                                            [value]="
+                                                filterPredicate.name || null
+                                            "
+                                            matInput
+                                            #name
+                                            (keyup)="filterName(name.value)"
+                                        />
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="vorname-filter">
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <input
+                                            [value]="
+                                                filterPredicate.vorname || null
+                                            "
+                                            matInput
+                                            #vorname
+                                            (keyup)="
+                                                filterVorname(vorname.value)
+                                            "
+                                        />
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="geburtsdatum-filter">
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <input
+                                            [value]="
+                                                filterPredicate.geburtsdatum ||
+                                                null
+                                            "
+                                            matInput
+                                            #geburtsdatum
+                                            (keyup)="
+                                                filterGeburtsdatum(
+                                                    geburtsdatum.value
+                                                )
+                                            "
+                                        />
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="antragTyp-filter">
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <input
+                                            [value]="
+                                                filterPredicate.antragTyp ||
+                                                null
+                                            "
+                                            matInput
+                                            #antragTyp
+                                            (keyup)="
+                                                filterAntragTyp(antragTyp.value)
+                                            "
+                                        />
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="periodenString-filter">
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <mat-select
+                                            [value]="
+                                                filterPredicate.periodenString
+                                            "
+                                            (selectionChange)="
+                                                filterPeriode($event.value)
+                                            "
+                                            panelClass="mat-select-panel1"
+                                            [placeholder]="'ALLE' | translate"
+                                        >
+                                            <mat-option selected
+                                                ><span translate
+                                                    >ALLE</span
+                                                ></mat-option
+                                            >
+                                            @for (
+                                                periode of gesuchsperiodenList;
+                                                track periode
+                                            ) {
+                                                <mat-option [value]="periode">{{
+                                                    periode
+                                                }}</mat-option>
+                                            }
+                                        </mat-select>
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="eingangsdatum-filter">
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <input
+                                            [value]="
+                                                filterPredicate.eingangsdatum ||
+                                                null
+                                            "
+                                            matInput
+                                            #eingangsdatum
+                                            (keyup)="
+                                                filterEingangsdatum(
+                                                    eingangsdatum.value
+                                                )
+                                            "
+                                        />
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="angebote-filter">
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <mat-select
+                                            [value]="filterPredicate.angebote"
+                                            (selectionChange)="
+                                                filterAngebot($event.value)
+                                            "
+                                            panelClass="mat-select-panel1"
+                                            [placeholder]="'ALLE' | translate"
+                                        >
+                                            <mat-option selected
+                                                ><span translate
+                                                    >ALLE</span
+                                                ></mat-option
+                                            >
+                                            @for (
+                                                angebot of angeboteList;
+                                                track angebot
+                                            ) {
+                                                <mat-option [value]="angebot"
+                                                    ><span translate>{{
+                                                        angebot
+                                                    }}</span></mat-option
+                                                >
+                                            }
+                                        </mat-select>
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="institutionen-filter">
+                                <mat-header-cell *matHeaderCellDef="let column">
+                                    <mat-form-field
+                                        class="dv-faelle-mat-form-field"
+                                    >
+                                        <mat-select
+                                            [value]="
+                                                filterPredicate.institutionen
+                                            "
+                                            (selectionChange)="
+                                                filterInstitution($event.value)
+                                            "
+                                            panelClass="mat-select-panel1"
+                                            [placeholder]="'ALLE' | translate"
+                                        >
+                                            <mat-option selected
+                                                ><span translate
+                                                    >ALLE</span
+                                                ></mat-option
+                                            >
+                                            @for (
+                                                institution of institutionenList;
+                                                track institution
+                                            ) {
+                                                <mat-option
+                                                    [value]="institution.name"
+                                                    >{{
+                                                        institution.name
+                                                    }}</mat-option
+                                                >
+                                            }
+                                        </mat-select>
+                                    </mat-form-field>
+                                </mat-header-cell>
+                            </ng-container>
+
+                            <mat-header-row
+                                *matHeaderRowDef="displayedColumns"
+                                class="dv-faelle-mat-header-row"
+                            ></mat-header-row>
+                            <mat-header-row
+                                *matHeaderRowDef="filterColumns"
+                                class="dv-faelle-mat-header-row"
+                            ></mat-header-row>
+                            <mat-row
+                                *matRowDef="let row; columns: displayedColumns"
+                                (click)="openBetreuung(row)"
+                                class="pointer-cursor"
+                            ></mat-row>
+                        </mat-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

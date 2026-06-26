@@ -41,6 +41,7 @@ export class TSPublicAppConfig {
     public angebotTFOActivated: boolean;
     public angebotMittagstischActivated: boolean;
     public infomaZahlungen: boolean;
+    public mailVersandAllerMailsAuchAnGS2: boolean;
     public frenchEnabled: boolean;
     public geresEnabledForMandant: boolean;
     public ebeguKibonAnfrageTestGuiEnabled: boolean;

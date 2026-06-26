@@ -75,6 +75,7 @@ public class ApplicationPropertyContext {
 	ApplicationProperty angebotTFOEnabled;
 	ApplicationProperty gemeindeVereinfachteKonfigAktiv;
 	ApplicationProperty abgeloesteViewBeschaeftigungSingleEnabled;
+	ApplicationProperty mailVersandAllerMailsAuchAnGS2;
 	ApplicationProperty gemeindeKennzahlenReminderActivated;
 	String nodeName = "";
 	BigDecimal lastenausgleichTagesschulenAnteilZweitpruefungDeConverted;
@@ -143,6 +144,9 @@ public class ApplicationPropertyContext {
 			.primaryColorLight(primaryColorLight.getValue())
 			.multimandantAktiv(multimandantEnabled)
 			.infomaZahlungen(stringToBool(infomaZahlungen.getValue()))
+			.mailVersandAllerMailsAuchAnGS2(
+				stringToBool(mailVersandAllerMailsAuchAnGS2.getValue())
+			)
 			.frenchEnabled(stringToBool(frenchEnabled.getValue()))
 			.geresEnabledForMandant(
 				stringToBool(geresEnabledForMandant.getValue())
