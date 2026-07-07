@@ -79,7 +79,7 @@
     "KINDER_FACHSTELLENBESTAETIGUNG": "Fachstellenbestätigung",
     "DOKUMENT_GRUND_TYP_ERWEITERTE_BETREUUNG": "Erweiterte Betreuung",
     "BETREUUNGSPENSUM_FACHSTELLE": "Von Fachstelle festgelegte Betreuung",
-    "FINANZIELLE_SITUATION_NETTOEINKOMMEN_HINT": "Tragen Sie hier den Betrag aus Ziffer 499, oder, wenn dieses höher ist gemäss Ziffer 400 der Staatssteuerveranlagung ein. Die genaue Definition des massgebenden Einkommens ist in der Verordnung zu den Betreuungsgutscheinen der jeweiligen Wohnsitzgemeinde geregelt.",
+    "FINANZIELLE_SITUATION_NETTOEINKOMMEN_HINT": "Tragen Sie hier den Betrag aus Ziffer 400 oder 499 der Staatssteuerveranlagung ein. Ob die Ziffer 400 oder 499 massgebend ist, entnehmen Sie bitte der Verordnung zu den Betreuungsgutscheinen Ihrer Wohnsitzgemeinde.",
     "VOLLKOSTEN_HELP": "Bezeichnet die Betreuungskosten in CHF der Institution für das vergünstigte Pensum.",
     "MIN_ELTERNBEITRAG_HELP": "Die Eltern müssen einen minimalen Elternbeitrag leisten. Falls dies noch nicht der Fall ist, weil die Kosten vollständig oder fast vollständig durch den Betreuungsgutschein gedeckt werden, muss die Kita oder Tagesfamilienorganisation den Eltern den (fehlenden) minimalen Elternbeitrag in Rechnung stellen. Der minimale Elternbeitrag wird in der Verordnung zu den Betreuungsgutscheinen der jeweiligen Wohnsitzgemeinde geregelt.",
     "BETREUUNG_HINT_UNTERMONATLICH": "Für die folgenden Angaben gilt: Falls das von- oder bis-Datum der Betreuung nicht auf einer Monatsgrenze liegt, müssen die Werte trotzdem für einen ganzen Monat erfasst werden.",

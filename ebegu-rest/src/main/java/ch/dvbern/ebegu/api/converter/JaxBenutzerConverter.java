@@ -115,6 +115,9 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 		// and the objects are not created again. ID and InsertTimeStamp are the same as before
 		benutzer.getBerechtigungen().clear();
 		benutzer.getBerechtigungen().addAll(convertedBerechtigungen);
+		benutzer.setSendMailWennOffenePendenzen(
+			jaxBenutzer.isSendMailWennOffenePendenzen()
+		);
 		return benutzer;
 	}
 
@@ -269,6 +272,9 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 				.collect(Collectors.toCollection(TreeSet::new));
 		}
 		jaxLoginElement.setBerechtigungen(jaxBerechtigungen);
+		jaxLoginElement.setSendMailWennOffenePendenzen(
+			benutzer.isSendMailWennOffenePendenzen()
+		);
 
 		return jaxLoginElement;
 	}

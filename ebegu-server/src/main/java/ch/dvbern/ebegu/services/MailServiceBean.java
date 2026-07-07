@@ -999,6 +999,43 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 		}
 	}
 
+	@Override
+	public void sendInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
+		@Nonnull Benutzer benutzer,
+		boolean offenePendenzen,
+		boolean ungelesendeMitteilung,
+		String gemeindeNamen,
+		String gemeindeNamenForUnreadMitteilung
+	) {
+		try {
+			String message = mailTemplateConfig
+				.getInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
+					benutzer,
+					offenePendenzen,
+					ungelesendeMitteilung,
+					gemeindeNamen,
+					gemeindeNamenForUnreadMitteilung
+				);
+			Mandant mandant = benutzer.getMandant();
+			toOutboxMail(
+				message,
+				benutzer.getEmail(),
+				mandant.getMandantIdentifier()
+			);
+			LOG.info(
+				"Email fuer InfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende wird versendet an {}",
+				benutzer.getEmail()
+			);
+		} catch (Exception e) {
+			logExceptionAccordingToEnvironment(
+				e,
+				"Mail InfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende konnte nicht verschickt werden fuer Benutzer {}",
+				ebeguConfiguration.getIsDevmode(),
+				benutzer.getFullName()
+			);
+		}
+	}
+
 	private void sendMailGS1Sozialdienst(
 		@Nonnull Gesuch gesuch,
 		@Nonnull String mailTemplate,

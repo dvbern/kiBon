@@ -17,38 +17,47 @@
 
 package ch.dvbern.ebegu.outbox.verfuegung;
 
-import java.util.concurrent.TimeUnit;
-
 import jakarta.annotation.security.RunAs;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.enums.UserRoleName;
-import ch.dvbern.ebegu.outbox.EventGeneratorServiceBean;
 import ch.dvbern.ebegu.services.AbstractBaseService;
+import ch.dvbern.ebegu.services.MandantService;
 import org.jboss.ejb3.annotation.RunAsPrincipal;
-import org.jboss.ejb3.annotation.TransactionTimeout;
 
 @Stateless
 @RunAs(UserRoleName.SUPER_ADMIN)
 @RunAsPrincipal(PrincipalBean.KIBON_SERVICE_ACCOUNT)
 public class VerfuegungEventGenerator extends AbstractBaseService {
+
 	@Inject
-	private EventGeneratorServiceBean eventGeneratorServiceBean;
+	MandantService mandantService;
+
+	@Inject
+	VerfuegungEventServiceBean verfuegungEventServiceBean;
 
 	/**
 	 * Each new Verfuegung is published to Kafka via the outbox event system. However, there are already Verfuegungn
 	 * in the database which have not been published, because the outbox event system has been added later. Thus,
 	 * fetch all these Verfuegungen and publish them once.
 	 */
-	@TransactionTimeout(value = 3, unit = TimeUnit.HOURS)
 	@Schedule(
 		info = "Migration-aid, pushes already existing Verfuegungen to outbox",
 		hour = "5",
 		persistent = true)
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	public void migrate() {
-		eventGeneratorServiceBean.exportVerfuegungEvent();
+		mandantService.getAll()
+			.forEach(
+				mandant -> verfuegungEventServiceBean
+					.publishExistingVerfuegungen(
+						mandant
+					)
+			);
 	}
 }

@@ -150,6 +150,15 @@
                         ></dv-error-messages>
                     </div>
                 </div>
+                @if (settings().checkboxAuszahlungInZukunft) {
+                    <div class="full-width-row">
+                        <dv-checkbox-x
+                            [label]="'CHECKBOX_AUSZAHLUNG_IN_ZUKUNFT'"
+                            [(model)]="model.auszahlungInZukunft"
+                            [displayBisher]="false"
+                        ></dv-checkbox-x>
+                    </div>
+                }
                 <div flex layout="row" layout-align="center center">
                     <dv-loading-button
                         (buttonClick)="createZahlungsauftrag()"
@@ -162,15 +171,6 @@
                         }}</span>
                     </dv-loading-button>
                 </div>
-                @if (settings().checkboxAuszahlungInZukunft) {
-                    <div class="col-md-3">
-                        <dv-checkbox-x
-                            [label]="'CHECKBOX_AUSZAHLUNG_IN_ZUKUNFT'"
-                            [(model)]="model.auszahlungInZukunft"
-                            [displayBisher]="false"
-                        ></dv-checkbox-x>
-                    </div>
-                }
             </div>
         </div>
     </div>

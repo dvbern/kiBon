@@ -15,17 +15,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {CONSTANTS} from '@models/constants';
 import {IPromise, IScope, ITimeoutService} from 'angular';
 import moment from 'moment';
-import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '@models/constants';
-import {DvDialog} from '../../../../app/core/directive/dv-dialog/dv-dialog';
-import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
+import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
+import {DvDialog} from '../../../../app/core/directive/dv-dialog/dv-dialog';
+import {GesuchstellerRS} from '../../../../app/core/service/gesuchstellerRS.rest';
+import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSRole} from '../../../../models/enums/TSRole';
 import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
 import {TSFinanzielleSituationContainer} from '../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../models/TSFinanzModel';
+import {TSGesuchstellerContainer} from '../../../../models/TSGesuchstellerContainer';
 import {ApplicationPropertyRsService} from '../../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {LogFactory} from '../../../../utils/log-factory/LogFactory';
@@ -53,6 +55,7 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
     protected zahlungsangabenRequired: boolean = false;
     protected finSitRequestState: string;
     protected finSitRequestRunning: boolean;
+    protected stekIdentifierSetOnGS = false;
 
     public constructor(
         gesuchModelManager: GesuchModelManager,
@@ -63,7 +66,8 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
         protected readonly authServiceRS: AuthServiceRS,
         protected readonly einstellungRS: EinstellungRS,
         protected readonly dvDialog: DvDialog,
-        private readonly applicationPropertyRS: ApplicationPropertyRsService
+        private readonly applicationPropertyRS: ApplicationPropertyRsService,
+        private readonly gesuchstellerRS: GesuchstellerRS
     ) {
         super(
             gesuchModelManager,
@@ -86,6 +90,14 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
                     CONSTANTS.DATE_FORMAT
                 );
             });
+
+        this.loadCheckIsZPVSet(this.getGesuchstellerContainer());
+    }
+
+    private getGesuchstellerContainer(): TSGesuchstellerContainer {
+        return this.gesuchModelManager.getGesuchstellerNumber() === 1
+            ? this.gesuchModelManager.getGesuch().gesuchsteller1
+            : this.gesuchModelManager.getGesuch().gesuchsteller2;
     }
 
     private loadEinstellungen(): void {
@@ -165,6 +177,19 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
         );
     }
 
+    private async loadCheckIsZPVSet(
+        gsContainer: TSGesuchstellerContainer
+    ): Promise<void> {
+        // If we are not the GS themselves, we are not allowed to know whether a identification number is set
+        if (!this.authServiceRS.isRole(TSRole.GESUCHSTELLER)) {
+            this.stekIdentifierSetOnGS = false;
+            return;
+        }
+        this.gesuchstellerRS
+            .isZPVNummerSetOnGS(gsContainer.id)
+            .then(isSetOnGS => (this.stekIdentifierSetOnGS = isSetOnGS));
+    }
+
     protected abstract isNotFinSitStartOrGS2Required(): boolean;
 
     public showWarningSteuerschnittstelleNotYetActive(): boolean {
@@ -205,27 +230,27 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
         );
     }
 
-    public callKiBonAnfrageAndUpdateFinSit(): void {
+    public async callKiBonAnfrageAndUpdateFinSit() {
         this.finSitRequestRunning = true;
         this.finSitRequestState = saveHints.LOADING;
-        this.callKiBonAnfrage(
-            EbeguUtil.isNotNullAndTrue(
-                this.model.familienSituation.gemeinsameSteuererklaerung
-            )
-        )
-            .then(() => {
+        try {
+            try {
+                await this.callKiBonAnfrage(
+                    EbeguUtil.isNotNullAndTrue(
+                        this.model.familienSituation.gemeinsameSteuererklaerung
+                    )
+                );
                 this.model.copyFinSitDataFromGesuch(
                     this.gesuchModelManager.getGesuch()
                 );
                 this.form.$setDirty();
                 this.finSitRequestState = saveHints.SAVED;
-            })
-            .catch(() => {
+            } catch {
                 this.finSitRequestState = saveHints.ERROR;
-            })
-            .finally(() => {
-                this.finSitRequestState = saveHints.SAVED;
-            });
+            }
+        } finally {
+            this.finSitRequestState = saveHints.SAVED;
+        }
         setTimeout(() => {
             this.finSitRequestRunning = false;
         }, 5000);
@@ -292,5 +317,29 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
         return this.gesuchModelManager.callKiBonAnfrageAndUpdateFinSit(
             isGemeinsam
         );
+    }
+
+    /**
+     *
+     * @protected
+     */
+    protected async resetStekIdentifier() {
+        const gs = this.getGesuchstellerContainer();
+
+        this.dvDialog
+            .showRemoveDialog(
+                removeDialogTemplate,
+                null,
+                RemoveDialogController,
+                {
+                    title: 'FINANZIELLE_SITUATION_STEUERDATEN_ZPV_VERKNUEPFUNG_ZURUECKSETZEN_CONFIRMATION',
+                    translateParams: {gsName: gs.extractFullName()}
+                }
+            )
+            .then(async () => {
+                await this.gesuchstellerRS.resetStekIdentifier(gs.id);
+                await this.callKiBonAnfrageAndUpdateFinSit();
+                await this.loadCheckIsZPVSet(gs);
+            });
     }
 }

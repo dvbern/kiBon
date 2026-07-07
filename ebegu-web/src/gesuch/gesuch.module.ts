@@ -438,8 +438,13 @@ export const GESUCH_JS_MODULE = angular
         'dvSteuerabfrageResponseHints',
         downgradeComponent({
             component: SteuerabfrageResponseHintsComponent,
-            inputs: ['status', 'finSitRequestState', 'finSitRequestRunning'],
-            outputs: ['tryAgainEvent']
+            inputs: [
+                'status',
+                'finSitRequestState',
+                'finSitRequestRunning',
+                'isStekIdentifierSetOnGS'
+            ],
+            outputs: ['tryAgainEvent', 'resetStekIdentifierClicked']
         })
     )
     .directive(

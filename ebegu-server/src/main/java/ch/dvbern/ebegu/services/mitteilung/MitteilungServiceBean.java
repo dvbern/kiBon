@@ -2374,39 +2374,40 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 	}
 
 	@Override
-	public boolean hasBenutzerAnyMitteilungenAsSenderOrEmpfaenger(
+	public List<String> findDistinctGemeindeNamesForUnreadMitteilungenAsEmpfaenger(
 		@Nonnull Benutzer benutzer
 	) {
 
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		CriteriaQuery query = SearchUtil.getQueryForSearchMode(
-			cb,
-			SearchMode.COUNT,
-			"searchMitteilungen"
-		);
+		CriteriaQuery query = cb.createQuery(String.class);
 		Root<Mitteilung> root = query.from(Mitteilung.class);
 
-		// Join all the relevant relations
-		Join<Mitteilung, Benutzer> joinSender = root.join(
-			Mitteilung_.sender,
-			JoinType.LEFT
-		);
 		Join<Mitteilung, Benutzer> joinEmpfaenger = root.join(
 			Mitteilung_.empfaenger,
 			JoinType.LEFT
 		);
+		Join<Mitteilung, Dossier> joinDossier = root.join(
+			Mitteilung_.dossier,
+			JoinType.INNER
+		);
+		Join<Dossier, Gemeinde> joinGemeindeDossier = joinDossier.join(
+			Dossier_.gemeinde,
+			JoinType.INNER
+		);
 
-		Predicate predicate = cb.or(
-			cb.equal(joinSender, benutzer),
+		Predicate predicate = cb.and(
+			cb.equal(
+				root.get(Mitteilung_.mitteilungStatus),
+				MitteilungStatus.NEU
+			),
 			cb.equal(joinEmpfaenger, benutzer)
 		);
 
-		query.select(cb.countDistinct(root.get(AbstractEntity_.id)))
+		query.select(joinGemeindeDossier.get(Gemeinde_.name))
+			.distinct(true)
 			.where(predicate);
 
-		Long count = (Long) persistence.getCriteriaSingleResult(query);
-
-		return count > 0;
+		return persistence.getCriteriaResults(query);
 	}
 
 	/**

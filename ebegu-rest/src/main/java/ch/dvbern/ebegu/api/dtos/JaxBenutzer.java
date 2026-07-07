@@ -24,9 +24,11 @@ import javax.annotation.Nullable;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.enums.BenutzerStatus;
-import ch.dvbern.ebegu.enums.UserRole;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @XmlRootElement(name = "benutzer")
 public class JaxBenutzer implements Serializable {
 
@@ -61,115 +63,8 @@ public class JaxBenutzer implements Serializable {
 	@Nonnull
 	private Set<JaxBerechtigung> berechtigungen = new LinkedHashSet<>();
 
-	@SuppressFBWarnings(value = "NM_CONFUSING",
-		justification = "Other method is external interface, cant change that")
 	@Nonnull
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(@Nonnull String username) {
-		this.username = username;
-	}
-
-	@Nullable
-	public String getExternalUUID() {
-		return externalUUID;
-	}
-
-	public void setExternalUUID(@Nullable String externalUUID) {
-		this.externalUUID = externalUUID;
-	}
-
-	@Nonnull
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(@Nonnull String password) {
-		this.password = password;
-	}
-
-	@Nonnull
-	public String getNachname() {
-		return nachname;
-	}
-
-	public void setNachname(@Nonnull String nachname) {
-		this.nachname = nachname;
-	}
-
-	@Nonnull
-	public String getVorname() {
-		return vorname;
-	}
-
-	public void setVorname(@Nonnull String vorname) {
-		this.vorname = vorname;
-	}
-
-	@Nonnull
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(@Nonnull String email) {
-		this.email = email;
-	}
-
-	public JaxMandant getMandant() {
-		return mandant;
-	}
-
-	public void setMandant(JaxMandant mandant) {
-		this.mandant = mandant;
-	}
-
-	@Nonnull
-	public BenutzerStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(@Nonnull BenutzerStatus status) {
-		this.status = status;
-	}
-
-	@Nullable
-	public JaxBerechtigung getCurrentBerechtigung() {
-		return currentBerechtigung;
-	}
-
-	public void setCurrentBerechtigung(
-		@Nonnull JaxBerechtigung currentBerechtigung
-	) {
-		this.currentBerechtigung = currentBerechtigung;
-	}
-
-	@Nonnull
-	public Set<JaxBerechtigung> getBerechtigungen() {
-		return berechtigungen;
-	}
-
-	public void setBerechtigungen(
-		@Nonnull Set<JaxBerechtigung> berechtigungen
-	) {
-		this.berechtigungen = berechtigungen;
-	}
-
-	@Nonnull
-	public UserRole getRole() {
-		return getCurrentBerechtigung().getRole();
-	}
-
-	@Nullable
-	public JaxInstitution getInstitution() {
-		return getCurrentBerechtigung().getInstitution();
-	}
-
-	@Nullable
-	public JaxTraegerschaft getTraegerschaft() {
-		return getCurrentBerechtigung().getTraegerschaft();
-	}
+	private boolean sendMailWennOffenePendenzen;
 
 	/**
 	 * evaluates current berechtigung and sets it to the object

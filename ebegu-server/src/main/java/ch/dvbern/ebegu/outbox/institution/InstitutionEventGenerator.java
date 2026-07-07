@@ -20,26 +20,39 @@ package ch.dvbern.ebegu.outbox.institution;
 import jakarta.annotation.security.RunAs;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.enums.UserRoleName;
-import ch.dvbern.ebegu.outbox.EventGeneratorServiceBean;
+import ch.dvbern.ebegu.services.MandantService;
 import org.jboss.ejb3.annotation.RunAsPrincipal;
 
 @Stateless
 @RunAs(UserRoleName.SUPER_ADMIN)
 @RunAsPrincipal(PrincipalBean.KIBON_SERVICE_ACCOUNT)
 public class InstitutionEventGenerator {
+
 	@Inject
-	private EventGeneratorServiceBean eventGeneratorServiceBean;
+	MandantService mandantService;
+
+	@Inject
+	InstitutionEventServiceBean institutionEventServiceBean;
 
 	@Schedule(
 		info = "Migration-aid, pushes already existing institutions to outbox",
 		hour = "5",
 		minute = "10",
 		persistent = true)
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	public void publishExistingInstitutionen() {
-		eventGeneratorServiceBean.exportInstitutionEvent();
+		mandantService.getAll()
+			.forEach(
+				mandant -> institutionEventServiceBean
+					.publishExistingInstitutionen(
+						mandant
+					)
+			);
 	}
 }

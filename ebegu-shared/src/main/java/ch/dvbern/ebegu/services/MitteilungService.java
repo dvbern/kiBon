@@ -260,7 +260,7 @@ public interface MitteilungService {
 	 * ist
 	 * Es wird keine Berechtigungsprüfung durchgeführt, da nur ja/nein zurückgeben wird.
 	 */
-	boolean hasBenutzerAnyMitteilungenAsSenderOrEmpfaenger(
+	List<String> findDistinctGemeindeNamesForUnreadMitteilungenAsEmpfaenger(
 		@Nonnull Benutzer benutzer
 	);
 

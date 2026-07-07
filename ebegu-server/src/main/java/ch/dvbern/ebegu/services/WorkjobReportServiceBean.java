@@ -58,6 +58,7 @@ import static ch.dvbern.ebegu.enums.WorkJobConstants.DATE_FROM_PARAM;
 import static ch.dvbern.ebegu.enums.WorkJobConstants.DATE_TO_PARAM;
 import static ch.dvbern.ebegu.enums.WorkJobConstants.DATUM_TYP;
 import static ch.dvbern.ebegu.enums.WorkJobConstants.DO_SAVE;
+import static ch.dvbern.ebegu.enums.WorkJobConstants.INCLUDE_GESPERRTE;
 import static ch.dvbern.ebegu.enums.WorkJobConstants.INKL_BG_GESUCHE;
 import static ch.dvbern.ebegu.enums.WorkJobConstants.INKL_MISCH_GESUCHE;
 import static ch.dvbern.ebegu.enums.WorkJobConstants.INKL_TS_GESUCHE;
@@ -155,6 +156,53 @@ public class WorkjobReportServiceBean extends AbstractBaseService implements
 		@Nullable BigDecimal kantonSelbstbehalt,
 		@Nonnull Locale locale
 	) {
+		return createNewReporting(
+			workJob,
+			vorlage,
+			datumVon,
+			datumBis,
+			datumTyp,
+			gesuchPeriodIdParam,
+			stammdatenIdParam,
+			inklBgGesuche,
+			inklMischGesuche,
+			inklTsGesuche,
+			ohneErneuerungsgesuch,
+			jahr,
+			gemeinde,
+			institution,
+			text,
+			doSave,
+			betragProKind,
+			kantonSelbstbehalt,
+			false,
+			locale
+		);
+	}
+
+	@Nonnull
+	private Workjob createNewReporting(
+		@Nonnull Workjob workJob,
+		@Nonnull ReportVorlage vorlage,
+		@Nullable LocalDate datumVon,
+		@Nullable LocalDate datumBis,
+		@Nullable DatumTyp datumTyp,
+		@Nullable String gesuchPeriodIdParam,
+		@Nullable String stammdatenIdParam,
+		boolean inklBgGesuche,
+		boolean inklMischGesuche,
+		boolean inklTsGesuche,
+		boolean ohneErneuerungsgesuch,
+		@Nullable Integer jahr,
+		@Nullable Gemeinde gemeinde,
+		@Nullable Institution institution,
+		@Nullable String text,
+		boolean doSave,
+		@Nonnull BigDecimal betragProKind,
+		@Nullable BigDecimal kantonSelbstbehalt,
+		boolean includeGesperrte,
+		@Nonnull Locale locale
+	) {
 		checkIfJobCreationAllowed(workJob, vorlage);
 
 		JobOperator jobOperator = BatchRuntime.getJobOperator();
@@ -184,6 +232,10 @@ public class WorkjobReportServiceBean extends AbstractBaseService implements
 		jobParameters.setProperty(
 			INKL_TS_GESUCHE,
 			String.valueOf(inklTsGesuche)
+		);
+		jobParameters.setProperty(
+			INCLUDE_GESPERRTE,
+			String.valueOf(includeGesperrte)
 		);
 		jobParameters.setProperty(
 			OHNE_ERNEUERUNGSGESUCHE,
@@ -250,7 +302,8 @@ public class WorkjobReportServiceBean extends AbstractBaseService implements
 		jobOperator.getJobNames();
 		workJob.setStatus(BatchJobStatus.REQUESTED);
 		workJob = workjobService.saveWorkjob(workJob);
-		persistence.getEntityManager().flush(); //so we can actually set state to running using an update script in the job-listener
+		persistence.getEntityManager()
+			.flush(); //so we can actually set state to running using an update script in the job-listener
 		long executionId = jobOperator.start("reportbatch", jobParameters);
 
 		this.persistence.getEntityManager().refresh(workJob); //evtl hat job schon gestartet
@@ -274,6 +327,41 @@ public class WorkjobReportServiceBean extends AbstractBaseService implements
 		@Nullable LocalDate datumVon,
 		@Nullable LocalDate datumBis,
 		@Nullable String gesuchPeriodIdParam,
+		boolean includeGesperrte,
+		@Nonnull Locale locale
+	) {
+		return createNewReporting(
+			workJob,
+			vorlage,
+			datumVon,
+			datumBis,
+			null,
+			gesuchPeriodIdParam,
+			null,
+			false,
+			false,
+			false,
+			false,
+			null,
+			null,
+			null,
+			null,
+			false,
+			BigDecimal.ZERO,
+			null,
+			includeGesperrte,
+			locale
+		);
+	}
+
+	@Nonnull
+	@Override
+	public Workjob createNewReporting(
+		@Nonnull Workjob workJob,
+		@Nonnull ReportVorlage vorlage,
+		@Nullable LocalDate datumVon,
+		@Nullable LocalDate datumBis,
+		@Nullable String gesuchPeriodIdParam,
 		@Nonnull Locale locale
 	) {
 		return createNewReporting(
@@ -283,13 +371,6 @@ public class WorkjobReportServiceBean extends AbstractBaseService implements
 			datumBis,
 			gesuchPeriodIdParam,
 			false,
-			false,
-			false,
-			false,
-			null,
-			null,
-			null,
-			null,
 			locale
 		);
 	}

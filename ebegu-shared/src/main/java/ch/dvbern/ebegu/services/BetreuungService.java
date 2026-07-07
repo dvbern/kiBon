@@ -291,6 +291,17 @@ public interface BetreuungService {
 	void sendInfoOffenePendenzenNeuMitteilungInstitution();
 
 	/**
+	 * Sendet eine E-Mail an alle Gemeinden die aktuell offene Pendenzen oder neue Mitteilung haben.
+	 * Offene Pendenzen sind Pendenzen die sind in eine Antragstatus die gehört an die Gemeinde und wo:
+	 * - keine BG or TS Verantwortlicher gesetzt ist
+	 * - oder der Benutzer ist als Verantwortlicher gesetzt
+	 * Neue Mitteilungen sind:
+	 * - an der Benutzer zugewiesen
+	 * - immer noch im Status Neu
+	 */
+	void sendInfoOffenePendenzenNeuMitteilungGemeinde(Mandant mandant);
+
+	/**
 	 * entfernt eine Anmeldung aus der Datenbank
 	 *
 	 * @param anmeldungId Id der zu entfernenden Anmeldung

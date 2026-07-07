@@ -3714,7 +3714,11 @@
                     </div>
                     <div class="col-sm-6">
                         <!-- Standardverantwortliche -->
-                        @if (stammdaten.defaultBenutzerBG) {
+                        @if (
+                            stammdaten.defaultBenutzerBG &&
+                            stammdaten.defaultBenutzerBG.status ===
+                                TSBenutzerStatus.AKTIV
+                        ) {
                             <div>
                                 <div class="form-group">
                                     <h3 translate>

@@ -93,6 +93,9 @@ public class MailTemplateConfiguration {
 	public static final String FTL_FILE_EXTENSION = ".ftl";
 	public static final String UNGELESENDE_MITTEILUNG = "ungelesendeMitteilung";
 	public static final String OFFENE_PENDENZEN = "offenePendenzen";
+	public static final String GEMEINDE_NAMEN = "gemeindeNamen";
+	public static final String GEMEINDE_NAMEN_MITTEILUNG =
+		"gemeindeNamenMitteilung";
 	public static final String FRONTEND_URL = "frontendUrl";
 	public static final String GRUSS = "gruss";
 	public static final String GRUSS_FR = "gruss_fr";
@@ -682,6 +685,43 @@ public class MailTemplateConfiguration {
 		return doProcessTemplate(
 			getTemplateFileName(
 				MailTemplate.InfoOffenePendenzenNeueMitteilungInstitution
+			),
+			locale,
+			paramMap
+		);
+	}
+
+	/**
+	 * InfoOffenePendenzenInstitution is sent in two languages FR and DE since we don't know the language of the
+	 * institution.
+	 */
+	@Nonnull
+	public String getInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
+		@Nonnull Benutzer benutzer,
+		boolean offenePendenzen,
+		boolean ungelesendeMitteilung,
+		String gemeindeNamen,
+		String gemeindeNamenForUnreadMitteilung
+	) {
+		Mandant mandant = benutzer.getMandant();
+		Map<Object, Object> paramMap = paramsWithEmpfaenger(
+			benutzer.getEmail(),
+			mandant.getMandantIdentifier()
+		);
+		Locale locale = getMandantLocale(
+			mandant
+		);
+		paramMap.put(UNGELESENDE_MITTEILUNG, ungelesendeMitteilung);
+		paramMap.put(OFFENE_PENDENZEN, offenePendenzen);
+		paramMap.put(GEMEINDE_NAMEN, gemeindeNamen);
+		paramMap.put(
+			GEMEINDE_NAMEN_MITTEILUNG,
+			gemeindeNamenForUnreadMitteilung
+		);
+
+		return doProcessTemplate(
+			getTemplateFileName(
+				MailTemplate.InfoOffenePendenzenNeueMitteilungGemeindeMitarbeitende
 			),
 			locale,
 			paramMap

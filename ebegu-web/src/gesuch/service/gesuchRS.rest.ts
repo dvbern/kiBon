@@ -435,17 +435,6 @@ export class GesuchRS implements IEntityRS {
             )
             .catch((): undefined => undefined);
     }
-
-    public zpvNummerErfolgreichVerknuepft(
-        gesuchstellerId: string
-    ): IPromise<boolean> {
-        return this.$http
-            .get(
-                `${this.serviceURL}/zpvNummerSuccess/${encodeURIComponent(gesuchstellerId)}`
-            )
-            .then((response: any) => JSON.parse(response.data));
-    }
-
     public mutationIgnorieren(gesuchId: string): IPromise<TSGesuch> {
         return this.$http
             .put(`${this.serviceURL}/${gesuchId}/ignorieren`, {})

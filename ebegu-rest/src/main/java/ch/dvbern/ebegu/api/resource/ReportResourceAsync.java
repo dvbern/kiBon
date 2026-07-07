@@ -373,7 +373,8 @@ public class ReportResourceAsync {
 		SACHBEARBEITER_MANDANT, ADMIN_INSTITUTION })
 	public Response getBenutzerReportExcel(
 		@Context HttpServletRequest request,
-		@Context UriInfo uriInfo
+		@Context UriInfo uriInfo,
+		@QueryParam("includeGesperrte") @Nonnull String includeGesperrte
 	) {
 		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
@@ -383,6 +384,7 @@ public class ReportResourceAsync {
 			null,
 			null,
 			null,
+			Boolean.parseBoolean(includeGesperrte),
 			LocaleThreadLocal.get()
 		);
 

@@ -19,6 +19,7 @@
 package ch.dvbern.ebegu.dto.filter.suchfilter.smarttable;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -61,7 +62,7 @@ public class BenutzerPredicateObjectDTO implements Serializable {
 	@Nullable
 	private String sozialdienst = null;
 	@Nullable
-	private BenutzerStatus status = null;
+	private List<BenutzerStatus> status = null;
 
 	@Override
 	public String toString() {
@@ -172,11 +173,11 @@ public class BenutzerPredicateObjectDTO implements Serializable {
 	}
 
 	@Nullable
-	public BenutzerStatus getStatus() {
+	public List<BenutzerStatus> getStatus() {
 		return status;
 	}
 
-	public void setStatus(@Nullable BenutzerStatus status) {
+	public void setStatus(@Nullable List<BenutzerStatus> status) {
 		this.status = status;
 	}
 

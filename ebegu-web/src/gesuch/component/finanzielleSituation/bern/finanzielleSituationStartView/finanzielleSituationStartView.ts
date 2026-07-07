@@ -20,6 +20,7 @@ import {electronicFormatIBAN} from 'ibantools';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
+import {GesuchstellerRS} from '../../../../../app/core/service/gesuchstellerRS.rest';
 import {ListResourceRS} from '../../../../../app/core/service/listResourceRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSAdresse} from '../../../../../models/entity/TSAdresse';
@@ -71,7 +72,8 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
         'ListResourceRS',
         'EinstellungRS',
         'ApplicationPropertyRsService',
-        'SharedUtilDvShowWarningAngabenVervollstaendingenService'
+        'SharedUtilDvShowWarningAngabenVervollstaendingenService',
+        'GesuchstellerRS'
     ];
 
     public finanzielleSituationRequired: boolean;
@@ -96,7 +98,8 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
         listResourceRS: ListResourceRS,
         einstellungRS: EinstellungRS,
         applicationPropertyRS: ApplicationPropertyRsService,
-        private readonly showWarningAngabenVervollstaendingenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
+        private readonly showWarningAngabenVervollstaendingenService: SharedUtilDvShowWarningAngabenVervollstaendingenService,
+        gesuchstellerRS: GesuchstellerRS
     ) {
         super(
             gesuchModelManager,
@@ -107,7 +110,8 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
             authServiceRS,
             einstellungRS,
             dvDialog,
-            applicationPropertyRS
+            applicationPropertyRS,
+            gesuchstellerRS
         );
 
         listResourceRS.getLaenderList().then((laenderList: TSLand[]) => {

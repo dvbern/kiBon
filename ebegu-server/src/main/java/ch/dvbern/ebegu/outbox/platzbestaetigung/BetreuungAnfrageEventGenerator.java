@@ -20,19 +20,29 @@ package ch.dvbern.ebegu.outbox.platzbestaetigung;
 import jakarta.annotation.security.RunAs;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.enums.UserRoleName;
-import ch.dvbern.ebegu.outbox.EventGeneratorServiceBean;
+import ch.dvbern.ebegu.services.MandantService;
 import org.jboss.ejb3.annotation.RunAsPrincipal;
 
 @Stateless
 @RunAs(UserRoleName.SUPER_ADMIN)
 @RunAsPrincipal(PrincipalBean.KIBON_SERVICE_ACCOUNT)
 public class BetreuungAnfrageEventGenerator {
+
 	@Inject
-	private EventGeneratorServiceBean eventGeneratorServiceBean;
+	private EbeguConfiguration ebeguConfiguration;
+
+	@Inject
+	MandantService mandantService;
+
+	@Inject
+	BetreuungAnfrageEventServiceBean betreuungAnfrageEventServiceBean;
 
 	/**
 	 * This is a job starting every night, there must be no more need for this job after the first execution
@@ -43,7 +53,16 @@ public class BetreuungAnfrageEventGenerator {
 		info = "Migration-aid, pushes Betreuung waiting for Platzbestaetigung and not yet published",
 		hour = "4",
 		persistent = true)
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	public void publishWartendeBetreuung() {
-		eventGeneratorServiceBean.exportBetreuungAnfrageEvent();
+		if (ebeguConfiguration.isBetreuungAnfrageApiEnabled()) {
+			mandantService.getAll()
+				.forEach(
+					mandant -> betreuungAnfrageEventServiceBean
+						.publishExistingBetreuungAnfrage(
+							mandant
+						)
+				);
+		}
 	}
 }

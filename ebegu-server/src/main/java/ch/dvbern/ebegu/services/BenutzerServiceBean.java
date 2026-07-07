@@ -785,6 +785,47 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 		return persistence.getCriteriaResults(query);
 	}
 
+	@Override
+	public Collection<Benutzer> getActiveGemeindeBenutzersWithSendMailActivated(
+		Mandant mandant
+	) {
+		List<Predicate> predicates = new ArrayList<>();
+
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
+		Root<Benutzer> root = query.from(Benutzer.class);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
+		query.select(root);
+
+		// UserRole Gueltig condition
+		predicates.add(cb.equal(root.get(Benutzer_.status), AKTIV));
+		predicates.add(
+			getBerechtigungGueltigPredicate(cb, joinBerechtigungen)
+		);
+
+		//Gemeinde Role condition
+		Collection<UserRole> gemeindeRoles =
+			new ArrayList<>(UserRole.getAllGemeindeAdminRoles());
+		gemeindeRoles.addAll(UserRole.getAllGemeindeSachbearbeiterRoles());
+		predicates.add(
+			joinBerechtigungen.get(Berechtigung_.role).in(gemeindeRoles)
+		);
+
+		//Send Email activated condition
+		predicates.add(
+			cb.isTrue(root.get(Benutzer_.sendMailWennOffenePendenzen))
+		);
+
+		predicates.add(cb.equal(root.get(Benutzer_.mandant), mandant));
+
+		query.where(predicates.toArray(NEW));
+		query.distinct(true);
+
+		return persistence.getCriteriaResults(query);
+	}
+
 	private static Predicate getBerechtigungGueltigPredicate(
 		CriteriaBuilder cb,
 		Join<Benutzer, Berechtigung> joinBerechtigungen
@@ -1773,12 +1814,10 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 			);
 		}
 		// gesperrt
-		if (predicateObjectDto.getStatus() != null) {
+		if (predicateObjectDto.getStatus() != null
+			&& !predicateObjectDto.getStatus().isEmpty()) {
 			predicates.add(
-				cb.equal(
-					root.get(Benutzer_.status),
-					predicateObjectDto.getStatus()
-				)
+				root.get(Benutzer_.status).in(predicateObjectDto.getStatus())
 			);
 		}
 	}

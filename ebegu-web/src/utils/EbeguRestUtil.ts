@@ -4717,6 +4717,7 @@ export class EbeguRestUtil {
         user.email = userTS.email;
         user.mandant = this.mandantToRestObject({}, userTS.mandant);
         user.status = userTS.status;
+        user.sendMailWennOffenePendenzen = userTS.sendMailWennOffenePendenzen;
         if (userTS.berechtigungen) {
             user.berechtigungen = [];
             userTS.berechtigungen.forEach((berecht: TSBerechtigung) => {
@@ -4765,6 +4766,8 @@ export class EbeguRestUtil {
             userTS.berechtigungen = this.parseBerechtigungen(
                 userFromServer.berechtigungen
             );
+            userTS.sendMailWennOffenePendenzen =
+                userFromServer.sendMailWennOffenePendenzen;
             return userTS;
         }
         return undefined;
@@ -6727,6 +6730,8 @@ export class EbeguRestUtil {
         publicAppConfigTS.testfaelleEnabled = data.testfaelleEnabled;
         publicAppConfigTS.mailVersandAllerMailsAuchAnGS2 =
             data.mailVersandAllerMailsAuchAnGS2;
+        publicAppConfigTS.benachrichtigungGemeindeEnabled =
+            data.benachrichtigungGemeindeEnabled;
 
         return publicAppConfigTS;
     }
@@ -8740,7 +8745,7 @@ export class EbeguRestUtil {
             institution: filter.institution,
             traegerschaft: filter.traegerschaft,
             sozialdienst: filter.sozialdienst,
-            status: filter.status
+            status: filter.status ? [filter.status] : null
         };
     }
 

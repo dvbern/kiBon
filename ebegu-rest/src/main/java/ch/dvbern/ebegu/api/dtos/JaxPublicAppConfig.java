@@ -56,4 +56,5 @@ public class JaxPublicAppConfig {
 	private boolean testfaelleEnabled;
 	private boolean abgeloesteViewBeschaeftigungSingleEnabled;
 	private boolean gemeindeKennzahlenReminderActivated;
+	private boolean benachrichtigungGemeindeEnabled;
 }

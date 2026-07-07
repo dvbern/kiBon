@@ -18,43 +18,38 @@
 
 package ch.dvbern.ebegu.outbox.anmeldung;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import jakarta.annotation.security.RunAs;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import jakarta.inject.Inject;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
-import ch.dvbern.ebegu.entities.AbstractEntity_;
-import ch.dvbern.ebegu.entities.AbstractPlatz_;
-import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
-import ch.dvbern.ebegu.entities.AnmeldungTagesschule_;
 import ch.dvbern.ebegu.enums.UserRoleName;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
-import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.services.MandantService;
 import org.jboss.ejb3.annotation.RunAsPrincipal;
-import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @RunAs(UserRoleName.SUPER_ADMIN)
 @RunAsPrincipal(PrincipalBean.KIBON_SERVICE_ACCOUNT)
 public class AnmeldungTagesschuleEventGenerator {
 
+	private static final Logger LOG = LoggerFactory.getLogger(
+		AnmeldungTagesschuleEventGenerator.class
+	);
+
 	@Inject
-	private Persistence persistence;
+	MandantService mandantService;
+
+	@Inject
+	AnmeldungTagesschuleEventServiceBean anmeldungTagesschuleEventServiceBean;
 
 	@Inject
 	private EbeguConfiguration ebeguConfiguration;
-
-	@Inject
-	private AnmeldungTagesschuleEventAsyncHelper asyncHelper;
 
 	/**
 	 * This is a job starting every night and exports all anmeldungen for which event_published
@@ -63,39 +58,16 @@ public class AnmeldungTagesschuleEventGenerator {
 	@Schedule(
 		info = "Migration-aid, pushes Anmeldungen waiting for confirmation and not yet published",
 		hour = "5")
-	@TransactionTimeout(value = 3, unit = TimeUnit.HOURS)
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	public void publishWartendeAnmeldungen() {
-		if (!ebeguConfiguration.isAnmeldungTagesschuleApiEnabled()) {
-			return;
+		if (ebeguConfiguration.isAnmeldungTagesschuleApiEnabled()) {
+			mandantService.getAll()
+				.forEach(
+					mandant -> anmeldungTagesschuleEventServiceBean
+						.publishExistingAnmeldungTagesschule(
+							mandant
+						)
+				);
 		}
-
-		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		CriteriaQuery<String> query = cb.createQuery(String.class);
-		Root<AnmeldungTagesschule> root = query.from(
-			AnmeldungTagesschule.class
-		);
-
-		//Event muss noch nicht plubliziert sein
-		Predicate isNotPublished = cb.isFalse(
-			root.get(AnmeldungTagesschule_.eventPublished)
-		);
-		Predicate isInStatusToFireEvent = root.get(
-			AbstractPlatz_.betreuungsstatus
-		)
-			.in(
-				Betreuungsstatus
-					.getBetreuungsstatusForFireAnmeldungTagesschuleEvent()
-			);
-
-		query.where(isNotPublished, isInStatusToFireEvent);
-		query.select(root.get(AbstractEntity_.ID));
-
-		List<String> anmeldungTagesschuleList = persistence.getEntityManager()
-			.createQuery(query)
-			.getResultList();
-
-		anmeldungTagesschuleList.forEach(
-			anmeldung -> asyncHelper.convert(anmeldung)
-		);
 	}
 }

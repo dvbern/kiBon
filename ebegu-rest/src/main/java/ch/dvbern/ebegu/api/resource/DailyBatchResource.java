@@ -29,6 +29,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.enums.UserRoleName;
 import ch.dvbern.ebegu.services.DailyBatch;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -49,6 +50,8 @@ public class DailyBatchResource {
 
 	@Inject
 	private DailyBatch dailyBatch;
+	@Inject
+	private PrincipalBean principalBean;
 
 	@Operation(summary = "Führt den Job runBatchCleanDownloadFiles aus.")
 	@Nullable
@@ -82,6 +85,24 @@ public class DailyBatchResource {
 		Future<Integer> count = dailyBatch
 			.runBatchUpdateGemeindeForBGInstitutionen();
 		return executeFuture(count, "UpdateGemeindeForBGInstitutionen");
+	}
+
+	@Operation(
+		summary = "Führt den Job InfoOffenePendenzenNeueMitteilungGemeinde aus.")
+	@Nullable
+	@GET
+	@Path("/runBatchInfoOffenePendenzenNeueMitteilungGemeinde")
+	@Consumes(MediaType.WILDCARD)
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response runBatchInfoOffenePendenzenNeueMitteilungGemeinde() {
+		Future<Boolean> booleanFuture = dailyBatch
+			.runBatchInfoOffenePendenzenNeueMitteilungGemeinde(
+				principalBean.getMandant()
+			);
+		return executeFuture(
+			booleanFuture,
+			"runBatchInfoOffenePendenzenNeueMitteilungGemeinde"
+		);
 	}
 
 	private static Response executeFuture(

@@ -79,10 +79,6 @@ export class GesuchstellerRS {
             );
     }
 
-    public getServiceName(): string {
-        return 'GesuchstellerRS';
-    }
-
     public initGS2ZPVNr(
         email: string,
         gs2: TSGesuchstellerContainer,
@@ -92,6 +88,20 @@ export class GesuchstellerRS {
             `${this.serviceURL}/initZPVNr/${encodeURIComponent(gs2.id)}?email=${encodeURIComponent(
                 email
             )}&language=${korrespondenzSprache}`
+        );
+    }
+
+    public async isZPVNummerSetOnGS(id: string) {
+        const res = await this.http.get<string>(
+            `${this.serviceURL}/${id}/is-stek-identifier-set`
+        );
+        return res.data === 'true';
+    }
+
+    public resetStekIdentifier(id: string) {
+        return this.http.put<void>(
+            `${this.serviceURL}/${id}/reset-stek-identifier`,
+            {}
         );
     }
 }

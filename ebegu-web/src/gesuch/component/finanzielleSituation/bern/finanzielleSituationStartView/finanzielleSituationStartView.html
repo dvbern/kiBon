@@ -205,7 +205,13 @@
                             (try-again-event)="
                                 vm.callKiBonAnfrageAndUpdateFinSit()
                             "
+                            (reset-stek-identifier-clicked)="
+                                vm.resetStekIdentifier()
+                            "
                             [status]="vm.getAbfrageStatus()"
+                            [is-stek-identifier-set-on-g-s]="
+                                vm.stekIdentifierSetOnGS
+                            "
                             [gs-status]="vm.getAbfrageStatusGS()"
                             [timestamp-abruf]="
                                 vm.getModel().finanzielleSituationJA

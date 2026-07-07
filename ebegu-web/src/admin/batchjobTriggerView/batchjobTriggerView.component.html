@@ -64,6 +64,97 @@
                     </dv-loading-button>
                 </div>
             </div>
+            <h2 class="margin-top-40">Export Batch Jobs</h2>
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>Publish existing Gemeinde Job</div>
+                    <dv-loading-button
+                        (buttonClick)="runBatchPublishExistingGemeinden()"
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>Publish existing Institution Job</div>
+                    <dv-loading-button
+                        (buttonClick)="runBatchPublishExistingInstitutionen()"
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>Publish existing wartende Anmeldungen Job</div>
+                    <dv-loading-button
+                        (buttonClick)="runBatchPublishWartendeAnmeldungen()"
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>Publish existing wartende Betreuungen Job</div>
+                    <dv-loading-button
+                        (buttonClick)="runBatchPublishWartendeBetreuung()"
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>Publish existing Gemeinde Kennzahlen Job</div>
+                    <dv-loading-button
+                        (buttonClick)="
+                            runBatchPublishExistingGemeindeKennzahlen()
+                        "
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>Publish existing Verfuegung Job</div>
+                    <dv-loading-button
+                        (buttonClick)="runBatchMigrateVerfuegung()"
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>
+                        Gemeinde bei offenen Pendenzen und Mitteilungen
+                        benachrichtigen
+                    </div>
+                    <dv-loading-button
+                        (buttonClick)="
+                            runBatchInfoOffenePendenzenNeueMitteilungGemeinde()
+                        "
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
             <h2 class="margin-top-40">Jährlich ausgeführte Batchjobs</h2>
             <div class="row">
                 <div class="col-md-12 margin-top-20">

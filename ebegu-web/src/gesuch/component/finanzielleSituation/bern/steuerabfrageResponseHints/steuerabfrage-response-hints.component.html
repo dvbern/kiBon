@@ -20,25 +20,37 @@
 ) {
     <div class="well well-status-warten minus-margin">
         <p class="ebegu-h3" [innerHTML]="getWarningText()"></p>
-        @if (
-            showWarningRetry() &&
-            (isGesuchsteller() || showRetryForGemeinde()) &&
-            !isGesuchReadonly()
-        ) {
-            <a class="pointer-cursor" translate (click)="tryAgain()"
-                >ERNEUT_VERSUCHEN</a
-            >
-        }
-        @if (
-            showZugriffKeineNummer() && isGesuchsteller() && !isGesuchReadonly()
-        ) {
-            <a
-                class="pointer-cursor"
-                translate
-                (click)="openDialogGSZPVVerknuepfen()"
-                >FINANZIELLE_SITUATION_STEUERDATEN_ZPV_VERKNUEPFEN_AUSLOESEN</a
-            >
-        }
+        <div class="flex gap-8">
+            @if (!isGesuchReadonly()) {
+                @if (
+                    (showWarningRetry() && isGesuchsteller()) ||
+                    showRetryForGemeinde()
+                ) {
+                    <dv-loading-button (buttonClick)="tryAgain()">{{
+                        'ERNEUT_VERSUCHEN' | translate
+                    }}</dv-loading-button>
+                }
+                @if (isGesuchsteller() && showZugriffKeineNummer()) {
+                    <dv-loading-button
+                        (buttonClick)="openDialogGSStekIdentifierVerknuepfen()"
+                        >{{
+                            'FINANZIELLE_SITUATION_STEUERDATEN_ZPV_VERKNUEPFEN_AUSLOESEN'
+                                | translate
+                        }}</dv-loading-button
+                    >
+                }
+                @if (isGesuchsteller() && isStekIdentifierSetOnGS) {
+                    <dv-loading-button
+                        (buttonClick)="resetStekIdentifierClicked.emit()"
+                    >
+                        {{
+                            'FINANZIELLE_SITUATION_STEUERDATEN_ZPV_VERKNUEPFUNG_ZURUECKSETZEN'
+                                | translate: {gsName: getGS1Name()}
+                        }}
+                    </dv-loading-button>
+                }
+            }
+        </div>
     </div>
 }
 

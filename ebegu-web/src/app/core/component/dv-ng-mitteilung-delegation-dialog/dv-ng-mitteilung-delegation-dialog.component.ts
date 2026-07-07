@@ -24,6 +24,7 @@ import {
 } from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
+import {TSBenutzerStatus} from '../../../../models/enums/TSBenutzerStatus';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {BenutzerRSX} from '../../service/benutzerRSX.rest';
 import {MitteilungRS} from '../../service/mitteilungRS.rest';
@@ -78,9 +79,11 @@ export class DvNgMitteilungDelegationDialogComponent {
                     ? value.getFullName().toLowerCase()
                     : value.toLowerCase();
             this.unselectBenutzerIfNoLongerSelected(filterValue);
-            return this.benutzerList.filter(benutzer =>
-                benutzer.getFullName().toLowerCase().includes(filterValue)
-            );
+            return this.benutzerList
+                .filter(benutzer => benutzer.status === TSBenutzerStatus.AKTIV)
+                .filter(benutzer =>
+                    benutzer.getFullName().toLowerCase().includes(filterValue)
+                );
         }
         return [];
     }

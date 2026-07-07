@@ -156,14 +156,16 @@ public interface ReportService {
 	@Nonnull
 	UploadFileInfo generateExcelReportBenutzer(
 		@Nonnull Locale locale,
-		@Nonnull Mandant mandant
+		@Nonnull Mandant mandant,
+		boolean includeGesperrte
 	)
 		throws ExcelMergeException, IOException;
 
 	@Nonnull
 	List<BenutzerDataRow> getReportDataBenutzer(
 		@Nonnull Locale locale,
-		@Nonnull Mandant mandant
+		@Nonnull Mandant mandant,
+		boolean includeGesperrte
 	);
 
 	@Nonnull

@@ -22,7 +22,6 @@ import {
     EventEmitter,
     Input,
     OnChanges,
-    OnDestroy,
     OnInit,
     Output,
     ViewEncapsulation,
@@ -32,7 +31,7 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {TranslateService} from '@ngx-translate/core';
 import moment from 'moment';
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSAntragStatus} from '../../../../../models/enums/TSAntragStatus';
@@ -41,15 +40,15 @@ import {
     isSteuerdatenAnfrageStatusErfolgreich,
     TSSteuerdatenAnfrageStatus
 } from '../../../../../models/enums/TSSteuerdatenAnfrageStatus';
-import {TSBenutzer} from '../../../../../models/TSBenutzer';
+import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
-import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {FinanzielleSituationRS} from '../../../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
-import {DialogInitZPVNummerVerknuepfenComponent} from '../dialog-init-zpv-nummer-verknuepfen/dialog-init-zpv-nummer-verknpuefen.component';
-
-const LOG = LogFactory.createLog('SteuerabfrageResponseHintsComponent');
+import {
+    DialogInitStekNummerVerknuepfenComponent,
+    InitStekIdentifierDialogData
+} from '../dialog-init-stek-identifier-verknuepfen/dialog-init-stek-identifier-verknpuefen.component';
 
 @Component({
     selector: 'dv-steuerabfrage-response-hints',
@@ -59,9 +58,7 @@ const LOG = LogFactory.createLog('SteuerabfrageResponseHintsComponent');
     encapsulation: ViewEncapsulation.None,
     standalone: false
 })
-export class SteuerabfrageResponseHintsComponent
-    implements OnInit, OnDestroy, OnChanges
-{
+export class SteuerabfrageResponseHintsComponent implements OnInit, OnChanges {
     readonly gesuchModelManager = inject(GesuchModelManager);
     private readonly authServiceRS = inject(AuthServiceRS);
     private readonly dialog = inject(MatDialog);
@@ -85,11 +82,16 @@ export class SteuerabfrageResponseHintsComponent
     @Input()
     public steuerAbfrageRequestRunning: boolean;
 
+    @Input()
+    public isStekIdentifierSetOnGS: boolean;
+
     @Output()
     private readonly tryAgainEvent: EventEmitter<void> =
         new EventEmitter<void>();
-    private principal: TSBenutzer;
-    private subscription: Subscription;
+
+    @Output()
+    readonly resetStekIdentifierClicked: EventEmitter<void> =
+        new EventEmitter<void>();
 
     public geburtstagNotMatching$: BehaviorSubject<boolean> =
         new BehaviorSubject<boolean>(false);
@@ -99,30 +101,18 @@ export class SteuerabfrageResponseHintsComponent
     }
 
     public ngOnInit(): void {
-        this.subscription = this.authServiceRS.principal$.subscribe(
-            principal => (this.principal = principal),
-            err => LOG.error(err)
-        );
-
-        const gesuchSteller =
-            this.gesuchModelManager.getGesuchstellerNumber() === 1
-                ? this.gesuchModelManager.getGesuch().gesuchsteller1
-                : this.gesuchModelManager.getGesuch().gesuchsteller2;
+        const gsContainer = this.getGesuchstellerContainer();
 
         if (this.showZugriffErfolgreich(this.status)) {
             this.finSitRS
                 .geburtsdatumMatchesSteuerabfrage(
-                    gesuchSteller.gesuchstellerJA.geburtsdatum,
-                    gesuchSteller.finanzielleSituationContainer.id
+                    gsContainer.gesuchstellerJA.geburtsdatum,
+                    gsContainer.finanzielleSituationContainer.id
                 )
                 .then(isMatching => {
                     this.geburtstagNotMatching$.next(!isMatching);
                 });
         }
-    }
-
-    public ngOnDestroy(): void {
-        this.subscription.unsubscribe();
     }
 
     public showZugriffErfolgreich(
@@ -296,18 +286,18 @@ export class SteuerabfrageResponseHintsComponent
                 }
             })
             .afterClosed()
-            .subscribe(
-                confirmation => {
+            .subscribe({
+                next: confirmation => {
                     if (confirmation) {
                         this.tryAgainEvent.emit();
                     }
                 },
-                () => {
+                error: () => {
                     this.errorService.addMesageAsInfo(
                         this.translate.instant('ERROR_UNEXPECTED')
                     );
                 }
-            );
+            });
     }
 
     public getEmailBesitzende(): string {
@@ -324,27 +314,27 @@ export class SteuerabfrageResponseHintsComponent
         return this.authServiceRS.isRole(TSRole.GESUCHSTELLER);
     }
 
-    public isMutation(): boolean {
-        return this.gesuchModelManager.getGesuch().isMutation();
-    }
-
-    public openDialogGSZPVVerknuepfen(): void {
-        const dialogOptions: MatDialogConfig = {
+    public openDialogGSStekIdentifierVerknuepfen(): void {
+        const dialogOptions: MatDialogConfig<InitStekIdentifierDialogData> = {
             data: {
-                gs:
-                    this.gesuchModelManager.getGesuchstellerNumber() === 1
-                        ? this.gesuchModelManager.getGesuch().gesuchsteller1
-                        : this.gesuchModelManager.getGesuch().gesuchsteller2,
+                gs: this.getGesuchstellerContainer(),
                 korrespondenzSprache:
                     this.gesuchModelManager.getGesuch().gesuchsteller1
-                        .gesuchstellerJA.korrespondenzSprache
+                        .gesuchstellerJA.korrespondenzSprache,
+                gesuch: this.gesuchModelManager.getGesuch()
             },
             panelClass: 'steuerdaten-email-dialog'
         };
         this.dialog.open(
-            DialogInitZPVNummerVerknuepfenComponent,
+            DialogInitStekNummerVerknuepfenComponent,
             dialogOptions
         );
+    }
+
+    private getGesuchstellerContainer(): TSGesuchstellerContainer {
+        return this.gesuchModelManager.getGesuchstellerNumber() === 1
+            ? this.gesuchModelManager.getGesuch().gesuchsteller1
+            : this.gesuchModelManager.getGesuch().gesuchsteller2;
     }
 
     public isGemeindeOrSuperadmin() {

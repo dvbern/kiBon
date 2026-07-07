@@ -47,6 +47,7 @@ import jakarta.validation.Valid;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.dto.pendenz.PendenzBetreuungDTO;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungKey;
@@ -173,6 +174,8 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 	private EinstellungService einstellungService;
 	@Inject
 	private VerantwortlicheService verantwortlicheService;
+	@Inject
+	private BenutzerService benutzerService;
 
 	private static final Logger LOG = LoggerFactory.getLogger(
 		BetreuungServiceBean.class.getSimpleName()
@@ -2063,6 +2066,121 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 				}
 			}
 		}
+	}
+
+	@Override
+	public void sendInfoOffenePendenzenNeuMitteilungGemeinde(Mandant mandant) {
+		if (Boolean.FALSE.equals(
+			applicationPropertyService.findApplicationPropertyAsBoolean(
+				ApplicationPropertyKey.BENACHRICHTIGUNG_GEMEINDE_AKTIV,
+				mandant
+			)
+		)) {
+			return;
+		}
+
+		Collection<Benutzer> benutzers = benutzerService
+			.getActiveGemeindeBenutzersWithSendMailActivated(mandant);
+		benutzers.forEach(benutzer -> {
+			List<String> gemeinden =
+				findDistinctGemeindeNamesForOffenePendenzen(
+					benutzer,
+					AntragStatus.pendenzenForRole(benutzer.getRole())
+				);
+
+			boolean hasOffenePendenzen = !gemeinden.isEmpty();
+
+			List<String> gemeindenForUnreadMitteilung = mitteilungService
+				.findDistinctGemeindeNamesForUnreadMitteilungenAsEmpfaenger(
+					benutzer
+				);
+
+			boolean ungelesendeMitteilung = !gemeindenForUnreadMitteilung
+				.isEmpty();
+			if (hasOffenePendenzen
+				|| ungelesendeMitteilung) {
+				mailService
+					.sendInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
+						benutzer,
+						hasOffenePendenzen,
+						ungelesendeMitteilung,
+						String.join(", ", gemeinden),
+						String.join(", ", gemeindenForUnreadMitteilung)
+					);
+			}
+		});
+	}
+
+	private List<String> findDistinctGemeindeNamesForOffenePendenzen(
+		Benutzer benutzer,
+		Set<AntragStatus> antragStatus
+	) {
+		CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		CriteriaQuery query = cb.createQuery(String.class);
+
+		Root<Gesuch> root = query.from(Gesuch.class);
+		Join<Gesuch, Gesuchsperiode> joinGesuchsperiode = root.join(
+			Gesuch_.gesuchsperiode,
+			JoinType.INNER
+		);
+		Join<Gesuch, Dossier> dossierJoin = root.join(
+			Gesuch_.dossier,
+			JoinType.INNER
+		);
+		Join<Dossier, Gemeinde> gemeindeJoin =
+			dossierJoin.join(Dossier_.gemeinde, JoinType.INNER);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		// Gesuch Status for offene Pendenz
+		Predicate inClauseStatus = root.get(Gesuch_.status)
+			.in(antragStatus);
+		predicates.add(inClauseStatus);
+
+		// GP should be aktiv
+		predicates.add(
+			cb.equal(
+				joinGesuchsperiode.get(Gesuchsperiode_.status),
+				GesuchsperiodeStatus.AKTIV
+			)
+		);
+
+		Predicate verantwortlicherNotSetted =
+			cb.and(
+				cb.isNull(dossierJoin.get(Dossier_.verantwortlicherBG)),
+				cb.isNull(dossierJoin.get(Dossier_.verantwortlicherTS))
+			);
+		// User must be set as verantwortlichTS or BG and TS must be null
+		Predicate tsPredicate =
+			cb.equal(dossierJoin.get(Dossier_.verantwortlicherTS), benutzer);
+
+		// User must be set as verantwortlichBG or BG and TS must be null
+		Predicate bgPredicate =
+			cb.equal(dossierJoin.get(Dossier_.verantwortlicherBG), benutzer);
+
+		// set the right verantwortlicher Predicate according to the user role
+		predicates.add(
+			cb.or(
+				tsPredicate,
+				bgPredicate,
+				verantwortlicherNotSetted
+			)
+		);
+
+		// therefore we need to link the Gemeinde or all the Gemeinde to be sure that we don't fall
+		// in other Gemeinde Pendenzen
+		predicates.add(gemeindeJoin.in(benutzer.extractGemeindenForUser()));
+
+		query.select(gemeindeJoin.get(Gemeinde_.name))
+			.distinct(true)
+			.where(
+				CriteriaQueryHelper.concatenateExpressions(
+					cb,
+					predicates
+				)
+			);
+
+		return persistence.getCriteriaResults(query);
 	}
 
 	@Override

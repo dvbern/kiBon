@@ -165,6 +165,9 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 	@Setter
 	private transient String initialPassword;
 
+	@Column(nullable = false)
+	private boolean sendMailWennOffenePendenzen = true;
+
 	@Transient
 	private boolean markedForDeletion = false;
 
@@ -249,6 +252,16 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 
 	public void setBemerkungen(@Nullable String bemerkungen) {
 		this.bemerkungen = bemerkungen;
+	}
+
+	public boolean isSendMailWennOffenePendenzen() {
+		return sendMailWennOffenePendenzen;
+	}
+
+	public void setSendMailWennOffenePendenzen(
+		boolean sendMailWennOffenePendenzen
+	) {
+		this.sendMailWennOffenePendenzen = sendMailWennOffenePendenzen;
 	}
 
 	@Override

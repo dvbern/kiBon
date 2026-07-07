@@ -330,7 +330,17 @@ export class PosteingangViewComponent
     }
 
     public getMitteilungsStatus(): Array<TSMitteilungStatus> {
-        return getTSMitteilungsStatusForFilter();
+        return getTSMitteilungsStatusForFilter(
+            this.hasUserRoleTragerschaftInstitution()
+        );
+    }
+
+    public hasUserRoleTragerschaftInstitution(): boolean {
+        return this.authServiceRS.isOneOfRoles(
+            TSRoleUtil.getInstitutionOnlyRoles().concat(
+                TSRoleUtil.getTraegerschaftOnlyRoles()
+            )
+        );
     }
 
     public isSuperAdmin(): boolean {
@@ -533,6 +543,7 @@ export class PosteingangViewComponent
                     .subscribe({
                         next: () => {
                             this.getMitteilungenCount();
+                            this.mitteilungen.reload();
                         },
                         error: () => {}
                     });

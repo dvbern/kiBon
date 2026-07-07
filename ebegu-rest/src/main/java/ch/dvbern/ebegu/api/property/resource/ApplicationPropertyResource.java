@@ -561,6 +561,13 @@ public class ApplicationPropertyResource {
 			)
 		);
 
+		applicationPropertyContext.setBenachrichtigungGemeindeEnabled(
+			getApplicationProperty(
+				mandant,
+				ApplicationPropertyKey.BENACHRICHTIGUNG_GEMEINDE_AKTIV
+			)
+		);
+
 		JaxPublicAppConfig pubAppConf = applicationPropertyContext
 			.buildJaxPublicAppConfig();
 		return Response.ok(pubAppConf).build();

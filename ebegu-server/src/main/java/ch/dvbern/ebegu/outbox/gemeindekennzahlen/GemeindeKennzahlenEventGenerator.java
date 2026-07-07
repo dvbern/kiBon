@@ -20,26 +20,39 @@ package ch.dvbern.ebegu.outbox.gemeindekennzahlen;
 import jakarta.annotation.security.RunAs;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.enums.UserRoleName;
-import ch.dvbern.ebegu.outbox.EventGeneratorServiceBean;
+import ch.dvbern.ebegu.services.MandantService;
 import org.jboss.ejb3.annotation.RunAsPrincipal;
 
 @Stateless
 @RunAs(UserRoleName.SUPER_ADMIN)
 @RunAsPrincipal(PrincipalBean.KIBON_SERVICE_ACCOUNT)
 public class GemeindeKennzahlenEventGenerator {
+
 	@Inject
-	private EventGeneratorServiceBean eventGeneratorServiceBean;
+	MandantService mandantService;
+
+	@Inject
+	GemeindeKennzahlenEventServiceBean gemeindeKennzahlenEventServiceBean;
 
 	@Schedule(
 		info = "Migration-aid, pushes already existing Gemeinden to outbox",
 		hour = "5",
 		minute = "15",
 		persistent = true)
-	public void publishExistingGemeinden() {
-		eventGeneratorServiceBean.exportGemeindeKennzahlenEvent();
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+	public void publishExistingGemeindeKennzahlen() {
+		mandantService.getAll()
+			.forEach(
+				mandant -> gemeindeKennzahlenEventServiceBean
+					.publishExistingGemeindeKennzahlen(
+						mandant
+					)
+			);
 	}
 }

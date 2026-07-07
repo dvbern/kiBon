@@ -51,6 +51,7 @@ public final class WorkJobConstants {
 	public static final String DATUM_FAELLIGKEIT = "datumFaelligkeit";
 	public static final String BESCHREIBUNG = "beschreibung";
 	public static final String DATUM_GENERIERT = "datumGeneriert";
+	public static final String INCLUDE_GESPERRTE = "includeGesperrte";
 
 	private WorkJobConstants() {
 	}

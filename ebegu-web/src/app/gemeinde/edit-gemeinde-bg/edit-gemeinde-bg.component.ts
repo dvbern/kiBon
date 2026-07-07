@@ -58,6 +58,7 @@ import {EinschulungTypesGemeindeVisitor} from '../../core/constants/EinschulungT
 import {LogFactory} from '@utils/log';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {MandantService} from '@utils/mandant';
+import {TSBenutzerStatus} from '../../../models/enums/TSBenutzerStatus';
 const LOG = LogFactory.createLog('EditGemeindeBGComponent');
 
 @Component({
@@ -102,6 +103,7 @@ export class EditGemeindeBGComponent implements OnInit {
     @ViewChild(NgModelGroup) private readonly group: NgModelGroup;
 
     public readonly CONSTANTS = CONSTANTS;
+    protected readonly TSBenutzerStatus = TSBenutzerStatus;
     public readonly TSEinstellungKey = TSEinstellungKey;
     public readonly TSGemeindeZusaetzlicherGutscheinTyp =
         TSGemeindeZusaetzlicherGutscheinTyp;

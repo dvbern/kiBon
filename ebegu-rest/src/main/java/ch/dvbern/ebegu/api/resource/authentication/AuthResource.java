@@ -58,8 +58,10 @@ import ch.dvbern.ebegu.oidc.AuthConstants;
 import ch.dvbern.ebegu.oidc.CustomAuthenticationController;
 import ch.dvbern.ebegu.services.BenutzerService;
 import ch.dvbern.ebegu.services.CreateBenutzerService;
-import ch.dvbern.ebegu.services.UpdateZpvService;
 import ch.dvbern.ebegu.services.authentication.KeycloakApi;
+import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZPVUpdateResult;
+import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZPVUpdateUtil;
+import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZpvService;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
@@ -109,7 +111,7 @@ public class AuthResource {
 	private CreateBenutzerService createBenutzerService;
 
 	@Inject
-	private UpdateZpvService updateZpvService;
+	private ZpvService zpvService;
 
 	private boolean isCookieSecure() {
 		final boolean forceCookieSecureFlag = configuration
@@ -322,9 +324,10 @@ public class AuthResource {
 		}
 
 		if (isRequestZpvLinking(returnPath)) {
-			linkZpvToGesuchsteller(returnPath);
+			var result = linkZpvToGesuchsteller(returnPath);
 			invalidateSession(request);
-			return redirectToFrontend(request, returnPath).build();
+			return ZPVUpdateUtil.redirectToFrontend(request, returnPath, result)
+				.build();
 		}
 
 		Optional<Benutzer> invitedUserOpt = benutzerService
@@ -417,12 +420,16 @@ public class AuthResource {
 		}
 	}
 
-	private void linkZpvToGesuchsteller(String returnPath) {
+	private ZPVUpdateResult linkZpvToGesuchsteller(String returnPath) {
 		var gesuchstellerId = getGeuchstellerIdFromReturnPath(returnPath);
-		updateZpvService.updateGesuchstellerZPVNr(
+		var result = zpvService.updateGesuchstellerZPVNr(
 			gesuchstellerId,
 			kibonJwt.getZpvNummer()
 		);
+
+		if (result != ZPVUpdateResult.SUCCESS) {
+			return result;
+		}
 
 		Optional<Benutzer> existingUserOpt = benutzerService
 			.findBenutzerByExternalUUID(kibonJwt.getExternalUUID());
@@ -434,6 +441,7 @@ public class AuthResource {
 				kibonJwt.getMandantIdentifier()
 			);
 		}
+		return result;
 	}
 
 	private String getGeuchstellerIdFromReturnPath(String returnPath) {

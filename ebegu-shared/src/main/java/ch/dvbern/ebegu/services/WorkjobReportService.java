@@ -104,5 +104,16 @@ public interface WorkjobReportService {
 	);
 
 	@Nonnull
+	Workjob createNewReporting(
+		@Nonnull Workjob workJob,
+		@Nonnull ReportVorlage vorlage,
+		@Nullable LocalDate datumVon,
+		@Nullable LocalDate datumBis,
+		@Nullable String gesuchPeriodIdParam,
+		boolean includeGesperrte,
+		@Nonnull Locale locale
+	);
+
+	@Nonnull
 	Workjob persistWorkjobForReport(@Nonnull Workjob workJob);
 }

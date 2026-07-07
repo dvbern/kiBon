@@ -41,7 +41,8 @@ import {FallCreationViewXComponent} from './component/fall-creation-view-x/fall-
 import {FallToolbarModule} from './component/fallToolbar/fall-toolbar.module';
 import {FamiliensituationModule} from './component/familiensituation/familiensituation.module';
 import {FinanzielleSituationAppenzellViewComponent} from './component/finanzielleSituation/appenzell/finanzielle-situation-appenzell-view/finanzielle-situation-appenzell-view.component';
-import {DialogInitZPVNummerVerknuepfenComponent} from './component/finanzielleSituation/bern/dialog-init-zpv-nummer-verknuepfen/dialog-init-zpv-nummer-verknpuefen.component';
+import {DialogInitStekNummerVerknuepfenComponent} from './component/finanzielleSituation/bern/dialog-init-stek-identifier-verknuepfen/dialog-init-stek-identifier-verknpuefen.component';
+import {ZpvInitMailUniqueValidator} from './component/finanzielleSituation/bern/dialog-init-stek-identifier-verknuepfen/zpv-init-mail-unique.validator';
 import {AufteilungComponent} from './component/finanzielleSituation/bern/finanzielleSituationAufteilung/aufteilung/aufteilung.component';
 import {FinanzielleSituationAufteilungComponent} from './component/finanzielleSituation/bern/finanzielleSituationAufteilung/finanzielle-situation-aufteilung.component';
 import {SteuerabfrageResponseHintsComponent} from './component/finanzielleSituation/bern/steuerabfrageResponseHints/steuerabfrage-response-hints.component';
@@ -77,7 +78,8 @@ import {ZahlungsstatusIconComponent} from './component/zahlungsstatus-icon/zahlu
         FamiliensituationModule,
         WarningComponent,
         IbanDirective,
-        DvDatePickerXAngularjswrapperComponent
+        DvDatePickerXAngularjswrapperComponent,
+        ZpvInitMailUniqueValidator
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     declarations: [
@@ -117,7 +119,7 @@ import {ZahlungsstatusIconComponent} from './component/zahlungsstatus-icon/zahlu
         FinanzielleSituationAufteilungComponent,
         AufteilungComponent,
         SteuerabfrageResponseHintsComponent,
-        DialogInitZPVNummerVerknuepfenComponent,
+        DialogInitStekNummerVerknuepfenComponent,
         FallCreationViewXComponent,
         ZahlungsstatusIconComponent,
         KindFachstelleComponent,

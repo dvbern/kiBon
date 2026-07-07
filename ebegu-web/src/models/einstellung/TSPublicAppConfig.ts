@@ -56,4 +56,5 @@ export class TSPublicAppConfig {
     public gemeindeVereinfachteKonfigAktiv: boolean;
     public testfaelleEnabled: boolean;
     public abgeloesteViewBeschaeftigungSingleEnabled: boolean;
+    public benachrichtigungGemeindeEnabled: boolean;
 }

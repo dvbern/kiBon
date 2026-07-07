@@ -393,4 +393,5 @@ public class GesuchstellerServiceBean extends AbstractBaseService implements
 		query.distinct(true);
 		return persistence.getCriteriaResults(query);
 	}
+
 }

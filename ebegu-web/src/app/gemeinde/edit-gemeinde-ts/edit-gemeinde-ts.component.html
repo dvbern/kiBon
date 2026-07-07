@@ -508,7 +508,9 @@
                     <!-- Standardverantwortliche -->
                     @if (
                         stammdaten.defaultBenutzerTS &&
-                        !stammdaten.gemeinde.nurLats
+                        !stammdaten.gemeinde.nurLats &&
+                        stammdaten.defaultBenutzerTS.status ===
+                            TSBenutzerStatus.AKTIV
                     ) {
                         <div class="col-sm-6">
                             <div class="form-group">

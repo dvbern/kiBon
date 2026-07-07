@@ -816,8 +816,27 @@
                                     "
                                 >
                                     <div class="row">
+                                        <dv-input-container
+                                            class="form-group col-xs-3"
+                                        >
+                                            <mat-checkbox
+                                                name="doSave"
+                                                [(ngModel)]="
+                                                    benutzendeStatistikParameter.includeGesperrte
+                                                "
+                                                [aria-label]="
+                                                    'STATISTIK_BENUTZENDE_INCLUDE_GESPERRT'
+                                                        | translate
+                                                "
+                                                class="input-element"
+                                            >
+                                                <span translate
+                                                    >STATISTIK_BENUTZENDE_INCLUDE_GESPERRT</span
+                                                >
+                                            </mat-checkbox>
+                                        </dv-input-container>
                                         <div
-                                            class="col-xs-3 col-xs-offset-9 statistik-button statistik-no-fields"
+                                            class="col-xs-3 col-xs-offset-6 mb-12 statistik-button"
                                         >
                                             <dv-loading-button type="submit">
                                                 <span
@@ -2215,11 +2234,10 @@
                         </div>
                     </div>
                 }
-
                 <!--                betreuungsgutscheine: zahlungen-->
                 @if (
                     (hasBgInstitutionen$ | async) &&
-                    showZahlungenStatistikAllowedForRoles
+                    showZahlungenStatistikAllowedForRoles()
                 ) {
                     <div [dvDemoFeature]="demoFeature">
                         <div>

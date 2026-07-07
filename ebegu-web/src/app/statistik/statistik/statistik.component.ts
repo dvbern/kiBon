@@ -46,7 +46,10 @@ import {TSBetreuungsangebotTyp} from '../../../models/enums/TSBetreuungsangebotT
 import {TSDemoFeature} from '../../../models/enums/TSDemoFeature';
 import {TSRole} from '../../../models/enums/TSRole';
 import {TSStatistikParameterType} from '../../../models/enums/TSStatistikParameterType';
-import {TSStatistikParameter} from '../../../models/TSStatistikParameter';
+import {
+    BenutzendeStatistikParameter,
+    TSStatistikParameter
+} from '../../../models/TSStatistikParameter';
 import {TSWorkJob} from '../../../models/TSWorkJob';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
@@ -91,6 +94,9 @@ export class StatistikComponent implements OnInit, OnDestroy {
 
     private polling: NodeJS.Timeout;
     public statistikParameter: TSStatistikParameter;
+    public benutzendeStatistikParameter: BenutzendeStatistikParameter = {
+        includeGesperrte: false
+    };
     public gesuchsperioden: Array<TSGesuchsperiode>;
     private readonly DATE_PARAM_FORMAT: string = 'YYYY-MM-DD';
     private readonly TS_ANMELDUNGEN_STATISTIK_MAX_AMOUNT = 50;
@@ -333,7 +339,9 @@ export class StatistikComponent implements OnInit, OnDestroy {
                 return;
             case TSStatistikParameterType.BENUTZER:
                 this.reportAsyncRS
-                    .getBenutzerReportExcel()
+                    .getBenutzerReportExcel(
+                        this.benutzendeStatistikParameter.includeGesperrte
+                    )
                     .subscribe((res: {workjobId: string}) => {
                         this.informReportGenerationStarted(res);
                     }, StatistikComponent.handleError);

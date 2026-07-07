@@ -246,4 +246,12 @@ public interface MailService {
 		boolean isProcessSuccessfull,
 		@Nonnull Mandant mandant
 	);
+
+	void sendInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
+		@Nonnull Benutzer benutzer,
+		boolean offenePendenzen,
+		boolean ungelesendeMitteilung,
+		String gemeindeNamen,
+		String gemeindeNamenForUnreadMitteilung
+	);
 }

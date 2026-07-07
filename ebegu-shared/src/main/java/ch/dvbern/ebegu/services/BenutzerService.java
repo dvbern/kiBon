@@ -126,6 +126,16 @@ public interface BenutzerService {
 	Collection<Benutzer> getAktiveGemeindeSachbearbeiter(Gemeinde gemeinde);
 
 	/**
+	 * Gibt alle existierenden aktive Benutzende mit SendMail for Pendenz aktiviert und einem Gemeinde Rolle zurueck.
+	 *
+	 * @return Liste aller Benutzern mit entsprechender Rolle und SendMail activated aus der DB
+	 */
+	@Nonnull
+	Collection<Benutzer> getActiveGemeindeBenutzersWithSendMailActivated(
+		Mandant mandant
+	);
+
+	/**
 	 * Gibt alle Administratoren einer Institution zurueck.
 	 *
 	 * @param institution Die Institution (Kita)

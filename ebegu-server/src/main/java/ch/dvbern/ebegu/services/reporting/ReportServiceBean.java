@@ -25,6 +25,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -59,6 +60,7 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.BenutzerSearchDTO;
 import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.BenutzerTableMandantFilterDTO;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
@@ -111,6 +113,7 @@ import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAn
 import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenStammdaten;
 import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungBerechnungen;
 import ch.dvbern.ebegu.enums.AntragStatus;
+import ch.dvbern.ebegu.enums.BenutzerStatus;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
@@ -1626,7 +1629,8 @@ public class ReportServiceBean extends AbstractReportServiceBean implements
 	@Nonnull
 	public UploadFileInfo generateExcelReportBenutzer(
 		@Nonnull Locale locale,
-		@Nonnull Mandant mandant
+		@Nonnull Mandant mandant,
+		boolean includeGesperrte
 	) throws ExcelMergeException, IOException {
 		final ReportVorlage reportVorlage =
 			ReportVorlage.VORLAGE_REPORT_BENUTZER;
@@ -1638,7 +1642,8 @@ public class ReportServiceBean extends AbstractReportServiceBean implements
 
 			List<BenutzerDataRow> reportData = getReportDataBenutzer(
 				locale,
-				mandant
+				mandant,
+				includeGesperrte
 			);
 
 			ExcelMergerDTO excelMergerDTO = benutzerExcelConverter
@@ -1665,11 +1670,25 @@ public class ReportServiceBean extends AbstractReportServiceBean implements
 	@Nonnull
 	public List<BenutzerDataRow> getReportDataBenutzer(
 		@Nonnull Locale locale,
-		@Nonnull Mandant mandant
+		@Nonnull Mandant mandant,
+		boolean includeGesperrte
 	) {
+		List<BenutzerStatus> benutzerStatuses =
+			Arrays.stream(BenutzerStatus.values())
+				.filter(
+					status -> !status.equals(BenutzerStatus.GESPERRT)
+						|| includeGesperrte
+				)
+				.toList();
+		BenutzerTableMandantFilterDTO benutzerTableFilterDto =
+			new BenutzerTableMandantFilterDTO(mandant);
+		benutzerTableFilterDto.setSearch(new BenutzerSearchDTO());
+		benutzerTableFilterDto.getSearch()
+			.getPredicateObject()
+			.setStatus(benutzerStatuses);
 		Pair<Long, List<Benutzer>> searchResultPair = benutzerService
 			.searchBenutzer(
-				new BenutzerTableMandantFilterDTO(mandant),
+				benutzerTableFilterDto,
 				true
 			);
 		List<Benutzer> benutzerList = searchResultPair.getRight();

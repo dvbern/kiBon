@@ -215,4 +215,13 @@ export class ApplicationPropertyRsService {
             )
         );
     }
+
+    public getBenachrichtigungGemeindeEnabled(): Observable<boolean> {
+        return this.getPublicPropertiesCached().pipe(
+            map(
+                (response: TSPublicAppConfig) =>
+                    response.benachrichtigungGemeindeEnabled
+            )
+        );
+    }
 }

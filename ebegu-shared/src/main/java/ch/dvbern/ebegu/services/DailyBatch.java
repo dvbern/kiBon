@@ -17,6 +17,8 @@ package ch.dvbern.ebegu.services;
 
 import java.util.concurrent.Future;
 
+import ch.dvbern.ebegu.entities.Mandant;
+
 public interface DailyBatch {
 
 	Future<Boolean> runBatchCleanDownloadFiles();
@@ -38,6 +40,10 @@ public interface DailyBatch {
 	void runBatchInfoOffenePendenzenNeueMitteilungInstitution();
 
 	void runBatchSendEmailsForNewGesuchsperiode();
+
+	Future<Boolean> runBatchInfoOffenePendenzenNeueMitteilungGemeinde(
+		Mandant mandant
+	);
 
 	/**
 	 * @return the number of changed InstitutionStammdaten

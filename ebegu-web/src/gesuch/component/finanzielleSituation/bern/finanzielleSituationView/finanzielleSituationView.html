@@ -147,10 +147,12 @@
                         vm.getModel().finanzielleSituationJA.steuerdatenZugriff
                     "
                     (try-again-event)="vm.callKiBonAnfrageAndUpdateFinSit()"
+                    (reset-stek-identifier-clicked)="vm.resetStekIdentifier()"
                     [status]="
                         vm.getModel().finanzielleSituationJA
                             .steuerdatenAbfrageStatus
                     "
+                    [is-stek-identifier-set-on-g-s]="vm.stekIdentifierSetOnGS"
                     [gs-status]="
                         vm.getModel().finanzielleSituationGS
                             .steuerdatenAbfrageStatus

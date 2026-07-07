@@ -16,11 +16,11 @@
   -->
 <div style="display: inline-block; max-width: 100%">
     <div class="onboarding-welcome">
-        @if (isZpvNummerErfolgreichVerknuepft) {
-            <p translate style="margin-bottom: 20px">ZPV_GS2_SUCCESS</p>
+        @if (result === ZPVUpdateResult.SUCCESS) {
+            <p class="mb-4" translate>ZPV_GS2_SUCCESS</p>
         } @else {
             <p translate class="well well-status-abgewiesen">
-                ZPV_GS_NICHT_VERKNUEPFT
+                {{ 'ZPV_UPDATE_RESULT_' + result }}
             </p>
         }
 

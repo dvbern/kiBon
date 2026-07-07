@@ -27,6 +27,7 @@ export type RemoveDialogParams =
     | 'confirmText'
     | 'parentController'
     | 'form'
+    | 'translateParams'
     | 'elementID';
 
 export class RemoveDialogController {
@@ -45,20 +46,26 @@ export class RemoveDialogController {
         private readonly params: {[key in RemoveDialogParams]?: any}
     ) {
         this.deleteText = EbeguUtil.isNotNullOrUndefined(params.deleteText)
-            ? $translate.instant(params.deleteText)
-            : $translate.instant('LOESCHEN_DIALOG_TEXT');
+            ? $translate.instant(params.deleteText, params.translateParams)
+            : $translate.instant(
+                  'LOESCHEN_DIALOG_TEXT',
+                  params.translateParams
+              );
 
         this.title = EbeguUtil.isNotNullOrUndefined(params.title)
-            ? $translate.instant(params.title)
-            : $translate.instant('LOESCHEN_DIALOG_TITLE');
+            ? $translate.instant(params.title, params.translateParams)
+            : $translate.instant(
+                  'LOESCHEN_DIALOG_TITLE',
+                  params.translateParams
+              );
 
         this.cancelText = EbeguUtil.isNotNullOrUndefined(params.cancelText)
-            ? $translate.instant(params.cancelText)
-            : $translate.instant('LABEL_NEIN');
+            ? $translate.instant(params.cancelText, params.translateParams)
+            : $translate.instant('LABEL_NEIN', params.translateParams);
 
         this.confirmText = EbeguUtil.isNotNullOrUndefined(params.confirmText)
-            ? $translate.instant(params.confirmText)
-            : $translate.instant('LABEL_JA');
+            ? $translate.instant(params.confirmText, params.translateParams)
+            : $translate.instant('LABEL_JA', params.translateParams);
     }
 
     public hide(): IPromise<any> {

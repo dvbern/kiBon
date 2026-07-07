@@ -45,6 +45,12 @@ export class DailyBatchService {
         );
     }
 
+    public runBatchInfoOffenePendenzenNeueMitteilungGemeinde(): Observable<string> {
+        return this.callServer(
+            `${this.serviceURL}/runBatchInfoOffenePendenzenNeueMitteilungGemeinde`
+        );
+    }
+
     private callServer(url: string): Observable<string> {
         return this.$http.get(url, {responseType: 'text'});
     }

@@ -20,7 +20,21 @@ export enum TSMitteilungStatus {
     IGNORIERT = 'IGNORIERT'
 }
 
-export function getTSMitteilungsStatusForFilter(): Array<TSMitteilungStatus> {
+/**
+ * Returns a filtered array of TSMitteilungStatus based on the provided traegerschaft flag.
+ *
+ * @param {boolean} traegerschaftOrInstitution - A boolean flag indicating whether to filter the statuses for "Trägerschaften" or "Institutionen".
+ * @return {Array<TSMitteilungStatus>} An array of TSMitteilungStatus values based on the filter criteria.
+ * Users having the role TSRole.ADMIN_TRAEGERSCHAFT or TSRole.SACHBEARBEITER_TRAEGERSCHAFT respectively "...INSTITUTION" will not see the status
+ * ERLEDIGT and  IGNORIERT in the filter component.
+ */
+export function getTSMitteilungsStatusForFilter(
+    traegerschaftOrInstitution: boolean
+): Array<TSMitteilungStatus> {
+    if (traegerschaftOrInstitution) {
+        return [TSMitteilungStatus.NEU, TSMitteilungStatus.GELESEN];
+    }
+
     return [
         TSMitteilungStatus.NEU,
         TSMitteilungStatus.GELESEN,

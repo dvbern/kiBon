@@ -20,7 +20,6 @@ package ch.dvbern.ebegu.outbox.verfuegung;
 import java.util.Optional;
 
 import jakarta.annotation.Resource;
-import jakarta.ejb.Asynchronous;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
@@ -28,8 +27,6 @@ import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
-import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
-import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.outbox.ExportedEvent;
 import ch.dvbern.ebegu.persistence.Persistence;
@@ -39,10 +36,10 @@ import org.slf4j.LoggerFactory;
 import static java.util.Objects.requireNonNull;
 
 @Stateless
-public class VerfuegungEventAsyncHelper {
+public class VerfuegungEventHelper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(
-		VerfuegungEventAsyncHelper.class
+		VerfuegungEventHelper.class
 	);
 
 	@Resource
@@ -57,23 +54,9 @@ public class VerfuegungEventAsyncHelper {
 	@Inject
 	private VerfuegungEventConverter verfuegungEventConverter;
 
-	@Inject
-	private ApplicationPropertyService applicationPropertyService;
-
-	@Asynchronous
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void convert(String id) {
+	public void convertAndFire(String id) {
 		Verfuegung verfuegung = persistence.find(Verfuegung.class, id);
-
-		Mandant mandant = verfuegung.getPlatz()
-			.extractGesuch()
-			.extractMandant();
-
-		if (!applicationPropertyService.isPublishSchnittstelleEventsAktiviert(
-			mandant
-		)) {
-			return;
-		}
 
 		LOG.info(
 			"Converting {} in Thread {} and Transaction {}",

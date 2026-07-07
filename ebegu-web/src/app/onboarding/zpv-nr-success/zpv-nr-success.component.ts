@@ -1,6 +1,6 @@
-import {Component, OnInit, inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {UIRouterGlobals} from '@uirouter/core';
-import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
+import {ZPVUpdateResult} from './ZPVUpdateResult';
 
 @Component({
     selector: 'dv-zpv-nr-success',
@@ -8,20 +8,11 @@ import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
     styleUrls: ['./zpv-nr-success.component.less'],
     standalone: false
 })
-export class ZpvNrSuccessComponent implements OnInit {
-    private readonly gesuchRS = inject(GesuchRS);
+export class ZpvNrSuccessComponent {
     private readonly uiRouterGlobals = inject(UIRouterGlobals);
 
-    public isZpvNummerErfolgreichVerknuepft: boolean;
+    protected readonly ZPVUpdateResult = ZPVUpdateResult;
 
-    public ngOnInit(): void {
-        this.gesuchRS
-            .zpvNummerErfolgreichVerknuepft(
-                this.uiRouterGlobals.params.gesuchstellerId
-            )
-            .then(
-                isErfolgreich =>
-                    (this.isZpvNummerErfolgreichVerknuepft = isErfolgreich)
-            );
-    }
+    public result: ZPVUpdateResult =
+        this.uiRouterGlobals.params.zpvUpdateResult;
 }

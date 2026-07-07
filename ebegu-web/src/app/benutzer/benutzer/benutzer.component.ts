@@ -44,11 +44,11 @@ import {MomentUtil} from '../../../utils/date/MomentUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {Log, LogFactory} from '../../../utils/log-factory/LogFactory';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {Permission} from '../../authorisation/Permission';
-import {PERMISSIONS} from '../../authorisation/Permissions';
+
 import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 
 const LOG = LogFactory.createLog('BenutzerComponent');
 
@@ -71,6 +71,7 @@ export class BenutzerComponent implements OnInit {
     private readonly adminUtilKeycloakAdminService = inject(
         KeycloakAdminRsService
     );
+    appPropService = inject(ApplicationPropertyRsService);
 
     @ViewChild(NgForm) private readonly form: NgForm;
 
@@ -114,11 +115,7 @@ export class BenutzerComponent implements OnInit {
             this.initSelectedUser();
             // Falls der Benutzer JA oder SCH Benutzer ist, muss geprüft werden, ob es sich um den
             // "Default-Verantwortlichen" des entsprechenden Amtes handelt
-            if (
-                PERMISSIONS[Permission.ROLE_GEMEINDE].indexOf(
-                    this.currentBerechtigung.role
-                ) > -1
-            ) {
+            if (this.currentBerechtigung?.hasGemeindeRole()) {
                 this.benutzerRS
                     .isBenutzerDefaultBenutzerOfAnyGemeinde(
                         this.selectedUser.username
@@ -277,6 +274,12 @@ export class BenutzerComponent implements OnInit {
 
     public cancel(): void {
         this.navigateBackToUsersList();
+    }
+
+    public hasGemeindeRole(): boolean {
+        return TSRoleUtil.getGemeindeOrBGOrTSRoles().includes(
+            this.currentBerechtigung?.role
+        );
     }
 
     private getTranslatedRole(role: TSRole): string {

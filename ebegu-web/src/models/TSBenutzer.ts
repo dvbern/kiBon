@@ -37,6 +37,7 @@ export class TSBenutzer {
 
     private _currentBerechtigung: TSBerechtigung;
     private _berechtigungen: Array<TSBerechtigung> = [];
+    public sendMailWennOffenePendenzen: boolean = true;
 
     public constructor(
         vorname?: string,

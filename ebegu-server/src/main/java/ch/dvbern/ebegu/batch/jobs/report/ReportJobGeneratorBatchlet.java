@@ -254,7 +254,12 @@ public class ReportJobGeneratorBatchlet extends AbstractBatchlet {
 		case VORLAGE_REPORT_BENUTZER: {
 			return this.reportService.generateExcelReportBenutzer(
 				locale,
-				mandant
+				mandant,
+				Boolean.parseBoolean(
+					getParameters().getProperty(
+						WorkJobConstants.INCLUDE_GESPERRTE
+					)
+				)
 			);
 		}
 		case VORLAGE_REPORT_ZAHLUNG_AUFTRAG: {

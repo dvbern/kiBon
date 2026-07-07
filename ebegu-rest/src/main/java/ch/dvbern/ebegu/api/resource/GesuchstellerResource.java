@@ -55,7 +55,7 @@ import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.GesuchstellerService;
 import ch.dvbern.ebegu.services.MandantService;
-import ch.dvbern.ebegu.services.UpdateZpvService;
+import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZpvService;
 import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import ch.dvbern.ebegu.validators.CheckEmail;
@@ -96,7 +96,7 @@ public class GesuchstellerResource {
 	private MandantService mandantService;
 
 	@Inject
-	private UpdateZpvService updateZpvService;
+	private ZpvService zpvService;
 
 	@Operation(
 		summary = "Updates a Gesuchsteller or creates it if it doesn't exist in the database. The transfer "
@@ -222,7 +222,7 @@ public class GesuchstellerResource {
 		MandantIdentifier mandant = getMandantBernFromCookieOrThrow(
 			mandantCookie
 		);
-		updateZpvService.sendInitUpdateZPVNr(
+		zpvService.sendInitUpdateZPVNr(
 			email,
 			korrespondenzSprache,
 			gesuchstellerOpt.get(),
@@ -245,5 +245,63 @@ public class GesuchstellerResource {
 		}
 
 		return mandant.getMandantIdentifier();
+	}
+
+	@Operation(
+		summary = "Returns whether the ZPV number is set on the Gesuchsteller.")
+	@Nullable
+	@GET
+	@Path("/{gesuchstellerId}/is-stek-identifier-set")
+	@Consumes(MediaType.WILDCARD)
+	@RolesAllowed(GESUCHSTELLER)
+	public Response isStekIdentifierSetOnGS(
+		@Nonnull @PathParam("gesuchstellerId") JaxId gesuchstellerJAXPId
+	) {
+
+		Objects.requireNonNull(gesuchstellerJAXPId.getId());
+		String gesuchstellerID = converter.toEntityId(gesuchstellerJAXPId);
+		Optional<GesuchstellerContainer> gesuchstellerOpt = gesuchstellerService
+			.findGesuchsteller(gesuchstellerID);
+
+		if (gesuchstellerOpt.isEmpty()) {
+			throw new EbeguEntityNotFoundException(
+				"isStekIdentifierSetOnGS",
+				gesuchstellerID
+			);
+		}
+
+		return Response.ok(
+			gesuchstellerOpt.get().getGesuchstellerJA().getZpvNummer() != null
+				|| gesuchstellerOpt.get().getGesuchstellerJA().getAhvNummer()
+					!= null
+		).build();
+	}
+
+	@Operation(
+		summary = "Resets the stek identifier number on the Gesuchsteller by setting all possible identifiers to null")
+	@Nullable
+	@PUT
+	@Path("/{gesuchstellerId}/reset-stek-identifier")
+	@Consumes(MediaType.WILDCARD)
+	@RolesAllowed(GESUCHSTELLER)
+	public Response resetGSZPVNummer(
+		@Nonnull @PathParam("gesuchstellerId") JaxId gesuchstellerJAXPId
+	) {
+
+		Objects.requireNonNull(gesuchstellerJAXPId.getId());
+		String gesuchstellerID = converter.toEntityId(gesuchstellerJAXPId);
+		Optional<GesuchstellerContainer> gesuchstellerOpt = gesuchstellerService
+			.findGesuchsteller(gesuchstellerID);
+
+		if (gesuchstellerOpt.isEmpty()) {
+			throw new EbeguEntityNotFoundException(
+				"isZPVNummerSetOnGS",
+				gesuchstellerID
+			);
+		}
+
+		this.zpvService.resetStekIdentifier(gesuchstellerOpt.get());
+
+		return Response.ok().build();
 	}
 }

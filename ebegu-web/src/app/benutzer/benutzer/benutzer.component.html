@@ -257,6 +257,46 @@
                         </div>
                     </div>
                 }
+                <!-- Benachrichtigung fuer Gemeinde Benutzende-->
+                @if (
+                    appPropService.getBenachrichtigungGemeindeEnabled() | async;
+                    as benachrichtigungGemeindeEnabled
+                ) {
+                    @if (hasGemeindeRole() && benachrichtigungGemeindeEnabled) {
+                        <div class="margin-top-50">
+                            <h1
+                                [textContent]="
+                                    'ZUSAETZLICHE_EINSTELLUNGEN' | translate
+                                "
+                            ></h1>
+                            <hr class="header" />
+                        </div>
+                        <div class="form-group">
+                            <mat-checkbox
+                                [(ngModel)]="
+                                    selectedUser.sendMailWennOffenePendenzen
+                                "
+                                id="sendMailWennOffenePendenzen_id"
+                                name="sendMailWennOffenePendenzen_id"
+                                data-test="sendMailWennOffenePendenzen"
+                                [disabled]="isDisabled"
+                            >
+                                <span class="mr-2">
+                                    {{
+                                        'GEMEINDE_BENUTZER_BENACHRICHTIGUNG_PENDENZEN'
+                                            | translate
+                                    }}
+                                </span>
+                                <dv-tooltip
+                                    [text]="
+                                        'GEMEINDE_BENUTZER_BENACHRICHTIGUNG_PENDENZEN_INFO'
+                                            | translate
+                                    "
+                                ></dv-tooltip>
+                            </mat-checkbox>
+                        </div>
+                    }
+                }
                 <!-- History Tabelle -->
                 @if (isSuperAdmin()) {
                     <h1 translate class="margin-top-50">BERECHTIGUNGHISTORY</h1>

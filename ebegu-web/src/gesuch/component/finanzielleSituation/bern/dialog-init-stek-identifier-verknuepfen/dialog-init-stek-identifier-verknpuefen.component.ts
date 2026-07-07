@@ -21,23 +21,25 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CONSTANTS} from '@models/constants';
 import {GesuchstellerRS} from '../../../../../app/core/service/gesuchstellerRS.rest';
 import {TSSprache} from '../../../../../models/enums/TSSprache';
+import {TSGesuch} from '../../../../../models/TSGesuch';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
 
 @Component({
-    selector: 'dv-ng-zpv-nummmer-verknuepfen-dialog',
-    templateUrl: './dialog-init-zpv-nummer-verknpuefen.template.html',
+    selector: 'dv-stek-identifier-verknuepfen-dialog',
+    templateUrl: './dialog-init-stek-identifier-verknpuefen.template.html',
     standalone: false
 })
-export class DialogInitZPVNummerVerknuepfenComponent {
+export class DialogInitStekNummerVerknuepfenComponent {
     private readonly dialogRef =
-        inject<MatDialogRef<DialogInitZPVNummerVerknuepfenComponent>>(
+        inject<MatDialogRef<DialogInitStekNummerVerknuepfenComponent>>(
             MatDialogRef
         );
     private readonly gesuchstellerRS = inject(GesuchstellerRS);
-    private readonly data = inject(MAT_DIALOG_DATA);
+    readonly data = inject<InitStekIdentifierDialogData>(MAT_DIALOG_DATA);
 
-    private readonly gs: TSGesuchstellerContainer;
-    private readonly korrespondenzSprache: TSSprache;
+    readonly gs = this.data.gs;
+    readonly korrespondenzSprache = this.data.korrespondenzSprache;
+
     public email: string;
     public readonly CONSTANTS = CONSTANTS;
 
@@ -61,3 +63,9 @@ export class DialogInitZPVNummerVerknuepfenComponent {
         this.dialogRef.close();
     }
 }
+
+export type InitStekIdentifierDialogData = {
+    gs: TSGesuchstellerContainer;
+    korrespondenzSprache: TSSprache;
+    gesuch: TSGesuch;
+};

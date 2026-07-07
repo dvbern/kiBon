@@ -127,7 +127,7 @@ export const STATES: NgHybridStateDeclaration[] = [
     },
     {
         name: 'onboarding.zpvgssuccess',
-        url: '/zpv-gs-success/:gesuchstellerId',
+        url: '/zpv-gs-success/:gesuchstellerId?zpvUpdateResult',
         component: ZpvNrSuccessComponent,
         data: {
             roles: [TSRole.ANONYMOUS]

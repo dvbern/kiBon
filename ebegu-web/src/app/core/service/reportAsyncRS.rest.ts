@@ -158,9 +158,12 @@ export class ReportAsyncRS {
         );
     }
 
-    public getBenutzerReportExcel(): Observable<{workjobId: string}> {
+    public getBenutzerReportExcel(
+        includeGesperrte: boolean
+    ): Observable<{workjobId: string}> {
         return this.http.get<{workjobId: string}>(
-            `${this.serviceURL}/excel/benutzer`
+            `${this.serviceURL}/excel/benutzer`,
+            {params: {includeGesperrte}}
         );
     }
 

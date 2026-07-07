@@ -268,6 +268,13 @@ public enum ApplicationPropertyKey {
 
 	/**
 	 * Default = false
+	 * When activated, the Gemeinde Users have a checkbox that allow them to be informed,
+	 * every morning, about their opened Pendenz and Mitteilung
+	 */
+	@BooleanEinstellung BENACHRICHTIGUNG_GEMEINDE_AKTIV,
+
+	/**
+	 * Default = false
 	 * Wenn dies aktiviert ist, werden jegliche E-Mails, die an GS1 versendet werden, auch an GS2 versendet.
 	 */
 	@BooleanEinstellung MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2,

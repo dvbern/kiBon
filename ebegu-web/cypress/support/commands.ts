@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ConfirmDialogPO} from '@dv-e2e/page-objects';
+import {ConfirmDialogPO, keycloakLoginPo} from '@dv-e2e/page-objects';
 /// <reference types="cypress" />
 import * as dvTasks from '@dv-e2e/tasks';
 import {OnlyValidSelectors, User} from '@dv-e2e/types';
@@ -211,6 +211,16 @@ Cypress.Commands.add('login', (user: User) => {
             cy.visit('/#/locallogin');
             cy.checkKeycloakUser();
             cy.get(`[data-test="test-user-${userSelector}"]`).click();
+
+            cy.get('#username', {timeout: 10000})
+                .should('be.visible')
+                .then(() => {
+                    // Remove the inline script's effect by overriding form.submit
+                    cy.window().then(win => {
+                        win.document.querySelector('form').submit = () => {}; // no-op
+                    });
+                    keycloakLoginPo.getKCLoginButton().click();
+                });
         },
         {
             validate: () => {

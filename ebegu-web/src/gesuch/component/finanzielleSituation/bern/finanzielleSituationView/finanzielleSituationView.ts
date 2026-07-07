@@ -19,7 +19,7 @@ import {IComponentOptions} from 'angular';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
-import {DemoFeatureRS} from '../../../../../app/core/service/demoFeatureRS.rest';
+import {GesuchstellerRS} from '../../../../../app/core/service/gesuchstellerRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSEinstellungKey} from '../../../../../admin/einstellungen/TSEinstellungKey';
@@ -77,7 +77,7 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
         'AuthServiceRS',
         'ApplicationPropertyRsService',
         'GesuchRS',
-        'DemoFeatureRS'
+        'GesuchstellerRS'
     ];
 
     public showSelbstaendig: boolean;
@@ -104,7 +104,7 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
         protected readonly authServiceRS: AuthServiceRS,
         applicationPropertyRS: ApplicationPropertyRsService,
         private readonly gesuchRS: GesuchRS,
-        private readonly demoFeatureRS: DemoFeatureRS
+        gesuchstellerRS: GesuchstellerRS
     ) {
         super(
             gesuchModelManager,
@@ -115,7 +115,8 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
             authServiceRS,
             einstellungRS,
             dvDialog,
-            applicationPropertyRS
+            applicationPropertyRS,
+            gesuchstellerRS
         );
         this.$stateParams = $stateParams;
         this.copyDataAndInit();

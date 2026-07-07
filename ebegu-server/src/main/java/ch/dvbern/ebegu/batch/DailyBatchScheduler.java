@@ -28,6 +28,7 @@ import jakarta.inject.Inject;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.enums.UserRoleName;
 import ch.dvbern.ebegu.services.DailyBatch;
+import ch.dvbern.ebegu.services.MandantService;
 import org.jboss.ejb3.annotation.RunAsPrincipal;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.slf4j.Logger;
@@ -45,6 +46,9 @@ public class DailyBatchScheduler {
 
 	@Inject
 	private DailyBatch dailyBatch;
+
+	@Inject
+	private MandantService mandantService;
 
 	@Schedule(second = "59", minute = "59", hour = "23", persistent = true)
 	public void runBatchCleanDownloadFiles() {
@@ -131,6 +135,22 @@ public class DailyBatchScheduler {
 	@TransactionTimeout(unit = TimeUnit.MINUTES, value = 60)
 	public void runBatchInfoOffenePendenzenNeueMitteilungInstitution() {
 		dailyBatch.runBatchInfoOffenePendenzenNeueMitteilungInstitution();
+	}
+
+	@Schedule(second = "59", minute = "00", hour = "04", persistent = true)
+	@TransactionTimeout(unit = TimeUnit.MINUTES, value = 15)
+	public void runBatchInfoOffenePendenzenNeueMitteilungGemeinde() {
+		LOGGER.info(
+			"Batchjob InfoOffenePendenzenNeueMitteilungGemeinde started"
+		);
+		mandantService.getAll()
+			.forEach(
+				mandant -> dailyBatch
+					.runBatchInfoOffenePendenzenNeueMitteilungGemeinde(mandant)
+			);
+		LOGGER.info(
+			"Batchjob InfoOffenePendenzenNeueMitteilungGemeinde finished"
+		);
 	}
 
 	@Schedule(second = "59", minute = "30", hour = "04", persistent = true)

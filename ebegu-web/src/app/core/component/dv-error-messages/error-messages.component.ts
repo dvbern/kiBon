@@ -127,6 +127,11 @@ export class ErrorMessagesComponent {
                     startgp: errorValue?.startGp,
                     endgp: errorValue?.endGp
                 });
+            case 'benutzerMailForStekIdentifierNotAllowed':
+                return this.translate.instant(
+                    'ERROR_STEK_IDENTIFIER_INIT_EMAIL_SAME_AS_BENUTER',
+                    {email: errorValue?.email}
+                );
             default:
                 return this.translate.instant('ERROR_UNKNOWN');
         }

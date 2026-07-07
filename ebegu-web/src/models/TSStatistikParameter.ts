@@ -199,3 +199,7 @@ export class TSStatistikParameter extends TSAbstractMutableEntity {
         this._gesuchZeitraumDatumTyp = value;
     }
 }
+
+export type BenutzendeStatistikParameter = {
+    includeGesperrte: boolean;
+};

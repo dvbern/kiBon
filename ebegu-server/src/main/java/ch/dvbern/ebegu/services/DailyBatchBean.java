@@ -32,6 +32,7 @@ import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
+import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.Constants;
 import org.jboss.ejb3.annotation.TransactionTimeout;
@@ -282,6 +283,30 @@ public class DailyBatchBean implements DailyBatch {
 				"Batch-Job InfoOffenePendenzenNeueMitteilungInstitution konnte nicht durchgefuehrt werden!",
 				e
 			);
+		}
+	}
+
+	@Override
+	public Future<Boolean> runBatchInfoOffenePendenzenNeueMitteilungGemeinde(
+		Mandant mandant
+	) {
+		try {
+			LOGGER.info(
+				"Starting Job InfoOffenePendenzenNeueMitteilungGemeinde..."
+			);
+			betreuungService.sendInfoOffenePendenzenNeuMitteilungGemeinde(
+				mandant
+			);
+			LOGGER.info(
+				"... Job InfoOffenePendenzenNeueMitteilungGemeinde finished"
+			);
+			return new AsyncResult<>(Boolean.TRUE);
+		} catch (RuntimeException e) {
+			LOGGER.error(
+				"Batch-Job InfoOffenePendenzenNeueMitteilungGemeinde konnte nicht durchgefuehrt werden!",
+				e
+			);
+			return new AsyncResult<>(Boolean.FALSE);
 		}
 	}
 

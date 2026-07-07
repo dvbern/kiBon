@@ -29,11 +29,18 @@
                             id="email"
                             type="email"
                             name="email"
+                            #mail="ngModel"
                             [(ngModel)]="email"
                             placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
+                            required
                             email
+                            isValidStekIdentifierInitMail
+                            [gesuch]="data.gesuch"
                             class="form-control"
                         />
+                        <dv-error-messages
+                            [errorObject]="mail.errors"
+                        ></dv-error-messages>
                     </div>
                 </div>
             </div>
@@ -44,6 +51,7 @@
                 <button
                     class="dv-btn"
                     (click)="save(mailForm)"
+                    [disabled]="mailForm.invalid"
                     [textContent]="'SEND_MAIL' | translate"
                 ></button>
                 <button
