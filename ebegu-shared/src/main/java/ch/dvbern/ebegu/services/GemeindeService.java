@@ -70,12 +70,6 @@ public interface GemeindeService {
 	long getNextGemeindeNummer();
 
 	/**
-	 * Gibt alle Gemeinden im Status "AKTIV" für den Mandanten des Principal zurück
-	 */
-	@Nonnull
-	Collection<Gemeinde> getAktiveGemeinden();
-
-	/**
 	 * Gibt alle Gemeinden im Status "AKTIV" für den übergebenen Mandanten zurück
 	 */
 	@Nonnull
@@ -263,4 +257,9 @@ public interface GemeindeService {
 	void fireGemeindeChangedEvent(@Nonnull Gemeinde gemeinde);
 
 	List<Gemeinde> getGemeindenWithInfoma(Mandant mandant);
+
+	/**
+	 * Set the event published flag to false
+	 */
+	void resetEventPublishedForAllGemeinde(@Nonnull Mandant mandant);
 }

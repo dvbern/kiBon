@@ -805,4 +805,17 @@ public class InstitutionServiceBean extends AbstractBaseService implements
 
 		return persistence.persist(institution);
 	}
+
+	@Override
+	public void resetEventPublishedForAllTagesschule(@Nonnull Mandant mandant) {
+		Collection<Institution> tagesschulen = getAllInstitutionenByType(
+			mandant,
+			List.of(BetreuungsangebotTyp.TAGESSCHULE)
+		);
+		tagesschulen.forEach(institution -> {
+			institution.setEventPublished(false);
+			persistence.merge(institution);
+		});
+
+	}
 }

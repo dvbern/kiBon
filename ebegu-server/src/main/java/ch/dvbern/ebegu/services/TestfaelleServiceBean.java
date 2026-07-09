@@ -2541,7 +2541,7 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		}
 
 		Collection<Gemeinde> allGemeinden = gemeindeService
-			.getAktiveGemeinden();
+			.getAktiveGemeinden(principalBean.getMandant());
 		// we need normlohnkosten only for first gemeinde, since this value is always identical for one gesuchsperiode
 		Gemeinde firstGemeinde = allGemeinden.iterator().next();
 		Einstellung normlohnkosten = einstellungService.findEinstellung(

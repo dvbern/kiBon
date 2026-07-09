@@ -321,6 +321,7 @@ public class ModulTagesschuleGroup extends AbstractEntity implements
 		copy.setIntervall(this.getIntervall());
 		copy.setWirdPaedagogischBetreut(this.isWirdPaedagogischBetreut());
 		copy.setReihenfolge(this.getReihenfolge());
+		copy.setFremdId(this.getFremdId());
 		if (CollectionUtils.isNotEmpty(this.getModule())) {
 			copy.getModule().clear();
 			this.getModule().forEach(modul -> {

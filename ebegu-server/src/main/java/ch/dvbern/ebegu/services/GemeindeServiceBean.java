@@ -207,12 +207,6 @@ public class GemeindeServiceBean extends AbstractBaseService implements
 
 	@Nonnull
 	@Override
-	public Collection<Gemeinde> getAktiveGemeinden() {
-		return getAktiveGemeinden(principalBean.getMandant());
-	}
-
-	@Nonnull
-	@Override
 	public Collection<Gemeinde> getAktiveGemeinden(@Nonnull Mandant mandant) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Gemeinde> query = cb.createQuery(Gemeinde.class);
@@ -1035,5 +1029,16 @@ public class GemeindeServiceBean extends AbstractBaseService implements
 		query.where(infomaPredicate, mandantPredicate);
 
 		return persistence.getCriteriaResults(query);
+	}
+
+	@Override
+	public void resetEventPublishedForAllGemeinde(@Nonnull Mandant mandant) {
+		getAktiveGemeinden(mandant).stream()
+			.forEach(
+				gemeinde -> {
+					gemeinde.setEventPublished(false);
+					persistence.merge(gemeinde);
+				}
+			);
 	}
 }

@@ -147,4 +147,9 @@ public interface InstitutionService {
 	List<Institution> findAllInstitutionen(@Nonnull List<String> ids);
 
 	Institution nurLatsInstitutionUmwandeln(@Nonnull Institution institution);
+
+	/**
+	 * Set the event published flag to false
+	 */
+	void resetEventPublishedForAllTagesschule(@Nonnull Mandant mandant);
 }

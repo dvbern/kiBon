@@ -112,6 +112,9 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements
 	@Inject
 	private GesuchsperiodeEmailService gesuchsperiodeEmailService;
 
+	@Inject
+	private InstitutionService institutionService;
+
 	@Nonnull
 	@Override
 	public Gesuchsperiode saveGesuchsperiode(
@@ -155,67 +158,74 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements
 			if (lastGesuchsperiodeOptional.isPresent()) {
 				Gesuchsperiode lastGesuchsperiode = lastGesuchsperiodeOptional
 					.get();
-				// we only copy the einstellung when there is a lastGesuchsperiode. In some cases, among others in
-				// some tests we won't have a lastGesuchsperiode so we cannot copy the Einstellungen. In production
-				// if there is no lastGesuchsperiode there is also nothing to copy
+				// we only copy the einstellung when there is a lastGesuchsperiode.
 				einstellungService.copyEinstellungenToNewGesuchsperiode(
 					gesuchsperiode,
 					lastGesuchsperiode
 				);
 
-				// Die Module der Tagesschulen sollen ebenfalls für die neue Gesuchsperiode übernommen werden
 				modulTagesschuleService
 					.copyModuleTagesschuleToNewGesuchsperiode(
 						gesuchsperiode,
 						lastGesuchsperiode
 					);
+				institutionService.resetEventPublishedForAllTagesschule(
+					gesuchsperiode.getMandant()
+				);
 
-				// Die Einstellungen der Ferieninseln sollen ebenfalls für die neue Gesuchsperiode übernommen werden
 				ferieninselStammdatenService
 					.copyEinstellungenFerieninselToNewGesuchsperiode(
 						gesuchsperiode,
 						lastGesuchsperiode
 					);
 
-				//Die Gemeinde Gesuchsperiode Stammdaten sollen auch für die neue Gesuchsperiode übernommen werden
 				gemeindeService.copyGesuchsperiodeGemeindeStammdaten(
 					gesuchsperiode,
 					lastGesuchsperiode
 				);
+				gemeindeService.resetEventPublishedForAllGemeinde(
+					gesuchsperiode.getMandant()
+				);
 
-				//copy erlaeuterung verfuegung from previos Gesuchperiode
-				gesuchsperiode.setVerfuegungErlaeuterungenDe(
-					lastGesuchsperiode.getVerfuegungErlaeuterungenDe()
-				);
-				gesuchsperiode.setVerfuegungErlaeuterungenFr(
-					lastGesuchsperiode.getVerfuegungErlaeuterungenFr()
-				);
-				// Merkblatt Tagesschulen kopieren
-				gesuchsperiode.setVorlageMerkblattTsDe(
-					lastGesuchsperiode.getVorlageMerkblattTsDe()
-				);
-				gesuchsperiode.setVorlageMerkblattTsFr(
-					lastGesuchsperiode.getVorlageMerkblattTsFr()
-				);
-				// Vorlage Verfügung Lats kopieren
-				gesuchsperiode.setVorlageVerfuegungLatsDe(
-					lastGesuchsperiode.getVorlageVerfuegungLatsDe()
-				);
-				gesuchsperiode.setVorlageVerfuegungLatsFr(
-					lastGesuchsperiode.getVorlageVerfuegungLatsFr()
-				);
-				// Vorlage Verfügung Ferienbetreuung kopieren
-				gesuchsperiode.setVorlageVerfuegungFerienbetreuungDe(
+				copyVorlagenForGesuchsperiode(
+					gesuchsperiode,
 					lastGesuchsperiode
-						.getVorlageVerfuegungFerienbetreuungDe()
-				);
-				gesuchsperiode.setVorlageVerfuegungFerienbetreuungFr(
-					lastGesuchsperiode
-						.getVorlageVerfuegungFerienbetreuungFr()
 				);
 			}
 		}
 		return saveGesuchsperiode(gesuchsperiode);
+	}
+
+	private void copyVorlagenForGesuchsperiode(
+		Gesuchsperiode gesuchsperiode,
+		Gesuchsperiode lastGesuchsperiode
+	) {
+		gesuchsperiode.setVerfuegungErlaeuterungenDe(
+			lastGesuchsperiode.getVerfuegungErlaeuterungenDe()
+		);
+		gesuchsperiode.setVerfuegungErlaeuterungenFr(
+			lastGesuchsperiode.getVerfuegungErlaeuterungenFr()
+		);
+		gesuchsperiode.setVorlageMerkblattTsDe(
+			lastGesuchsperiode.getVorlageMerkblattTsDe()
+		);
+		gesuchsperiode.setVorlageMerkblattTsFr(
+			lastGesuchsperiode.getVorlageMerkblattTsFr()
+		);
+		gesuchsperiode.setVorlageVerfuegungLatsDe(
+			lastGesuchsperiode.getVorlageVerfuegungLatsDe()
+		);
+		gesuchsperiode.setVorlageVerfuegungLatsFr(
+			lastGesuchsperiode.getVorlageVerfuegungLatsFr()
+		);
+		gesuchsperiode.setVorlageVerfuegungFerienbetreuungDe(
+			lastGesuchsperiode
+				.getVorlageVerfuegungFerienbetreuungDe()
+		);
+		gesuchsperiode.setVorlageVerfuegungFerienbetreuungFr(
+			lastGesuchsperiode
+				.getVorlageVerfuegungFerienbetreuungFr()
+		);
 	}
 
 	private void handleStatusUebergang(
@@ -288,7 +298,7 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements
 
 	/**
 	 * Returns all gesuchsperioden of mandant ordered by gueltigAb date
-	 * 
+	 *
 	 * @param mandant the {@link Mandant} the gesuchsperioden are to be retrieved for
 	 * @return all {@link Gesuchsperiode}n of the {@link Mandant}
 	 */
