@@ -1,0 +1,24 @@
+<h2 mat-dialog-title class="!before:content-none !before:hidden">
+    {{ data.betreff.trimStart() }}
+</h2>
+
+<mat-dialog-content>
+    <p class="text-gray-500">
+        <span translate>EMPFAENGERADRESSE_MAIL</span>:
+        {{ data.empfaengerAdresse }}
+    </p>
+    <p class="text-gray-500">
+        <span translate>ZEITPUNKTVERSAND_MAIL</span>:
+        {{ data.zeitpunktVersand }}
+    </p>
+    <mat-divider class="!my-4"></mat-divider>
+
+    <div
+        class="max-w-none text-gray-800"
+        [innerHTML]="sanitize(data.body)"
+    ></div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button class="dv-btn cancel-button" mat-dialog-close>SCHLIESSEN</button>
+</mat-dialog-actions>

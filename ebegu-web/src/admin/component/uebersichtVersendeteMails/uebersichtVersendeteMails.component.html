@@ -1,16 +1,18 @@
 <!--
-  ~ Ki-Tax: System for the management of external childcare subsidies
-  ~ Copyright (C) 2017 City of Bern Switzerland
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
   ~ published by the Free Software Foundation, either version 3 of the
   ~ License, or (at your option) any later version.
+  ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU Affero General Public License for more details.
+  ~
   ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
 <div class="admin-modul" flex="auto">
@@ -20,20 +22,14 @@
             <h2 translate>VERSENDETE_MAILS_TITLE</h2>
             <hr class="header" />
         </div>
-
-        <div class="filter margin-bottom-20">
-            <input
-                class="filter"
-                matInput
-                type="text"
-                [(ngModel)]="filter"
-                placeholder="{{
-                    'VERSENDETE_MAILS_SUCHE_PLATZHALTER' | translate
-                }}"
-                data-test="SearchBarSentMails"
-            />
-        </div>
-
+        @if (showWarning()) {
+            <dv-warning
+                [text]="'VERSENDETE_MAILS_SUCHE_WARNING' | translate"
+            ></dv-warning>
+        }
+        <dv-versendete-mail-filter
+            [(filter)]="filter"
+        ></dv-versendete-mail-filter>
         <div class="table-responsive">
             <mat-table
                 #table
@@ -43,24 +39,46 @@
             >
                 <!-- Column zeitpunktversand -->
                 <ng-container matColumnDef="zeitpunktVersand">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        class="max-w-[20%]"
+                    >
                         {{ 'ZEITPUNKTVERSAND_MAIL' | translate }}
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let item" data-test="sentTimeMails">
+                    <mat-cell
+                        *matCellDef="let item"
+                        data-test="sentTimeMails"
+                        class="max-w-[20%]"
+                    >
                         {{ item.zeitpunktVersand }}
                     </mat-cell>
                 </ng-container>
 
                 <!-- Column empfaengeradresse -->
                 <ng-container matColumnDef="empfaengerAdresse">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell
+                        *matHeaderCellDef
+                        mat-sort-header
+                        class="max-w-[30%]"
+                    >
                         {{ 'EMPFAENGERADRESSE_MAIL' | translate }}
                     </mat-header-cell>
                     <mat-cell
                         *matCellDef="let item"
                         data-test="sentMailsAdress"
+                        class="max-w-[30%]"
                     >
-                        {{ item.empfaengerAdresse }}
+                        <span>{{ item.empfaengerAdresse }}</span>
+                        <!-- Hidden Button to open Dialog for screen readers-->
+                        <button
+                            class="sr-only"
+                            [attr.aria-label]="
+                                'Details anzeigen für ' + item.name
+                            "
+                            aria-haspopup="dialog"
+                            (click)="$event.stopPropagation(); openMail(item)"
+                        ></button>
                     </mat-cell>
                 </ng-container>
 
@@ -82,7 +100,11 @@
                 ></mat-header-row>
                 <mat-row
                     *matRowDef="let row; columns: DISPLAYED_COLUMNS"
-                    class="pointer-cursor"
+                    tabindex="0"
+                    class="pointer-cursor focus:bg-gray-100/30"
+                    (click)="openMail(row)"
+                    (keydown.enter)="openMail(row)"
+                    (keydown.space)="preventDefaultAndOpenMail($event, row)"
                 ></mat-row>
             </mat-table>
             <mat-paginator

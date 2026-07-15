@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MEDIUMTEXT_LENGTH_IN_CHARS;
+
 @Stateless
 @Slf4j
 public class OutboxMailService {
@@ -24,7 +26,6 @@ public class OutboxMailService {
 		OutboxMailService.class
 	);
 
-	private static final int MEDIUMTEXT_MAX_LENGTH = 4190000;
 	private static final String TEXT_WAS_CUT_OFF_HINT =
 		"... IMPORTANT NOTE: mail content was cut off because it was too long to be "
 			+ "stored into database. The full text might be available in the server logs.";
@@ -60,11 +61,11 @@ public class OutboxMailService {
 		// we will most likely store text UTF-8 encoded which consumes 4 bytes per character
 		// that allows MEDIUMTEXT to hold around 4,194,303 characters.
 		// we will round that down to 4.19 M.
-		if (text.length() > MEDIUMTEXT_MAX_LENGTH) {
+		if (text.length() > DB_DEFAULT_MEDIUMTEXT_LENGTH_IN_CHARS) {
 			LOGGER.warn(
 				"Mail content was cut off because it was too long to be stored into database. The full text might be available in the server logs."
 			);
-			return text.substring(0, MEDIUMTEXT_MAX_LENGTH)
+			return text.substring(0, DB_DEFAULT_MEDIUMTEXT_LENGTH_IN_CHARS)
 				+ TEXT_WAS_CUT_OFF_HINT;
 		}
 		return text;

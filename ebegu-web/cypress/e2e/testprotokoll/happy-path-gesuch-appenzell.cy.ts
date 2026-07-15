@@ -53,9 +53,9 @@ describe('Appenzell - Happy Path Gesuch', () => {
     );
     const userGS = getUser('[5-GS] Emma Gerber');
     const gesuchsPeriode: {ganze: TestPeriode; anfang: string; ende: string} = {
-        ganze: '2023/24',
-        anfang: '2023',
-        ende: '2024'
+        ganze: '2025/26',
+        anfang: '2025',
+        ende: '2026'
     };
 
     beforeEach(() => {

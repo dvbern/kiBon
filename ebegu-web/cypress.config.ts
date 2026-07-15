@@ -3,6 +3,8 @@ import * as fs from 'fs';
 
 import * as dvTasks from './cypress/support/tasks';
 
+// for local e2e test again e2e environment, default is local
+// const baseUrl = process.env.baseURL ?? 'https://e2e-be.kibon.ch';
 const baseUrl = process.env.baseURL ?? 'https://local-be.kibon.ch:4200/';
 
 export default defineConfig({

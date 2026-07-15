@@ -64,7 +64,7 @@ const elementsWithSuffixSelector: [
     ['mat-radio-button', 'label']
 ];
 
-Cypress.SelectorPlayground.defaults({
+Cypress.ElementSelector.defaults({
     onElement: el => {
         const prefixSelector = el
             .parents('[data-test^="container."]')

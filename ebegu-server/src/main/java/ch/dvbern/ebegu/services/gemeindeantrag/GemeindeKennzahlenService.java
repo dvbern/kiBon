@@ -451,16 +451,20 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 	}
 
 	/**
-	 * Creates {@link GemeindeKennzahlen} records for all active {@link Gemeinde}n for the
-	 * {@link Gesuchsperiode} of the provided {@link Mandant} that was active in the current Gesuchsperiode.
+	 * <p>
+	 * Creates {@link GemeindeKennzahlen} records for all {@link Gemeinde}n with BG-angebot enabled for the
+	 * of the provided {@link Mandant} that were active in the {@link Gesuchsperiode} running at the start of the
+	 * current year.
+	 * </p>
 	 * <p>
 	 * If no {@link Gesuchsperiode} currently exists for the provided {@link Mandant},
 	 * the process is not executed.
+	 * </p>
 	 *
 	 * @param mandant The {@link Mandant} entity for which the {@link GemeindeKennzahlen}
 	 * should be generated. Must not be null.
 	 */
-	public void createGemeindeKennzahlenInCurrentGPForActiveGemeinden(
+	public List<GemeindeKennzahlen> createGemeindeKennzahlenInCurrentGPForActiveBGGemeinden(
 		@Nonnull Mandant mandant
 	) {
 		Optional<Gesuchsperiode> gesuchsperiodeAtYearStart =
@@ -472,16 +476,16 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 			LOG.info(
 				"Batchjob sendGemeindeKennzahlenFirstReminder nicht durchgefuehrt, keine Gesuchsperiode am Jahrstart vorhanden"
 			);
-			return;
+			return null;
 
 		}
 		Gesuchsperiode gesuchsperiode = gesuchsperiodeAtYearStart.get();
 		var activeGemeinden =
-			(List<Gemeinde>) this.gemeindeService.getAktiveGemeindenGueltigAm(
+			this.gemeindeService.getAktiveGemeindenGueltigAm(
 				gesuchsperiode.getGueltigkeit().getGueltigAb(),
 				mandant
-			);
+			).stream().filter(Gemeinde::isAngebotBG).toList();
 
-		this.createGemeindeKennzahlen(gesuchsperiode, activeGemeinden);
+		return this.createGemeindeKennzahlen(gesuchsperiode, activeGemeinden);
 	}
 }

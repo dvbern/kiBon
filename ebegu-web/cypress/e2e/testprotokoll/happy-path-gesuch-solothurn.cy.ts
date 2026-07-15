@@ -174,7 +174,7 @@ function openAntrag(user: User) {
         'include.text',
         'Antrag stellen'
     );
-    GesuchstellendeDashboardPO.getCorrectPeriodeGesuchButton('2023/24').click();
+    GesuchstellendeDashboardPO.getCorrectPeriodeGesuchButton('2025/26').click();
 }
 
 function createKinder(): void {

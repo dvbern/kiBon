@@ -333,7 +333,35 @@ class AuthResourceTest extends EasyMockSupport {
 
 			expect(request.getRequestURL()).andReturn(
 				new StringBuffer(
-					"https://somehost.com/web"
+					"https://be.kibon.ch/ebegu/api/v1/auth/callback"
+				)
+			);
+
+			createBenutzerService.createNewBenutzerFromJwt();
+			expectLastCall();
+
+			expect(benutzerService.findBenutzer(kibonJwt)).andReturn(
+				Optional.empty()
+			);
+			expect(benutzerService.findUserWithInvitation(KEYCLOAK_UUID))
+				.andReturn(Optional.empty());
+
+			replayAll();
+
+			// when
+			testee.callback(request, "/frontend");
+		}
+
+		@Test
+		void mustRedirectToUrl_WhenUserIsCreatedAndFragmentReturnPathGiven() {
+			// given
+			expect(kibonJwt.hasInvalidMandantClaims()).andReturn(false);
+			expect(kibonJwt.getExternalUUID()).andReturn(KEYCLOAK_UUID);
+			expect(kibonJwt.getEmail()).andReturn("some@email.com");
+
+			expect(request.getRequestURL()).andReturn(
+				new StringBuffer(
+					"https://be.kibon.ch/ebegu/api/v1/auth/callback"
 				)
 			);
 
@@ -360,7 +388,231 @@ class AuthResourceTest extends EasyMockSupport {
 			);
 			assertThat(
 				response.getLocation().toString(),
-				Is.is("https://somehost.com#/frontend")
+				Is.is("https://be.kibon.ch/#/frontend")
+			);
+		}
+
+		@Test
+		void mustRedirectToUrl_WhenUserIsCreatedAndFullReturnPathGiven() {
+			// given
+			expect(kibonJwt.hasInvalidMandantClaims()).andReturn(false);
+			expect(kibonJwt.getExternalUUID()).andReturn(KEYCLOAK_UUID);
+			expect(kibonJwt.getEmail()).andReturn("some@email.com");
+
+			expect(request.getRequestURL()).andReturn(
+				new StringBuffer(
+					"https://be.kibon.ch/ebegu/api/v1/auth/callback"
+				)
+			);
+
+			createBenutzerService.createNewBenutzerFromJwt();
+			expectLastCall();
+
+			expect(benutzerService.findBenutzer(kibonJwt)).andReturn(
+				Optional.empty()
+			);
+			expect(benutzerService.findUserWithInvitation(KEYCLOAK_UUID))
+				.andReturn(Optional.empty());
+
+			replayAll();
+
+			// when
+			var response = testee.callback(
+				request,
+				"https://be.kibon.ch/#/faelle"
+			);
+
+			// then
+			assertThat(
+				response.getStatusInfo().getStatusCode(),
+				Is.is(
+					Status.TEMPORARY_REDIRECT.getStatusCode()
+				)
+			);
+			assertThat(
+				response.getLocation().toString(),
+				Is.is("https://be.kibon.ch/#/faelle")
+			);
+		}
+
+		@Test
+		void mustRedirectToUrl_WhenUserIsFoundAndFragmentReturnPathGiven() {
+			var benutzer = new Benutzer();
+			benutzer.setStatus(BenutzerStatus.AKTIV);
+			// given
+			expect(kibonJwt.hasInvalidMandantClaims()).andReturn(false);
+			expect(kibonJwt.getExternalUUID()).andReturn(KEYCLOAK_UUID);
+			expect(kibonJwt.getBeLoginPrimaryId()).andReturn(Optional.empty());
+			expect(kibonJwt.getEmail()).andReturn("some@email.com");
+			expect(kibonJwt.getVorname()).andReturn("Jean");
+			expect(kibonJwt.getNachname()).andReturn("Room");
+			expect(kibonJwt.getZpvNummer()).andReturn(null);
+
+			expect(request.getRequestURL()).andReturn(
+				new StringBuffer(
+					"https://be.kibon.ch/ebegu/api/v1/auth/callback"
+				)
+			);
+
+			expect(benutzerService.findBenutzer(kibonJwt)).andReturn(
+				Optional.of(benutzer)
+			);
+			expect(benutzerService.findUserWithInvitation(KEYCLOAK_UUID))
+				.andReturn(Optional.empty());
+
+			replayAll();
+
+			// when
+			var response = testee.callback(request, "/faelle");
+
+			// then
+			assertThat(
+				response.getStatusInfo().getStatusCode(),
+				Is.is(
+					Status.TEMPORARY_REDIRECT.getStatusCode()
+				)
+			);
+			assertThat(
+				response.getLocation().toString(),
+				Is.is("https://be.kibon.ch/#/faelle")
+			);
+		}
+
+		@Test
+		void mustRedirectToUrl_WhenUserIsFoundAndFullReturnPathGiven() {
+			var benutzer = new Benutzer();
+			benutzer.setStatus(BenutzerStatus.AKTIV);
+			// given
+			expect(kibonJwt.hasInvalidMandantClaims()).andReturn(false);
+			expect(kibonJwt.getExternalUUID()).andReturn(KEYCLOAK_UUID);
+			expect(kibonJwt.getBeLoginPrimaryId()).andReturn(Optional.empty());
+			expect(kibonJwt.getEmail()).andReturn("some@email.com");
+			expect(kibonJwt.getVorname()).andReturn("Jean");
+			expect(kibonJwt.getNachname()).andReturn("Room");
+			expect(kibonJwt.getZpvNummer()).andReturn(null);
+
+			expect(request.getRequestURL()).andReturn(
+				new StringBuffer(
+					"https://be.kibon.ch/ebegu/api/v1/auth/callback"
+				)
+			);
+
+			expect(benutzerService.findBenutzer(kibonJwt)).andReturn(
+				Optional.of(benutzer)
+			);
+			expect(benutzerService.findUserWithInvitation(KEYCLOAK_UUID))
+				.andReturn(Optional.empty());
+
+			replayAll();
+
+			// when
+			var response = testee.callback(
+				request,
+				"https://be.kibon.ch/#/faelle"
+			);
+
+			// then
+			assertThat(
+				response.getStatusInfo().getStatusCode(),
+				Is.is(
+					Status.TEMPORARY_REDIRECT.getStatusCode()
+				)
+			);
+			assertThat(
+				response.getLocation().toString(),
+				Is.is("https://be.kibon.ch/#/faelle")
+			);
+		}
+
+		@Test
+		void mustKeepQueryParams_WhenUserIsFoundAndFullReturnPathGiven() {
+			var benutzer = new Benutzer();
+			benutzer.setStatus(BenutzerStatus.AKTIV);
+			// given
+			expect(kibonJwt.hasInvalidMandantClaims()).andReturn(false);
+			expect(kibonJwt.getExternalUUID()).andReturn(KEYCLOAK_UUID);
+			expect(kibonJwt.getBeLoginPrimaryId()).andReturn(Optional.empty());
+			expect(kibonJwt.getEmail()).andReturn("some@email.com");
+			expect(kibonJwt.getVorname()).andReturn("Jean");
+			expect(kibonJwt.getNachname()).andReturn("Room");
+			expect(kibonJwt.getZpvNummer()).andReturn(null);
+
+			expect(request.getRequestURL()).andReturn(
+				new StringBuffer(
+					"https://be.kibon.ch/ebegu/api/v1/auth/callback"
+				)
+			);
+
+			expect(benutzerService.findBenutzer(kibonJwt)).andReturn(
+				Optional.of(benutzer)
+			);
+			expect(benutzerService.findUserWithInvitation(KEYCLOAK_UUID))
+				.andReturn(Optional.empty());
+
+			replayAll();
+
+			// when
+			var response = testee.callback(
+				request,
+				"https://be.kibon.ch/#/faelle?query=hi"
+			);
+
+			// then
+			assertThat(
+				response.getStatusInfo().getStatusCode(),
+				Is.is(
+					Status.TEMPORARY_REDIRECT.getStatusCode()
+				)
+			);
+			assertThat(
+				response.getLocation().toString(),
+				Is.is("https://be.kibon.ch/#/faelle?query=hi")
+			);
+		}
+
+		@Test
+		void mustKeepQueryParams_WhenUserIsFoundAndFragmentReturnPathGiven() {
+			var benutzer = new Benutzer();
+			benutzer.setStatus(BenutzerStatus.AKTIV);
+			// given
+			expect(kibonJwt.hasInvalidMandantClaims()).andReturn(false);
+			expect(kibonJwt.getExternalUUID()).andReturn(KEYCLOAK_UUID);
+			expect(kibonJwt.getBeLoginPrimaryId()).andReturn(Optional.empty());
+			expect(kibonJwt.getEmail()).andReturn("some@email.com");
+			expect(kibonJwt.getVorname()).andReturn("Jean");
+			expect(kibonJwt.getNachname()).andReturn("Room");
+			expect(kibonJwt.getZpvNummer()).andReturn(null);
+
+			expect(request.getRequestURL()).andReturn(
+				new StringBuffer(
+					"https://be.kibon.ch/ebegu/api/v1/auth/callback"
+				)
+			);
+
+			expect(benutzerService.findBenutzer(kibonJwt)).andReturn(
+				Optional.of(benutzer)
+			);
+			expect(benutzerService.findUserWithInvitation(KEYCLOAK_UUID))
+				.andReturn(Optional.empty());
+
+			replayAll();
+
+			// when
+			var response = testee.callback(
+				request,
+				"/faelle?query=hi"
+			);
+
+			// then
+			assertThat(
+				response.getStatusInfo().getStatusCode(),
+				Is.is(
+					Status.TEMPORARY_REDIRECT.getStatusCode()
+				)
+			);
+			assertThat(
+				response.getLocation().toString(),
+				Is.is("https://be.kibon.ch/#/faelle?query=hi")
 			);
 		}
 
@@ -446,7 +698,7 @@ class AuthResourceTest extends EasyMockSupport {
 				);
 				assertThat(
 					response.getLocation().toString(),
-					Is.is("https://somehost.com#/start")
+					Is.is("https://somehost.com/#/start")
 				);
 			}
 		}

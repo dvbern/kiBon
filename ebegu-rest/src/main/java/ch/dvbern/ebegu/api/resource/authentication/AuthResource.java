@@ -64,6 +64,7 @@ import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZPVUpdateUtil;
 import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZpvService;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
+import ch.dvbern.ebegu.util.URLUtil;
 import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import com.google.common.base.Strings;
@@ -461,19 +462,56 @@ public class AuthResource {
 		return returnPath.contains(Constants.ZPV_LINK_SUCCESSS_PATH);
 	}
 
+	/**
+	 * Builds a redirect response to the frontend application.
+	 * <p>
+	 * Note, that {@code frontendPathOrFragment} can be either an absolute URL or a fragment. Which option is used
+	 * depends on how the frontend initiates the login process, resp. whether it sends a full URL or a fragment
+	 * as return path.
+	 * </p>
+	 * <p>
+	 * If {@code frontendPathOrFragment} is a valid absolute URL (see {@link #isValidURL}),
+	 * its path and fragment are appended to the server's own host, with the
+	 * scheme forced to {@code https}
+	 * <p>
+	 * Otherwise, {@code frontendPathOrFragment} is treated as an Angular route and is appended
+	 * as the URL fragment (e.g. {@code #/faelle}) to this server's own host, with the
+	 * scheme forced to {@code https} and the path reset to {@code /}.
+	 * <p>
+	 *
+	 * <p>
+	 * Note, that since {@code frontendPathOrFragment} (doesn't matter if it is a full path or just
+	 * the fragment) may contain query params, e.g. https://be.kibon.ch/#/faelle?query=hi or /faelle?query=hi. In
+	 * both of these cases, the query params are treated as part of the fragment and are
+	 * therefor conserved to be treated by angular in the frontend
+	 * </p>
+	 *
+	 * @param request the current request, used to derive the host
+	 * @param frontendPathOrFragment either an absolute URL to derive the fragment from, or a relative
+	 * frontend route to be used as the URL fragment (e.g. {@code /faelle})
+	 * @return a {@link ResponseBuilder} pre-configured with a 307 Temporary Redirect
+	 * to the resolved target
+	 */
 	private ResponseBuilder redirectToFrontend(
 		HttpServletRequest request,
-		String frontendPath
+		String frontendPathOrFragment
 	) {
-		var url = UriBuilder.fromUri(
+		var builder = UriBuilder.fromUri(
 			URI.create(request.getRequestURL().toString())
-		)
-			.scheme("https")
-			.replacePath(null)
-			.fragment(frontendPath)
+		).scheme("https").replacePath("/");
+
+		if (URLUtil.isValidHttpOrHttpsURL(frontendPathOrFragment)) {
+			var fullUri = UriBuilder.fromUri(frontendPathOrFragment).build();
+			builder.fragment(fullUri.getFragment());
+		} else {
+			builder.replacePath("/").fragment(frontendPathOrFragment);
+		}
+		var url = builder
 			.build();
+		LOG.info("Redirecting to frontend with URL: {}", url);
 		return Response.temporaryRedirect(
 			url
 		);
 	}
+
 }

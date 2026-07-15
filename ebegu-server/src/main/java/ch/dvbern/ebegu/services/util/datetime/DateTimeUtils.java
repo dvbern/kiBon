@@ -20,8 +20,11 @@ package ch.dvbern.ebegu.services.util.datetime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 
 import jakarta.ejb.Stateless;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
 
 /**
  * Erweitert {@link LocalDate} und {@link LocalDateTime} um häufig verwendete, Zeit- und Datumsspezifische Funktionen.
@@ -36,5 +39,27 @@ public class DateTimeUtils {
 
 	public LocalDateTime now() {
 		return LocalDateTime.now(zoneId);
+	}
+
+	/**
+	 * Parses the given string into a {@link LocalDateTime}. If the string cannot be parsed,
+	 * a {@link WebApplicationException} with a {@link Status#BAD_REQUEST} status is thrown.
+	 *
+	 * @param dateTimeString the string representation of the date and time to be parsed
+	 * @return the parsed {@link LocalDateTime} object
+	 * @throws WebApplicationException with {@link Status#BAD_REQUEST} if the input string cannot be parsed into a valid
+	 * {@link LocalDateTime}
+	 */
+	public LocalDateTime parseOrThrowBadRequest(String dateTimeString)
+		throws WebApplicationException {
+		try {
+			return LocalDateTime.parse(dateTimeString);
+		} catch (DateTimeParseException e) {
+			throw new WebApplicationException(
+				"Invalid date time string",
+				e,
+				Status.BAD_REQUEST
+			);
+		}
 	}
 }

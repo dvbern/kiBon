@@ -25,7 +25,7 @@ const createPapierGesuch = (dataset: keyof typeof FixturePapierAntrag) => {
             .find('input')
             .type(data.fallCreationEingangsdatum);
     });
-    cy.getByData('gesuchsperioden.2022/23').find('label').click();
+    cy.getByData('gesuchsperioden.2025/26').find('label').click();
     cy.waitForRequest('POST', '**/gesuche', () => {
         NavigationPO.saveAndGoNext();
     });

@@ -81,7 +81,7 @@
     "caniuse-lite": "^1.0.30001700",
     "check-engine": "^1.10.0",
     "concurrently": "^5.1.0",
-    "cypress": "^14.0.3",
+    "cypress": "^15.18.0",
     "cypress-multi-reporters": "^1.6.4",
     "cypress-parallel": "^0.13.0",
     "eslint": "^9.28.0",

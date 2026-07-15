@@ -20,11 +20,12 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnDestroy,
     OnInit,
     ViewChild,
+    DestroyRef,
     inject
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort, SortDirection} from '@angular/material/sort';
@@ -33,8 +34,8 @@ import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, TransitionService, UIRouterGlobals} from '@uirouter/core';
 import moment from 'moment';
-import {of, Subject} from 'rxjs';
-import {mergeMap, switchMap, takeUntil} from 'rxjs/operators';
+import {of, Subject, timer} from 'rxjs';
+import {switchMap, take} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSPaginationResultDTO} from '../../../models/dto/TSPaginationResultDTO';
@@ -69,9 +70,8 @@ const LOG = LogFactory.createLog('ZahlungsauftragViewXComponent');
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
-export class ZahlungsauftragViewXComponent
-    implements OnInit, AfterViewInit, OnDestroy
-{
+export class ZahlungsauftragViewXComponent implements OnInit, AfterViewInit {
+    private readonly destroyRef = inject(DestroyRef);
     private readonly zahlungRS = inject(ZahlungService);
     private readonly $state = inject(StateService);
     private readonly downloadRS = inject(DownloadRS);
@@ -116,7 +116,6 @@ export class ZahlungsauftragViewXComponent
 
     public tableColumns: DvSimpleTableColumnDefinition[] = [];
 
-    private readonly unsubscribe$ = new Subject<void>();
     public readonly updateZahlungsauftrag$ = new Subject<void>();
 
     public hasMahlzeitenZahlungslaeufe: boolean = false;
@@ -150,24 +149,30 @@ export class ZahlungsauftragViewXComponent
         this.updateHasAuszahlungAnElternZahlungslaeufe();
         this.applicationPropertyRS
             .isZahlungenTestMode()
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response: any) => {
                 this.testMode = response;
             });
         this.applicationPropertyRS
             .getCheckboxAuszahlungInZukunft()
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response: any) => {
                 this.checkboxAuszahlungInZukunft = response;
                 this.auszahlungInZukunft = this.checkboxAuszahlungInZukunft;
             });
         this.setupTableColumns();
-        this.authServiceRS.principal$.subscribe({
-            next: user => (this.principal = user),
-            error: error => LOG.error(error)
-        });
-        this.translate.onDefaultLangChange.subscribe(
-            () => this.setupTableColumns(),
-            (error: any) => LOG.error(error)
-        );
+        this.authServiceRS.principal$
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: user => (this.principal = user),
+                error: error => LOG.error(error)
+            });
+        this.translate.onDefaultLangChange
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(
+                () => this.setupTableColumns(),
+                (error: any) => LOG.error(error)
+            );
         this.transition.onStart({exiting: 'zahlungsauftrag.view'}, () => {
             if (this.sort.active) {
                 this.stateStore.store(this.SORT_STORE_KEY, this.sort);
@@ -189,10 +194,7 @@ export class ZahlungsauftragViewXComponent
     private initializeZahlungsauftraegeListe() {
         this.updateZahlungsauftrag$
             .pipe(
-                takeUntil(this.unsubscribe$),
-                mergeMap(() => {
-                    return this.authServiceRS.principal$;
-                }),
+                switchMap(() => this.authServiceRS.principal$.pipe(take(1))),
                 switchMap(principal => {
                     if (principal) {
                         return this.zahlungRS.getZahlungsauftraegeForRole$(
@@ -207,7 +209,8 @@ export class ZahlungsauftragViewXComponent
                     return of(
                         new TSPaginationResultDTO<TSZahlungsauftrag>([], 0)
                     );
-                })
+                }),
+                takeUntilDestroyed(this.destroyRef)
             )
             .subscribe({
                 next: result => {
@@ -223,10 +226,12 @@ export class ZahlungsauftragViewXComponent
         this.initSort();
         this.initGemeindenListAndFilter();
         this.updateZahlungsauftrag$.next();
-    }
 
-    public ngOnDestroy(): void {
-        this.unsubscribe$.next();
+        timer(30000, 30000)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.updateZahlungsauftrag$.next();
+            });
     }
 
     private initSort(): void {
@@ -436,7 +441,7 @@ export class ZahlungsauftragViewXComponent
     private initGemeindenListAndFilter(): void {
         this.gemeindeRS
             .getGemeindenForPrincipal$()
-            .pipe(takeUntil(this.unsubscribe$))
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: gemeinden => {
                     this.berechtigteGemeindenList = gemeinden;
@@ -489,6 +494,7 @@ export class ZahlungsauftragViewXComponent
     private updateHasAuszahlungAnElternZahlungslaeufe(): void {
         this.applicationPropertyRS
             .getPublicPropertiesCached()
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response: TSPublicAppConfig) => {
                 this.isAuszahlungAnElternActive = response.auszahlungAnEltern;
                 this.hasInfomaZahlung = response.infomaZahlungen;

@@ -23,13 +23,15 @@ import {
     signal,
     viewChild
 } from '@angular/core';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import moment from 'moment';
 import {UebersichtVersendeteMailsRS} from '../../../app/core/service/uebersichtVersendeteMailsRS';
 import {rxResource, takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {debounceSignal} from '../../../utils/signal-helpers/debounce-signal';
+import {VersendeteMailDetail} from './versendete-mail-detail/versendete-mail-detail';
+import {VersendeteMailsFilter} from './versendete-mail-filter/versendete-mail-filter';
 
 const initialSort: Sort = {active: 'zeitpunktVersand', direction: 'desc'};
 
@@ -44,6 +46,7 @@ export class UebersichtVersendeteMailsComponent implements OnInit {
         UebersichtVersendeteMailsRS
     );
     private readonly destroyRef = inject(DestroyRef);
+    private readonly dialog = inject(MatDialog);
 
     private sort = viewChild(MatSort);
     private paginator = viewChild(MatPaginator);
@@ -58,18 +61,21 @@ export class UebersichtVersendeteMailsComponent implements OnInit {
     readonly DATA_SOURCE: MatTableDataSource<TableUebersichtVersendeteMails> =
         new MatTableDataSource([]);
 
-    filter = signal('');
     private sortValue = signal<Sort>(initialSort);
     private paginationValue = signal<{page: number; size: number}>({
         page: this.DEFAULT_PAGE,
         size: this.DEFAULT_PAGE_SIZE
     });
-    private debouncedFilter = debounceSignal<string>(this.filter, 500);
+    filter = signal<VersendeteMailsFilter>({
+        subjectOrReceiver: '',
+        endDate: null,
+        startDate: null
+    });
     private resource = rxResource({
         params: () => ({
             sort: this.sortValue(),
             pagination: this.paginationValue(),
-            filter: this.debouncedFilter()
+            filter: this.filter()
         }),
         stream: ({params: {sort, pagination, filter}}) =>
             this.uebersichtVersendeteMailsRS.getAllMails({
@@ -125,10 +131,31 @@ export class UebersichtVersendeteMailsComponent implements OnInit {
     private parseMomentToString(versand: moment.Moment): string {
         return versand.format('DD.MM.YYYY HH:mm:ss');
     }
+
+    openMail(row: TableUebersichtVersendeteMails): void {
+        const dialogConfig =
+            new MatDialogConfig<TableUebersichtVersendeteMails>();
+        dialogConfig.data = row;
+        dialogConfig.autoFocus = 'dialog';
+        this.dialog.open(VersendeteMailDetail, dialogConfig);
+    }
+
+    showWarning(): boolean {
+        return this.filter()?.subjectOrReceiver?.length > 0;
+    }
+
+    preventDefaultAndOpenMail(
+        event: Event,
+        row: TableUebersichtVersendeteMails
+    ) {
+        event.preventDefault();
+        this.openMail(row);
+    }
 }
 
-interface TableUebersichtVersendeteMails {
+export interface TableUebersichtVersendeteMails {
     zeitpunktVersand: string;
     empfaengerAdresse: string;
     betreff: string;
+    body: string;
 }

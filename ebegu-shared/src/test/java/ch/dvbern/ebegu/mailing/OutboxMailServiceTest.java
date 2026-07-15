@@ -25,6 +25,7 @@ import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MEDIUMTEXT_LENGTH_IN_CHARS;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -67,11 +68,7 @@ public class OutboxMailServiceTest extends EasyMockSupport {
 	@Test
 	public void saveOutboxMail_LongText_TextCutOffAndDelegatedToPersistence() {
 		OutboxMail mail = new OutboxMail();
-		StringBuilder longText = new StringBuilder();
-		for (int i = 0; i < 4190001; i++) {
-			longText.append("a");
-		}
-		mail.setContent(longText.toString());
+		mail.setContent("a".repeat(DB_DEFAULT_MEDIUMTEXT_LENGTH_IN_CHARS + 1));
 		expect(persistence.persist(mail)).andReturn(mail);
 
 		replayAll();
@@ -102,11 +99,7 @@ public class OutboxMailServiceTest extends EasyMockSupport {
 	@Test
 	public void testUpdateOutboxMail_LongText_TextCutOffAndDelegatedToPersistence() {
 		OutboxMail mail = new OutboxMail();
-		StringBuilder longText = new StringBuilder();
-		for (int i = 0; i < 4190001; i++) {
-			longText.append("a");
-		}
-		mail.setContent(longText.toString());
+		mail.setContent("a".repeat(4190001));
 		expect(persistence.merge(mail)).andReturn(mail);
 
 		replayAll();

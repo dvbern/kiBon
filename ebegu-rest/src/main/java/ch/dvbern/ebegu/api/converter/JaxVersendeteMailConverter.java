@@ -41,6 +41,7 @@ public class JaxVersendeteMailConverter extends AbstractBaseConverter {
 		jaxVersendeteMail.setMandantIdentifier(
 			versendeteMail.getMandantIdentifier()
 		);
+		jaxVersendeteMail.setBody(versendeteMail.getBody());
 		return jaxVersendeteMail;
 	}
 }

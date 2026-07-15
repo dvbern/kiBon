@@ -21,4 +21,5 @@ export class TSVersendeteMail extends TSAbstractEntity {
     public zeitpunktVersand: moment.Moment;
     public empfaengerAdresse: string;
     public betreff: string;
+    public body: string;
 }

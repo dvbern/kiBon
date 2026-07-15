@@ -37,6 +37,11 @@ public final class Constants {
 	public static final int DB_TEXTAREA_LENGTH = 4000;
 	public static final int DB_TEXTAREA_XL_LENGTH = 8000;
 	public static final int DB_DEFAULT_SHORT_LENGTH = 100;
+	// data type MEDIUMTEXT can hold up to 16,777,215 bytes.
+	// we will most likely store text UTF-8 encoded which consumes 4 bytes per character
+	// that allows MEDIUMTEXT to hold around 4,194,303 characters.
+	// we will round that down to 4.19 M.
+	public static final int DB_DEFAULT_MEDIUMTEXT_LENGTH_IN_CHARS = 4190000;
 	public static final int ONE_MB = 1048576;
 	public static final int TEN_MB = 10485760;
 

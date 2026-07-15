@@ -16,9 +16,17 @@
  */
 
 import {NgModule} from '@angular/core';
+import {
+    MatTimepicker,
+    MatTimepickerInput,
+    MatTimepickerToggle
+} from '@angular/material/timepicker';
+import {DateTimePickerComponent} from '@app/shared/component/date-time-picker';
+import {WarningComponent} from '../app/shared/component/warning/warning.component';
 import {StringSqlDateToDisplayDatePipe} from '../app/shared/pipe/string-sql-date-to-display-date.pipe';
 import {SharedModule} from '../app/shared/shared.module';
 import {BatchjobTriggerViewComponent} from './batchjobTriggerView/batchjobTriggerView.component';
+import {VersendeteMailFilter} from './component/uebersichtVersendeteMails/versendete-mail-filter/versendete-mail-filter';
 import {AdminViewXComponent} from './einstellungen/admin-view-x/admin-view-x.component';
 import {BenutzerListViewXComponent} from './component/benutzerListView/benutzer-list-view-x.component';
 import {BenutzerListXComponent} from './component/benutzerListView/dv-benutzer-list/benutzer-list-x.component';
@@ -40,7 +48,13 @@ import {ApplicationPropertyGroupComponent} from './einstellungen/application-pro
         EditEinstellungComponent,
         StringSqlDateToDisplayDatePipe,
         GesuchsperiodenEinstellungenComponent,
-        ApplicationPropertyGroupComponent
+        ApplicationPropertyGroupComponent,
+        DateTimePickerComponent,
+        MatTimepicker,
+        MatTimepickerToggle,
+        MatTimepickerInput,
+        VersendeteMailFilter,
+        WarningComponent
     ],
     declarations: [
         TestdatenViewComponent,

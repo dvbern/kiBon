@@ -32,7 +32,7 @@ public class YearlyBatchService {
 			return GemeindeKennzahlenBatchJobResult.NOT_ACTIVATED;
 		}
 		gemeindeKennzahlenService
-			.createGemeindeKennzahlenInCurrentGPForActiveGemeinden(
+			.createGemeindeKennzahlenInCurrentGPForActiveBGGemeinden(
 				mandant
 			);
 

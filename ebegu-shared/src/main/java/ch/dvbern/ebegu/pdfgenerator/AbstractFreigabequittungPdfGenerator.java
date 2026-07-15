@@ -29,6 +29,7 @@ import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.enums.GesuchTypFromAngebotTyp;
 import ch.dvbern.ebegu.pdfgenerator.PdfGenerator.CustomGenerator;
 import ch.dvbern.lib.invoicegenerator.pdf.PdfElementGenerator;
 import ch.dvbern.lib.invoicegenerator.pdf.PdfUtilities;
@@ -103,6 +104,20 @@ public abstract class AbstractFreigabequittungPdfGenerator extends
 			stammdaten.getGemeindeStammdatenKorrespondenz()
 				.getBarcodeSpacingLeft()
 		);
+	}
+
+	@Override
+	protected boolean useAlternativeLogoIfPresent() {
+		boolean isOnlyTagesschule =
+			getGesuch().calculateGesuchTypFromAngebotTyp()
+				== GesuchTypFromAngebotTyp.TS_GESUCH;
+
+		boolean hasTagesschuleLogo =
+			getGemeindeStammdaten().getGemeindeStammdatenKorrespondenz()
+				.getAlternativesLogoTagesschuleContent().length
+				> 0;
+
+		return isOnlyTagesschule && hasTagesschuleLogo;
 	}
 
 	@Override

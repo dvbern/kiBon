@@ -1,0 +1,121 @@
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- Unfortunately we have to use a lot of !important. kiBon has a lot of legacy styling issues. Fixing these would lead to
+bigger adjustments which would increase the scope of the task which would make it infeasible-->
+<div
+    class="flex justify-center items-end gap-4 margin-bottom-20 flex-grow-2 versendete-mail-filter-material-overrides wrap"
+>
+    <input
+        class="!outline !outline-[2px] min-w-[130px]"
+        matInput
+        type="text"
+        [(ngModel)]="subjectOrReceiver"
+        placeholder="{{ 'VERSENDETE_MAILS_SUCHE_PLATZHALTER' | translate }}"
+        data-test="SearchBarSentMails"
+    />
+
+    <div
+        class="flex flex-col gap-1"
+        role="group"
+        aria-labelledby="vonGroupLabel"
+    >
+        <span
+            id="vonGroupLabel"
+            class="!text-lg !font-semibold !uppercase !tracking-wide !text-gray-500"
+            translate
+            >VON</span
+        >
+        <div class="flex gap-2">
+            <mat-form-field floatLabel="always" class="!max-w-[130px]">
+                <mat-label><span translate>DATUM</span></mat-label>
+                <input
+                    matInput
+                    class="!outline-none !bg-transparent !p-0 !text-[1.6rem]"
+                    [matDatepicker]="datepickerFrom"
+                    [ngModel]="startDate"
+                    (ngModelChange)="setStartDate($event)"
+                />
+                <mat-datepicker #datepickerFrom />
+                <mat-datepicker-toggle
+                    [for]="datepickerFrom"
+                    matSuffix
+                    class="ignore-kibon-legacy"
+                />
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" class="!max-w-[130px]">
+                <mat-label><span translate>ZEIT</span></mat-label>
+                <input
+                    matInput
+                    class="!outline-none !bg-transparent !p-0 !text-[1.6rem]"
+                    [matTimepicker]="timepickerFrom"
+                    [(ngModel)]="startDate"
+                    [ngModelOptions]="{updateOn: 'blur'}"
+                />
+                <mat-timepicker #timepickerFrom />
+                <mat-timepicker-toggle [for]="timepickerFrom" matSuffix />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <mat-icon fontIcon="arrow_right_alt" class="flex-shrink-0"></mat-icon>
+
+    <div
+        class="flex flex-col gap-1"
+        role="group"
+        aria-labelledby="bisGroupLabel"
+    >
+        <span
+            id="bisGroupLabel"
+            class="!text-lg !font-semibold !uppercase !tracking-wide !text-gray-500"
+            translate
+            >BIS</span
+        >
+        <div class="flex gap-2">
+            <mat-form-field floatLabel="always" class="!max-w-[130px]">
+                <mat-label><span translate>DATUM</span></mat-label>
+                <input
+                    matInput
+                    class="!outline-none !bg-transparent !text-[1.6rem]"
+                    [matDatepicker]="datepickerTo"
+                    [ngModel]="endDate"
+                    (ngModelChange)="setEndDate($event)"
+                />
+                <mat-datepicker #datepickerTo />
+                <mat-datepicker-toggle
+                    [for]="datepickerTo"
+                    matSuffix
+                    class="ignore-kibon-legacy"
+                />
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" class="!max-w-[130px]">
+                <mat-label><span translate>ZEIT</span></mat-label>
+                <input
+                    matInput
+                    class="!outline-none !bg-transparent !p-0 !text-[1.6rem]"
+                    [matTimepicker]="timepickerTo"
+                    [(ngModel)]="endDate"
+                    [ngModelOptions]="{updateOn: 'blur'}"
+                />
+                <mat-timepicker #timepickerTo />
+                <mat-timepicker-toggle [for]="timepickerTo" matSuffix />
+            </mat-form-field>
+        </div>
+    </div>
+</div>

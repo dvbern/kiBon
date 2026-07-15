@@ -164,7 +164,6 @@ import {TSUnbezahlterUrlaub} from '../models/TSUnbezahlterUrlaub';
 import {TSVerfuegung} from '../models/TSVerfuegung';
 import {TSVerfuegungZeitabschnitt} from '../models/TSVerfuegungZeitabschnitt';
 import {TSVerfuegungZeitabschnittBemerkung} from '../models/TSVerfuegungZeitabschnittBemerkung';
-import {TSVersendeteMail} from '../models/TSVersendeteMail';
 import {TSWizardStepX} from '../models/TSWizardStepX';
 import {TSWorkJob} from '../models/TSWorkJob';
 import {TSZahlung, TSZahlungsauftrag} from '@models/zahlung';
@@ -181,6 +180,7 @@ import {TSGesuchsperiode} from '../models/entity/TSGesuchsperiode';
 import {TSAdresse} from '../models/entity/TSAdresse';
 import {TSAdressetyp} from '../models/enums/TSAdressetyp';
 import {TSGemeinde} from '../models/entity/TSGemeinde';
+import {TSVersendeteMail} from 'src/models/TSVersendeteMail';
 
 @Injectable({
     providedIn: 'root'
@@ -8783,6 +8783,8 @@ export class EbeguRestUtil {
             uebersichtVersendeteMailsFromServer.empfaengerAdresse;
         uebersichtVersendeteMails.betreff =
             uebersichtVersendeteMailsFromServer.betreff;
+        uebersichtVersendeteMails.body =
+            uebersichtVersendeteMailsFromServer.body;
         return uebersichtVersendeteMails;
     }
 }

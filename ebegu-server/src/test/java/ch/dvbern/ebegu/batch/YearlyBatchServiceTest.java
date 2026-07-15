@@ -90,7 +90,7 @@ public class YearlyBatchServiceTest {
 					mandant
 				);
 			verify(gemeindeKennzahlenService, Mockito.times(1))
-				.createGemeindeKennzahlenInCurrentGPForActiveGemeinden(
+				.createGemeindeKennzahlenInCurrentGPForActiveBGGemeinden(
 					mandant
 				);
 			verifyNoInteractions(gemeindeKennzahlenMailService);
@@ -116,7 +116,7 @@ public class YearlyBatchServiceTest {
 					mandant
 				);
 			verify(gemeindeKennzahlenService, Mockito.times(1))
-				.createGemeindeKennzahlenInCurrentGPForActiveGemeinden(
+				.createGemeindeKennzahlenInCurrentGPForActiveBGGemeinden(
 					mandant
 				);
 			verify(gemeindeKennzahlenMailService, Mockito.times(1))

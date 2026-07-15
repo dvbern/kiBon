@@ -15,12 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ConfirmDialogPO, keycloakLoginPo} from '@dv-e2e/page-objects';
+import {ConfirmDialogPO} from '@dv-e2e/page-objects';
 /// <reference types="cypress" />
 import * as dvTasks from '@dv-e2e/tasks';
 import {OnlyValidSelectors, User} from '@dv-e2e/types';
 import {KiBonMandant} from '@models/mandant';
 import {Method, WaitOptions} from 'cypress/types/net-stubbing';
+import {checkAuthenticated} from './e2e-helper';
 
 type DvTasks = typeof dvTasks;
 
@@ -212,27 +213,15 @@ Cypress.Commands.add('login', (user: User) => {
             cy.checkKeycloakUser();
             cy.get(`[data-test="test-user-${userSelector}"]`).click();
 
-            cy.get('#username', {timeout: 10000})
-                .should('be.visible')
-                .then(() => {
-                    // Remove the inline script's effect by overriding form.submit
-                    cy.window().then(win => {
-                        win.document.querySelector('form').submit = () => {}; // no-op
-                    });
-                    keycloakLoginPo.getKCLoginButton().click();
-                });
+            // wait for the first auth callback, the one always fails at first
+            cy.url({timeout: 15000}).should('not.include', '/auth/callback');
+            cy.url().should('include', '/#/anmeldung');
+
+            checkAuthenticated();
         },
         {
             validate: () => {
-                const origin = new URL(Cypress.config().baseUrl).origin;
-                cy.request(
-                    new URL(
-                        '/ebegu/api/v1/auth/authenticated-user',
-                        origin
-                    ).toString()
-                )
-                    .its('status')
-                    .should('eq', 200);
+                checkAuthenticated();
             }
         }
     );

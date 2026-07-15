@@ -3189,5 +3189,7 @@
     "GEMEINDE_BENUTZER_BENACHRICHTIGUNG_PENDENZEN_INFO": "Vous recevez chaque jour par e-mail une notification de rappel concernant :<ul><li>les dossiers en suspens (demandes et modifications)</li><li>les notifications de modification et les messages non lus dans votre boîte de réception</li></ul>Les dossiers en suspens internes créés par la commune elle-même ne sont actuellement pas pris en compte dans cette notification.<br/><br/> L'envoi a lieu une fois par jour. Toutes les notifications reçues sont regroupées et transmises dans une notification récapitulative.",
     "GEMEINDE_INFO_OFFENE_PENDENZEN_BATCHJOB_EXECUTED_OK": "Le job qui envoie des courriels de rappels aux utilisateurs des communes qui ont des pendences ouvertes ou des messages non lus a été executé avec succès",
     "GEMEINDE_INFO_OFFENE_PENDENZEN_BATCHJOB_EXECUTED_ERROR": "Erreur: le job qui envoie des courriels de rappels aux utilisateurs des communes qui ont des pendences ouvertes ou des messages non lus n'a pas pu être executé avec succès",
+    "ZEIT": "Temps",
+    "VERSENDETE_MAILS_SUCHE_WARNING": "La recherche textuelle est peu performante. Pour accélérer la recherche, vous pouvez limiter la plage de recherche en indiquant les dates de début et de fin.",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

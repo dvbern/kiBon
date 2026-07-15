@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
@@ -13,6 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MEDIUMTEXT_LENGTH_IN_CHARS;
 
 @Entity
 @Getter
@@ -28,6 +31,7 @@ public class OutboxMail extends AbstractEntity {
 
 	@Nonnull
 	@Column(nullable = false)
+	@Size(max = DB_DEFAULT_MEDIUMTEXT_LENGTH_IN_CHARS)
 	private String content;
 
 	@Nonnull

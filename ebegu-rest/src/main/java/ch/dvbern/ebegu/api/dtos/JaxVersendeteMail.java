@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
@@ -29,4 +30,7 @@ public class JaxVersendeteMail extends JaxAbstractDTO {
 
 	@Nonnull
 	private MandantIdentifier mandantIdentifier;
+
+	@Nullable
+	private String body;
 }

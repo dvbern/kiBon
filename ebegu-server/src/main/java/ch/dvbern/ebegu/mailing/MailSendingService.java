@@ -64,8 +64,8 @@ public class MailSendingService {
 			pretendToSendMessage(messageBody, mailadress);
 		} else {
 			doSendMessage(subject, messageBody, mailadress);
-			saveSentMails(subject, mailadress, mandantIdentifier);
 		}
+		saveSentMails(subject, mailadress, messageBody, mandantIdentifier);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class MailSendingService {
 				mailadress,
 				uploadFileInfo
 			);
-			saveSentMails(subject, mailadress, mandantIdentifier);
+			saveSentMails(subject, mailadress, messageBody, mandantIdentifier);
 		}
 	}
 
@@ -142,7 +142,7 @@ public class MailSendingService {
 	/**
 	 * DEPRECATED - KIBON DOES NOT SEND EMAILS WITH ATTACHMENT ANYMORE
 	 * QUOTE FROM PO - 2025-07-24
-	 * 
+	 *
 	 * @param subject
 	 * @param messageBody
 	 * @param mailadress
@@ -195,6 +195,7 @@ public class MailSendingService {
 	private void saveSentMails(
 		String subject,
 		String mailadress,
+		String body,
 		MandantIdentifier mandant
 	) {
 		LocalDateTime zeitpunktVersand = LocalDateTime.now();
@@ -202,7 +203,8 @@ public class MailSendingService {
 			zeitpunktVersand,
 			mailadress,
 			subject,
-			mandant
+			mandant,
+			body
 		);
 		versendeteMailsService.saveVersendeteMail(versendeteMail);
 	}

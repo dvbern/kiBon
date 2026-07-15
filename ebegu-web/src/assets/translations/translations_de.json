@@ -3360,5 +3360,7 @@
     "GEMEINDE_INFO_OFFENE_PENDENZEN_BATCHJOB_EXECUTED_OK": "Die E-Mail Benachrichtigung an Gemeindemitarbeitende mit offenen Pendenzen oder ungelesenen Mitteilungen wurde erfolgreich versendet.",
     "GEMEINDE_INFO_OFFENE_PENDENZEN_BATCHJOB_EXECUTED_ERROR": "ERROR: die E-Mail Benachrichtigung an Gemeindemitarbeitende mit offenen Pendenzen oder ungelesenen Mitteilungen wurde nicht erfolgreich durchgeführt",
     "BENACHRICHTIGUNG_GEMEINDE_AKTIV": "Gemeindebenachrichtigungen aktiviert",
+    "VERSENDETE_MAILS_SUCHE_WARNING": "Die Textsuche ist unperformant. Um die Suche zu beschleunigen, können Sie den Suchbereich mit dem von- und bis-Datum einschränken.",
+    "ZEIT": "Zeit",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }
