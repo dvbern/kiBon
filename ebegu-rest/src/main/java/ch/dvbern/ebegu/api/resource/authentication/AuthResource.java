@@ -498,17 +498,17 @@ public class AuthResource {
 	) {
 		var builder = UriBuilder.fromUri(
 			URI.create(request.getRequestURL().toString())
-		).scheme("https").replacePath("/");
+		).scheme("https");
 
 		if (URLUtil.isValidHttpOrHttpsURL(frontendPathOrFragment)) {
 			var fullUri = UriBuilder.fromUri(frontendPathOrFragment).build();
-			builder.fragment(fullUri.getFragment());
+			builder.replacePath(fullUri.getPath())
+				.fragment(fullUri.getFragment());
 		} else {
-			builder.replacePath("/").fragment(frontendPathOrFragment);
+			builder.replacePath("/web/").fragment(frontendPathOrFragment);
 		}
 		var url = builder
 			.build();
-		LOG.info("Redirecting to frontend with URL: {}", url);
 		return Response.temporaryRedirect(
 			url
 		);

@@ -122,6 +122,7 @@ export class BenutzerComponent implements OnInit {
                     )
                     .then(isDefaultUser => {
                         this.isDefaultVerantwortlicher = isDefaultUser;
+                        this.changeDetectorRef.markForCheck();
                     });
             }
             this.changeDetectorRef.markForCheck();

@@ -18,25 +18,27 @@
 <label [class.required]="needToShowRequired" translate [for]="inputId"
     >ROLLE</label
 >
-<div class="dv-select-style">
-    <!--suppress HtmlFormInputWithoutLabel -->
-    <select
-        [attr.aria-describedby]="inputId + '-error'"
-        class="form-control"
-        [id]="inputId"
-        [name]="name"
-        [required]="required"
-        [disabled]="disabled"
-        [(ngModel)]="benutzerRolle"
-    >
-        @for (item of roles | keyvalue; track trackByRole($index, item)) {
-            <option [ngValue]="item.key">
-                {{ item.value | translate }}
-            </option>
-        }
-    </select>
-    <dv-error-messages
-        [inputId]="inputId"
-        [errorObject]="form.controls[name]?.errors"
-    ></dv-error-messages>
-</div>
+<!--suppress HtmlFormInputWithoutLabel -->
+<mat-select
+    [attr.aria-describedby]="inputId + '-error'"
+    class="form-control"
+    [id]="inputId"
+    [name]="name"
+    [required]="required"
+    [disabled]="disabled"
+    [ngModel]="benutzerRolle"
+    [style.pointer-events]="disabled ? 'none' : 'auto'"
+>
+    @for (item of roles | keyvalue; track trackByRole($index, item)) {
+        <mat-option
+            (onSelectionChange)="onSelectionChange($event)"
+            [value]="item.key"
+        >
+            {{ item.value | translate }}
+        </mat-option>
+    }
+</mat-select>
+<dv-error-messages
+    [inputId]="inputId"
+    [errorObject]="form.controls[name]?.errors"
+></dv-error-messages>

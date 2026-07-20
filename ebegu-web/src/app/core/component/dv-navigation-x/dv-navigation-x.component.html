@@ -16,7 +16,7 @@
 -->
 
 <div [ngClass]="containerClass">
-    @if (dvNext) {
+    @if (canGoNext) {
         <dv-loading-button
             input-id="buttonSave"
             data-test="container.navigation-save"
@@ -50,7 +50,7 @@
             }
         </dv-loading-button>
     }
-    @if (dvPrevious) {
+    @if (canGoPrevious) {
         <dv-loading-button
             input-id="buttonPrevious"
             data-test="container.navigation-previous"

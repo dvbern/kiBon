@@ -43,7 +43,7 @@
                 unsaved-warning-form
                 ng-if="vm.model"
             >
-                <fieldset ng-disabled="vm.isGesuchReadonly()">
+                <fieldset ng-disabled="vm.erwerbspensumGueltigbisDisabled()">
                     <!--Bezeichnung-->
                     <div class="row">
                         <div class="col-sm-12 dv-input-container-small">
@@ -318,10 +318,7 @@
                                     name="taetigkeitAb"
                                     [inputId]="taetigkeitAbID"
                                     class="input-element"
-                                    [disabled]="
-                                        vm.erwerbspensumDisabled() ||
-                                        vm.isGesuchReadonly()
-                                    "
+                                    [disabled]="vm.erwerbspensumDisabled()"
                                     [required]="true"
                                     [(date)]="
                                         vm.model.erwerbspensumJA.gueltigkeit
@@ -360,8 +357,7 @@
                                             .gueltigBis
                                     "
                                     [disabled]="
-                                        vm.erwerbspensumDisabled() ||
-                                        vm.isGesuchReadonly()
+                                        vm.erwerbspensumGueltigbisDisabled()
                                     "
                                 >
                                 </dv-date-picker-angularjs-xx>
@@ -391,7 +387,7 @@
                                     aria-label="{{
                                         'UNBEZAHLTER_URLAUB' | translate
                                     }}"
-                                    ng-disabled="vm.isUnbezahlterUrlaubDisabled()"
+                                    ng-disabled="vm.erwerbspensumDisabled()"
                                     ng-change="vm.unbezahlterUrlaubClicked()"
                                 >
                                     <span
@@ -434,10 +430,7 @@
                                     data-test="urlaub-datum-ab"
                                     [required]="vm.hasUnbezahlterUrlaub"
                                     class="input-element"
-                                    [disabled]="
-                                        vm.isUnbezahlterUrlaubDisabled() ||
-                                        vm.isGesuchReadonly()
-                                    "
+                                    [disabled]="vm.erwerbspensumDisabled()"
                                     [(date)]="
                                         vm.model.erwerbspensumJA
                                             .unbezahlterUrlaub.gueltigkeit
@@ -471,10 +464,7 @@
                                     data-test="urlaub-datum-bis"
                                     [required]="false"
                                     class="input-element"
-                                    [disabled]="
-                                        vm.isUnbezahlterUrlaubDisabled() ||
-                                        vm.isGesuchReadonly()
-                                    "
+                                    [disabled]="vm.erwerbspensumDisabled()"
                                     [(date)]="
                                         vm.model.erwerbspensumJA
                                             .unbezahlterUrlaub.gueltigkeit
@@ -508,7 +498,7 @@
                                         'UNREGELMAESSIGE_ARBEITSZEITEN'
                                             | translate
                                     }}"
-                                    ng-disabled="vm.isGesuchReadonly()"
+                                    ng-disabled="vm.erwerbspensumDisabled()"
                                 >
                                     <span>
                                         {{
@@ -538,7 +528,7 @@
                 <dv-navigation
                     dv-cancel="vm.cancel()"
                     dv-save="vm.save()"
-                    dv-next="!vm.isGesuchReadonly()"
+                    can-go-next="!vm.erwerbspensumGueltigbisDisabled()"
                     dv-sub-step="2"
                     dv-translate-next="{{ 'SPEICHERN' }}"
                 >

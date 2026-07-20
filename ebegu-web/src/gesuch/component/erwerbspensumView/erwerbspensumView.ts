@@ -47,6 +47,7 @@ import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
 import ITranslateService = angular.translate.ITranslateService;
+import {TSRole} from '../../../models/enums/TSRole';
 
 const LOG = LogFactory.createLog('ErwerbspensumViewController');
 
@@ -200,17 +201,32 @@ export class ErwerbspensumViewController extends AbstractGesuchViewController<TS
         }
     }
 
-    public erwerbspensumDisabled(): boolean {
-        // Disabled wenn Mutation, ausser bei Bearbeiter Jugendamt oder Schulamt
-        if (this.model && this.model.erwerbspensumJA) {
-            return (
-                this.model.erwerbspensumJA.vorgaengerId &&
-                !this.authServiceRS.isOneOfRoles(
-                    TSRoleUtil.getAdministratorOrAmtRole()
-                )
-            );
+    private isErwerbspensumDisabledForRoles(
+        allowedRoles: ReadonlyArray<TSRole>
+    ): boolean {
+        if (!this.model || !this.model.erwerbspensumJA) {
+            return false;
         }
-        return false;
+
+        return (
+            (this.model.erwerbspensumJA.vorgaengerId &&
+                !this.authServiceRS.isOneOfRoles(allowedRoles)) ||
+            this.isGesuchReadonly()
+        );
+    }
+
+    public erwerbspensumDisabled(): boolean {
+        return this.isErwerbspensumDisabledForRoles(
+            TSRoleUtil.getAdministratorOrAmtRole()
+        );
+    }
+
+    public erwerbspensumGueltigbisDisabled(): boolean {
+        return this.isErwerbspensumDisabledForRoles(
+            TSRoleUtil.getAdministratorOrAmtRole().concat(
+                TSRoleUtil.getGesuchstellerSozialdienstRolle()
+            )
+        );
     }
 
     public isUnbezahlterUrlaubVisible(): boolean {
@@ -225,10 +241,6 @@ export class ErwerbspensumViewController extends AbstractGesuchViewController<TS
                 this.model.erwerbspensumJA.taetigkeit ===
                     TSTaetigkeit.SELBSTAENDIG)
         );
-    }
-
-    public isUnbezahlterUrlaubDisabled(): boolean {
-        return !this.isUnbezahlterUrlaubVisible() || this.isGesuchReadonly();
     }
 
     private initUnbezahlterUrlaub(): void {

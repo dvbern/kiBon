@@ -388,7 +388,7 @@ class AuthResourceTest extends EasyMockSupport {
 			);
 			assertThat(
 				response.getLocation().toString(),
-				Is.is("https://be.kibon.ch/#/frontend")
+				Is.is("https://be.kibon.ch/web/#/frontend")
 			);
 		}
 
@@ -419,7 +419,7 @@ class AuthResourceTest extends EasyMockSupport {
 			// when
 			var response = testee.callback(
 				request,
-				"https://be.kibon.ch/#/faelle"
+				"https://be.kibon.ch/web/#/faelle"
 			);
 
 			// then
@@ -431,7 +431,7 @@ class AuthResourceTest extends EasyMockSupport {
 			);
 			assertThat(
 				response.getLocation().toString(),
-				Is.is("https://be.kibon.ch/#/faelle")
+				Is.is("https://be.kibon.ch/web/#/faelle")
 			);
 		}
 
@@ -474,7 +474,7 @@ class AuthResourceTest extends EasyMockSupport {
 			);
 			assertThat(
 				response.getLocation().toString(),
-				Is.is("https://be.kibon.ch/#/faelle")
+				Is.is("https://be.kibon.ch/web/#/faelle")
 			);
 		}
 
@@ -493,7 +493,7 @@ class AuthResourceTest extends EasyMockSupport {
 
 			expect(request.getRequestURL()).andReturn(
 				new StringBuffer(
-					"https://be.kibon.ch/ebegu/api/v1/auth/callback"
+					"https://e2e-sz.kibon.ch/ebegu/api/v1/auth/callback"
 				)
 			);
 
@@ -508,7 +508,7 @@ class AuthResourceTest extends EasyMockSupport {
 			// when
 			var response = testee.callback(
 				request,
-				"https://be.kibon.ch/#/faelle"
+				"https://e2e-sz.kibon.ch/web/#/anmeldung"
 			);
 
 			// then
@@ -520,7 +520,7 @@ class AuthResourceTest extends EasyMockSupport {
 			);
 			assertThat(
 				response.getLocation().toString(),
-				Is.is("https://be.kibon.ch/#/faelle")
+				Is.is("https://e2e-sz.kibon.ch/web/#/anmeldung")
 			);
 		}
 
@@ -554,7 +554,7 @@ class AuthResourceTest extends EasyMockSupport {
 			// when
 			var response = testee.callback(
 				request,
-				"https://be.kibon.ch/#/faelle?query=hi"
+				"https://be.kibon.ch/web/#/faelle?query=hi"
 			);
 
 			// then
@@ -566,7 +566,7 @@ class AuthResourceTest extends EasyMockSupport {
 			);
 			assertThat(
 				response.getLocation().toString(),
-				Is.is("https://be.kibon.ch/#/faelle?query=hi")
+				Is.is("https://be.kibon.ch/web/#/faelle?query=hi")
 			);
 		}
 
@@ -612,7 +612,7 @@ class AuthResourceTest extends EasyMockSupport {
 			);
 			assertThat(
 				response.getLocation().toString(),
-				Is.is("https://be.kibon.ch/#/faelle?query=hi")
+				Is.is("https://be.kibon.ch/web/#/faelle?query=hi")
 			);
 		}
 
@@ -677,7 +677,7 @@ class AuthResourceTest extends EasyMockSupport {
 					);
 				expect(request.getRequestURL()).andReturn(
 					new StringBuffer(
-						"https://somehost.com/web"
+						"https://be.kibon.ch/web"
 					)
 				);
 
@@ -698,7 +698,7 @@ class AuthResourceTest extends EasyMockSupport {
 				);
 				assertThat(
 					response.getLocation().toString(),
-					Is.is("https://somehost.com/#/start")
+					Is.is("https://be.kibon.ch/web/#/start")
 				);
 			}
 		}

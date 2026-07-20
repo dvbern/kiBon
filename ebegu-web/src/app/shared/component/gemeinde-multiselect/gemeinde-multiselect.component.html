@@ -33,6 +33,7 @@
             [id]="inputId"
             [required]="required"
             [multiple]="true"
+            [style.pointer-events]="disabled ? 'none' : 'auto'"
         >
             @for (item of allowedGemeinden | keyvalue: sortByName; track item) {
                 <mat-option

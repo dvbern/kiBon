@@ -58,8 +58,8 @@
         </form>
         <dv-navigation-x
             (dvSave)="prepareSave($event.onResult)"
-            [dvNext]="true"
-            [dvPrevious]="true"
+            [canGoNext]="true"
+            [canGoPrevious]="true"
             [dvSubStep]="3"
         ></dv-navigation-x>
     } @else {

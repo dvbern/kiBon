@@ -1171,6 +1171,15 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 
 		authorizer.checkWriteAuthorization(benutzerFromDB);
 
+		if (isBenutzerDefaultBenutzerOfAnyGemeinde(
+			benutzerFromDB.getUsername()
+		)) {
+			throw new EbeguRuntimeException(
+				KibonLogLevel.NONE,
+				"sperren",
+				ErrorCodeEnum.ERROR_USER_IS_VERANTWORTLICHER
+			);
+		}
 		benutzerFromDB.setStatus(GESPERRT);
 		keycloakApi.deleteMitarbeiterAccessBenutzerRole(benutzerFromDB);
 		keycloakApi.lock(benutzerFromDB);
@@ -2147,6 +2156,12 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 			String.class,
 			"username"
 		);
+		Predicate predicateDefaultGemeinde = cb.equal(
+			root.get(GemeindeStammdaten_.defaultBenutzer)
+				.get(Benutzer_.username),
+			benutzerParam
+		);
+
 		Predicate predicateDefaultBG =
 			cb.equal(
 				root.get(GemeindeStammdaten_.defaultBenutzerBG)
@@ -2159,7 +2174,11 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 					.get(Benutzer_.username),
 				benutzerParam
 			);
-		Predicate anyDefault = cb.or(predicateDefaultBG, predicateDefaultTS);
+		Predicate anyDefault = cb.or(
+			predicateDefaultBG,
+			predicateDefaultTS,
+			predicateDefaultGemeinde
+		);
 		query.where(anyDefault);
 
 		TypedQuery<GemeindeStammdaten> q = persistence.getEntityManager()

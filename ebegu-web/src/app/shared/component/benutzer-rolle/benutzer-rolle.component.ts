@@ -28,6 +28,7 @@ import {ControlContainer, NgForm} from '@angular/forms';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSRole} from '../../../../models/enums/TSRole';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
+import {MatOptionSelectionChange} from '@angular/material/core';
 
 @Component({
     selector: 'dv-benutzer-rolle',
@@ -84,5 +85,12 @@ export class BenutzerRolleComponent implements OnInit {
         item: {key: TSRole; value: string}
     ): string {
         return item.key;
+    }
+
+    public onSelectionChange(item: MatOptionSelectionChange): void {
+        if (!item.isUserInput) {
+            return;
+        }
+        this.benutzerRolle = item.source.value;
     }
 }

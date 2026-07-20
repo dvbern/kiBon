@@ -21,7 +21,7 @@ import * as dvTasks from '@dv-e2e/tasks';
 import {OnlyValidSelectors, User} from '@dv-e2e/types';
 import {KiBonMandant} from '@models/mandant';
 import {Method, WaitOptions} from 'cypress/types/net-stubbing';
-import {checkAuthenticated} from './e2e-helper';
+import {checkAuthenticated, waitForAuthenticated} from './e2e-helper';
 
 type DvTasks = typeof dvTasks;
 
@@ -211,13 +211,11 @@ Cypress.Commands.add('login', (user: User) => {
         () => {
             cy.visit('/#/locallogin');
             cy.checkKeycloakUser();
+
+            cy.intercept('GET', '**/auth/authenticated-user').as('authCheck');
             cy.get(`[data-test="test-user-${userSelector}"]`).click();
 
-            // wait for the first auth callback, the one always fails at first
-            cy.url({timeout: 15000}).should('not.include', '/auth/callback');
-            cy.url().should('include', '/#/anmeldung');
-
-            checkAuthenticated();
+            waitForAuthenticated();
         },
         {
             validate: () => {

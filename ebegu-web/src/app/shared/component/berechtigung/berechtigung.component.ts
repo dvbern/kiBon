@@ -31,6 +31,7 @@ import {InstitutionRS} from '../../../core/service/institutionRS.rest';
 import {SozialdienstRS} from '../../../core/service/SozialdienstRS.rest';
 import {TraegerschaftRS} from '../../../core/service/traegerschaftRS.rest';
 import {Displayable} from '../../interfaces/displayable';
+import {MatOptionSelectionChange} from '@angular/material/core';
 
 let nextId = 0;
 
@@ -135,5 +136,27 @@ export class BerechtigungComponent {
 
     public translationKeyForRole(role: TSRole): string {
         return TSRoleUtil.translationKeyForRole(role);
+    }
+
+    public onInstitutionSelectionChange(item: MatOptionSelectionChange): void {
+        if (!item.isUserInput) {
+            return;
+        }
+        this.berechtigung.institution = item.source.value;
+    }
+
+    public onTraegerschaftSelectionChange(
+        item: MatOptionSelectionChange
+    ): void {
+        if (!item.isUserInput) {
+            return;
+        }
+        this.berechtigung.traegerschaft = item.source.value;
+    }
+    public onSozialdienstSelectionChange(item: MatOptionSelectionChange): void {
+        if (!item.isUserInput) {
+            return;
+        }
+        this.berechtigung.sozialdienst = item.source.value;
     }
 }

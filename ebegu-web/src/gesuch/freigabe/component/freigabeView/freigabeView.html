@@ -221,13 +221,15 @@
             </dv-loading-button>
         </span>
         <span>
-            <dv-navigation dv-previous="true" dv-next="false"> </dv-navigation>
+            <dv-navigation can-go-previous="true" can-go-next="false">
+            </dv-navigation>
         </span>
     </div>
 
     <div ng-if="!vm.isNotFreigegeben()" class="dv-navigation-flex">
         <span>
-            <dv-navigation dv-previous="true" dv-next="true"> </dv-navigation>
+            <dv-navigation can-go-previous="true" can-go-next="true">
+            </dv-navigation>
         </span>
     </div>
 </div>

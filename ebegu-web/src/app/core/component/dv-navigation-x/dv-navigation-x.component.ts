@@ -59,8 +59,8 @@ export class DvNavigationXComponent implements OnInit {
 
     private readonly log: Log = LogFactory.createLog('DvNavigationXComponent');
 
-    @Input() public dvPrevious: boolean;
-    @Input() public dvNext: boolean;
+    @Input() public canGoPrevious: boolean;
+    @Input() public canGoNext: boolean;
     @Output() public readonly dvSave = new EventEmitter<{
         onResult: (arg: any) => any;
     }>();

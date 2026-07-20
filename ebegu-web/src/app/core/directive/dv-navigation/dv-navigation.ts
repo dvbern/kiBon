@@ -45,9 +45,9 @@ import ITranslateService = angular.translate.ITranslateService;
  * Diese Direktive wird benutzt, um die Navigation Buttons darzustellen. Folgende Parameter koennen benutzt werden,
  * um die Funktionalitaet zu definieren:
  *
- * -- dvPrevious: function      Wenn true wird der Button "previous" angezeigt (nicht gleichzeitig mit dvCancel
+ * -- canGoPrevious: boolean    Wenn true wird der Button "previous" angezeigt (nicht gleichzeitig mit dvCancel
  * benutzen)
- * -- dvNext: function          Wenn true wird der Button "next" angezeigt
+ * -- canGoNext: boolean        Wenn true wird der Button "next" angezeigt
  * -- dvNextDisabled: function  Wenn man eine extra Pruefung braucht, um den Button Next zu disablen
  * -- dvSubStep: number         Manche Steps haben sog. SubSteps (z.B. finanzielle Situation). Dieses Parameter wird
  * benutzt, um zwischen SubSteps unterscheiden zu koennen
@@ -62,8 +62,8 @@ export class DVNavigation implements IComponentController {
     public controller = NavigatorController;
     public controllerAs = 'vm';
     public bindings = {
-        dvPrevious: '&?',
-        dvNext: '&?',
+        canGoPrevious: '<?',
+        canGoNext: '<?',
         dvCancel: '&?',
         dvNextDisabled: '&?',
         dvSubStep: '<',
@@ -91,8 +91,8 @@ export class NavigatorController implements IController {
         '$timeout'
     ];
 
-    public dvPrevious: () => any;
-    public dvNext: () => any;
+    public canGoPrevious: boolean;
+    public canGoNext: boolean;
     public dvSave: () => any;
     public dvCancel: () => any;
     public dvNextDisabled: () => any;

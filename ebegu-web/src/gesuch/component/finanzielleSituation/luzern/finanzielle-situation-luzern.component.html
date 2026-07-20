@@ -568,8 +568,8 @@
                 <div class="col-md-12">
                     <dv-navigation-x
                         (dvSave)="prepareSave($event.onResult)"
-                        [dvNext]="hasNext"
-                        [dvPrevious]="hasPrevious"
+                        [canGoNext]="hasNext"
+                        [canGoPrevious]="hasPrevious"
                         [dvSubStepName]="getSubStepName()"
                         [dvSubStep]="getSubStepIndex()"
                     ></dv-navigation-x>

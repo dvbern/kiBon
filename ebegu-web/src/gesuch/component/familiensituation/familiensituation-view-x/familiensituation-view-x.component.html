@@ -626,8 +626,8 @@
                                 true;
                                 roles: getAllRolesButTraegerschaftInstitutionSteueramt()
                             "
-                            [dvPrevious]="true"
-                            [dvNext]="true"
+                            [canGoPrevious]="true"
+                            [canGoNext]="true"
                             (dvSave)="confirmAndSave($event.onResult)"
                         >
                         </dv-navigation-x>
@@ -636,7 +636,7 @@
                                 true;
                                 roles: getTraegerschaftInstitutionSteueramtOnlyRoles()
                             "
-                            [dvNext]="true"
+                            [canGoNext]="true"
                         >
                         </dv-navigation-x>
                     </div>

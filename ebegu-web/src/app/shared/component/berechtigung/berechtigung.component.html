@@ -51,32 +51,37 @@
                     <label class="required" translate [for]="institutionId"
                         >INSTITUTION</label
                     >
-                    <div class="dv-select-style">
-                        <select
-                            [attr.aria-describedby]="institutionId + '-error'"
-                            [name]="institutionId"
-                            [id]="institutionId"
-                            class="form-control"
-                            [disabled]="disabled"
-                            [required]="true"
-                            [(ngModel)]="berechtigung.institution"
-                            [compareWith]="compareById"
-                        >
-                            @for (
-                                institution of institutionen$ | async;
-                                track institution
-                            ) {
-                                <option [ngValue]="institution">
-                                    {{ institution.name }}
-                                </option>
-                            }
-                        </select>
-                        <dv-error-messages
-                            [inputId]="institutionId"
-                            [errorObject]="form.controls[institutionId]?.errors"
-                        >
-                        </dv-error-messages>
-                    </div>
+
+                    <mat-select
+                        [attr.aria-describedby]="institutionId + '-error'"
+                        [name]="institutionId"
+                        [id]="institutionId"
+                        class="form-control"
+                        [disabled]="disabled"
+                        [required]="true"
+                        [ngModel]="berechtigung.institution"
+                        [compareWith]="compareById"
+                        [style.pointer-events]="disabled ? 'none' : 'auto'"
+                    >
+                        @for (
+                            institution of institutionen$ | async;
+                            track institution
+                        ) {
+                            <mat-option
+                                (onSelectionChange)="
+                                    onInstitutionSelectionChange($event)
+                                "
+                                [value]="institution"
+                            >
+                                {{ institution.name }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                    <dv-error-messages
+                        [inputId]="institutionId"
+                        [errorObject]="form.controls[institutionId]?.errors"
+                    >
+                    </dv-error-messages>
                 </div>
             </div>
         }
@@ -87,34 +92,36 @@
                     <label class="required" translate [for]="traegerschaftId"
                         >TRAEGERSCHAFT</label
                     >
-                    <div class="dv-select-style">
-                        <select
-                            [attr.aria-describedby]="traegerschaftId + '-error'"
-                            [name]="traegerschaftId"
-                            [id]="traegerschaftId"
-                            class="form-control"
-                            [disabled]="disabled"
-                            [required]="true"
-                            [(ngModel)]="berechtigung.traegerschaft"
-                            [compareWith]="compareById"
-                        >
-                            @for (
-                                traegerschaft of traegerschaften$ | async;
-                                track traegerschaft
-                            ) {
-                                <option [ngValue]="traegerschaft">
-                                    {{ traegerschaft.name }}
-                                </option>
-                            }
-                        </select>
-                        <dv-error-messages
-                            [inputId]="traegerschaftId"
-                            [errorObject]="
-                                form.controls[traegerschaftId]?.errors
-                            "
-                        >
-                        </dv-error-messages>
-                    </div>
+                    <mat-select
+                        [attr.aria-describedby]="traegerschaftId + '-error'"
+                        [name]="traegerschaftId"
+                        [id]="traegerschaftId"
+                        class="form-control"
+                        [disabled]="disabled"
+                        [required]="true"
+                        [ngModel]="berechtigung.traegerschaft"
+                        [compareWith]="compareById"
+                        [style.pointer-events]="disabled ? 'none' : 'auto'"
+                    >
+                        @for (
+                            traegerschaft of traegerschaften$ | async;
+                            track traegerschaft
+                        ) {
+                            <mat-option
+                                (onSelectionChange)="
+                                    onTraegerschaftSelectionChange($event)
+                                "
+                                [value]="traegerschaft"
+                            >
+                                {{ traegerschaft.name }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                    <dv-error-messages
+                        [inputId]="traegerschaftId"
+                        [errorObject]="form.controls[traegerschaftId]?.errors"
+                    >
+                    </dv-error-messages>
                 </div>
             </div>
         }
@@ -125,34 +132,36 @@
                     <label class="required" translate [for]="sozialdienstId"
                         >SOZIALDIENST_TITLE</label
                     >
-                    <div class="dv-select-style">
-                        <select
-                            [attr.aria-describedby]="sozialdienstId + '-error'"
-                            [name]="sozialdienstId"
-                            [id]="sozialdienstId"
-                            class="form-control"
-                            [disabled]="disabled"
-                            [required]="true"
-                            [(ngModel)]="berechtigung.sozialdienst"
-                            [compareWith]="compareById"
-                        >
-                            @for (
-                                sozialdienst of sozialdienste$ | async;
-                                track sozialdienst
-                            ) {
-                                <option [ngValue]="sozialdienst">
-                                    {{ sozialdienst.name }}
-                                </option>
-                            }
-                        </select>
-                        <dv-error-messages
-                            [inputId]="sozialdienstId"
-                            [errorObject]="
-                                form.controls[sozialdienstId]?.errors
-                            "
-                        >
-                        </dv-error-messages>
-                    </div>
+                    <mat-select
+                        [attr.aria-describedby]="sozialdienstId + '-error'"
+                        [name]="sozialdienstId"
+                        [id]="sozialdienstId"
+                        class="form-control"
+                        [disabled]="disabled"
+                        [required]="true"
+                        [ngModel]="berechtigung.sozialdienst"
+                        [compareWith]="compareById"
+                        [style.pointer-events]="disabled ? 'none' : 'auto'"
+                    >
+                        @for (
+                            sozialdienst of sozialdienste$ | async;
+                            track sozialdienst
+                        ) {
+                            <mat-option
+                                (onSelectionChange)="
+                                    onSozialdienstSelectionChange($event)
+                                "
+                                [value]="sozialdienst"
+                            >
+                                {{ sozialdienst.name }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                    <dv-error-messages
+                        [inputId]="sozialdienstId"
+                        [errorObject]="form.controls[sozialdienstId]?.errors"
+                    >
+                    </dv-error-messages>
                 </div>
             </div>
         }
