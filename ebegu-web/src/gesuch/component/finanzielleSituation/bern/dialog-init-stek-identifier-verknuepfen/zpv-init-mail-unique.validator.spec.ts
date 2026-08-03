@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormControl, FormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
@@ -9,6 +9,7 @@ const BESITZER_MAIL = 'owner@example.com';
 
 @Component({
     imports: [FormsModule, ZpvInitMailUniqueValidator],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <input
             type="email"

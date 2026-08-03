@@ -85,6 +85,9 @@ public class JaxZahlungConverter extends AbstractBaseConverter {
 		jaxZahlungsauftrag.setDatumGeneriert(
 			persistedZahlungsauftrag.getDatumGeneriert()
 		);
+		jaxZahlungsauftrag.setDatumBeendet(
+			persistedZahlungsauftrag.getDatumBeendet()
+		);
 		jaxZahlungsauftrag.setHasNegativeZahlungen(
 			persistedZahlungsauftrag.getHasNegativeZahlungen()
 		);

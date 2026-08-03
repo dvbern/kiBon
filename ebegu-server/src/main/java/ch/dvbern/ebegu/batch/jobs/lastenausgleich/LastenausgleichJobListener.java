@@ -96,7 +96,7 @@ public class LastenausgleichJobListener extends AbstractJobListener {
 		String jahr = lastenausgleichBatchletContext.getProperty(
 			WorkJobConstants.LAS_JAHR
 		);
-		mailService.sendInfoLastenausgleichProzessBeendet(
+		mailService.prepareToSendInfoLastenausgleichProzessBeendet(
 			jahr,
 			userMail,
 			isSuccessful,

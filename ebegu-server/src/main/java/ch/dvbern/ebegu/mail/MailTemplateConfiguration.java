@@ -101,6 +101,8 @@ public class MailTemplateConfiguration {
 	public static final String GRUSS_FR = "gruss_fr";
 	public static final String VERANTWORTLICHERTS = "verantwortlicherTS";
 
+	private static final String EINLADUNGEMAIL_FOOTER = "EinladungEmail_FOOTER";
+
 	private static final Locale DEUTSCH_FRENCH_LOCALE = new Locale(
 		"defr",
 		"CH"
@@ -296,13 +298,69 @@ public class MailTemplateConfiguration {
 		paramMap.put(
 			"footer",
 			ServerMessageUtil.getMessage(
-				"EinladungEmail_FOOTER",
+				EINLADUNGEMAIL_FOOTER,
 				sprache.getLocale(),
 				mandant
 			)
 		);
 		return doProcessTemplate(
 			getTemplateFileName(MailTemplate.InfoStatistikGeneriert),
+			mandantLocale,
+			paramMap
+		);
+	}
+
+	public String sendInfoZahlungslaufGeneriert(
+		@Nonnull String empfaengerMail,
+		@Nonnull String zahlungsUrl,
+		@Nonnull Sprache sprache,
+		@Nonnull Mandant mandant
+	) {
+		Locale mandantLocale = new MandantLocaleVisitor(sprache.getLocale())
+			.process(mandant);
+		Map<Object, Object> paramMap = paramsWithEmpfaenger(
+			empfaengerMail,
+			mandant.getMandantIdentifier()
+		);
+		paramMap.put("zahlungsUrl", zahlungsUrl);
+		paramMap.put(
+			"footer",
+			ServerMessageUtil.getMessage(
+				EINLADUNGEMAIL_FOOTER,
+				sprache.getLocale(),
+				mandant
+			)
+		);
+		return doProcessTemplate(
+			getTemplateFileName(MailTemplate.InfoZahlungslaufGeneriert),
+			mandantLocale,
+			paramMap
+		);
+	}
+
+	public String createInfoZahlungslaufNichtErfolgreichErstelltMail(
+		@Nonnull String empfaengerMail,
+		@Nonnull Sprache sprache,
+		@Nonnull Mandant mandant
+	) {
+		Locale mandantLocale = new MandantLocaleVisitor(sprache.getLocale())
+			.process(mandant);
+		Map<Object, Object> paramMap = paramsWithEmpfaenger(
+			empfaengerMail,
+			mandant.getMandantIdentifier()
+		);
+		paramMap.put(
+			"footer",
+			ServerMessageUtil.getMessage(
+				EINLADUNGEMAIL_FOOTER,
+				sprache.getLocale(),
+				mandant
+			)
+		);
+		return doProcessTemplate(
+			getTemplateFileName(
+				MailTemplate.InfoZahlungslaufNichtErfolgreichGeneriert
+			),
 			mandantLocale,
 			paramMap
 		);
@@ -848,7 +906,7 @@ public class MailTemplateConfiguration {
 			return "EinladungEmail_FOOTER_TRAEGERSCHAFT";
 		}
 
-		return "EinladungEmail_FOOTER";
+		return EINLADUNGEMAIL_FOOTER;
 	}
 
 	private String getAbsatzForInstitution(

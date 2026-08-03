@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,8 +39,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
 import ch.dvbern.ebegu.api.converter.JaxZahlungConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
@@ -51,10 +54,13 @@ import ch.dvbern.ebegu.dto.ZahlungenSearchParamsDTO;
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Institution;
+import ch.dvbern.ebegu.entities.Workjob;
 import ch.dvbern.ebegu.entities.Zahlung;
 import ch.dvbern.ebegu.entities.Zahlungsauftrag;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.WorkJobType;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
+import ch.dvbern.ebegu.enums.reporting.BatchJobStatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
@@ -62,6 +68,7 @@ import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.GeneratedDokumentService;
 import ch.dvbern.ebegu.services.InstitutionService;
+import ch.dvbern.ebegu.services.WorkjobService;
 import ch.dvbern.ebegu.services.ZahlungService;
 import ch.dvbern.ebegu.services.zahlungen.WorkjobZahlungslaufService;
 import ch.dvbern.ebegu.util.DateUtil;
@@ -120,6 +127,9 @@ public class ZahlungResource {
 
 	@Inject
 	private Authorizer authorizer;
+
+	@Inject
+	private WorkjobService workjobService;
 
 	@Operation(summary = "Gibt alle Zahlungsauftraege zurueck.")
 	@Nullable
@@ -413,7 +423,8 @@ public class ZahlungResource {
 		@QueryParam("faelligkeitsdatum") String stringFaelligkeitsdatum,
 		@QueryParam("beschrieb") String beschrieb,
 		@QueryParam("auszahlungInZukunft") Boolean auszahlungInZukunft,
-		@Nullable @QueryParam("datumGeneriert") String stringDatumGeneriert
+		@Nullable @QueryParam("datumGeneriert") String stringDatumGeneriert,
+		@Context UriInfo uriInfo
 	) throws EbeguRuntimeException {
 
 		LOGGER.info(
@@ -436,26 +447,41 @@ public class ZahlungResource {
 		Gemeinde gemeinde = gemeindeService.findGemeinde(gemeindeId)
 			.orElseThrow(
 				() -> new EbeguEntityNotFoundException(
-					"zahlungsauftragErstellen",
+					"createZahlung",
 					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
 					gemeindeId
 				)
 			);
+		// Validation before to start Job
+		authorizer.checkWriteAuthorization(gemeinde);
+
+		// Es darf nur ein Zahlungsauftrag per Gemeinde in erstellung sein
+		checkNoWorkjobStartedWithGivenGemeindeId(gemeindeId);
 
 		// Es darf immer nur ein Zahlungsauftrag im Status ENTWURF sein
 		Optional<Zahlungsauftrag> lastZahlungsauftragOptional =
 			zahlungService.findLastZahlungsauftrag(zahlungslaufTyp, gemeinde);
-		if (lastZahlungsauftragOptional.isPresent()
-			&& lastZahlungsauftragOptional.get().getStatus().isEntwurf()) {
-			throw new EbeguRuntimeException(
-				KibonLogLevel.DEBUG,
-				"zahlungsauftragErstellen called from zahlungResource",
-				ErrorCodeEnum.ERROR_ZAHLUNG_ERSTELLEN
-			);
+		if (lastZahlungsauftragOptional.isPresent()) {
+			if (lastZahlungsauftragOptional.get().getStatus().isEntwurf()) {
+				throw new EbeguRuntimeException(
+					KibonLogLevel.DEBUG,
+					"createZahlung called from zahlungResource",
+					ErrorCodeEnum.ERROR_ZAHLUNG_ERSTELLEN
+				);
+			}
+			// in extrem Situation kann einer Zahlungslauf blockiert sein (Server reboot, out of memory)
+			// der Workjob lauft nicht mehr, der Zahlungslauf ist im Status in Erstellung und wird nicht mehr bearbeitet sein
+			if (lastZahlungsauftragOptional.get().getStatus().isAngefragt()) {
+				LOGGER.info(
+					"Zahlungslauf mit id {} würde untergebrochen wegen einen externen Faktor, wir setzen es als Failed",
+					lastZahlungsauftragOptional.get().getId()
+				);
+				zahlungService.setZahlungsauftragstatusHasFailed(
+					lastZahlungsauftragOptional.get().getId()
+				);
+			}
 		}
 
-		// Validation before to start Job
-		authorizer.checkWriteAuthorization(gemeinde);
 		if (stringDatumGeneriert != null) {
 			validateDatumGeneriert(
 				DateUtil.parseStringToDateOrReturnNow(
@@ -463,22 +489,94 @@ public class ZahlungResource {
 				).atStartOfDay()
 			);
 		}
+		LocalDateTime datumGeneriert;
+		if (stringDatumGeneriert != null) {
+			datumGeneriert = DateUtil.parseStringToDateOrReturnNow(
+				stringDatumGeneriert
+			).atStartOfDay();
+		} else {
+			datumGeneriert = LocalDateTime.now();
+		}
+		Zahlungsauftrag zahlungsauftrag = zahlungService
+			.createEmptyZahlungsauftrag(
+				zahlungslaufTyp,
+				gemeindeId,
+				faelligkeitsdatum,
+				beschrieb,
+				auszahlungInZukunft,
+				datumGeneriert,
+				principalBean.getMandant()
+			);
 
+		Workjob workjob = createWorkjobForZahlungslauf(uriInfo, gemeindeId);
+		workjob = workjobZahlungslaufService.startZahlungslaufWorkjob(
+			zahlungslaufTyp,
+			gemeindeId,
+			auszahlungInZukunft,
+			zahlungsauftrag.getId(),
+			workjob
+		);
 		LOGGER.info(
 			"Zahlungsauftrag erstellung gestartet für gemeinde: {}",
 			gemeinde.getName()
 		);
 
-		long jobId = workjobZahlungslaufService.startZahlungslaufWorkjob(
-			zahlungslaufTyp,
-			gemeindeId,
-			auszahlungInZukunft,
-			faelligkeitsdatum,
-			beschrieb,
-			stringDatumGeneriert
-		);
+		return Response.accepted(Map.of("workjobId", workjob.getId())).build();
+	}
 
-		return Response.accepted(jobId).build();
+	private void checkNoWorkjobStartedWithGivenGemeindeId(
+		@Nonnull String gemeindeId
+	) throws EbeguRuntimeException {
+		List<Workjob> workjobs = workjobService.getWorkjobsWithParams(
+			gemeindeId
+		);
+		if (!workjobs.isEmpty()) {
+			Optional<Workjob> workjobOpt = workjobs.stream()
+				.filter(
+					workjob -> workjob.getStatus()
+						.equals(BatchJobStatus.RUNNING)
+						|| workjob.getStatus().equals(BatchJobStatus.REQUESTED)
+				)
+				.findAny();
+			if (workjobOpt.isPresent()) {
+				throw new EbeguRuntimeException(
+					KibonLogLevel.DEBUG,
+					"createZahlung called from zahlungResource",
+					ErrorCodeEnum.ERROR_ZAHLUNG_ALREADY_REQUESTED
+				);
+			}
+		}
+	}
+
+	@Nonnull
+	private Workjob createWorkjobForZahlungslauf(
+		UriInfo uriInfo,
+		String gemeindeId
+	) {
+		Workjob workJob = new Workjob();
+		workJob.setWorkJobType(WorkJobType.ZAHLUNGSLAUF);
+		workJob.setStartinguser(principalBean.getPrincipal().getName());
+		workJob.setRequestURI(uriInfo.getRequestUri().toString());
+		String param = gemeindeId;
+		workJob.setParams(param);
+		return workJob;
+	}
+
+	@GET
+	@Consumes(MediaType.WILDCARD)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/status/{id}")
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE })
+	public Response status(@PathParam("id") String id) {
+		Workjob workjob = workjobService.findById(id);
+
+		return Response.ok(
+			Map.of(
+				"status",
+				workjob != null ? workjob.getStatus().toString() : "FAILED"
+			)
+		).build();
 	}
 
 	private void validateDatumGeneriert(LocalDateTime datumGeneriert) {

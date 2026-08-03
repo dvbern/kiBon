@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
@@ -32,6 +32,7 @@ import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 @Component({
     selector: 'dv-ng-gemeinde-dialog',
     templateUrl: './dv-ng-gemeinde-dialog.template.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvNgGemeindeDialogComponent {

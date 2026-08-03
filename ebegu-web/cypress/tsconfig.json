@@ -1,6 +1,7 @@
 {
     "extends": "../tsconfig.base.json",
     "compilerOptions": {
+        "rootDir": "..",
         "allowJs": true,
         "outDir": "./dist/out-tsc",
         "esModuleInterop": true,

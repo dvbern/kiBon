@@ -42,4 +42,22 @@ public interface WorkjobService {
 	);
 
 	void removeWorkjob(Workjob workjob);
+
+	/**
+	 * Find a workjob with a given ID
+	 *
+	 * @param id of the workjob
+	 * @return the Workjob related to the given id or null if not found
+	 */
+	@Nullable
+	Workjob findById(@Nonnull String id);
+
+	/**
+	 * Find related workjobs with the given Params
+	 *
+	 * @param params the parameter(s) for the text search
+	 * @return a list of workjobs matching the given params
+	 */
+	@Nonnull
+	List<Workjob> getWorkjobsWithParams(@Nonnull String params);
 }

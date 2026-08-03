@@ -49,6 +49,8 @@ public class SendStornierungsInfoEmailAction implements Action<BetreuungEvent> {
 	@Override
 	public void execute(@NotNull BetreuungEvent betreuungEvent) {
 		// TODO KIBON-3569: Müssen wir hier evtl. noch unterscheiden zwischen Ablehnung und Stornierung?
-		mailService.sendInfoBetreuungAbgelehnt(betreuungEvent.getBetreuung());
+		mailService.prepareToSendInfoBetreuungAbgelehnt(
+			betreuungEvent.getBetreuung()
+		);
 	}
 }

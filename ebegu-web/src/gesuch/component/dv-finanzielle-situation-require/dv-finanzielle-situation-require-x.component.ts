@@ -19,7 +19,8 @@ import {
     Input,
     OnInit,
     Output,
-    inject
+    inject,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -42,6 +43,7 @@ const LOG = LogFactory.createLog('DvFinanzielleSituationRequireXComponent');
     templateUrl: './dv-finanzielle-situation-require-x.component.html',
     styleUrl: './dv-finanzielle-situation-require-x.component.less',
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvFinanzielleSituationRequireXComponent implements OnInit {

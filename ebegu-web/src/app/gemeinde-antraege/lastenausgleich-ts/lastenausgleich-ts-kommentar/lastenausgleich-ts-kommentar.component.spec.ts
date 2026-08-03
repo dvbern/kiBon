@@ -15,7 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {
+    provideHttpClient,
+    withInterceptorsFromDi,
+    withXhr
+} from '@angular/common/http';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -70,7 +74,7 @@ describe('LastenausgleichTsKommentarComponent', () => {
                 {provide: ErrorService, useValue: errorServiceSpy},
                 {provide: StateService, useValue: stateServiceSpy},
                 {provide: BenutzerRSX, useValue: benuzerRSSpy},
-                provideHttpClient(withInterceptorsFromDi())
+                provideHttpClient(withXhr(), withInterceptorsFromDi())
             ]
         })
             .overrideModule(SharedModule, SHARED_MODULE_OVERRIDES)

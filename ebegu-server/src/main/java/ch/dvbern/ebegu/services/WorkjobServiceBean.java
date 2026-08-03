@@ -194,4 +194,27 @@ public class WorkjobServiceBean extends AbstractBaseService implements
 	public void removeWorkjob(Workjob workjob) {
 		this.persistence.remove(workjob);
 	}
+
+	@Override
+	@Nullable
+	public Workjob findById(@Nonnull String id) {
+		return persistence.find(Workjob.class, id);
+	}
+
+	@Override
+	@Nonnull
+	public List<Workjob> getWorkjobsWithParams(@Nonnull String params) {
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<Workjob> query = cb.createQuery(Workjob.class);
+		Root<Workjob> root = query.from(Workjob.class);
+
+		Predicate paramsPredicate = cb.equal(root.get(Workjob_.params), params);
+
+		query.where(paramsPredicate);
+		query.orderBy(cb.desc(root.get(AbstractEntity_.timestampMutiert)));
+		return persistence.getEntityManager()
+			.createQuery(query)
+			.getResultList();
+	}
+
 }

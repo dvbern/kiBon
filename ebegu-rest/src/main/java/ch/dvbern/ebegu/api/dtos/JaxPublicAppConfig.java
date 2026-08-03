@@ -57,4 +57,5 @@ public class JaxPublicAppConfig {
 	private boolean abgeloesteViewBeschaeftigungSingleEnabled;
 	private boolean gemeindeKennzahlenReminderActivated;
 	private boolean benachrichtigungGemeindeEnabled;
+	private boolean benutzendeEditNameAllowed;
 }

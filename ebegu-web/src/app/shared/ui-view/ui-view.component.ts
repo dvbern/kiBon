@@ -15,12 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
     selector: 'dv-ui-view',
     template: '<ui-view></ui-view>',
     styles: [':host {display: flex; flex: 1;}'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UiViewComponent {}

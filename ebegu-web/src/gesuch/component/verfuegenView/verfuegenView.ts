@@ -648,25 +648,27 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     public getInstitutionName(): string {
+        const betreuung = this.getBetreuung();
         if (
             this.gesuchModelManager &&
             this.gesuchModelManager.getGesuch() &&
-            this.getBetreuung() &&
-            this.getBetreuung().institutionStammdaten
+            betreuung &&
+            betreuung.institutionStammdaten
         ) {
-            return this.getBetreuung().institutionStammdaten.institution.name;
+            return betreuung.institutionStammdaten?.institution.name;
         }
         return undefined;
     }
 
     public getInstitutionPhone(): string {
+        const betreuung = this.getBetreuung();
         if (
             this.gesuchModelManager &&
             this.gesuchModelManager.getGesuch() &&
-            this.getBetreuung() &&
-            this.getBetreuung().institutionStammdaten
+            betreuung &&
+            betreuung.institutionStammdaten
         ) {
-            return this.getBetreuung().institutionStammdaten.telefon;
+            return betreuung.institutionStammdaten.telefon;
         }
         return undefined;
     }
@@ -684,7 +686,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                 this.getFall(),
                 this.gesuchModelManager.getDossier().gemeinde,
                 this.gesuchModelManager.getKindToWorkWith().kindNummer,
-                this.getBetreuung().betreuungNummer
+                this.getBetreuung()?.betreuungNummer
             );
         }
         return undefined;
@@ -698,7 +700,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         ) {
             return undefined;
         }
-        return this.getBetreuung().betreuungsstatus;
+        return this.getBetreuung()?.betreuungsstatus;
     }
 
     /**
@@ -984,7 +986,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
 
         return (
             this.gesuchModelManager.getBetreuungToWorkWith()
-                .auszahlungAnEltern &&
+                ?.auszahlungAnEltern &&
             EbeguUtil.isEmptyArrayNullOrUndefined(
                 this.getVerfuegungZeitabschnitte()
             )
@@ -1169,11 +1171,9 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     private getTagesschuleZeitabschnitteMitBetreuung(): Array<TSVerfuegungZeitabschnitt> {
-        if (
-            this.getBetreuung().verfuegung &&
-            this.getBetreuung().verfuegung.zeitabschnitte
-        ) {
-            return this.getBetreuung().verfuegung.zeitabschnitte.filter(
+        const betreuung = this.getBetreuung();
+        if (betreuung?.verfuegung && betreuung.verfuegung.zeitabschnitte) {
+            return betreuung.verfuegung.zeitabschnitte.filter(
                 anmeldungTagesschuleZeitabschnitt =>
                     EbeguUtil.isNotNullOrUndefined(
                         anmeldungTagesschuleZeitabschnitt.tsCalculationResultMitPaedagogischerBetreuung
@@ -1184,11 +1184,9 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     private getTagesschuleZeitabschnitteOhneBetreuung(): Array<TSVerfuegungZeitabschnitt> {
-        if (
-            this.getBetreuung().verfuegung &&
-            this.getBetreuung().verfuegung.zeitabschnitte
-        ) {
-            return this.getBetreuung().verfuegung.zeitabschnitte.filter(
+        const betreuung = this.getBetreuung();
+        if (betreuung?.verfuegung && betreuung.verfuegung.zeitabschnitte) {
+            return betreuung.verfuegung.zeitabschnitte.filter(
                 anmeldungTagesschuleZeitabschnitt =>
                     EbeguUtil.isNotNullOrUndefined(
                         anmeldungTagesschuleZeitabschnitt.tsCalculationResultOhnePaedagogischerBetreuung
@@ -1233,10 +1231,15 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
 
     private openAnmeldebestaetigungPDF(mitTarif: boolean): void {
         const win = this.downloadRS.prepareDownloadWindow();
+        const betreuung = this.getBetreuung();
+        if (!betreuung) {
+            EbeguUtil.handleDownloadError(win, 'Betreuung not found');
+            return;
+        }
         this.downloadRS
             .getAccessTokenAnmeldebestaetigungGeneratedDokument(
                 this.gesuchModelManager.getGesuch().id,
-                this.getBetreuung().id,
+                betreuung.id,
                 false,
                 mitTarif
             )
@@ -1258,8 +1261,8 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     public isTagesschuleTagi(): boolean {
         const gesuchsPeriode = this.getGesuchsperiode();
         const stammdatenTagesschule =
-            this.getBetreuung().institutionStammdaten
-                .institutionStammdatenTagesschule;
+            this.getBetreuung()?.institutionStammdaten
+                ?.institutionStammdatenTagesschule;
         if (stammdatenTagesschule) {
             const tsEinstellungenTagesschule =
                 stammdatenTagesschule.einstellungenTagesschule
@@ -1306,11 +1309,11 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     public auszahlungAnEltern(): boolean {
-        return this.getBetreuung().auszahlungAnEltern;
+        return this.getBetreuung()?.auszahlungAnEltern;
     }
 
     public showGutscheinProStunde(): boolean {
-        return this.isLuzern && this.getBetreuung().isAngebotTagesfamilien();
+        return this.isLuzern && this.getBetreuung()?.isAngebotTagesfamilien();
     }
 
     public showMahlzeitenverguenstigung(): boolean {
@@ -1324,7 +1327,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
 
     public showAuszahlungAnInstitutionenCol(): boolean {
         // falls die Auszahlung zuletzt an die Institution gemacht wird, soll die Spalte gezeigt werden.
-        if (!this.getBetreuung().auszahlungAnEltern) {
+        if (!this.getBetreuung()?.auszahlungAnEltern) {
             return true;
         }
         if (EbeguUtil.isNullOrUndefined(this.getVerfuegungZeitabschnitte())) {
@@ -1370,7 +1373,8 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
             return false;
         }
         return (
-            this.getBetreuung().betreuungsstatus === TSBetreuungsstatus.VERFUEGT
+            this.getBetreuung()?.betreuungsstatus ===
+            TSBetreuungsstatus.VERFUEGT
         );
     }
 
@@ -1410,7 +1414,8 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         }
 
         // falls die Auszahlung zuletzt an die Eltern gemacht wird, soll die Spalte gezeigt werden.
-        if (this.getBetreuung().auszahlungAnEltern) {
+        const betreuung = this.getBetreuung();
+        if (betreuung && betreuung.auszahlungAnEltern) {
             return true;
         }
 
@@ -1431,7 +1436,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     public isBetreuungGueltig(): boolean {
-        return this.getBetreuung().gueltig || this.betreuungVerfuegt;
+        return this.getBetreuung()?.gueltig || this.betreuungVerfuegt;
     }
 
     public getVerguenstigungAnInstitution(
@@ -1665,7 +1670,8 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     }
 
     private initVorgaengerGebuehren(): void {
-        if (!this.getBetreuung().isAngebotSchulamt() || !this.isMutation()) {
+        const betreuung = this.getBetreuung();
+        if (!betreuung?.isAngebotSchulamt() || !this.isMutation()) {
             return;
         }
 
@@ -1682,15 +1688,19 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     private extractVoraengerZeitabschnitteFromVorgaengerGesuch(
         gesuch: TSGesuch
     ): TSVerfuegungZeitabschnitt[] {
+        const betreuung = this.getBetreuung();
+        if (!betreuung) {
+            return [];
+        }
         const vorgaengerKind = gesuch.kindContainers.find(
-            kc => kc.kindNummer === this.getBetreuung().kindNummer
+            kc => kc.kindNummer === betreuung.kindNummer
         );
 
         if (!vorgaengerKind) {
             return [];
         }
         const vorgaengerBetreuung = vorgaengerKind.betreuungen.find(
-            b => b.betreuungNummer === this.getBetreuung().betreuungNummer
+            b => b.betreuungNummer === betreuung.betreuungNummer
         );
 
         if (!vorgaengerBetreuung || !vorgaengerBetreuung.isAngebotSchulamt()) {

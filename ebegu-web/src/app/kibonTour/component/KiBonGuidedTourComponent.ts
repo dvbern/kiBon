@@ -15,7 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectorRef, Component, DOCUMENT, inject} from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    DOCUMENT,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {
     GuidedTourComponent,
@@ -27,6 +33,7 @@ import {
     selector: 'kibon-guided-tour',
     templateUrl: './kibon-guided-tour.component.html',
     styleUrls: ['./kibon-guided-tour.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class KiBonGuidedTourComponent extends GuidedTourComponent {

@@ -26,7 +26,6 @@ import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -48,7 +47,6 @@ import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
 import ch.dvbern.ebegu.enums.RollenAbhaengigkeit;
 import ch.dvbern.ebegu.enums.UserRole;
-import ch.dvbern.ebegu.listener.BenutzerChangedEntityListener;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -67,7 +65,6 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 import static java.util.Objects.requireNonNull;
 
 @Entity
-@EntityListeners(BenutzerChangedEntityListener.class)
 @Table(
 	uniqueConstraints = {
 		@UniqueConstraint(columnNames = { "username", "mandant_id" },

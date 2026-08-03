@@ -273,16 +273,12 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean
 				}
 			}
 
-			// we need to hide the template sheet because of formula references
-			workbook.setSheetHidden(
-				workbook.getSheetIndex(templateSheet),
-				true
-			);
+			ReportUtil.removeSheet(workbook, templateSheet);
 
 			// set first cloned sheet as active
 			if (workbook.getNumberOfSheets() > 0) {
-				workbook.setActiveSheet(1);
-				workbook.setSelectedTab(1);
+				workbook.setActiveSheet(0);
+				workbook.setSelectedTab(0);
 			}
 
 			byte[] bytes = createWorkbook(workbook);

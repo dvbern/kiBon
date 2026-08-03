@@ -129,7 +129,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoBetreuungenBestaetigt(@Nonnull Gesuch gesuch) {
+	public void prepareToSendInfoBetreuungenBestaetigt(@Nonnull Gesuch gesuch) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
 			gesuch,
 			gemeindeService
@@ -163,7 +163,9 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoBetreuungAbgelehnt(@Nonnull Betreuung betreuung) {
+	public void prepareToSendInfoBetreuungAbgelehnt(
+		@Nonnull Betreuung betreuung
+	) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
 			betreuung.extractGesuch(),
 			gemeindeService
@@ -195,7 +197,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoSchulamtAnmeldungTagesschuleUebernommen(
+	public void prepareToSendInfoSchulamtAnmeldungTagesschuleUebernommen(
 		@Nonnull AbstractAnmeldung abstractAnmeldung
 	) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
@@ -229,7 +231,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoSchulamtAnmeldungAbgelehnt(
+	public void prepareToSendInfoSchulamtAnmeldungAbgelehnt(
 		@Nonnull AbstractAnmeldung abstractAnmeldung
 	) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
@@ -263,7 +265,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoSchulamtAnmeldungFerieninselUebernommen(
+	public void prepareToSendInfoSchulamtAnmeldungFerieninselUebernommen(
 		@Nonnull AbstractAnmeldung abstractAnmeldung
 	) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
@@ -297,7 +299,9 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoMitteilungErhalten(@Nonnull Mitteilung mitteilung) {
+	public void prepareToSendInfoMitteilungErhalten(
+		@Nonnull Mitteilung mitteilung
+	) {
 		List<Sprache> sprachen =
 			EbeguUtil.extractGemeindeSprachen(
 				mitteilung.getDossier().getGemeinde(),
@@ -354,7 +358,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoVerfuegtGesuch(@Nonnull Gesuch gesuch) {
+	public void prepareToSendInfoVerfuegtGesuch(@Nonnull Gesuch gesuch) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
 			gesuch,
 			gemeindeService
@@ -386,7 +390,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoVerfuegtMutation(@Nonnull Gesuch gesuch) {
+	public void prepareToSendInfoVerfuegtMutation(@Nonnull Gesuch gesuch) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
 			gesuch,
 			gemeindeService
@@ -418,7 +422,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoMahnung(@Nonnull Gesuch gesuch) {
+	public void prepareToSendInfoMahnung(@Nonnull Gesuch gesuch) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
 			gesuch,
 			gemeindeService
@@ -449,7 +453,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendWarnungGesuchNichtFreigegeben(
+	public void prepareToSendWarnungGesuchNichtFreigegeben(
 		@Nonnull Gesuch gesuch,
 		int anzahlTageBisLoeschung
 	) {
@@ -486,7 +490,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendWarnungFreigabequittungFehlt(
+	public void prepareToSendWarnungFreigabequittungFehlt(
 		@Nonnull Gesuch gesuch,
 		int anzahlTageBisLoeschung
 	) {
@@ -523,7 +527,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoGesuchGeloescht(@Nonnull Gesuch gesuch) {
+	public void prepareToSendInfoGesuchGeloescht(@Nonnull Gesuch gesuch) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
 			gesuch,
 			gemeindeService
@@ -557,13 +561,16 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	@Override
 	@Asynchronous
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-	public Future<Integer> sendInfoFreischaltungGesuchsperiode(
+	public Future<Integer> prepareToSendInfoFreischaltungGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiode,
 		@Nonnull List<Gesuch> gesucheToSendMail
 	) {
 		int versendetZaehler = 0;
 		for (Gesuch gesuch : gesucheToSendMail) {
-			if (sendInfoFreischaltungGesuchsperiode(gesuchsperiode, gesuch)) {
+			if (prepareToSendInfoFreischaltungGesuchsperiode(
+				gesuchsperiode,
+				gesuch
+			)) {
 				versendetZaehler++;
 			}
 		}
@@ -571,7 +578,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public boolean sendInfoFreischaltungGesuchsperiode(
+	public boolean prepareToSendInfoFreischaltungGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiode,
 		@Nonnull Gesuch gesuch
 	) {
@@ -655,7 +662,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@Override
-	public void sendInfoBetreuungGeloescht(
+	public void prepareToSendInfoBetreuungGeloescht(
 		@Nonnull List<Betreuung> betreuungen
 	) {
 
@@ -772,7 +779,9 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoBetreuungVerfuegt(@Nonnull Betreuung betreuung) {
+	public void prepareToSendInfoBetreuungVerfuegt(
+		@Nonnull Betreuung betreuung
+	) {
 
 		Institution institution = betreuung.getInstitutionStammdaten()
 			.getInstitution();
@@ -816,7 +825,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoStatistikGeneriert(
+	public void prepareToSendInfoStatistikGeneriert(
 		@Nonnull String receiverEmail,
 		@Nonnull String downloadurl,
 		@Nonnull Locale locale,
@@ -844,12 +853,69 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 		);
 	}
 
+	@Override
+	public void prepareToSendInfoZahlungslaufGeneriert(
+		@Nonnull String receiverEmail,
+		@Nonnull String zahlungsUrl,
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	) {
+		Sprache sprache = Sprache.DEUTSCH;
+		if (Locale.FRENCH.getLanguage().equals(locale.getLanguage())) {
+			sprache = Sprache.FRANZOESISCH;
+		}
+		String message = mailTemplateConfig.sendInfoZahlungslaufGeneriert(
+			receiverEmail,
+			zahlungsUrl,
+			sprache,
+			mandant
+		);
+
+		toOutboxMail(
+			message,
+			receiverEmail,
+			mandant.getMandantIdentifier()
+		);
+		logEmailVersendet(
+			"InfoZahlungenGeneriert",
+			removeNewLineChar(receiverEmail)
+		);
+	}
+
 	private String removeNewLineChar(String str) {
 		return NEW_LINE_CHAR_PATTERN.matcher(str).replaceAll("_");
 	}
 
 	@Override
-	public void sendBenutzerEinladung(
+	public void prepareToSendInfoZahlungslaufNichtErfolgreichErstellt(
+		@Nonnull String receiverEmail,
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	) {
+		Sprache sprache = Sprache.DEUTSCH;
+		if (Locale.FRENCH.getLanguage().equals(locale.getLanguage())) {
+			sprache = Sprache.FRANZOESISCH;
+		}
+		String message = mailTemplateConfig
+			.createInfoZahlungslaufNichtErfolgreichErstelltMail(
+				receiverEmail,
+				sprache,
+				mandant
+			);
+
+		toOutboxMail(
+			message,
+			receiverEmail,
+			mandant.getMandantIdentifier()
+		);
+		logEmailVersendet(
+			"InfoZahlungenGeneriert",
+			removeNewLineChar(receiverEmail)
+		);
+	}
+
+	@Override
+	public void prepareToSendBenutzerEinladung(
 		@Nonnull Benutzer einladender,
 		@Nonnull Einladung einladung
 	) {
@@ -872,7 +938,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendSupportAnfrage(
+	public void prepareToSendSupportAnfrage(
 		@Nonnull SupportAnfrageDTO supportAnfrageDTO
 	) {
 		Benutzer benutzer = benutzerService.getCurrentBenutzer()
@@ -954,7 +1020,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoOffenePendenzenNeuMitteilungInstitution(
+	public void prepareToSendInfoOffenePendenzenNeuMitteilungInstitution(
 		@Nonnull InstitutionStammdaten institutionStammdaten,
 		boolean offenePendenzen,
 		boolean ungelesendeMitteilung
@@ -1000,7 +1066,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
+	public void prepareToSendInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
 		@Nonnull Benutzer benutzer,
 		boolean offenePendenzen,
 		boolean ungelesendeMitteilung,
@@ -1228,7 +1294,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
+	public void prepareToSendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
 		@Nonnull AbstractAnmeldung abstractAnmeldung
 	) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
@@ -1262,7 +1328,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoGemeindeAngebotAktiviert(
+	public void prepareToSendInfoGemeindeAngebotAktiviert(
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull GemeindeAngebotTyp angebot
 	) {
@@ -1315,7 +1381,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoGesuchVerfuegtVerantwortlicherTS(
+	public void prepareToSendInfoGesuchVerfuegtVerantwortlicherTS(
 		@Nonnull Gesuch gesuch,
 		@Nonnull Benutzer verantwortlicherTS
 	) {
@@ -1359,7 +1425,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoLastenausgleichGemeinde(
+	public void prepareToSendInfoLastenausgleichGemeinde(
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull Lastenausgleich lastenausgleich
 	) {
@@ -1407,7 +1473,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoSchulamtAnmeldungStorniert(
+	public void prepareToSendInfoSchulamtAnmeldungStorniert(
 		AbstractAnmeldung abstractAnmeldung
 	) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
@@ -1441,7 +1507,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoLATSAntragZurueckAnGemeinde(
+	public void prepareToSendInfoLATSAntragZurueckAnGemeinde(
 		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer wiederEroeffnet
 	) {
 		final List<Sprache> sprachen = EbeguUtil.extractGemeindeSprachen(
@@ -1494,7 +1560,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInitGSZPVNr(
+	public void prepareToSendInitGSZPVNr(
 		@Nonnull String ssoInitURL,
 		GesuchstellerContainer gesuchstellerContainer,
 		@Nonnull String email,
@@ -1516,7 +1582,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoAuszahlungsdatenChanged(
+	public void prepareToSendInfoAuszahlungsdatenChanged(
 		InstitutionStammdaten institutionStammdaten,
 		@Nonnull String email
 	) {
@@ -1541,7 +1607,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void sendInfoLastenausgleichProzessBeendet(
+	public void prepareToSendInfoLastenausgleichProzessBeendet(
 		@Nonnull String jahr,
 		@Nonnull String receiverEmail,
 		boolean isProcessSuccessfull,

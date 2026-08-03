@@ -48,9 +48,10 @@ public interface BenutzerService {
 	 * @return Die aktualisierte Benutzer
 	 */
 	@Nonnull
-	Benutzer saveBenutzerBerechtigungen(
+	Benutzer saveBenutzerAndBerechtigungen(
 		@Nonnull Benutzer benutzer,
-		boolean currentBerechtigungChanged
+		boolean currentBerechtigungChanged,
+		boolean nameVornameUpdated
 	);
 
 	/**

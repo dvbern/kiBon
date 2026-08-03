@@ -14,15 +14,19 @@
  */
 
 export enum TSZahlungsauftragsstatus {
+    ANGEFRAGT = 'ANGEFRAGT',
     ENTWURF = 'ENTWURF',
     AUSGELOEST = 'AUSGELOEST',
-    BESTAETIGT = 'BESTAETIGT'
+    BESTAETIGT = 'BESTAETIGT',
+    FAILED = 'FAILED'
 }
 
 export function getTSZahlungsauftragsstatusValues(): Array<TSZahlungsauftragsstatus> {
     return [
+        TSZahlungsauftragsstatus.ANGEFRAGT,
         TSZahlungsauftragsstatus.ENTWURF,
         TSZahlungsauftragsstatus.AUSGELOEST,
-        TSZahlungsauftragsstatus.BESTAETIGT
+        TSZahlungsauftragsstatus.BESTAETIGT,
+        TSZahlungsauftragsstatus.FAILED
     ];
 }

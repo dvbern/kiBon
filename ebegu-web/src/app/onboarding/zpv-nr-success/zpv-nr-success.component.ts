@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import {ZPVUpdateResult} from './ZPVUpdateResult';
 
@@ -6,6 +6,7 @@ import {ZPVUpdateResult} from './ZPVUpdateResult';
     selector: 'dv-zpv-nr-success',
     templateUrl: './zpv-nr-success.component.html',
     styleUrls: ['./zpv-nr-success.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ZpvNrSuccessComponent {

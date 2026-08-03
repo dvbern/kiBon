@@ -1,0 +1,21 @@
+diff --git a/node_modules/@uirouter/angular-hybrid/fesm2022/uirouter-angular-hybrid.mjs b/node_modules/@uirouter/angular-hybrid/fesm2022/uirouter-angular-hybrid.mjs
+index c414558..4d6bb45 100644
+--- a/node_modules/@uirouter/angular-hybrid/fesm2022/uirouter-angular-hybrid.mjs
++++ b/node_modules/@uirouter/angular-hybrid/fesm2022/uirouter-angular-hybrid.mjs
+@@ -1,6 +1,6 @@
+ import * as i0 from '@angular/core';
+ import { Input, Inject, Component, Injector, NgModule } from '@angular/core';
+-import { getAngularJSGlobal, getAngularLib, UpgradeModule, downgradeComponent } from '@angular/upgrade/static';
++import { getAngularJSGlobal, UpgradeModule, downgradeComponent } from '@angular/upgrade/static';
+ import * as i1 from '@uirouter/core';
+ import { UIRouter, StateRegistry, Resolvable, forEach } from '@uirouter/core';
+ import * as i2 from '@uirouter/angular';
+@@ -8,7 +8,7 @@ import { UIView, UIROUTER_MODULE_TOKEN, applyModuleConfig, makeChildProviders, U
+ import { Ng1ViewConfig } from '@uirouter/angularjs';
+ import { UIRouterRx } from '@uirouter/rx';
+ 
+-const getAngularJS = getAngularJSGlobal || getAngularLib;
++const getAngularJS = getAngularJSGlobal;
+ const angular = getAngularJS();
+ if (!angular) {
+     throw new Error('AngularJS not found on window.  https://github.com/ui-router/angular-hybrid/wiki/AngularJS-not-found-on-window');

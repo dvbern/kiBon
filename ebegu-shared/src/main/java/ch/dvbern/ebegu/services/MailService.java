@@ -44,7 +44,8 @@ import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 public interface MailService {
 
 	/**
-	 * Sendet die Email mit gegebenem MessageBody an die gegebene Adresse. Dadurch kann eine beliebige Message gemailt
+	 * Create eine Outbox Mail Eintritt in der Datenbank mit gegebenem MessageBody an die gegebene Adresse. Dadurch kann
+	 * eine beliebige Message gemailt
 	 * werden
 	 */
 	void toOutboxMail(
@@ -55,115 +56,125 @@ public interface MailService {
 	);
 
 	/**
-	 * Sendet eine Supportanfrage an die definierte Support-Email
+	 * Vorbereitet zu Senden eine Supportanfrage an die definierte Support-Email
 	 */
-	void sendSupportAnfrage(@Nonnull SupportAnfrageDTO supportAnfrageDTO);
+	void prepareToSendSupportAnfrage(
+		@Nonnull SupportAnfrageDTO supportAnfrageDTO
+	);
 
 	/**
-	 * Sendet eine Email mit der Information, dass alle Betreuungsplaetze bestaetigt wurden und das Gesuch freigegeben
+	 * Vorbereitet zu Senden eine Email mit der Information, dass alle Betreuungsplaetze bestaetigt wurden und das
+	 * Gesuch freigegeben
 	 * werden kann.
 	 */
-	void sendInfoBetreuungenBestaetigt(@Nonnull Gesuch gesuch);
+	void prepareToSendInfoBetreuungenBestaetigt(@Nonnull Gesuch gesuch);
 
 	/**
-	 * Sendet eine Email mit der Information, dass ein Betreuungsplatz abgelehnt wurde.
+	 * Vorbereitet zu Senden eine Email mit der Information, dass ein Betreuungsplatz abgelehnt wurde.
 	 */
-	void sendInfoBetreuungAbgelehnt(@Nonnull Betreuung betreuung);
+	void prepareToSendInfoBetreuungAbgelehnt(@Nonnull Betreuung betreuung);
 
 	/**
-	 * Sendet eine Email mit der Information, dass eine Anmeldung fuer ein Schulamt-Angebot ins Backend uebernommen
+	 * Vorbereitet zu Senden eine Email mit der Information, dass eine Anmeldung fuer ein Schulamt-Angebot ins Backend
+	 * uebernommen
 	 * wurde
 	 */
-	void sendInfoSchulamtAnmeldungTagesschuleUebernommen(
+	void prepareToSendInfoSchulamtAnmeldungTagesschuleUebernommen(
 		@Nonnull AbstractAnmeldung abstractAnmeldung
 	);
 
 	/**
-	 * Sendet eine Email mit der Information, dass eine Anmeldung fuer ein Schulamt-Angebot abgelehnt wurde.
+	 * Vorbereitet zu Senden eine Email mit der Information, dass eine Anmeldung fuer ein Schulamt-Angebot abgelehnt
+	 * wurde.
 	 */
-	void sendInfoSchulamtAnmeldungAbgelehnt(
+	void prepareToSendInfoSchulamtAnmeldungAbgelehnt(
 		@Nonnull AbstractAnmeldung abstractAnmeldung
 	);
 
 	/**
-	 * Sendet eine Email mit der Information, dass eine Anmeldung für eine Ferieninsel angenommen wurde
+	 * Vorbereitet zu Senden eine Email mit der Information, dass eine Anmeldung für eine Ferieninsel angenommen wurde
 	 */
-	void sendInfoSchulamtAnmeldungFerieninselUebernommen(
+	void prepareToSendInfoSchulamtAnmeldungFerieninselUebernommen(
 		@Nonnull AbstractAnmeldung abstractAnmeldung
 	);
 
 	/**
-	 * Sendet eine Email mit der Benachrichtigung, dass eine In-System Nachricht erhalten wurde.
+	 * Vorbereitet zu Senden eine Email mit der Benachrichtigung, dass eine In-System Nachricht erhalten wurde.
 	 */
-	void sendInfoMitteilungErhalten(@Nonnull Mitteilung mitteilung);
+	void prepareToSendInfoMitteilungErhalten(@Nonnull Mitteilung mitteilung);
 
 	/**
-	 * Sendet eine Email mit der Information, dass ein Gesuch Verfügt wurde.
+	 * Vorbereitet zu Senden eine Email mit der Information, dass ein Gesuch Verfügt wurde.
 	 */
-	void sendInfoVerfuegtGesuch(@Nonnull Gesuch gesuch);
+	void prepareToSendInfoVerfuegtGesuch(@Nonnull Gesuch gesuch);
 
 	/**
-	 * Sendet eine Email mit der Information, dass eine Mutation Verfügt wurde.
+	 * Vorbereitet zu Senden eine Email mit der Information, dass eine Mutation Verfügt wurde.
 	 */
-	void sendInfoVerfuegtMutation(@Nonnull Gesuch gesuch);
+	void prepareToSendInfoVerfuegtMutation(@Nonnull Gesuch gesuch);
 
 	/**
-	 * Sendet eine Email mit der Information, dass eine Mahnung versendet wurde.
+	 * Vorbereitet zu Senden eine Email mit der Information, dass eine Mahnung verVorbereitet zu Senden wurde.
 	 */
-	void sendInfoMahnung(@Nonnull Gesuch gesuch);
+	void prepareToSendInfoMahnung(@Nonnull Gesuch gesuch);
 
 	/**
-	 * Sendet eine Email mit der Information, dass ein Gesuch Verfügt wurde.
+	 * Vorbereitet zu Senden eine Email mit der Information, dass ein Gesuch Verfügt wurde.
 	 */
-	void sendWarnungGesuchNichtFreigegeben(
+	void prepareToSendWarnungGesuchNichtFreigegeben(
 		@Nonnull Gesuch gesuch,
 		int anzahlTageBisLoeschung
 	);
 
 	/**
-	 * Sendet eine Email mit der Information, dass ein Gesuch Verfügt wurde.
+	 * Vorbereitet zu Senden eine Email mit der Information, dass ein Gesuch Verfügt wurde.
 	 */
-	void sendWarnungFreigabequittungFehlt(
+	void prepareToSendWarnungFreigabequittungFehlt(
 		@Nonnull Gesuch gesuch,
 		int anzahlTageBisLoeschung
 	);
 
 	/**
-	 * Sendet eine Email mit der Information, dass ein Gesuch Verfügt wurde.
+	 * Vorbereitet zu Senden eine Email mit der Information, dass ein Gesuch Verfügt wurde.
 	 */
-	void sendInfoGesuchGeloescht(@Nonnull Gesuch gesuch);
+	void prepareToSendInfoGesuchGeloescht(@Nonnull Gesuch gesuch);
 
 	/**
-	 * Sendet eine Mail an den GS1 der übergebenen Gesuche, dass die übergebene Gesuchsperiode eröffnet wurde.
+	 * Vorbereitet zu Senden eine Mail an den GS1 der übergebenen Gesuche, dass die übergebene Gesuchsperiode eröffnet
+	 * wurde.
 	 */
-	Future<Integer> sendInfoFreischaltungGesuchsperiode(
+	Future<Integer> prepareToSendInfoFreischaltungGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiode,
 		@Nonnull List<Gesuch> gesucheToSendMail
 	);
 
 	/**
-	 * Sendet eine Mail an den GS1 des übergebenen Gesuchs, dass die übergebene Gesuchsperiode eröffnet wurde.
+	 * Vorbereitet zu Senden eine Mail an den GS1 des übergebenen Gesuchs, dass die übergebene Gesuchsperiode eröffnet
+	 * wurde.
 	 */
-	boolean sendInfoFreischaltungGesuchsperiode(
+	boolean prepareToSendInfoFreischaltungGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiode,
 		@Nonnull Gesuch gesuch
 	);
 
 	/**
-	 * Sendet unter gewissen Bedingungen pro Betreuung eine Email mit der Information, dass ein Betreuungsplatz
+	 * Vorbereitet zu Senden unter gewissen Bedingungen pro Betreuung eine Email mit der Information, dass ein
+	 * Betreuungsplatz
 	 * geloescht wurde.
 	 */
-	void sendInfoBetreuungGeloescht(@Nonnull List<Betreuung> betreuungen);
+	void prepareToSendInfoBetreuungGeloescht(
+		@Nonnull List<Betreuung> betreuungen
+	);
 
 	/**
-	 * Sendet eine Email mit der Information, dass eine Betreuung verfuegt wurde.
+	 * Vorbereitet zu Senden eine Email mit der Information, dass eine Betreuung verfuegt wurde.
 	 */
-	void sendInfoBetreuungVerfuegt(@Nonnull Betreuung betreuung);
+	void prepareToSendInfoBetreuungVerfuegt(@Nonnull Betreuung betreuung);
 
 	/**
-	 * Sendet eine E-Mail mit der Information, dass die Statistik erstellt wurde
+	 * Vorbereitet zu Senden eine E-Mail mit der Information, dass die Statistik erstellt wurde
 	 */
-	void sendInfoStatistikGeneriert(
+	void prepareToSendInfoStatistikGeneriert(
 		@Nonnull String receiverEmail,
 		@Nonnull String downloadurl,
 		@Nonnull Locale locale,
@@ -171,34 +182,54 @@ public interface MailService {
 	);
 
 	/**
+	 * Vorbereitet zu Senden eine E-Mail mit der Information, dass der Zahlungslauf erstellt wurde
+	 */
+	void prepareToSendInfoZahlungslaufGeneriert(
+		@Nonnull String receiverEmail,
+		@Nonnull String zahlungsUrl,
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	);
+
+	/**
+	 * Vorbereitet zu Senden eine E-Mail mit der Information, dass der Zahlungslauf erstellt wurde
+	 */
+	void prepareToSendInfoZahlungslaufNichtErfolgreichErstellt(
+		@Nonnull String receiverEmail,
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	);
+
+	/**
 	 * Sends an Einladungsemail to the given user according to the type of the Einladung
 	 */
-	void sendBenutzerEinladung(
+	void prepareToSendBenutzerEinladung(
 		@Nonnull Benutzer einladender,
 		@Nonnull Einladung einladung
 	);
 
 	/**
-	 * Sendet eine E-Mail an eine Institution mit der Info, dass es offene Pendenzen gibt
+	 * Vorbereitet zu Senden eine E-Mail an eine Institution mit der Info, dass es offene Pendenzen gibt
 	 */
-	void sendInfoOffenePendenzenNeuMitteilungInstitution(
+	void prepareToSendInfoOffenePendenzenNeuMitteilungInstitution(
 		@Nonnull InstitutionStammdaten institutionStammdaten,
 		boolean offenePendenzen,
 		boolean ungelesendeMitteilung
 	);
 
 	/**
-	 * Sendet eine Email mit der Information, dass eine Anmeldung fuer ein Schulamt-Angebot ins Backend uebernommen
+	 * Vorbereitet zu Senden eine Email mit der Information, dass eine Anmeldung fuer ein Schulamt-Angebot ins Backend
+	 * uebernommen
 	 * wurde
 	 */
-	void sendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
+	void prepareToSendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
 		@Nonnull AbstractAnmeldung abstractAnmeldung
 	);
 
 	/**
-	 * Sendet eine Email mit der Information, dass ein Angebot für eine Gemeinde aktiviert wurde
+	 * Vorbereitet zu Senden eine Email mit der Information, dass ein Angebot für eine Gemeinde aktiviert wurde
 	 */
-	void sendInfoGemeindeAngebotAktiviert(
+	void prepareToSendInfoGemeindeAngebotAktiviert(
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull GemeindeAngebotTyp angebot
 	);
@@ -206,48 +237,49 @@ public interface MailService {
 	/**
 	 * schickt eine email an den Verantwortlichen Tagesschule und informiert, dass das Gesuch verfuegt wurde
 	 */
-	void sendInfoGesuchVerfuegtVerantwortlicherTS(
+	void prepareToSendInfoGesuchVerfuegtVerantwortlicherTS(
 		@Nonnull Gesuch gesuch,
 		@Nonnull Benutzer verantwortlicherTS
 	);
 
 	/**
-	 * Sendet eine Email mit der Informatiom, dass ein Ruckforderungformular bei der Kanton geprueft wurde
+	 * Vorbereitet zu Senden eine Email mit der Informatiom, dass ein Ruckforderungformular bei der Kanton geprueft
+	 * wurde
 	 */
 
-	void sendInfoLastenausgleichGemeinde(
+	void prepareToSendInfoLastenausgleichGemeinde(
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull Lastenausgleich lastenausgleich
 	);
 
-	void sendInfoSchulamtAnmeldungStorniert(
+	void prepareToSendInfoSchulamtAnmeldungStorniert(
 		AbstractAnmeldung abstractAnmeldung
 	);
 
-	void sendInfoLATSAntragZurueckAnGemeinde(
+	void prepareToSendInfoLATSAntragZurueckAnGemeinde(
 		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer wiederEroeffnet
 	);
 
-	void sendInitGSZPVNr(
+	void prepareToSendInitGSZPVNr(
 		@Nonnull String ssoInitURL,
 		GesuchstellerContainer gesuchstellerContainer,
 		@Nonnull String email,
 		String korrespondenzSprache
 	);
 
-	void sendInfoAuszahlungsdatenChanged(
+	void prepareToSendInfoAuszahlungsdatenChanged(
 		InstitutionStammdaten institutionStammdaten,
 		@Nonnull String email
 	);
 
-	void sendInfoLastenausgleichProzessBeendet(
+	void prepareToSendInfoLastenausgleichProzessBeendet(
 		@Nonnull String jahr,
 		@Nonnull String receiverEmail,
 		boolean isProcessSuccessfull,
 		@Nonnull Mandant mandant
 	);
 
-	void sendInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
+	void prepareToSendInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
 		@Nonnull Benutzer benutzer,
 		boolean offenePendenzen,
 		boolean ungelesendeMitteilung,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 /**
@@ -26,6 +26,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     selector: 'dv-ng-three-button-dialog',
     templateUrl: './dv-ng-three-button-dialog.template.html',
     styleUrls: ['./dv-ng-three-button-dialog.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvNgThreeButtonDialogComponent {

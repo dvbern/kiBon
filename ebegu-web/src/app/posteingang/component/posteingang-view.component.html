@@ -31,7 +31,6 @@
                         <i class="fa fa-undo"></i>
                         {{ 'FILTER_ZURUECKSETZEN' | translate }}
                     </button>
-
                     @if (showAlleMutationenBearbeitenButton()) {
                         <button
                             class="dv-btn posteingang-muta-bearbeiten"
@@ -87,7 +86,6 @@
                             }}</span>
                         </mat-cell>
                     </ng-container>
-
                     <!-- Gemeinde -->
                     <ng-container matColumnDef="gemeinde">
                         <mat-header-cell
@@ -105,7 +103,6 @@
                             }}</span>
                         </mat-cell>
                     </ng-container>
-
                     <!-- Fall-Nummer -->
                     <ng-container matColumnDef="fallNummer">
                         <mat-header-cell
@@ -131,7 +128,6 @@
                             >
                         </mat-cell>
                     </ng-container>
-
                     <!-- Familie -->
                     @if (!isSozialdienst()) {
                         <ng-container matColumnDef="familienName">
@@ -157,7 +153,6 @@
                             </mat-cell>
                         </ng-container>
                     }
-
                     <!-- Betreff -->
                     <ng-container matColumnDef="subject">
                         <mat-header-cell
@@ -173,7 +168,6 @@
                             }}</span></mat-cell
                         >
                     </ng-container>
-
                     <!-- Datum -->
                     <ng-container matColumnDef="sentDatum">
                         <mat-header-cell
@@ -191,7 +185,6 @@
                             ></mat-cell
                         >
                     </ng-container>
-
                     <!-- An -->
                     @if (!isSozialdienstOrInstitution()) {
                         <ng-container matColumnDef="empfaenger">
@@ -212,7 +205,6 @@
                             </mat-cell>
                         </ng-container>
                     }
-
                     <!-- Amt -->
                     @if (!isSozialdienstOrInstitution()) {
                         <ng-container matColumnDef="empfaengerVerantwortung">
@@ -231,7 +223,6 @@
                             </mat-cell>
                         </ng-container>
                     }
-
                     <!-- Status -->
                     <ng-container matColumnDef="mitteilungStatus">
                         <mat-header-cell
@@ -250,7 +241,6 @@
                             <div class="flex-fill"></div>
                         </mat-cell>
                     </ng-container>
-
                     <!-- Actions / Buttons -->
                     <ng-container matColumnDef="actions">
                         <mat-header-cell *matHeaderCellDef>
@@ -317,7 +307,7 @@
                             }
                         </mat-cell>
                     </ng-container>
-
+                    <!-- filter row -->
                     <!-- Von -->
                     <ng-container matColumnDef="sender-filter">
                         <mat-header-cell *matHeaderCellDef="let column">
@@ -330,7 +320,6 @@
                             </mat-form-field>
                         </mat-header-cell>
                     </ng-container>
-
                     <!-- Gemeinde -->
                     <ng-container matColumnDef="gemeinde-filter">
                         <mat-header-cell *matHeaderCellDef="let column">
@@ -373,7 +362,6 @@
                             </mat-form-field>
                         </mat-header-cell>
                     </ng-container>
-
                     <!-- Familie -->
                     <ng-container matColumnDef="familienName-filter">
                         <mat-header-cell *matHeaderCellDef="let column">
@@ -386,7 +374,6 @@
                             </mat-form-field>
                         </mat-header-cell>
                     </ng-container>
-
                     <!-- Betreff -->
                     <ng-container matColumnDef="subject-filter">
                         <mat-header-cell *matHeaderCellDef="let column">
@@ -399,7 +386,6 @@
                             </mat-form-field>
                         </mat-header-cell>
                     </ng-container>
-
                     <!-- Datum -->
                     <ng-container matColumnDef="sentDatum-filter">
                         <mat-header-cell *matHeaderCellDef="let column">
@@ -412,7 +398,6 @@
                             </mat-form-field>
                         </mat-header-cell>
                     </ng-container>
-
                     <!-- An -->
                     @if (!isSozialdienstOrInstitution()) {
                         <ng-container
@@ -435,7 +420,6 @@
                             </mat-header-cell>
                         </ng-container>
                     }
-
                     <!-- Verantwortung -->
                     @if (!isSozialdienstOrInstitution()) {
                         <ng-container
@@ -470,7 +454,6 @@
                             </mat-header-cell>
                         </ng-container>
                     }
-
                     <!-- Status -->
                     <ng-container matColumnDef="mitteilungStatus-filter">
                         <mat-header-cell *matHeaderCellDef="let column">
@@ -500,12 +483,10 @@
                             </mat-form-field>
                         </mat-header-cell>
                     </ng-container>
-
                     <!-- Actions / Buttons -->
                     <ng-container matColumnDef="actions-filter">
                         <mat-header-cell *matHeaderCellDef></mat-header-cell>
                     </ng-container>
-
                     <mat-header-row
                         *matHeaderRowDef="displayedColumns"
                         class="dv-table-mat-header-row"
@@ -514,6 +495,7 @@
                         class="dv-table-mat-header-row"
                         *matHeaderRowDef="filterColumns"
                     ></mat-header-row>
+                    <!-- data -->
                     <mat-row
                         *matRowDef="
                             let element;
@@ -530,7 +512,6 @@
                         }"
                     ></mat-row>
                 </mat-table>
-
                 <div class="bottom-pagination">
                     <nav>
                         <ul class="pagination">

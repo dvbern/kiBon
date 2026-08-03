@@ -1,4 +1,10 @@
-import {Component, inject, Input, OnInit} from '@angular/core';
+import {
+    Component,
+    inject,
+    Input,
+    OnInit,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslatePipe} from '@ngx-translate/core';
 import {LoadingButtonDirective} from '../../../../app/shared/directive/loading-button.directive';
@@ -18,6 +24,7 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
 @Component({
     templateUrl: 'open-tabellarische-maske-button.component.html',
     imports: [LoadingButtonDirective, TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './open-tabellarische-maske-button.component.less'
 })
 export class OpenTabellarischeMaskeButtonComponent implements OnInit {

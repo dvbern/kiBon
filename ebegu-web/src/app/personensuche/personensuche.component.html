@@ -129,40 +129,40 @@ EWK Suche starten kann -->
                             ></dv-ewk-adresse>
                         </details>
                     }
-                    @for (beziehung of person.beziehungen; track beziehung) {
+                    @for (beziehung of person?.beziehungen; track beziehung) {
                         <details class="beziehung">
                             <summary>
-                                {{ beziehung.beziehungstyp | translate }}
+                                {{ beziehung?.beziehungstyp | translate }}
                             </summary>
                             <div class="beziehung-details">
                                 <div>
                                     <span class="ewk-label">{{
                                         'EWK_NACHNAME' | translate
                                     }}</span>
-                                    {{ beziehung.nachname }}
+                                    {{ beziehung?.nachname }}
                                 </div>
                                 <div>
                                     <span class="ewk-label">{{
                                         'EWK_VORNAME' | translate
                                     }}</span>
-                                    {{ beziehung.vorname }}
+                                    {{ beziehung?.vorname }}
                                 </div>
                                 <div>
                                     <span class="ewk-label">{{
                                         'EWK_GEBURTSDATUM' | translate
                                     }}</span>
                                     {{
-                                        beziehung.geburtsdatum?.toISOString()
+                                        beziehung?.geburtsdatum?.toISOString()
                                             | date: 'shortDate'
                                     }}
                                 </div>
-                                @if (beziehung.adresse) {
+                                @if (beziehung?.adresse) {
                                     <details class="adresse">
                                         <summary>
                                             {{ 'EWK_ADRESSE_TYP' | translate }}
                                         </summary>
                                         <dv-ewk-adresse
-                                            [adresse]="beziehung.adresse"
+                                            [adresse]="beziehung?.adresse"
                                         ></dv-ewk-adresse>
                                     </details>
                                 }

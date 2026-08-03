@@ -1,4 +1,10 @@
-import {Component, input, linkedSignal, output} from '@angular/core';
+import {
+    Component,
+    input,
+    linkedSignal,
+    output,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {TSDokumentGrundTyp} from '../../../models/enums/TSDokumentGrundTyp';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {TSEinstellung} from '../../einstellungen/TSEinstellung';
@@ -21,6 +27,7 @@ import {SharedModule} from '../../../app/shared/shared.module';
         SharedModule
     ],
     templateUrl: './dokumente-zu-uebernehmen-einstellung-group.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './dokumente-zu-uebernehmen-einstellung-group.component.css'
 })
 export class DokumenteZuUebernehmenEinstellungGroupComponent {

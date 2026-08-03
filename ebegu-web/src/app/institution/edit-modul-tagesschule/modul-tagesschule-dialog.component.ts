@@ -15,7 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, OnInit, ViewChild, inject} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ViewChild,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CONSTANTS} from '@models/constants';
@@ -30,6 +36,7 @@ import {TSModulTagesschuleName} from '../../../models/enums/TSModulTagesschuleNa
     selector: 'modul-tagesschule-dialog',
     templateUrl: './modul-tagesschule-dialog.template.html',
     styleUrls: ['./modul-tagesschule-dialog.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ModulTagesschuleDialogComponent implements OnInit {

@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 
@@ -31,6 +31,7 @@ export interface DvMultiSelectDialogItem {
     selector: 'dv-ng-multi-select-dialog',
     templateUrl: './dv-ng-multi-select-dialog.template.html',
     styleUrls: ['./dv-ng-multi-select-dialog.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvNgMultiSelectDialogComponent {

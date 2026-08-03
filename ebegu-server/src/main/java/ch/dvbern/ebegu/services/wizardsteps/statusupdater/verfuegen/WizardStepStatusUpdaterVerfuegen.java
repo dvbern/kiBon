@@ -181,12 +181,12 @@ public class WizardStepStatusUpdaterVerfuegen extends AbstractStatusUpdater {
 				if (gemeindeStammdaten.getBenachrichtigungBgEmailAuto()) {
 					if (!verfuegenWizardStep.getGesuch().isMutation()) {
 						// Erstgesuch
-						mailService.sendInfoVerfuegtGesuch(
+						mailService.prepareToSendInfoVerfuegtGesuch(
 							verfuegenWizardStep.getGesuch()
 						);
 					} else {
 						// Mutation
-						mailService.sendInfoVerfuegtMutation(
+						mailService.prepareToSendInfoVerfuegtMutation(
 							verfuegenWizardStep.getGesuch()
 						);
 					}

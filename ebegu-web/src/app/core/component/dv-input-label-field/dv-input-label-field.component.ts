@@ -28,7 +28,7 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-input-label-field',
     templateUrl: './dv-input-label-field.component.html',
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false
 })

@@ -507,7 +507,7 @@ public class GemeindeServiceBean extends AbstractBaseService implements
 		persistence.merge(gemeinde);
 
 		if (value) {
-			mailService.sendInfoGemeindeAngebotAktiviert(
+			mailService.prepareToSendInfoGemeindeAngebotAktiviert(
 				gemeinde,
 				GemeindeAngebotTyp.BETREUUNGSGUTSCHEIN
 			);
@@ -531,7 +531,7 @@ public class GemeindeServiceBean extends AbstractBaseService implements
 		persistence.merge(gemeinde);
 
 		if (value && !nurLats) {
-			mailService.sendInfoGemeindeAngebotAktiviert(
+			mailService.prepareToSendInfoGemeindeAngebotAktiviert(
 				gemeinde,
 				GemeindeAngebotTyp.TAGESSCHULE
 			);
@@ -544,7 +544,7 @@ public class GemeindeServiceBean extends AbstractBaseService implements
 		persistence.merge(gemeinde);
 
 		if (value) {
-			mailService.sendInfoGemeindeAngebotAktiviert(
+			mailService.prepareToSendInfoGemeindeAngebotAktiviert(
 				gemeinde,
 				GemeindeAngebotTyp.FERIENINSEL
 			);

@@ -14,7 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {
+    provideHttpClient,
+    withInterceptorsFromDi,
+    withXhr
+} from '@angular/common/http';
 import {
     ChangeDetectionStrategy,
     CUSTOM_ELEMENTS_SCHEMA,
@@ -151,7 +155,7 @@ describe('GemeindeAntraegeComponent', () => {
                     provide: ApplicationPropertyRsService,
                     useValue: applicationPropertyRSSpy
                 },
-                provideHttpClient(withInterceptorsFromDi())
+                provideHttpClient(withXhr(), withInterceptorsFromDi())
             ]
         })
             .overrideComponent(GemeindeAntraegeComponent, {

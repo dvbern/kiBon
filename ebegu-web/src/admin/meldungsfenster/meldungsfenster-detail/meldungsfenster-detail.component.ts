@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {TranslatePipe} from '@ngx-translate/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
 import {rxResource} from '@angular/core/rxjs-interop';
@@ -8,6 +8,7 @@ import {MeldungsfensterFormComponent} from '../meldungsfenster-form/meldungsfens
 @Component({
     imports: [MeldungsfensterFormComponent, TranslatePipe],
     templateUrl: 'meldungsfenster-detail.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: 'meldungsfenster-detail.component.less'
 })
 export class MeldungsfensterDetailComponent {

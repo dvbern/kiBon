@@ -187,7 +187,7 @@ export class ZahlungService {
         faelligkeitsdatum: moment.Moment,
         datumGeneriert: moment.Moment | undefined,
         auszahlungInZukunft: boolean
-    ): Observable<string> {
+    ): Observable<{workjobId: string}> {
         const params: any = {
             zahlungslaufTyp: zahlungslaufTyp.toString(),
             gemeindeId: gemeinde.id,
@@ -200,9 +200,17 @@ export class ZahlungService {
                 MomentUtil.momentToLocalDate(datumGeneriert);
         }
 
-        return this.http.get<string>(`${this.serviceURL}/create`, {
+        return this.http.get<{workjobId: string}>(`${this.serviceURL}/create`, {
             params
         });
+    }
+
+    public getZahlungsauftragStatus(
+        jobId: string
+    ): Observable<{status: string}> {
+        return this.http.get<{status: string}>(
+            `${this.serviceURL}/status/${jobId}`
+        );
     }
 
     public updateZahlungsauftrag(

@@ -371,4 +371,19 @@ public class KeycloakApi {
 	private static String getRealmName(Benutzer benutzer) {
 		return benutzer.getMandant().getMandantIdentifier().getRealmName();
 	}
+
+	/**
+	 * Updates the user's firstname and last name in Keycloak based on the provided user details.
+	 * This call is explicitly not asynchronous, as it is intended to be used within a transactional context.
+	 *
+	 * @param benutzer The user containing the updated information, such as first name and last name,
+	 * which will be applied to the corresponding user record in Keycloak.
+	 */
+	public void updateUser(Benutzer benutzer) {
+		var userResource = getUserResourceOptional(benutzer).orElseThrow();
+		var representation = userResource.toRepresentation();
+		representation.setFirstName(benutzer.getVorname());
+		representation.setLastName(benutzer.getNachname());
+		userResource.update(representation);
+	}
 }

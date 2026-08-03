@@ -15,7 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, ViewChild, inject} from '@angular/core';
+import {
+    Component,
+    ViewChild,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ZemisDialogDTO} from './zemisDialog.interface';
@@ -24,6 +29,7 @@ import {ZemisDialogDTO} from './zemisDialog.interface';
     selector: 'zemis-dialog',
     templateUrl: 'zemis-dialog.template.html',
     styleUrls: ['zemis-dialog.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ZemisDialogComponent {

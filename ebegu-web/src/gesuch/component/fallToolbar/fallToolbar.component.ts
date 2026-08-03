@@ -13,7 +13,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, Input, OnChanges, OnDestroy, inject} from '@angular/core';
+import {
+    Component,
+    Input,
+    OnChanges,
+    OnDestroy,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {StateService} from '@uirouter/core';
@@ -48,6 +55,7 @@ const LOG = LogFactory.createLog('FallToolbarComponent');
     selector: 'dv-fall-toolbar',
     templateUrl: './fallToolbar.template.html',
     styleUrls: ['./fallToolbar.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FallToolbarComponent implements OnChanges, OnDestroy {

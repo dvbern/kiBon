@@ -69,6 +69,10 @@ public class Zahlungsauftrag extends AbstractDateRangedEntity implements
 	@Column(nullable = false)
 	private LocalDateTime datumGeneriert; // Zeitpunkt, an welchem der Auftrag erstellt wurde, d.h. bis hierhin wurden Mutationen beruecksichtigt
 
+	@Nullable
+	@Column(nullable = true)
+	private LocalDateTime datumBeendet;
+
 	@NotNull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -194,6 +198,15 @@ public class Zahlungsauftrag extends AbstractDateRangedEntity implements
 
 	public void setHasNegativeZahlungen(@Nonnull Boolean hasNegativeZahlungen) {
 		this.hasNegativeZahlungen = hasNegativeZahlungen;
+	}
+
+	@Nullable
+	public LocalDateTime getDatumBeendet() {
+		return datumBeendet;
+	}
+
+	public void setDatumBeendet(@Nullable LocalDateTime datumBeendet) {
+		this.datumBeendet = datumBeendet;
 	}
 
 	public String getFilename() {

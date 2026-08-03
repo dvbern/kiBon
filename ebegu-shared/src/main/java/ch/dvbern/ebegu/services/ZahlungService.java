@@ -36,12 +36,19 @@ import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 public interface ZahlungService {
 
 	/**
-	 * Ermittelt alle im aktuellen Monat gueltigen Verfuegungen, sowie aller seit dem letzten Auftrag eingeganegenen
-	 * Mutationen.
-	 * Der Zahlungsauftrag hat den initialen Status ENTWURF
+	 * Vorbereitet einer Zahlungsauftrag fuer die Bearbeitung
+	 *
+	 * @param zahlungslaufTyp der Typ von Zahlungslauf
+	 * @param gemeindeId der Id des Gemeinde fuer dieser Zahlungslauf
+	 * @param datumFaelligkeit wann ist die Zahlung faellig
+	 * @param beschreibung die Beschreibung des Zahlungslauf
+	 * @param auszahlungInZukunft naechste Monat auch mitzahlen
+	 * @param datumGeneriert wann ist der Zahlungslauf generiert
+	 * @param mandant der Mandant die der Zahlungslauf beantragt hat
+	 * @return der neu erstellte Zahlungslauf
 	 */
 	@Nonnull
-	Zahlungsauftrag zahlungsauftragErstellen(
+	Zahlungsauftrag createEmptyZahlungsauftrag(
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
 		@Nonnull String gemeindeId,
 		@Nonnull LocalDate datumFaelligkeit,
@@ -49,6 +56,16 @@ public interface ZahlungService {
 		@Nonnull Boolean auszahlungInZukunft,
 		@Nonnull LocalDateTime datumGeneriert,
 		@Nonnull Mandant mandant
+	);
+
+	/**
+	 * Ermittelt alle im aktuellen Monat gueltigen Verfuegungen, sowie aller seit dem letzten Auftrag eingeganegenen
+	 * Mutationen.
+	 * Der Zahlungsauftrag bekommt am Ende des Prozess den Status ENTWURF
+	 */
+	@Nonnull
+	Zahlungsauftrag zahlungsauftragBearbeiten(
+		@Nonnull String zahlungsauftragId
 	);
 
 	/**
@@ -127,4 +144,11 @@ public interface ZahlungService {
 	 * Entfernt alle Zahlungspositionen des übergebenen Gesuchs
 	 */
 	void deleteZahlungspositionenOfGesuch(@Nonnull Gesuch gesuch);
+
+	/**
+	 * Set the Zahlungsstatus has failed
+	 *
+	 * @param zahlungsauftragId
+	 */
+	void setZahlungsauftragstatusHasFailed(String zahlungsauftragId);
 }

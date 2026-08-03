@@ -124,9 +124,9 @@ export class I18nServiceRSRest implements OnDestroy {
             mandant === MANDANTS.NONE
                 ? selectedLanguage
                 : `${selectedLanguage}${I18nServiceRSRest.LOCALE_SEPARATOR}${mandant.hostname}`;
-        if (gemeinde !== null) {
+        if (gemeinde != null) {
             locale = locale.concat(
-                `${I18nServiceRSRest.LOCALE_SEPARATOR}${gemeinde.bfsNummer}`
+                `${I18nServiceRSRest.LOCALE_SEPARATOR}${gemeinde?.bfsNummer}`
             );
         }
         return locale;

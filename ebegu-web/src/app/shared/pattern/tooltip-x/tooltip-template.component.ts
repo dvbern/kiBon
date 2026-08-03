@@ -15,13 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TranslatePipe} from '@ngx-translate/core';
 
 @Component({
     templateUrl: 'tooltip-template.component.html',
     imports: [TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.Eager,
     styles: `
         .ugly-button-row {
             align-items: end;

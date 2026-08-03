@@ -34,7 +34,7 @@ public enum WorkJobType {
 		WorkJobConstants.INKL_TS_GESUCHE,
 		WorkJobConstants.OHNE_ERNEUERUNGSGESUCHE,
 		WorkJobConstants.TEXT
-	);
+	), ZAHLUNGSLAUF();
 
 	List<String> paramNames = new ArrayList<>();
 

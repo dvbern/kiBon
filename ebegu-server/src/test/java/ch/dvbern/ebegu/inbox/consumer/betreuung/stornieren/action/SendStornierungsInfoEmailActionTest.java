@@ -73,7 +73,7 @@ class SendStornierungsInfoEmailActionTest extends EasyMockTestSupport {
 			.anyTimes();
 
 		// Wir müssen hier nur verifizieren, dass die Service-Methode richtig aufgerufen wird.
-		mailService.sendInfoBetreuungAbgelehnt(betreuung);
+		mailService.prepareToSendInfoBetreuungAbgelehnt(betreuung);
 		EasyMock.expectLastCall().once();
 
 		replayAll();

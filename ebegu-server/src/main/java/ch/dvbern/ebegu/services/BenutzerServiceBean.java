@@ -178,15 +178,30 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 
 	@Nonnull
 	@Override
-	public Benutzer saveBenutzerBerechtigungen(
+	public Benutzer saveBenutzerAndBerechtigungen(
 		@Nonnull Benutzer benutzer,
-		boolean currentBerechtigungChanged
+		boolean currentBerechtigungChanged,
+		boolean nameVornameUpdated
 	) {
 		requireNonNull(benutzer);
 		prepareBenutzerForSave(benutzer, currentBerechtigungChanged);
 		authorizer.checkWriteAuthorization(benutzer);
 		checkSuperuserRoleZuteilung(benutzer);
-		return persistence.merge(benutzer);
+		Benutzer mergedBenutzer = persistence.merge(benutzer);
+		if (currentBerechtigungChanged) {
+			//do the mitarbeiter update in KC if needed
+			if (mergedBenutzer.getCurrentBerechtigung()
+				.getRole()
+				.equals(UserRole.GESUCHSTELLER)) {
+				keycloakApi.deleteMitarbeiterAccessBenutzerRole(mergedBenutzer);
+			} else {
+				keycloakApi.addMitarbeiterAccessBenutzerRole(mergedBenutzer);
+			}
+		}
+		if (nameVornameUpdated) {
+			keycloakApi.updateUser(mergedBenutzer);
+		}
+		return mergedBenutzer;
 	}
 
 	@Nonnull
@@ -247,7 +262,7 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 	}
 
 	private void sendBenutzerEinladung(Einladung einladung) {
-		mailService.sendBenutzerEinladung(
+		mailService.prepareToSendBenutzerEinladung(
 			principalBean.getBenutzer(),
 			einladung
 		);

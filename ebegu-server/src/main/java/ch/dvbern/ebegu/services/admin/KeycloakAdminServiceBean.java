@@ -106,42 +106,4 @@ public class KeycloakAdminServiceBean {
 			throw new KeycloakAdminServiceException(e);
 		}
 	}
-
-	/**
-	 * Removes the Keycloak realm role {@link RealmRoles#MITARBEITER_ACCESS} from the given user.
-	 * This role is required for accessing the "Local Login" feature.
-	 *
-	 * @param externalUuid The external UUID of the user to remove the role for. This is the ID the user is
-	 * identified by in Keycloak.
-	 * @return If the role has been successfully removed from the given user.
-	 */
-	@Asynchronous
-	@SuppressWarnings("squid:S2139") // The rule says: Either log this exception and handle it, or rethrow it with some contextual information.
-	// But this is exactly what we're doing here. Looks like a false positive to me.
-	public Future<Boolean> deleteAccessMitarbeiterRechte(Benutzer benutzer) {
-		try {
-
-			if (keycloakApi.deleteMitarbeiterAccessBenutzerRole(benutzer)) {
-				LOGGER.info(
-					"Removed role MITARBEITER_ACCESS from user {}",
-					benutzer.getUsername()
-				);
-				return CompletableFuture.completedFuture(true);
-			}
-
-			LOGGER.warn(
-				"Role MITARBEITER_ACCESS could not be removed from user {}, because this user does not exist in Keycloak.",
-				benutzer.getUsername()
-			);
-			return CompletableFuture.completedFuture(false);
-
-		} catch (RuntimeException e) {
-			LOGGER.error(
-				"Trying to remove role MITARBEITER_ACCESS from user {} has failed!",
-				benutzer.getUsername(),
-				e
-			);
-			throw new KeycloakAdminServiceException(e);
-		}
-	}
 }

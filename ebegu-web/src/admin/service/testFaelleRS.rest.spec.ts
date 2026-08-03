@@ -16,7 +16,8 @@
 import {
     HttpClient,
     provideHttpClient,
-    withInterceptorsFromDi
+    withInterceptorsFromDi,
+    withXhr
 } from '@angular/common/http';
 import {TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
@@ -33,7 +34,7 @@ describe('TestFaelleRS', () => {
             imports: [],
             providers: [
                 {provide: HttpClient, useValue: mockHttpClient},
-                provideHttpClient(withInterceptorsFromDi())
+                provideHttpClient(withXhr(), withInterceptorsFromDi())
             ]
         });
         testFaelleRS = TestBed.inject(TestFaelleRS);

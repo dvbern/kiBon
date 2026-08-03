@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DvNgHelpDialogComponent} from '../../../../gesuch/dialog/dv-ng-help-dialog/dv-ng-help-dialog.component';
 
@@ -21,6 +21,7 @@ import {DvNgHelpDialogComponent} from '../../../../gesuch/dialog/dv-ng-help-dial
     selector: 'dv-helpmenu',
     templateUrl: './dv-helpmenu.component.html',
     styleUrls: ['./dv-helpmenu.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvHelpmenuComponent {

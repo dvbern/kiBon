@@ -79,7 +79,7 @@ public class ZpvService {
 		)
 			.toString();
 
-		mailService.sendInitGSZPVNr(
+		mailService.prepareToSendInitGSZPVNr(
 			loginInitURL,
 			gesuchstellerContainer,
 			email,

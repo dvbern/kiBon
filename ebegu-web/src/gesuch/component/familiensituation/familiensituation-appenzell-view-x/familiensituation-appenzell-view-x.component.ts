@@ -1,4 +1,9 @@
-import {Component, OnInit, inject} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
 import {LogFactory} from '@utils/log';
@@ -18,6 +23,7 @@ const LOG = LogFactory.createLog('FamiliensituationAppenzellViewXComponent');
     selector: 'dv-familiensituation-appenzell-view-x',
     templateUrl: './familiensituation-appenzell-view-x.component.html',
     styleUrls: ['./familiensituation-appenzell-view-x.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FamiliensituationAppenzellViewXComponent

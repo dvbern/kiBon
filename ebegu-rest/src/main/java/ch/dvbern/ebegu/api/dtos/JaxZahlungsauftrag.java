@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -53,6 +54,10 @@ public class JaxZahlungsauftrag extends JaxAbstractDateRangedDTO {
 	@NotNull
 	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime datumGeneriert;
+
+	@Nullable
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
+	private LocalDateTime datumBeendet;
 
 	@NotNull
 	private ZahlungauftragStatus status;
@@ -144,5 +149,14 @@ public class JaxZahlungsauftrag extends JaxAbstractDateRangedDTO {
 
 	public void setGemeinde(@Nonnull JaxGemeinde gemeinde) {
 		this.gemeinde = gemeinde;
+	}
+
+	@Nullable
+	public LocalDateTime getDatumBeendet() {
+		return datumBeendet;
+	}
+
+	public void setDatumBeendet(@Nullable LocalDateTime datumBeendet) {
+		this.datumBeendet = datumBeendet;
 	}
 }

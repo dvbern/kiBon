@@ -15,7 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject, viewChild} from '@angular/core';
+import {
+    Component,
+    inject,
+    viewChild,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {TSSupportAnfrage} from '../../../models/TSSupportAnfrage';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
@@ -31,6 +36,7 @@ import {from} from 'rxjs';
     selector: 'dv-ng-support-dialog',
     templateUrl: './dv-ng-support-dialog.template.html',
     styleUrls: ['./dv-ng-support-dialog.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvNgSupportDialogComponent {

@@ -16,7 +16,7 @@
  */
 
 import {Clipboard} from '@angular/cdk/clipboard';
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {SharedModule} from '../../../app/shared/shared.module';
 import {TSInstitution} from '../../../models/entity/TSInstitution';
@@ -26,6 +26,7 @@ import {TSModulTagesschuleGroup} from '../../../models/entity/TSModulTagesschule
     selector: 'lib-modul-tagesschule-dialog',
     templateUrl: './info-schnittstelle-dialog.template.html',
     styleUrls: ['./info-schnittstelle-dialog.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [SharedModule]
 })
 export class InfoSchnittstelleDialogComponent {

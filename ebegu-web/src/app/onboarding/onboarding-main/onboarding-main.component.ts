@@ -15,7 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject, OnInit} from '@angular/core';
+import {
+    Component,
+    inject,
+    OnInit,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {MandantLogoWhiteNameVisitor} from '@models/mandant';
 import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
@@ -29,6 +34,7 @@ const LOG = LogFactory.createLog('OnboardingMainComponent');
     selector: 'dv-onboarding-main',
     templateUrl: './onboarding-main.component.html',
     styleUrls: ['./onboarding-main.component.less', '../onboarding.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OnboardingMainComponent implements OnInit {

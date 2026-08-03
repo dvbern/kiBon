@@ -28,7 +28,7 @@ const LOG = LogFactory.createLog('LangageSelectorComponent');
     selector: 'dv-language-selector',
     templateUrl: './language-selector.component.html',
     styleUrls: ['./language-selector.component.less'],
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class LanguageSelectorComponent {

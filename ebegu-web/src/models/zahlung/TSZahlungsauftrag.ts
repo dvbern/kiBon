@@ -31,6 +31,7 @@ export class TSZahlungsauftrag extends TSAbstractDateRangedEntity {
     public hasNegativeZahlungen: boolean = false;
     public gemeinde: TSGemeinde;
     public zahlungen: Array<TSZahlung>;
+    public datumBeendet: moment.Moment;
 
     public constructor(
         zahlungslaufTyp?: TSZahlungslaufTyp,
@@ -42,7 +43,8 @@ export class TSZahlungsauftrag extends TSAbstractDateRangedEntity {
         betragTotalAuftrag?: number,
         hasNegativeZahlungen?: boolean | false,
         gemeinde?: TSGemeinde,
-        zahlungen?: Array<TSZahlung>
+        zahlungen?: Array<TSZahlung>,
+        datumBeendet?: moment.Moment
     ) {
         super(gueltigkeit);
         this.zahlungslaufTyp = zahlungslaufTyp;
@@ -54,5 +56,6 @@ export class TSZahlungsauftrag extends TSAbstractDateRangedEntity {
         this.hasNegativeZahlungen = hasNegativeZahlungen;
         this.gemeinde = gemeinde;
         this.zahlungen = zahlungen;
+        this.datumBeendet = datumBeendet;
     }
 }

@@ -1,5 +1,9 @@
 /* eslint-disable  */
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {
+    provideHttpClient,
+    withInterceptorsFromDi,
+    withXhr
+} from '@angular/common/http';
 import {TestBed} from '@angular/core/testing';
 import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {CookieService} from 'ngx-cookie-service';
@@ -58,7 +62,7 @@ describe('MandantService', () => {
                     useValue: authServiceSpy
                 },
                 CookieService,
-                provideHttpClient(withInterceptorsFromDi())
+                provideHttpClient(withXhr(), withInterceptorsFromDi())
             ]
         }).overrideProvider(WindowRef, {useValue: windowRefSpy});
         service = TestBed.inject(MandantService);

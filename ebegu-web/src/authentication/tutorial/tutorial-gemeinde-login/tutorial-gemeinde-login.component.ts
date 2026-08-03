@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Input, inject} from '@angular/core';
+import {Component, Input, inject, ChangeDetectionStrategy} from '@angular/core';
 import {TargetState} from '@uirouter/core';
 import {KiBonMandant} from '@models/mandant';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
@@ -25,6 +25,7 @@ import {MandantService} from '@utils/mandant';
     selector: 'dv-tutorial-gemeinde-login',
     templateUrl: './tutorial-gemeinde-login.component.html',
     styleUrls: ['../tutorial-login.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TutorialGemeindeLoginComponent {

@@ -15,7 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, OnInit, inject} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TSEinstellungenTagesschule} from '../../../../models/entity/TSEinstellungenTagesschule';
 import {TSInstitutionStammdaten} from '../../../../models/entity/TSInstitutionStammdaten';
@@ -27,6 +32,7 @@ import {InstitutionStammdatenRS} from '../../../core/service/institutionStammdat
     selector: 'dv-ng-gemeinde-dialog',
     templateUrl: './dialog-import-from-other-institution.template.html',
     styleUrls: ['./dialog-import-from-other-institution.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DialogImportFromOtherInstitutionComponent implements OnInit {

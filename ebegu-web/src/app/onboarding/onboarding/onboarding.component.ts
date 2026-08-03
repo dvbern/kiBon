@@ -15,7 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Input, OnDestroy, OnInit, inject} from '@angular/core';
+import {
+    Component,
+    Input,
+    OnDestroy,
+    OnInit,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
@@ -30,6 +37,7 @@ import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.se
     selector: 'dv-onboarding',
     templateUrl: './onboarding.component.html',
     styleUrls: ['./onboarding.component.less', '../onboarding.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OnboardingComponent implements OnInit, OnDestroy {

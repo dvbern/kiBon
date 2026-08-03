@@ -141,7 +141,7 @@ public class MahnungServiceBean extends AbstractBaseService implements
 		}
 		// Mail senden
 		try {
-			mailService.sendInfoMahnung(gesuch);
+			mailService.prepareToSendInfoMahnung(gesuch);
 		} catch (Exception e) {
 			LOG.error(
 				"Mail InfoMahnung konnte nicht verschickt werden fuer Gesuch {}",

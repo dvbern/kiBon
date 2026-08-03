@@ -568,6 +568,13 @@ public class ApplicationPropertyResource {
 			)
 		);
 
+		applicationPropertyContext.setBenutzendeEditNameAllowed(
+			getApplicationProperty(
+				mandant,
+				ApplicationPropertyKey.BENUTZENDE_EDIT_NAME_ALLOWED
+			)
+		);
+
 		JaxPublicAppConfig pubAppConf = applicationPropertyContext
 			.buildJaxPublicAppConfig();
 		return Response.ok(pubAppConf).build();

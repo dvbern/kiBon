@@ -44,7 +44,7 @@
                     <!-- Folgegesuch: Info, dass Daten uebernommen wurden -->
                     <div
                         *dvNgShowElement="
-                            getGesuchModel().isFolgegesuch();
+                            getGesuchModel()?.isFolgegesuch();
                             roles: getGesuchstellerOnlyRoles()
                         "
                         class="well well-status-warten"

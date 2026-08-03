@@ -8,7 +8,7 @@
 <#-- @ftlvariable name="gemeindeNamenMitteilung" type="java.lang.String" -->
 From: ${configuration.senderAddress}
 To: ${empfaengerMail}
-Subject: <@base64Header>kiBon <#if configuration.isDevmode>Testsystem / Système de test</#if> –  <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung> neue Mitteilungen</#if> / <#if offenePendenzen>dossiers en suspens</#if><#if ungelesendeMitteilung && offenePendenzen> et</#if><#if ungelesendeMitteilung> nouveau message</#if></@base64Header>
+Subject: <@base64Header>kiBon <#if configuration.isDevmode>Testsystem / Système de test</#if> –  <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung><#if offenePendenzen> neue<#else> Neue</#if> Mitteilungen</#if> / <#if offenePendenzen>dossiers en suspens</#if><#if ungelesendeMitteilung && offenePendenzen> et</#if><#if ungelesendeMitteilung><#if offenePendenzen> nouveau<#else> Nouveau</#if> message</#if></@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -16,7 +16,7 @@ Content-Type: text/html;charset=utf-8
 ${templateConfiguration.mailCss}
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>kiBon <#if configuration.isDevmode>Testsystem / Système de test</#if>– <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung> neue Mitteilungen</#if>  / <#if offenePendenzen>dossiers en suspens</#if><#if ungelesendeMitteilung && offenePendenzen> et</#if><#if ungelesendeMitteilung> nouveau message</#if></title>
+    <title>kiBon <#if configuration.isDevmode>Testsystem / Système de test</#if>– <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung><#if offenePendenzen> neue<#else> Neue</#if> Mitteilungen</#if>  / <#if offenePendenzen>dossiers en suspens</#if><#if ungelesendeMitteilung && offenePendenzen> et</#if><#if ungelesendeMitteilung><#if offenePendenzen> nouveau<#else> Nouveau</#if> message</#if></title>
 
 </head>
 

@@ -280,6 +280,14 @@ public enum ApplicationPropertyKey {
 	@BooleanEinstellung MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2,
 
 	/**
+	 * Default = true
+	 * When activated, the user name and surname can be edited. When edited, the change is also propagated to keycloak.
+	 * It is recommended to deactivate this feature for mandants where their keycloak realms uses an external identity
+	 * provider.
+	 */
+	@BooleanEinstellung BENUTZENDE_EDIT_NAME_ALLOWED,
+
+	/**
 	 * We can switch for everysteps to the new angular non javascript implemention:
 	 * True => new version when provided
 	 * False => old version

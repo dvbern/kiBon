@@ -33,7 +33,7 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 @Component({
     selector: 'dv-steuerveranlagung-gemeinsam',
     templateUrl: './steuerveranlagung-gemeinsam.component.html',
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false
 })

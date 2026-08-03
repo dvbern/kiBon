@@ -290,6 +290,7 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
     GEMEINDE_KENNZAHLEN_REMINDER_ACTIVATED: createConfiguration(Boolean),
     DOKUMENT_ZU_UEBERNEHMEN_TYPS: createConfiguration(TSDokumentTyp),
     BENACHRICHTIGUNG_GEMEINDE_AKTIV: createConfiguration(Boolean),
+    BENUTZENDE_EDIT_NAME_ALLOWED: createConfiguration(Boolean),
     ABGELOESTE_VIEW_ANTRAGSTELLER: createConfiguration(Boolean),
     ABGELOESTE_VIEW_FAMILIENSITUATION: createConfiguration(Boolean),
     ABGELOESTE_VIEW_KINDER_LIST: createConfiguration(Boolean),

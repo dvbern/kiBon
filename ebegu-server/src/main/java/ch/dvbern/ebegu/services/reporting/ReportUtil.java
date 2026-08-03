@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -19,8 +21,10 @@ import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.oss.lib.excelmerger.ExcelMerger;
 import org.apache.commons.lang3.Validate;
+import org.apache.poi.ss.formula.SheetNameFormatter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -132,6 +136,8 @@ public final class ReportUtil {
 	) {
 		Map<CellStyle, CellStyle> styleCache = new HashMap<>();
 
+		copyTemplateNames(workbook, templateSheet, newSheet);
+
 		// Copy column widths
 		for (int i = 0; i <= templateSheet.getRow(0).getLastCellNum(); i++) {
 			newSheet.setColumnWidth(i, templateSheet.getColumnWidth(i));
@@ -207,18 +213,66 @@ public final class ReportUtil {
 	}
 
 	/**
-	 * excel working sheets are not allowed to be named the same.
-	 * this method makes sure, same names won't occur
+	 * Copies defined names (such as named ranges or formulas) from a template sheet to a new sheet within the same
+	 * workbook.
+	 * The method adapts the formulas to reference the new sheet instead of the template sheet.
 	 *
-	 * @param workbook
-	 * @param baseName
-	 * @return
+	 * @param workbook the workbook containing the sheets and defined names
+	 * @param templateSheet the template sheet whose defined names will be copied
+	 * @param newSheet the target sheet where the copied names will refer
+	 */
+	private static void copyTemplateNames(
+		Workbook workbook,
+		Sheet templateSheet,
+		Sheet newSheet
+	) {
+		List<Name> existingNames = new ArrayList<>(workbook.getAllNames());
+		existingNames.stream()
+			.filter(
+				name -> name.getSheetIndex()
+					== workbook.getSheetIndex(templateSheet)
+			)
+			.forEach(name -> {
+				Name localName = workbook.createName();
+				localName.setNameName(name.getNameName());
+				var replaced = name.getRefersToFormula()
+					.replace(
+						templateSheet.getSheetName() + "!",
+						SheetNameFormatter.format(newSheet.getSheetName()) + "!"
+					);
+				localName.setRefersToFormula(replaced);
+				localName.setComment(name.getComment());
+				localName.setFunction(name.isFunctionName());
+				localName.setSheetIndex(workbook.getSheetIndex(newSheet));
+			});
+	}
+
+	/**
+	 * <p>
+	 * Creates a unique sheet name within a workbook by ensuring the proposed name
+	 * does not conflict with existing sheet names. If the proposed name is too long,
+	 * it is truncated. If after truncating a sheet with the proposed name already exists,
+	 * it will generate a version with a numerical suffix.
+	 * </p>
+	 *
+	 * <p>
+	 * To avoid running into the POI-bug, where names with apostrophes in sheet names are not parsed correctly
+	 * when evaluating formulars, apostrophes are replaced with aigus. You can find more information about this bug in
+	 * the kiBon-Task, the linked bugzilla bug or the test of this class.
+	 * </p>
+	 *
+	 * @param workbook the {@code Workbook} instance where the sheet will be created
+	 * @param proposedName the desired name for the sheet
+	 * @return a unique and valid sheet name that can safely be used in the provided workbook
+	 * @see <a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=68305">Bugzilla-Bug-68305</a>
+	 *
 	 */
 	public static String createUniqueSheetName(
 		Workbook workbook,
-		String baseName
+		String proposedName
 	) {
-		String safeName = WorkbookUtil.createSafeSheetName(baseName);
+		String replacedAiguName = proposedName.replace('\'', '´');
+		String safeName = WorkbookUtil.createSafeSheetName(replacedAiguName);
 		final int MAX_LEN = 31;
 
 		// truncate if name is too long
@@ -243,5 +297,26 @@ public final class ReportUtil {
 			return name;
 		}
 		return name.substring(0, maxLen);
+	}
+
+	/**
+	 * Removes the specified sheet from the workbook and deletes all defined names
+	 * associated with the sheet.
+	 *
+	 * @param workbook the workbook from which the sheet will be removed
+	 * @param sheet the sheet to be removed from the workbook
+	 *
+	 * @throws IllegalArgumentException if the sheet is not found in the workbook
+	 */
+	public static void removeSheet(Workbook workbook, Sheet sheet) {
+		if (workbook.getSheetIndex(sheet) < 0) {
+			throw new IllegalArgumentException("Sheet not found in workbook");
+		}
+		String sheetName = sheet.getSheetName();
+		workbook.removeSheetAt(workbook.getSheetIndex(sheet));
+		workbook.getAllNames()
+			.stream()
+			.filter(n -> n.getSheetName().equals(sheetName))
+			.forEach(workbook::removeName);
 	}
 }

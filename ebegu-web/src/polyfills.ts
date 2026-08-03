@@ -17,8 +17,6 @@
 /***************************************************************************************************
  * BROWSER POLYFILLS
  */
-import 'core-js/es7/array';
-import 'core-js/es7/object';
 // eslint-disable-next-line import/no-unassigned-import
 import 'zone.js'; // Included with Angular CLI.
 

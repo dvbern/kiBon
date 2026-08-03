@@ -87,6 +87,7 @@ public class ApplicationPropertyContext {
 	BigDecimal ferienbetreuungAutoZweitpruefungDeConverted;
 	BigDecimal ferienbetreuungAutoZweitpruefungFrConverted;
 	ApplicationProperty benachrichtigungGemeindeEnabled;
+	ApplicationProperty benutzendeEditNameAllowed;
 
 	public JaxPublicAppConfig buildJaxPublicAppConfig()
 		throws EbeguRuntimeException {
@@ -194,6 +195,9 @@ public class ApplicationPropertyContext {
 			)
 			.benachrichtigungGemeindeEnabled(
 				stringToBool(benachrichtigungGemeindeEnabled.getValue())
+			)
+			.benutzendeEditNameAllowed(
+				stringToBool(benutzendeEditNameAllowed.getValue())
 			)
 			.build();
 	}

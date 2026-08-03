@@ -3,5 +3,8 @@
     "compilerOptions": {
         "target": "es5",
         "moduleResolution": "bundler"
+    },
+    "angularCompilerOptions": {
+        "strictTemplates": false
     }
 }

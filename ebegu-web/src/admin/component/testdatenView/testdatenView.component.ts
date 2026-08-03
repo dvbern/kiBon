@@ -13,7 +13,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, OnInit, inject} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import moment from 'moment';
 import {firstValueFrom, Observable} from 'rxjs';
@@ -45,6 +50,7 @@ const LOG = LogFactory.createLog('TestdatenView');
     selector: 'dv-testdaten-view',
     templateUrl: './testdatenView.component.html',
     styleUrls: ['./testdatenView.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TestdatenViewComponent implements OnInit {

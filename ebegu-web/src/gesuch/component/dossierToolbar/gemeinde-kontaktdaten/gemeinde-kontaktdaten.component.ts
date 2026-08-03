@@ -1,4 +1,10 @@
-import {Component, Input, OnInit, inject} from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {KiBonMandant} from '@models/mandant';
 import {TSAdresse} from '../../../../models/entity/TSAdresse';
 import {TSGemeindeStammdaten} from '../../../../models/TSGemeindeStammdaten';
@@ -15,6 +21,7 @@ const LOG = LogFactory.createLog('GemeindeKontaktdatenComponent');
     selector: 'gemeinde-kontaktdaten',
     imports: [SharedModule],
     templateUrl: './gemeinde-kontaktdaten.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: 'gemeinde-kontaktdaten.component.less'
 })
 export class GemeindeKontaktdatenComponent implements OnInit {

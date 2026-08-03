@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject, input} from '@angular/core';
+import {Component, inject, input, ChangeDetectionStrategy} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslatePipe} from '@ngx-translate/core';
 import {TooltipTemplateComponent} from './tooltip-template.component';
@@ -29,6 +29,7 @@ import {TooltipTemplateComponent} from './tooltip-template.component';
         }
     `,
     imports: [TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true
 })
 export class SharedPatternTooltipXComponent {

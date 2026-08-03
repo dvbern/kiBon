@@ -5868,6 +5868,9 @@ export class EbeguRestUtil {
             tsZahlungsauftrag.datumGeneriert = MomentUtil.localDateTimeToMoment(
                 zahlungsauftragFromServer.datumGeneriert
             );
+            tsZahlungsauftrag.datumBeendet = MomentUtil.localDateTimeToMoment(
+                zahlungsauftragFromServer.datumBeendet
+            );
             tsZahlungsauftrag.betragTotalAuftrag =
                 zahlungsauftragFromServer.betragTotalAuftrag;
             tsZahlungsauftrag.hasNegativeZahlungen =
@@ -6732,6 +6735,8 @@ export class EbeguRestUtil {
             data.mailVersandAllerMailsAuchAnGS2;
         publicAppConfigTS.benachrichtigungGemeindeEnabled =
             data.benachrichtigungGemeindeEnabled;
+        publicAppConfigTS.benutzendeEditNameAllowed =
+            data.benutzendeEditNameAllowed;
 
         return publicAppConfigTS;
     }

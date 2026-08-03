@@ -167,7 +167,7 @@ public class GesuchsperiodeEmailServiceBean extends AbstractBaseService
 			return gesuchsperiodeEmailCandidate;
 		}
 
-		mailService.sendInfoFreischaltungGesuchsperiode(
+		mailService.prepareToSendInfoFreischaltungGesuchsperiode(
 			gesuchsperiodeEmailCandidate.getNextGesuchsperiode(),
 			gesuch
 		);

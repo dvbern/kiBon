@@ -15,7 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, EventEmitter, Input, Output, inject} from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    Output,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {LogFactory} from '@utils/log';
 import {DvNgMitteilungDelegationDialogComponent} from '../dv-ng-mitteilung-delegation-dialog/dv-ng-mitteilung-delegation-dialog.component';
@@ -25,6 +32,7 @@ const LOG = LogFactory.createLog('DvMitteilungDelegationComponent');
 @Component({
     selector: 'dv-mitteilung-delegation',
     templateUrl: './dv-mitteilung-delegation.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvMitteilungDelegationComponent {

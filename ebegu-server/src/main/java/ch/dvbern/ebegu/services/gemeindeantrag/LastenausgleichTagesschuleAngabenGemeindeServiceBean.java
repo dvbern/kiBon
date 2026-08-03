@@ -1095,7 +1095,7 @@ public class LastenausgleichTagesschuleAngabenGemeindeServiceBean extends
 		LastenausgleichTagesschuleAngabenGemeindeContainer saved =
 			saveLastenausgleichTagesschuleGemeinde(container, true);
 
-		mailService.sendInfoLATSAntragZurueckAnGemeinde(saved);
+		mailService.prepareToSendInfoLATSAntragZurueckAnGemeinde(saved);
 
 		return saved;
 	}

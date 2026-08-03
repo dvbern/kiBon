@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CONSTANTS} from '@models/constants';
@@ -27,6 +27,7 @@ import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerCon
 @Component({
     selector: 'dv-stek-identifier-verknuepfen-dialog',
     templateUrl: './dialog-init-stek-identifier-verknpuefen.template.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DialogInitStekNummerVerknuepfenComponent {

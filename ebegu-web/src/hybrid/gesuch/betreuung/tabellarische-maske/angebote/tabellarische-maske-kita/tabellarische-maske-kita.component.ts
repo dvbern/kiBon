@@ -1,4 +1,4 @@
-import {Component, inject, model} from '@angular/core';
+import {Component, inject, model, ChangeDetectionStrategy} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {SharedPatternTooltipXComponent} from '@app/shared/pattern/tooltip-x';
 import {TranslatePipe} from '@ngx-translate/core';
@@ -24,6 +24,7 @@ import {InputUtil} from '../../util/InputUtil';
     ],
     templateUrl: 'tabellarische-maske-kita.component.html',
     styleUrl: 'tabellarische-maske-kita.component.less',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true
 })
 export class TabellarischeMaskeKitaComponent {

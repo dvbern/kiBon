@@ -8,7 +8,7 @@
 <#-- @ftlvariable name="gemeindeNamenMitteilung" type="java.lang.String" -->
 From: ${configuration.senderAddress}
 To: ${empfaengerMail}
-Subject: <@base64Header>kiBon <#if configuration.isDevmode>Testsystem</#if> –  <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung> neue Mitteilungen</#if></@base64Header>
+Subject: <@base64Header>kiBon <#if configuration.isDevmode>Testsystem</#if> –  <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung><#if offenePendenzen> neue<#else> Neue</#if> Mitteilungen</#if></@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -16,7 +16,7 @@ Content-Type: text/html;charset=utf-8
 ${templateConfiguration.mailCss}
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>kiBon <#if configuration.isDevmode>Testsystem</#if>– <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung> neue Mitteilungen</#if></title>
+    <title>kiBon <#if configuration.isDevmode>Testsystem</#if>– <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung><#if offenePendenzen> neue<#else> Neue</#if> Mitteilungen</#if></title>
 
 </head>
 

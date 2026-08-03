@@ -37,10 +37,14 @@ import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.errors.BenutzerExistException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.services.ApplicationPropertyServiceBean;
+import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.BenutzerService;
 import ch.dvbern.ebegu.services.BenutzerServiceBean;
 import ch.dvbern.ebegu.services.FallService;
 import ch.dvbern.ebegu.services.GesuchService;
+import ch.dvbern.ebegu.services.authentication.KeycloakApi;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import org.easymock.EasyMockExtension;
@@ -78,6 +82,18 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 
 	@Mock
 	private KibonJwt kibonJwt;
+
+	@Mock
+	private ApplicationPropertyServiceBean applicationPropertyServiceBean;
+
+	@Mock
+	private KeycloakApi keycloakApi;
+
+	@Mock
+	private Authorizer authorizer;
+
+	@Mock
+	private Persistence persistence;
 
 	@Test
 	public void testNotGesuchstellerRoleShouldReturnNull() {
@@ -174,6 +190,98 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 		benutzer.setBerechtigungen(berechtigungSet);
 		benutzer.setTimestampErstellt(LocalDateTime.now());
 		return benutzer;
+	}
+
+	@Nested
+	class SaveBenutzerAndBerechtigungen {
+
+		@Test
+		void shouldUpdateBenutzerNameWhenNameChanged() {
+			var benutzer = new Benutzer();
+			benutzer.setId("1");
+			benutzer.setMandant(new Mandant());
+			benutzer.setBerechtigungen(new HashSet<>());
+			benutzer.getBerechtigungen().add(new Berechtigung());
+			authorizer.checkWriteAuthorization(benutzer);
+			expect(persistence.merge(benutzer)).andReturn(benutzer);
+			keycloakApi.updateUser(benutzer);
+			replayAll();
+
+			var result = benutzerServiceBean.saveBenutzerAndBerechtigungen(
+				benutzer,
+				false,
+				true
+			);
+
+			assertThat(result, Is.is(benutzer));
+			verifyAll();
+		}
+
+		@Test
+		void shouldNotUpdateBenutzerNameIFNotNeeded() {
+			var benutzer = new Benutzer();
+			benutzer.setId("1");
+			benutzer.setMandant(new Mandant());
+			benutzer.setBerechtigungen(new HashSet<>());
+			benutzer.getBerechtigungen().add(new Berechtigung());
+			authorizer.checkWriteAuthorization(benutzer);
+			expect(persistence.merge(benutzer)).andReturn(benutzer);
+			replayAll();
+			benutzerServiceBean.saveBenutzerAndBerechtigungen(
+				benutzer,
+				false,
+				false
+			);
+			verifyAll();
+		}
+
+		@Test
+		void shouldAddMitarbeiterAccessNameWhenRoleChangedToAdmin() {
+			var benutzer = new Benutzer();
+			benutzer.setId("1");
+			benutzer.setMandant(new Mandant());
+			benutzer.setBerechtigungen(new HashSet<>());
+			Berechtigung berechtigung = new Berechtigung();
+			berechtigung.setGueltigkeit(new DateRange());
+			berechtigung.setRole(UserRole.ADMIN_BG);
+			benutzer.getBerechtigungen().add(berechtigung);
+			keycloakApi.logout(benutzer);
+			authorizer.checkWriteAuthorization(benutzer);
+			expect(persistence.merge(benutzer)).andReturn(benutzer);
+			expect(keycloakApi.addMitarbeiterAccessBenutzerRole(benutzer))
+				.andReturn(true);
+			replayAll();
+			benutzerServiceBean.saveBenutzerAndBerechtigungen(
+				benutzer,
+				true,
+				false
+			);
+			verifyAll();
+		}
+
+		@Test
+		void shouldRemoveMitarbeiterAccessNameWhenRoleChangedToGesuchsteller() {
+			var benutzer = new Benutzer();
+			benutzer.setId("1");
+			benutzer.setMandant(new Mandant());
+			benutzer.setBerechtigungen(new HashSet<>());
+			Berechtigung berechtigung = new Berechtigung();
+			berechtigung.setGueltigkeit(new DateRange());
+			berechtigung.setRole(UserRole.GESUCHSTELLER);
+			benutzer.getBerechtigungen().add(berechtigung);
+			keycloakApi.logout(benutzer);
+			authorizer.checkWriteAuthorization(benutzer);
+			expect(persistence.merge(benutzer)).andReturn(benutzer);
+			expect(keycloakApi.deleteMitarbeiterAccessBenutzerRole(benutzer))
+				.andReturn(true);
+			replayAll();
+			benutzerServiceBean.saveBenutzerAndBerechtigungen(
+				benutzer,
+				true,
+				false
+			);
+			verifyAll();
+		}
 	}
 
 	@Nested

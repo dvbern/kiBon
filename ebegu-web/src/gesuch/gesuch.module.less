@@ -345,15 +345,17 @@
             padding: 1px;
             width: 2rem;
 
-            & + label {
+            & + span.mdc-label {
                 color: #000;
                 font-style: normal;
                 font-weight: 600;
                 line-height: 2.2rem;
                 padding-left: 0.6rem;
             }
-
-            &.mdc-radio--disabled + label {
+        }
+        &.mat-mdc-radio-disabled > label.mdc-form-field {
+            &,
+            & > span.mdc-label {
                 color: #858585;
             }
         }

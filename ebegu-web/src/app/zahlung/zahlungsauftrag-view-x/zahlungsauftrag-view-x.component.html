@@ -92,6 +92,7 @@
                     <tr>
                         <th></th>
                         <th></th>
+                        <th></th>
                         <th>
                             <div class="dv-select-style">
                                 <select
@@ -152,6 +153,7 @@
                                 *matCellDef="let element"
                                 class="ellipsis pointer-cursor"
                                 (click)="gotoZahlung(element)"
+                                [class.disabled-row]="isDisabled(element)"
                             >
                                 <span
                                     [title]="
@@ -170,7 +172,11 @@
                         <mat-header-cell *matHeaderCellDef class="ellipsis">
                             <span translate>ZAHLUNG_TOTAL</span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let element" class="ellipsis">
+                        <mat-cell
+                            *matCellDef="let element"
+                            class="ellipsis"
+                            [class.disabled-row]="isDisabled(element)"
+                        >
                             @if (element.hasNegativeZahlungen) {
                                 <i
                                     class="fa fa-exclamation-triangle warning-negative-zahlungen"
@@ -195,13 +201,21 @@
                                 [innerHTML]="'ZAHLUNG_PAIN001' | translate"
                             ></span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let element" class="ellipsis">
+                        <mat-cell
+                            *matCellDef="let element"
+                            class="ellipsis"
+                            [class.disabled-row]="isDisabled(element)"
+                        >
                             <dv-loading-button
                                 type="button"
+                                [buttonDisabled]="isDisabled(element)"
                                 (buttonClick)="downloadPain(element)"
                                 [buttonClass]="'dv-btn-operation'"
                             >
-                                <i class="fa fa-lg fa-file-code-o"></i>
+                                <i
+                                    class="fa fa-lg fa-file-code-o"
+                                    [class.disabled-icon]="isDisabled(element)"
+                                ></i>
                             </dv-loading-button>
                         </mat-cell>
                     </ng-container>
@@ -211,14 +225,24 @@
                                 [innerHTML]="'ZAHLUNG_INFOMA' | translate"
                             ></span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let element" class="ellipsis">
+                        <mat-cell
+                            *matCellDef="let element"
+                            class="ellipsis"
+                            [class.disabled-row]="isDisabled(element)"
+                        >
                             @if (element.gemeinde.infomaZahlungen) {
                                 <dv-loading-button
                                     type="button"
+                                    [buttonDisabled]="isDisabled(element)"
                                     (buttonClick)="downloadInfoma(element)"
                                     [buttonClass]="'dv-btn-operation'"
                                 >
-                                    <i class="fa fa-lg fa-file-code-o"></i>
+                                    <i
+                                        class="fa fa-lg fa-file-code-o"
+                                        [class.disabled-icon]="
+                                            isDisabled(element)
+                                        "
+                                    ></i>
                                 </dv-loading-button>
                             }
                         </mat-cell>
@@ -227,14 +251,22 @@
                         <mat-header-cell *matHeaderCellDef class="ellipsis">
                             <span translate>ZAHLUNG_DETAILPOSITIONEN</span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let element" class="ellipsis">
+                        <mat-cell
+                            *matCellDef="let element"
+                            class="ellipsis"
+                            [class.disabled-row]="isDisabled(element)"
+                        >
                             <dv-loading-button
                                 type="button"
+                                [buttonDisabled]="isDisabled(element)"
                                 (buttonClick)="downloadAllDetails(element)"
                                 [buttonClass]="'dv-btn-operation'"
                                 data-test="ExcelDownloadButton"
                             >
-                                <i class="fa fa-lg fa-file-code-o"></i>
+                                <i
+                                    class="fa fa-lg fa-file-code-o"
+                                    [class.disabled-icon]="isDisabled(element)"
+                                ></i>
                             </dv-loading-button>
                         </mat-cell>
                     </ng-container>
@@ -242,7 +274,11 @@
                         <mat-header-cell *matHeaderCellDef class="ellipsis">
                             <span translate></span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let element" class="ellipsis">
+                        <mat-cell
+                            *matCellDef="let element"
+                            class="ellipsis"
+                            [class.disabled-row]="isDisabled(element)"
+                        >
                             @if (
                                 isEditable(element.status) &&
                                 !isEditMode(element.id)
@@ -276,7 +312,11 @@
                         >
                             <span translate>ZAHLUNG_FAELLIGKEIT</span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let element" class="ellipsis">
+                        <mat-cell
+                            *matCellDef="let element"
+                            class="ellipsis"
+                            [class.disabled-row]="isDisabled(element)"
+                        >
                             @if (isEditMode(element.id)) {
                                 <div class="form-group">
                                     <label
@@ -342,7 +382,11 @@
                         >
                             <span translate>ZAHLUNG_BESCHRIEB</span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let element" class="ellipsis">
+                        <mat-cell
+                            *matCellDef="let element"
+                            class="ellipsis"
+                            [class.disabled-row]="isDisabled(element)"
+                        >
                             @if (isEditMode(element.id)) {
                                 <div class="form-group">
                                     <label
@@ -385,7 +429,11 @@
                         <mat-header-cell *matHeaderCellDef class="ellipsis">
                             <span translate></span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let element" class="ellipsis">
+                        <mat-cell
+                            *matCellDef="let element"
+                            class="ellipsis"
+                            [class.disabled-row]="isDisabled(element)"
+                        >
                             <td class="symbol text-center">
                                 @if (
                                     isEditable(element.status) &&

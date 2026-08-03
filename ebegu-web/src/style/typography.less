@@ -68,7 +68,8 @@ a {
 }
 
 md-input-container label:not(.md-container-ignore),
-label {
+label,
+span.mdc-label {
     .ebeguLabel();
     display: block;
     &:not(.ignore-danger-font-color) {
@@ -98,7 +99,6 @@ md-input-container:not(.md-input-focused):not(.md-input-invalid),
     label.md-required {
         .ebeguLabel();
         color: @contrast-darkest;
-        display: block;
         &:after {
             .ebeguLabel();
             color: @contrast-darkest;

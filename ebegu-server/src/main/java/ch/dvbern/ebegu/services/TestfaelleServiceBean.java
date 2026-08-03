@@ -2293,40 +2293,43 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 			);
 		}
 		// Sprachunabhängige Mails
-		mailService.sendInfoOffenePendenzenNeuMitteilungInstitution(
+		mailService.prepareToSendInfoOffenePendenzenNeuMitteilungInstitution(
 			firstBetreuung.getInstitutionStammdaten(),
 			true,
 			false
 		);
-		mailService.sendBenutzerEinladung(besitzer, einladung);
-		mailService.sendInfoMitteilungErhalten(mitteilung);
-		mailService.sendInfoGemeindeAngebotAktiviert(gemeinde, angebotTyp);
+		mailService.prepareToSendBenutzerEinladung(besitzer, einladung);
+		mailService.prepareToSendInfoMitteilungErhalten(mitteilung);
+		mailService.prepareToSendInfoGemeindeAngebotAktiviert(
+			gemeinde,
+			angebotTyp
+		);
 
 		if (isLastenausgleichEnabled()) {
 			Lastenausgleich lastenausgleich = new Lastenausgleich();
 			lastenausgleich.setMandant(gemeinde.getMandant());
 			lastenausgleich.setJahr(2025);
-			mailService.sendInfoLastenausgleichGemeinde(
+			mailService.prepareToSendInfoLastenausgleichGemeinde(
 				gemeinde,
 				lastenausgleich
 			);
 		}
 
 		if (isLATSEnabled()) {
-			mailService.sendInfoLATSAntragZurueckAnGemeinde(
+			mailService.prepareToSendInfoLATSAntragZurueckAnGemeinde(
 				lastenaugleichTagesschuleContainer
 			);
 		}
 
 		if (isTagesschuleEnabled()) {
-			mailService.sendInfoGesuchVerfuegtVerantwortlicherTS(
+			mailService.prepareToSendInfoGesuchVerfuegtVerantwortlicherTS(
 				gesuch,
 				verantwortlicherTS
 			);
 		}
 
 		if (mandant.getMandantIdentifier() == MandantIdentifier.BERN) {
-			mailService.sendInitGSZPVNr(
+			mailService.prepareToSendInitGSZPVNr(
 				"www.kibon.ch",
 				gesuch.getGesuchsteller1(),
 				mailadresse,
@@ -2373,18 +2376,23 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 			Locale.GERMAN;
 
 		gesuch.setStatus(AntragStatus.IN_BEARBEITUNG_GS);
-		mailService.sendInfoBetreuungenBestaetigt(gesuch);
+		mailService.prepareToSendInfoBetreuungenBestaetigt(gesuch);
 		gesuch.setStatus(AntragStatus.VERFUEGT);
-		mailService.sendInfoBetreuungAbgelehnt(firstBetreuung);
-		mailService.sendInfoVerfuegtGesuch(gesuch);
-		mailService.sendInfoVerfuegtMutation(gesuch);
-		mailService.sendInfoMahnung(gesuch);
-		mailService.sendWarnungGesuchNichtFreigegeben(gesuch, 10);
-		mailService.sendInfoGesuchGeloescht(gesuch);
-		mailService.sendInfoFreischaltungGesuchsperiode(gesuchsperiode, gesuch);
-		mailService.sendInfoBetreuungGeloescht(gesuch.extractAllBetreuungen());
-		mailService.sendInfoBetreuungVerfuegt(firstBetreuung);
-		mailService.sendInfoStatistikGeneriert(
+		mailService.prepareToSendInfoBetreuungAbgelehnt(firstBetreuung);
+		mailService.prepareToSendInfoVerfuegtGesuch(gesuch);
+		mailService.prepareToSendInfoVerfuegtMutation(gesuch);
+		mailService.prepareToSendInfoMahnung(gesuch);
+		mailService.prepareToSendWarnungGesuchNichtFreigegeben(gesuch, 10);
+		mailService.prepareToSendInfoGesuchGeloescht(gesuch);
+		mailService.prepareToSendInfoFreischaltungGesuchsperiode(
+			gesuchsperiode,
+			gesuch
+		);
+		mailService.prepareToSendInfoBetreuungGeloescht(
+			gesuch.extractAllBetreuungen()
+		);
+		mailService.prepareToSendInfoBetreuungVerfuegt(firstBetreuung);
+		mailService.prepareToSendInfoStatistikGeneriert(
 			mailadresse,
 			"www.kibon.ch",
 			locale,
@@ -2399,13 +2407,13 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		anmeldung.setKind(firstBetreuung.getKind());
 
 		if (isLastenausgleichEnabled()) {
-			mailService.sendInfoLastenausgleichProzessBeendet(
+			mailService.prepareToSendInfoLastenausgleichProzessBeendet(
 				String.valueOf(Year.now().getValue()),
 				mailadresse,
 				true,
 				requireNonNull(gesuch.getFall().getMandant())
 			);
-			mailService.sendInfoLastenausgleichProzessBeendet(
+			mailService.prepareToSendInfoLastenausgleichProzessBeendet(
 				String.valueOf(Year.now().getValue()),
 				mailadresse,
 				false,
@@ -2414,14 +2422,15 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		}
 
 		if (isTagesschuleEnabled()) {
-			mailService.sendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
+			mailService.prepareToSendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
 				anmeldung
 			);
-			mailService.sendInfoSchulamtAnmeldungTagesschuleUebernommen(
-				anmeldung
-			);
-			mailService.sendInfoSchulamtAnmeldungAbgelehnt(anmeldung);
-			mailService.sendInfoSchulamtAnmeldungStorniert(anmeldung);
+			mailService
+				.prepareToSendInfoSchulamtAnmeldungTagesschuleUebernommen(
+					anmeldung
+				);
+			mailService.prepareToSendInfoSchulamtAnmeldungAbgelehnt(anmeldung);
+			mailService.prepareToSendInfoSchulamtAnmeldungStorniert(anmeldung);
 		}
 
 		final boolean isFerienInselEnabled = Boolean.TRUE.equals(
@@ -2433,9 +2442,10 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		);
 
 		if (isFerienInselEnabled) {
-			mailService.sendInfoSchulamtAnmeldungFerieninselUebernommen(
-				anmeldung
-			);
+			mailService
+				.prepareToSendInfoSchulamtAnmeldungFerieninselUebernommen(
+					anmeldung
+				);
 		}
 
 		final boolean isINFOMAEnabled = Boolean.TRUE.equals(
@@ -2447,7 +2457,7 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		);
 
 		if (isINFOMAEnabled && gemeinde.getInfomaZahlungen()) {
-			mailService.sendInfoAuszahlungsdatenChanged(
+			mailService.prepareToSendInfoAuszahlungsdatenChanged(
 				firstBetreuung.getInstitutionStammdaten(),
 				mailadresse
 			);
@@ -2468,11 +2478,27 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		);
 
 		if (!isFreigabequittungEnabled) {
-			mailService.sendWarnungFreigabequittungFehlt(
+			mailService.prepareToSendWarnungFreigabequittungFehlt(
 				gesuch,
 				10
 			);
 		}
+
+		mailService.prepareToSendInfoZahlungslaufGeneriert(
+			mailadresse,
+			configuration.getFrontendBaseUrl(
+				gesuchsperiode.getMandant().getMandantIdentifier()
+			)
+				+ "/zahlungsauftrag",
+			locale,
+			gesuchsperiode.getMandant()
+		);
+
+		mailService.prepareToSendInfoZahlungslaufNichtErfolgreichErstellt(
+			mailadresse,
+			locale,
+			gesuchsperiode.getMandant()
+		);
 	}
 
 	@Nonnull

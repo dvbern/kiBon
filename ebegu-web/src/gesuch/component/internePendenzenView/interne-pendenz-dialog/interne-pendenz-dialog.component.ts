@@ -15,7 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, ViewChild, inject} from '@angular/core';
+import {
+    Component,
+    ViewChild,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TSInternePendenz} from '../../../../models/TSInternePendenz';
@@ -25,6 +30,7 @@ import moment from 'moment';
     selector: 'interne-pendenz-dialog',
     templateUrl: './interne-pendenz-dialog.template.html',
     styleUrls: ['./interne-pendenz-dialog.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class InternePendenzDialogComponent {

@@ -45,7 +45,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
     });
 
-    it('should create a Zahlung Instiution and check its Values Bern', () => {
+    it('should create a Zahlung Institution and check its Values Bern', () => {
         ZahlungslaufPO.mandantAndUserChangeAction(MANDANTS.BERN, adminUser);
         ZahlungslaufPO.clearAndEditZahlungslaufAction(testgemeindeLondon);
 
@@ -61,6 +61,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
             zahlungBeschrieb,
             testgemeindeLondon
         );
+        ZahlungslaufPO.waitForRefreshAction();
         ZahlungslaufPO.getElementWithContent(
             '.mat-sort-header-container',
             'Status'
@@ -118,6 +119,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
             zahlungBeschrieb,
             testgemeindeParis
         );
+        ZahlungslaufPO.waitForRefreshAction();
 
         ZahlungslaufPO.getElementWithContent(
             '.mat-sort-header-container',
@@ -143,6 +145,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         ZahlungslaufPO.mandantAndUserChangeAction(MANDANTS.SCHWYZ, adminUser);
         ZahlungslaufPO.getZahlungenSwitchButton().click();
         ZahlungslaufPO.createZahlungTodayAction('clear', testgemeindeSchwyz);
+        ZahlungslaufPO.waitForRefreshAction();
         ZahlungslaufPO.zahlungAusloesenAction();
 
         TestFaellePO.createPapierTestfall({
@@ -164,6 +167,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
             zahlungBeschrieb,
             testgemeindeSchwyz
         );
+        ZahlungslaufPO.waitForRefreshAction();
 
         ZahlungslaufPO.getElementWithContent(
             '.mat-sort-header-container',

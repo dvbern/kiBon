@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {LogFactory} from '@utils/log';
 import {DvNgOkDialogComponent} from '../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
@@ -28,6 +28,7 @@ const LOG = LogFactory.createLog('BatchjobTriggerViewComponent');
     selector: 'dv-batchjob-trigger-view',
     templateUrl: './batchjobTriggerView.component.html',
     styleUrls: ['./batchjobTrigger.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class BatchjobTriggerViewComponent {

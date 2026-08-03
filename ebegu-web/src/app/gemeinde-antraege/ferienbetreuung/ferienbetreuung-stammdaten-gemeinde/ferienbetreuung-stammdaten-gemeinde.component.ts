@@ -32,9 +32,10 @@ import {
 import {MAT_DATE_FORMATS} from '@angular/material/core';
 import {MatDatepicker} from '@angular/material/datepicker';
 import {MatDialog} from '@angular/material/dialog';
-import {getUser} from '@dv-e2e/types';
+import {CONSTANTS} from '@models/constants';
 import {TranslateService} from '@ngx-translate/core';
 import {UIRouterGlobals} from '@uirouter/core';
+import {LogFactory} from '@utils/log';
 import {electronicFormatIBAN, isValidIBAN} from 'ibantools';
 import moment from 'moment';
 import {Moment} from 'moment';
@@ -47,11 +48,9 @@ import {TSFerienbetreuungFormularStatus} from '../../../../models/enums/TSFerien
 import {TSRole} from '../../../../models/enums/TSRole';
 import {TSFerienbetreuungAngabenStammdaten} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenStammdaten';
 import {TSBfsGemeinde} from '../../../../models/TSBfsGemeinde';
-import {CONSTANTS} from '@models/constants';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '@utils/log';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {UnsavedChangesService} from '../../services/unsaved-changes.service';
 import {AbstractFerienbetreuungFormular} from '../abstract.ferienbetreuung-formular';
@@ -92,7 +91,6 @@ export class FerienbetreuungStammdatenGemeindeComponent
     protected readonly uiRouterGlobals: UIRouterGlobals;
     protected readonly wizardRS: WizardStepXRS;
     protected readonly CONSTANTS = CONSTANTS;
-    protected readonly getUser = getUser;
     protected readonly TSRole = TSRole;
     private readonly ferienbetreuungService = inject(FerienbetreuungService);
     private readonly fb = inject(FormBuilder);

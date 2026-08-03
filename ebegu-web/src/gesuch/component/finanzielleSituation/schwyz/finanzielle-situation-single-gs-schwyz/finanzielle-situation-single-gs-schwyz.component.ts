@@ -14,7 +14,7 @@ import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-finanzielle-situation-single-gs-schwyz',
     templateUrl: './finanzielle-situation-single-gs-schwyz.component.html',
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false
 })

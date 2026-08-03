@@ -60,7 +60,7 @@ public class InstitutionUpdateMailServiceBean implements
 		benutzerService.getAktivGemeindeAdministratoren(gemeinde)
 			.forEach(
 				gemeindeAdmin -> mailService
-					.sendInfoAuszahlungsdatenChanged(
+					.prepareToSendInfoAuszahlungsdatenChanged(
 						institutionStammdaten,
 						gemeindeAdmin.getEmail()
 					)

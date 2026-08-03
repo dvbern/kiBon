@@ -57,4 +57,5 @@ export class TSPublicAppConfig {
     public testfaelleEnabled: boolean;
     public abgeloesteViewBeschaeftigungSingleEnabled: boolean;
     public benachrichtigungGemeindeEnabled: boolean;
+    public benutzendeEditNameAllowed: boolean;
 }

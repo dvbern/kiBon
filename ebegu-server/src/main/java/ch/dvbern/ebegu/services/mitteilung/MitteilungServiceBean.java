@@ -247,7 +247,7 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		if (MitteilungTeilnehmerTyp.GESUCHSTELLER
 			== mitteilung.getEmpfaengerTyp()
 			&& mitteilung.getEmpfaenger() != null) {
-			mailService.sendInfoMitteilungErhalten(mitteilung);
+			mailService.prepareToSendInfoMitteilungErhalten(mitteilung);
 		}
 
 		return persistence.merge(mitteilung);

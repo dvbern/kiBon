@@ -50,7 +50,7 @@ import {SharedModule} from '../../shared.module';
             [datePickerEnabled]="datePickerEnabled"
         ></dv-date-picker-x>
     </form>`,
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormsModule, SharedModule],
     standalone: true
 })

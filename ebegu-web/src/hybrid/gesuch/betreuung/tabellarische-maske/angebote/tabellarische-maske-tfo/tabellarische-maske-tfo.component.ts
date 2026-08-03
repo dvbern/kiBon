@@ -1,4 +1,4 @@
-import {Component, inject, model} from '@angular/core';
+import {Component, inject, model, ChangeDetectionStrategy} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TranslatePipe} from '@ngx-translate/core';
 import {TSBetreuungspensum} from '../../../../../../models/TSBetreuungspensum';
@@ -21,6 +21,7 @@ import {InputUtil} from '../../util/InputUtil';
     ],
     templateUrl: 'tabellarische-maske-tfo.component.html',
     styleUrl: 'tabellarische-maske-tfo.component.less',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true
 })
 export class TabellarischeMaskeTfoComponent {

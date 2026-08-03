@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {
     MAT_DIALOG_DATA,
     MatDialogActions,
@@ -35,6 +35,7 @@ import {TranslatePipe} from '@ngx-translate/core';
         MatDialogActions,
         MatDialogTitle
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true
 })
 export class DvNgRemoveDialogComponent {

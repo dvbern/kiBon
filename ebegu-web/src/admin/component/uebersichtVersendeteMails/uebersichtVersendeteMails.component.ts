@@ -21,7 +21,8 @@ import {
     inject,
     OnInit,
     signal,
-    viewChild
+    viewChild,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatPaginator} from '@angular/material/paginator';
@@ -39,6 +40,7 @@ const initialSort: Sort = {active: 'zeitpunktVersand', direction: 'desc'};
     selector: 'dv-uebersicht-Versendete-Mails',
     templateUrl: './uebersichtVersendeteMails.component.html',
     styleUrls: ['./uebersichtVersendeteMails.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UebersichtVersendeteMailsComponent implements OnInit {

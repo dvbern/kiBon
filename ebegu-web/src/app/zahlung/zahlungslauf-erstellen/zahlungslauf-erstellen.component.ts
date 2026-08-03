@@ -19,12 +19,13 @@ import {SharedModule} from '../../shared/shared.module';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {Moment} from 'moment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {filter} from 'rxjs/operators';
+import {filter, startWith, switchMap, takeWhile} from 'rxjs/operators';
 import {LogFactory} from '@utils/log';
 import {ZahlungService} from '@app/zahlung/service';
-import {TSZahlungsauftrag, TSZahlungslaufTyp} from '@models/zahlung';
+import {TSZahlungslaufTyp} from '@models/zahlung';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {DvNgRemoveDialogComponent} from '@app/shared/component/remove-dialog';
+import {interval, Subscription} from 'rxjs';
 
 const LOG = LogFactory.createLog('ZahlungslaufErstellenComponent');
 
@@ -50,13 +51,14 @@ export class ZahlungslaufErstellenComponent {
     zahlungslaufTyp = input.required<TSZahlungslaufTyp>();
     settings = input.required<Settings>();
 
-    zahlungslaufErstellen = output<TSZahlungsauftrag>();
+    zahlungslaufErstellen = output();
 
     form = viewChild.required(NgForm);
     translate = inject(TranslateService);
     dialog = inject(MatDialog);
     errorService = inject(ErrorService);
     zahlungRS = inject(ZahlungService);
+    private pollingSub?: Subscription;
 
     model: ZahlungslaufErstellen = {
         gemeinde: null,
@@ -83,9 +85,6 @@ export class ZahlungslaufErstellenComponent {
             .pipe(filter(result => !!result))
             .subscribe(
                 () => {
-                    this.errorService.addMesageAsInfo(
-                        this.translate.instant('ZAHLUNG_AUSGELOEST_INFO')
-                    );
                     this.zahlungRS
                         .createZahlungsauftrag(
                             this.zahlungslaufTyp(),
@@ -95,22 +94,67 @@ export class ZahlungslaufErstellenComponent {
                             this.model.datumGeneriert!,
                             this.model.auszahlungInZukunft!
                         )
-                        .subscribe(
-                            (response: string) => {
+                        .subscribe({
+                            next: (res: {workjobId: string}) => {
                                 this.errorService.clearAll();
                                 this.errorService.addMesageAsInfo(
-                                    this.translate.instant('ZAHLUNG_ERSTELLT')
+                                    this.translate.instant(
+                                        'ZAHLUNGSLAUF_STARTED'
+                                    )
                                 );
                                 LOG.info(
-                                    'batch job started with jobId: ' + response
+                                    'batch job started with jobId: ' +
+                                        res.workjobId
                                 );
                                 this.form().resetForm();
+                                this.zahlungslaufErstellen.emit();
+                                this.startPolling(res.workjobId);
                             },
-                            error => LOG.error(error)
-                        );
+                            error: error => LOG.error(error)
+                        });
                 },
                 error => LOG.error(error)
             );
+    }
+
+    private startPolling(workjobId: string) {
+        this.pollingSub = interval(10000)
+            .pipe(
+                startWith(0),
+                switchMap(() =>
+                    this.zahlungRS.getZahlungsauftragStatus(workjobId)
+                ),
+                takeWhile(
+                    ({status}) => !['FAILED', 'FINISHED'].includes(status),
+                    true
+                )
+            )
+            .subscribe({
+                next: (res: {status: string}) => {
+                    if (res.status === 'FINISHED') {
+                        this.pollingSub?.unsubscribe();
+                        // reset the table
+                        this.form().resetForm();
+                        // tell parent to reload the list
+                        this.zahlungslaufErstellen.emit();
+                        this.errorService.clearAll();
+                        this.errorService.addMesageAsInfo(
+                            this.translate.instant('ZAHLUNGSLAUF_ERSTELLT')
+                        );
+                    }
+
+                    if (res.status === 'FAILED') {
+                        this.pollingSub?.unsubscribe();
+                        // reset the table
+                        this.form().resetForm();
+                        this.errorService.clearAll();
+                        this.errorService.addMesageAsError(
+                            this.translate.instant('ZAHLUNGSLAUF_FAILED')
+                        );
+                    }
+                    return;
+                }
+            });
     }
 
     public getLabelZahlungslaufErstellen(): string {

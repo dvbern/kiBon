@@ -12,7 +12,7 @@ import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-steuerveranlagt-schwyz',
     templateUrl: './steuerveranlagt-schwyz.component.html',
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false
 })

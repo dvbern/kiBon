@@ -101,7 +101,7 @@ public class SendEmailBatchlet extends AbstractBatchlet {
 			downloadFile.getAccessToken()
 		); // add the actual generated doc to the workjob
 		try {
-			mailService.sendInfoStatistikGeneriert(
+			mailService.prepareToSendInfoStatistikGeneriert(
 				receiverEmail,
 				createStatistikPageLink(mandant),
 				Locale.forLanguageTag(receiverLanguage),

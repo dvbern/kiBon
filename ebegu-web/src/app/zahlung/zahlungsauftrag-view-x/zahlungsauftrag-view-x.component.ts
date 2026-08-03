@@ -43,10 +43,10 @@ import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 import {TSGeneratedDokumentTyp} from '../../../models/enums/TSGeneratedDokumentTyp';
 import {
-    TSZahlungsauftragsstatus,
-    TSZahlungsstatus,
     TSZahlungsauftrag,
-    TSZahlungslaufTyp
+    TSZahlungsauftragsstatus,
+    TSZahlungslaufTyp,
+    TSZahlungsstatus
 } from '@models/zahlung';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
@@ -60,6 +60,7 @@ import {ReportRS} from '../../core/service/reportRS.rest';
 import {DvSimpleTableColumnDefinition} from '../../shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {StateStoreService} from '../../shared/services/state-store.service';
 import {ZahlungService} from '@app/zahlung/service';
+import {CONSTANTS} from '@models/constants';
 
 const LOG = LogFactory.createLog('ZahlungsauftragViewXComponent');
 
@@ -246,6 +247,8 @@ export class ZahlungsauftragViewXComponent implements OnInit, AfterViewInit {
     }
 
     public gotoZahlung(zahlungsauftrag: TSZahlungsauftrag): void {
+        if (this.isDisabled(zahlungsauftrag)) return;
+
         this.$state.go('zahlung.view', {
             zahlungsauftragId: zahlungsauftrag.id,
             isMahlzeitenzahlungen:
@@ -565,13 +568,23 @@ export class ZahlungsauftragViewXComponent implements OnInit, AfterViewInit {
         return this.zahlungslaufTyp === TSZahlungslaufTyp.GEMEINDE_INSTITUTION;
     }
 
+    public isDisabled(row: TSZahlungsauftrag): boolean {
+        return row.status === TSZahlungsauftragsstatus.ANGEFRAGT;
+    }
+
     private setupTableColumns(): void {
         this.tableColumns = [
             {
                 displayedName: this.translate.instant('ZAHLUNG_GENERIERT'),
                 attributeName: 'datumGeneriert',
                 displayFunction: (date: moment.Moment) =>
-                    date.format('DD.MM.YYYY')
+                    date.format(CONSTANTS.DATE_TIME_FORMAT)
+            },
+            {
+                displayedName: this.translate.instant('ZAHLUNG_BEENDET'),
+                attributeName: 'datumBeendet',
+                displayFunction: (date: moment.Moment) =>
+                    date?.format(CONSTANTS.DATE_TIME_FORMAT)
             },
             {
                 displayedName: this.translate.instant('GEMEINDE'),

@@ -205,7 +205,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		persistence.merge(persistedVerfuegung);
 
 		if (sendEmail) {
-			mailService.sendInfoBetreuungVerfuegt(
+			mailService.prepareToSendInfoBetreuungVerfuegt(
 				betreuungMitVerfuegungPreview
 			);
 		}
@@ -303,9 +303,10 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 				).get();
 			if (gemeindeStammdaten.getBenachrichtigungTsEmailAuto()
 				&& !persistedAnmeldung.isTagesschuleTagi()) {
-				mailService.sendInfoSchulamtAnmeldungTagesschuleUebernommen(
-					persistedAnmeldung
-				);
+				mailService
+					.prepareToSendInfoSchulamtAnmeldungTagesschuleUebernommen(
+						persistedAnmeldung
+					);
 			}
 		}
 
@@ -328,7 +329,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 			Betreuungsstatus.SCHULAMT_ANMELDUNG_UEBERNOMMEN
 		);
 		// Bei Uebernahme einer Anmeldung muss eine E-Mail geschickt werden
-		mailService.sendInfoSchulamtAnmeldungFerieninselUebernommen(
+		mailService.prepareToSendInfoSchulamtAnmeldungFerieninselUebernommen(
 			anmeldungFerieninsel
 		);
 		return betreuungService.saveAnmeldungFerieninsel(anmeldungFerieninsel);

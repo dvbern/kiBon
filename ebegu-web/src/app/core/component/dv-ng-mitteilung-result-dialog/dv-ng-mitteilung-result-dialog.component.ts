@@ -15,7 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, OnInit, inject} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {StateService} from '@uirouter/core';
 import {TSBetreuungsstatus} from '../../../../models/enums/betreuung/TSBetreuungsstatus';
@@ -38,6 +43,7 @@ const LOG = LogFactory.createLog('DvNgMitteilungResultDialogComponent');
     selector: 'dv-ng-mitteilung-result-dialog',
     templateUrl: './dv-ng-mitteilung-result-dialog.template.html',
     styleUrls: ['./dv-ng-mitteilung-result-dialog.template.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvNgMitteilungResultDialogComponent implements OnInit {

@@ -19,7 +19,7 @@ import {FinanzielleSituationSchwyzService} from '../finanzielle-situation-schwyz
 @Component({
     selector: 'dv-finanzielle-situation-gs-schwyz',
     templateUrl: './finanzielle-situation-gs-schwyz.component.html',
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FinanzielleSituationGsSchwyzComponent

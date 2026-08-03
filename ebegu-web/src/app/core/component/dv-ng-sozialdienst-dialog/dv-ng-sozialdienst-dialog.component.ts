@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
 
@@ -28,6 +28,7 @@ import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
 @Component({
     selector: 'dv-ng-sozialdienst-dialog',
     templateUrl: './dv-ng-sozialdienst-dialog.template.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvNgSozialdienstDialogComponent {

@@ -2,7 +2,13 @@ import {
     ConfigurableEinstellung,
     EditEinstellungComponent
 } from '@admin/einstellungen';
-import {Component, input, output, OnInit} from '@angular/core';
+import {
+    Component,
+    input,
+    output,
+    OnInit,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {
     MatAccordion,
     MatExpansionPanel,
@@ -22,6 +28,7 @@ import {TSApplicationProperty} from '../../../models/einstellung/TSApplicationPr
         SharedModule,
         EditEinstellungComponent
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './application-property-group.component.html'
 })
 export class ApplicationPropertyGroupComponent implements OnInit {

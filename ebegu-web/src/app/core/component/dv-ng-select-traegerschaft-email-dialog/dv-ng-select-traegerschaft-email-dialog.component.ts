@@ -15,13 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'dv-ng-select-tragerschaft-email-dialog',
     templateUrl: './dv-ng-select-traegerschaft-email-dialog.template.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvNgSelectTraegerschaftEmailDialogComponent {

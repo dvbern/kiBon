@@ -2191,7 +2191,7 @@ public class GesuchServiceBean extends AbstractBaseService implements
 		var gesuch = findGesuch(gesuchId).orElseThrow();
 		gesuch.setDatumGewarntNichtFreigegeben(LocalDate.now());
 		updateGesuch(gesuch, false, null);
-		mailService.sendWarnungGesuchNichtFreigegeben(
+		mailService.prepareToSendWarnungGesuchNichtFreigegeben(
 			gesuch,
 			anzahlTageBisLoeschungNachWarnungFreigabe
 		);
@@ -2292,7 +2292,7 @@ public class GesuchServiceBean extends AbstractBaseService implements
 		try {
 			gesuch.setDatumGewarntFehlendeQuittung(LocalDate.now());
 			gesuch = updateGesuch(gesuch, false, null);
-			mailService.sendWarnungFreigabequittungFehlt(
+			mailService.prepareToSendWarnungFreigabequittungFehlt(
 				gesuch,
 				anzahlTageBisLoeschungNachWarnungFreigabe
 			);
@@ -2324,9 +2324,9 @@ public class GesuchServiceBean extends AbstractBaseService implements
 				typ = GesuchDeletionCause.BATCHJOB_KEINE_QUITTUNG;
 			}
 			self.removeGesuchAndPersist(gesuch, typ);
-			mailService.sendInfoGesuchGeloescht(gesuch);
+			mailService.prepareToSendInfoGesuchGeloescht(gesuch);
 		}
-		mailService.sendInfoBetreuungGeloescht(betreuungen);
+		mailService.prepareToSendInfoBetreuungGeloescht(betreuungen);
 		return anzahl;
 	}
 
@@ -2478,7 +2478,7 @@ public class GesuchServiceBean extends AbstractBaseService implements
 		);
 		superAdminService.removeGesuch(onlineMutation.getId());
 
-		mailService.sendInfoBetreuungGeloescht(betreuungen);
+		mailService.prepareToSendInfoBetreuungGeloescht(betreuungen);
 	}
 
 	@Override
@@ -2595,7 +2595,7 @@ public class GesuchServiceBean extends AbstractBaseService implements
 		);
 		superAdminService.removeGesuch(gesuch.getId());
 
-		mailService.sendInfoBetreuungGeloescht(betreuungen);
+		mailService.prepareToSendInfoBetreuungGeloescht(betreuungen);
 	}
 
 	@Override
@@ -2822,7 +2822,7 @@ public class GesuchServiceBean extends AbstractBaseService implements
 				&& verantwortlicherBG != null
 				&& !verantwortlicherBG.getId()
 					.equals(verantwortlicherTS.getId())) {
-				mailService.sendInfoGesuchVerfuegtVerantwortlicherTS(
+				mailService.prepareToSendInfoGesuchVerfuegtVerantwortlicherTS(
 					gesuch,
 					verantwortlicherTS
 				);

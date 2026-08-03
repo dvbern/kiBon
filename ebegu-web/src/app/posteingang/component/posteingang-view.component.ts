@@ -291,6 +291,7 @@ export class PosteingangViewComponent
                 return;
             }
             this.displayedCollection.data = result?.mitteilungen ?? [];
+            this.totalResultCount = result?.totalResultSize ?? 0;
         });
     }
 
@@ -481,6 +482,7 @@ export class PosteingangViewComponent
         this.resetMitteilungRevertInfo();
         this.mitteilungRS.setMitteilungUngelesen(mitteilung.id).then(() => {
             this.getMitteilungenCount();
+            this.mitteilungen.reload();
         });
     }
 
@@ -490,6 +492,7 @@ export class PosteingangViewComponent
             .setMitteilungIgnoriert(mitteilung.id)
             .then(() => {
                 this.getMitteilungenCount();
+                this.mitteilungen.reload();
             })
             .then(() => {
                 const errorMessageCallback = new DVErrorMessageCallback(
@@ -511,6 +514,7 @@ export class PosteingangViewComponent
         this.resetMitteilungRevertInfo();
         this.mitteilungRS.setMitteilungGelesen(mitteilung.id).then(() => {
             this.getMitteilungenCount();
+            this.mitteilungen.reload();
         });
     }
 

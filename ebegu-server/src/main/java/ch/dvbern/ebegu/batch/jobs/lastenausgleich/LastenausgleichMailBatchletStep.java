@@ -47,10 +47,11 @@ public class LastenausgleichMailBatchletStep
 			.map(LastenausgleichDetail::getGemeinde)
 			.distinct()
 			.forEach(
-				gemeinde -> mailService.sendInfoLastenausgleichGemeinde(
-					gemeinde,
-					lastenausgleich
-				)
+				gemeinde -> mailService
+					.prepareToSendInfoLastenausgleichGemeinde(
+						gemeinde,
+						lastenausgleich
+					)
 			);
 	}
 }

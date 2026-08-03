@@ -105,32 +105,77 @@
                     </div>
                     <!-- Name / Vorname -->
                     <div class="row">
+                        @let benutzendeEditNameAllowed =
+                            appPropService.getBenutzendeEditNameAllowed()
+                                | async;
                         <div class="col-sm-12 dv-input-container-medium">
                             <div class="form-group">
-                                <label translate for="nachname_ID">NAME</label>
-                                <input
-                                    id="nachname_ID"
-                                    type="text"
-                                    name="nachname"
-                                    disabled
-                                    [ngModel]="selectedUser.nachname"
-                                    class="form-control"
-                                />
+                                <label
+                                    translate
+                                    for="nachname_ID"
+                                    [class.required]="
+                                        !isDisabled && benutzendeEditNameAllowed
+                                    "
+                                    >NAME</label
+                                >
+                                @if (isDisabled || !benutzendeEditNameAllowed) {
+                                    <input
+                                        id="nachname_ID"
+                                        type="text"
+                                        name="nachname"
+                                        disabled
+                                        [ngModel]="selectedUser.nachname"
+                                        class="form-control"
+                                    />
+                                } @else {
+                                    <input
+                                        id="nachname_ID"
+                                        type="text"
+                                        name="nachname"
+                                        #nachname="ngModel"
+                                        required
+                                        [(ngModel)]="selectedUser.nachname"
+                                        class="form-control"
+                                    />
+                                    <dv-error-messages
+                                        [errorObject]="nachname.errors"
+                                    ></dv-error-messages>
+                                }
                             </div>
                         </div>
                         <div class="col-sm-12 dv-input-container-medium">
                             <div class="form-group">
-                                <label translate for="vorname_ID"
+                                <label
+                                    translate
+                                    [class.required]="
+                                        !isDisabled && benutzendeEditNameAllowed
+                                    "
+                                    for="vorname_ID"
                                     >VORNAME</label
                                 >
-                                <input
-                                    id="vorname_ID"
-                                    type="text"
-                                    name="vorname"
-                                    disabled
-                                    [ngModel]="selectedUser.vorname"
-                                    class="form-control"
-                                />
+                                @if (isDisabled || !benutzendeEditNameAllowed) {
+                                    <input
+                                        id="vorname_ID"
+                                        type="text"
+                                        name="vorname"
+                                        disabled
+                                        [ngModel]="selectedUser.vorname"
+                                        class="form-control"
+                                    />
+                                } @else {
+                                    <input
+                                        id="vorname_ID"
+                                        type="text"
+                                        name="vorname"
+                                        #vorname="ngModel"
+                                        [(ngModel)]="selectedUser.vorname"
+                                        required
+                                        class="form-control"
+                                    />
+                                    <dv-error-messages
+                                        [errorObject]="vorname.errors"
+                                    ></dv-error-messages>
+                                }
                             </div>
                         </div>
                     </div>
@@ -272,28 +317,32 @@
                             <hr class="header" />
                         </div>
                         <div class="form-group">
-                            <mat-checkbox
-                                [(ngModel)]="
-                                    selectedUser.sendMailWennOffenePendenzen
-                                "
-                                id="sendMailWennOffenePendenzen_id"
-                                name="sendMailWennOffenePendenzen_id"
-                                data-test="sendMailWennOffenePendenzen"
-                                [disabled]="isDisabled"
-                            >
-                                <span class="mr-2">
-                                    {{
-                                        'GEMEINDE_BENUTZER_BENACHRICHTIGUNG_PENDENZEN'
-                                            | translate
-                                    }}
-                                </span>
-                                <dv-tooltip
-                                    [text]="
-                                        'GEMEINDE_BENUTZER_BENACHRICHTIGUNG_PENDENZEN_INFO'
-                                            | translate
+                            <div class="checkbox-container">
+                                <mat-checkbox
+                                    [(ngModel)]="
+                                        selectedUser.sendMailWennOffenePendenzen
                                     "
-                                ></dv-tooltip>
-                            </mat-checkbox>
+                                    id="sendMailWennOffenePendenzen_id"
+                                    name="sendMailWennOffenePendenzen_id"
+                                    data-test="sendMailWennOffenePendenzen"
+                                    [disabled]="isDisabled"
+                                >
+                                    <span class="mr-2">
+                                        {{
+                                            'GEMEINDE_BENUTZER_BENACHRICHTIGUNG_PENDENZEN'
+                                                | translate
+                                        }}
+                                    </span>
+                                </mat-checkbox>
+                                <span>
+                                    <dv-tooltip
+                                        [text]="
+                                            'GEMEINDE_BENUTZER_BENACHRICHTIGUNG_PENDENZEN_INFO'
+                                                | translate
+                                        "
+                                    ></dv-tooltip>
+                                </span>
+                            </div>
                         </div>
                     }
                 }
@@ -385,6 +434,7 @@
                 ></button>
                 <dv-loading-button
                     [type]="'submit'"
+                    [buttonDisabled]="form.invalid"
                     *dvNgShowElement="
                         !isDefaultVerantwortlicher && !isDisabled;
                         roles: TSRoleUtil.getAllAdminRoles()

@@ -18,7 +18,7 @@ import {GesuchModelManager} from '../service/gesuchModelManager';
 @Component({
     selector: 'dv-auszahlungsdaten',
     templateUrl: './auszahlungsdaten.component.html',
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false
 })

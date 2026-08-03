@@ -23,6 +23,7 @@
         "baseUrl": ".",
         "typeRoots": ["node_modules/@types"],
         "useDefineForClassFields": false,
+        "ignoreDeprecations": "6.0",
         "paths": {
             "@dv-e2e/fixtures": ["./cypress/support/fixture-helper.ts"],
             "@dv-e2e/page-objects": ["./cypress/page-objects/index.ts"],

@@ -39,7 +39,7 @@ import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
     selector: 'dv-search-list',
     templateUrl: './dv-search-list.component.html',
     styleUrls: ['./dv-search-list.component.less'],
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvSearchListComponent implements OnInit, OnChanges, AfterViewInit {

@@ -15,5 +15,8 @@
         "src/environments/environment.test.ts",
         "src/test.ts",
         "src/hybrid/gesuch/betreuung/tabellarische-maske/util/test/TestUtils.ts"
-    ]
+    ],
+    "angularCompilerOptions": {
+        "strictTemplates": false
+    }
 }

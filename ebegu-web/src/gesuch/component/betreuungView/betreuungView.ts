@@ -1557,7 +1557,7 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
     public getMutationAbweichungAktiviertRoles() {
         if (
             this.gesuchModelManager.getGemeinde()
-                .adminMutationAbweichungMeldungEnabled
+                ?.adminMutationAbweichungMeldungEnabled
         ) {
             return TSRoleUtil.getMutationsMitteilungAbweichungSendenRoles();
         } else {
@@ -2664,7 +2664,7 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
             ])
         ) {
             return this.gesuchModelManager.getGemeinde()
-                .adminMutationAbweichungMeldungEnabled;
+                ?.adminMutationAbweichungMeldungEnabled;
         }
         return true;
     }

@@ -246,16 +246,11 @@ export class BenutzerRSX {
         );
     }
 
-    public saveBenutzerBerechtigungen(
-        benutzer: TSBenutzer
-    ): Promise<TSBenutzer> {
+    public saveBenutzer(benutzer: TSBenutzer): Promise<TSBenutzer> {
         const benutzerRest = this.ebeguRestUtil.userToRestObject({}, benutzer);
         return firstValueFrom(
             this.$http
-                .put(
-                    `${this.serviceURL}/saveBenutzerBerechtigungen/`,
-                    benutzerRest
-                )
+                .put(`${this.serviceURL}/saveBenutzer/`, benutzerRest)
                 .pipe(
                     map((response: any) =>
                         this.ebeguRestUtil.parseUser(new TSBenutzer(), response)

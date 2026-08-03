@@ -33,6 +33,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotAllowedException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -53,6 +54,8 @@ import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.BenutzerTableFilterDTO;
 import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.BenutzerTableMandantFilterDTO;
 import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.PaginationDTO;
 import ch.dvbern.ebegu.einladung.Einladung;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Mandant;
@@ -130,6 +133,9 @@ public class BenutzerResource {
 
 	@Inject
 	private PrincipalBean principalBean;
+
+	@Inject
+	private ApplicationPropertyService applicationPropertyService;
 
 	@Operation(
 		summary = "Erstellt einen Benutzer mit Status EINGELADEN und sendet ihm eine E-Mail"
@@ -574,7 +580,7 @@ public class BenutzerResource {
 	@Operation(summary = "Updates a Benutzer in the database")
 	@Nullable
 	@PUT
-	@Path("/saveBenutzerBerechtigungen")
+	@Path("/saveBenutzer")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(
@@ -582,10 +588,9 @@ public class BenutzerResource {
 			ADMIN_TRAEGERSCHAFT, ADMIN_INSTITUTION,
 			ADMIN_MANDANT, ADMIN_FERIENBETREUUNG, ADMIN_SOZIALDIENST }
 	)
-	public JaxBenutzer saveBenutzerBerechtigungen(
+	public JaxBenutzer saveBenutzer(
 		@Nonnull @NotNull @Valid JaxBenutzer benutzerJax
 	) {
-
 		String username = benutzerJax.getUsername();
 		Benutzer benutzer = benutzerService.findBenutzer(
 			username,
@@ -605,12 +610,17 @@ public class BenutzerResource {
 			.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
 				benutzer
 			);
-		// Keine Exception: Es ist kein Gesuchsteller: Wir können immer löschen
-		return saveBenutzerBerechtigungenForced(benutzer, benutzerJax, fallId);
+		Benutzer updatedBenutzer;
+		updatedBenutzer = saveBenutzerUndBerechtigungen(
+			benutzer,
+			benutzerJax,
+			fallId
+		);
+		return converter.benutzerToJaxBenutzer(updatedBenutzer);
 	}
 
 	@Nonnull
-	private JaxBenutzer saveBenutzerBerechtigungenForced(
+	private Benutzer saveBenutzerUndBerechtigungen(
 		@Nonnull Benutzer benutzerFromDB,
 		@Nonnull JaxBenutzer benutzerJax,
 		@Nullable String fallId
@@ -619,16 +629,54 @@ public class BenutzerResource {
 			benutzerJax,
 			benutzerFromDB
 		);
+
 		if (fallId != null) {
 			superAdminService.removeFallIfExists(fallId);
 		}
 
-		Benutzer mergedBenutzer = benutzerService.saveBenutzerBerechtigungen(
-			converter.jaxBenutzerToBenutzer(benutzerJax, benutzerFromDB),
-			currentBerechtigungChanged
+		boolean nameVornameUpdated = hasNameChangedAndIsAllowed(
+			benutzerFromDB,
+			benutzerJax
 		);
 
-		return converter.benutzerToJaxBenutzer(mergedBenutzer);
+		Benutzer mergedBenutzer = benutzerService.saveBenutzerAndBerechtigungen(
+			converter.jaxBenutzerToBenutzer(benutzerJax, benutzerFromDB),
+			currentBerechtigungChanged,
+			nameVornameUpdated
+		);
+
+		return mergedBenutzer;
+	}
+
+	private boolean hasNameChangedAndIsAllowed(
+		@Nonnull Benutzer benutzerFromDB,
+		@Nonnull JaxBenutzer benutzerJax
+	) {
+		boolean nameChanged =
+			!Objects.equals(
+				benutzerFromDB.getNachname(),
+				benutzerJax.getNachname()
+			)
+				||
+				!Objects.equals(
+					benutzerFromDB.getVorname(),
+					benutzerJax.getVorname()
+				);
+
+		if (!nameChanged) {
+			return false;
+		}
+		if (!applicationPropertyService.findApplicationPropertyAsBoolean(
+			ApplicationPropertyKey.BENUTZENDE_EDIT_NAME_ALLOWED,
+			benutzerFromDB.getMandant()
+		)) {
+			throw new NotAllowedException(
+				"updateBenutzer must not be called when ApplicationProperty "
+					+ ApplicationPropertyKey.BENUTZENDE_EDIT_NAME_ALLOWED
+					+ " is false"
+			);
+		}
+		return true;
 	}
 
 	private boolean hasCurrentBerechtigungChanged(

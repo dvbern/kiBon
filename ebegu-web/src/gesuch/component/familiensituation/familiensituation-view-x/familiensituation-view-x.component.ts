@@ -15,7 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, OnInit, inject} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    inject,
+    ChangeDetectionStrategy
+} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {isNullOrUndefined} from '@uirouter/core';
@@ -60,6 +65,7 @@ const LOG = LogFactory.createLog('FamiliensitutionViewComponent');
     selector: 'dv-familiensituation-view-x',
     templateUrl: './familiensituation-view-x.component.html',
     styleUrls: ['./familiensituation-view-x.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FamiliensituationViewXComponent

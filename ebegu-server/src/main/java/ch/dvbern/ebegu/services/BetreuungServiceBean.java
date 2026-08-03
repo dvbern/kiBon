@@ -508,7 +508,7 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 			externalClient
 		);
 		// Bei Ablehnung einer Betreuung muss eine E-Mail geschickt werden
-		mailService.sendInfoBetreuungAbgelehnt(persistedBetreuung);
+		mailService.prepareToSendInfoBetreuungAbgelehnt(persistedBetreuung);
 		LOG.info(
 			"Betreuung mit RefNr: {} wurde abgewiesen",
 			betreuung.getReferenzNummer()
@@ -543,7 +543,7 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 		Gesuch gesuch = betreuung.extractGesuch();
 		if (gesuch.areAllBetreuungenBestaetigt()) {
 			// Sobald alle Betreuungen bestaetigt sind, eine Mail schreiben
-			mailService.sendInfoBetreuungenBestaetigt(gesuch);
+			mailService.prepareToSendInfoBetreuungenBestaetigt(gesuch);
 		}
 		LOG.info(
 			"Betreuung mit RefNr: {} wurde bestaetigt",
@@ -593,9 +593,10 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 				).get();
 			if (gemeindeStammdaten.getBenachrichtigungTsEmailAuto()
 				&& !anmeldungTagesschule.isTagesschuleTagi()) {
-				mailService.sendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
-					persistedBetreuung
-				);
+				mailService
+					.prepareToSendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
+						persistedBetreuung
+					);
 			}
 			generateAnmeldebestaetigungDokument(persistedBetreuung, false);
 		}
@@ -762,7 +763,7 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 					.getId()
 			).get();
 		if (gemeindeStammdaten.getBenachrichtigungTsEmailAuto() && !tagis) {
-			mailService.sendInfoSchulamtAnmeldungAbgelehnt(
+			mailService.prepareToSendInfoSchulamtAnmeldungAbgelehnt(
 				persistedBetreuung
 			);
 		}
@@ -1164,7 +1165,7 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 			null,
 			WizardStepName.BETREUUNG
 		); //auch bei entfernen wizard updaten
-		mailService.sendInfoBetreuungGeloescht(
+		mailService.prepareToSendInfoBetreuungGeloescht(
 			Collections.singletonList(betreuungToRemove)
 		);
 	}
@@ -2058,11 +2059,12 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 					.hasInstitutionOffeneMitteilungen(institution);
 				if (CollectionUtils.isNotEmpty(pendenzen)
 					|| ungelesendeMitteilung) {
-					mailService.sendInfoOffenePendenzenNeuMitteilungInstitution(
-						stammdaten,
-						CollectionUtils.isNotEmpty(pendenzen),
-						ungelesendeMitteilung
-					);
+					mailService
+						.prepareToSendInfoOffenePendenzenNeuMitteilungInstitution(
+							stammdaten,
+							CollectionUtils.isNotEmpty(pendenzen),
+							ungelesendeMitteilung
+						);
 				}
 			}
 		}
@@ -2100,7 +2102,7 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 			if (hasOffenePendenzen
 				|| ungelesendeMitteilung) {
 				mailService
-					.sendInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
+					.prepareToSendInfoOffenePendenzenNeuMitteilungGemeindeMitarbeitende(
 						benutzer,
 						hasOffenePendenzen,
 						ungelesendeMitteilung,
@@ -2204,7 +2206,7 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 					.getId()
 			).get();
 		if (gemeindeStammdaten.getBenachrichtigungTsEmailAuto()) {
-			mailService.sendInfoSchulamtAnmeldungStorniert(
+			mailService.prepareToSendInfoSchulamtAnmeldungStorniert(
 				persistedBetreuung
 			);
 		}

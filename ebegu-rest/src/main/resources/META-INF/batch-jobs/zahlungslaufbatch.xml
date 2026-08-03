@@ -22,12 +22,19 @@
 	<listeners>
 		<listener ref="zahlungslaufJobListener"/>
 	</listeners>
-	<step id="zahlungslaufErstellen" next="zahlungslaufUeberpruefen">
+	<step id="zahlungslaufErstellen" next="sendZahlungslaufMail">
 		<properties>
 			<!-- timeout wie timeout max (360 minuten) -->
 			<property name="jakarta.transaction.global.timeout" value="21600"/>
 		</properties>
+		<listeners>
+			<listener ref="zahlungsauftragStepListener"/>
+		</listeners>
 		<batchlet ref="zahlungslaufErstellenBatchlet"/>
+	</step>
+	<!-- send Mail to User after Zahlungsauftrag was created -->
+	<step id="sendZahlungslaufMail" next="zahlungslaufUeberpruefen">
+		<batchlet ref="sendZahlungsauftragEmailBatchlet"/>
 	</step>
 	<step id="zahlungslaufUeberpruefen">
 		<properties>

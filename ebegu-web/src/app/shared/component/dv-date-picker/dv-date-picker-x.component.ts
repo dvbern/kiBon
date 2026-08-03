@@ -37,7 +37,7 @@ import {I18nServiceRSRest} from '../../../i18n/services/i18nServiceRS.rest';
 @Component({
     selector: 'dv-date-picker-x',
     templateUrl: './dv-date-picker-x.component.html',
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None,
     styleUrls: ['dv-date-picker-x.component.less'],
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],

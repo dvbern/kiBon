@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {
     MAT_DIALOG_DATA,
@@ -38,6 +38,7 @@ import {MitteilungRS} from '../../service/mitteilungRS.rest';
 @Component({
     selector: 'dv-ng-mitteilung-delegation-dialog',
     templateUrl: './dv-ng-mitteilung-delegation-dialog.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvNgMitteilungDelegationDialogComponent {

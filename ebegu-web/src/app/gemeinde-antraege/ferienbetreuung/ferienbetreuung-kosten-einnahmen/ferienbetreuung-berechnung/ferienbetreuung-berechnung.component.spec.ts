@@ -15,7 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {
+    provideHttpClient,
+    withInterceptorsFromDi,
+    withXhr
+} from '@angular/common/http';
 /* eslint-disable no-magic-numbers */
 import {TestBed} from '@angular/core/testing';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
@@ -44,7 +48,7 @@ describe('FerienbetreuungBerechnungComponent', () => {
             imports: [SharedModule],
             providers: [
                 {provide: EinstellungRS, useValue: einstellungRSSpy},
-                provideHttpClient(withInterceptorsFromDi())
+                provideHttpClient(withXhr(), withInterceptorsFromDi())
             ]
         })
             .overrideModule(SharedModule, SHARED_MODULE_OVERRIDES)

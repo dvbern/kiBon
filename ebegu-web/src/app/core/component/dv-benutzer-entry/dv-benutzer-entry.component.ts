@@ -15,7 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, inject, Input, ChangeDetectionStrategy} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TSRole} from '../../../../models/enums/TSRole';
 import {TSVerantwortung} from '../../../../models/enums/TSVerantwortung';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
@@ -25,12 +27,22 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     selector: 'dv-benutzer-entry',
     templateUrl: './dv-benutzer-entry.component.html',
     styleUrls: ['./dv-benutzer-entry.component.less'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvBenutzerEntryComponent {
+    private readonly applicationPropertyService = inject(
+        ApplicationPropertyRsService
+    );
+
     @Input() public benutzer: TSBenutzer;
     @Input() public noIcons: boolean;
     @Input() public noName: boolean;
+
+    private readonly angebotTSActivated = toSignal(
+        this.applicationPropertyService.isAngebotTSEnabled(),
+        {initialValue: false}
+    );
 
     public getVerantwortungClasses(): string[][] {
         if (EbeguUtil.isNullOrUndefined(this.benutzer)) {
@@ -50,11 +62,18 @@ export class DvBenutzerEntryComponent {
                     ['fa fa-graduation-cap', TSVerantwortung.VERANTWORTUNG_TS]
                 ];
             case TSRole.ADMIN_GEMEINDE:
-            case TSRole.SACHBEARBEITER_GEMEINDE:
-                return [
-                    ['fa fa-gift', TSVerantwortung.VERANTWORTUNG_BG],
-                    ['fa fa-graduation-cap', TSVerantwortung.VERANTWORTUNG_TS]
+            case TSRole.SACHBEARBEITER_GEMEINDE: {
+                const classes = [
+                    ['fa fa-gift', TSVerantwortung.VERANTWORTUNG_BG]
                 ];
+                if (this.angebotTSActivated()) {
+                    classes.push([
+                        'fa fa-graduation-cap',
+                        TSVerantwortung.VERANTWORTUNG_TS
+                    ]);
+                }
+                return classes;
+            }
             case TSRole.ADMIN_TRAEGERSCHAFT:
             case TSRole.SACHBEARBEITER_TRAEGERSCHAFT:
             case TSRole.ADMIN_INSTITUTION:

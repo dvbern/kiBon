@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {HttpStatusCode} from '@angular/common/http';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -26,7 +25,6 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {KeycloakAdminRsService} from '@admin/util';
 import {CONSTANTS} from '@models/constants';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
@@ -68,9 +66,7 @@ export class BenutzerComponent implements OnInit {
     private readonly benutzerRS = inject(BenutzerRSX);
     private readonly dialog = inject(MatDialog);
     private readonly errorService = inject(ErrorService);
-    private readonly adminUtilKeycloakAdminService = inject(
-        KeycloakAdminRsService
-    );
+
     appPropService = inject(ApplicationPropertyRsService);
 
     @ViewChild(NgForm) private readonly form: NgForm;
@@ -88,6 +84,8 @@ export class BenutzerComponent implements OnInit {
     public futureBerechtigung?: TSBerechtigung;
     public isDefaultVerantwortlicher: boolean = false;
     public isDisabled = true;
+    private initialCurrentBerechtigung: TSBerechtigung;
+    private initialFutureBerechtigung?: TSBerechtigung;
 
     berechtigungHistoryList: TSBerechtigungHistory[];
 
@@ -140,15 +138,13 @@ export class BenutzerComponent implements OnInit {
             : `${role} (${details})`;
     }
 
-    public saveBenutzerBerechtigungen(): void {
+    public async saveBenutzerBerechtigungen(): Promise<void> {
         if (!this.form.valid) {
             return;
         }
 
-        if (!this.isMoreThanGesuchstellerRole()) {
-            this.deleteMitarbeiterAccessRole();
-            this.doSaveBenutzer();
-
+        if (!this.hasBerechtigungenChanged()) {
+            await this.addMitarbeiterAccessRoleAndSaveBenutzer();
             return;
         }
 
@@ -183,46 +179,16 @@ export class BenutzerComponent implements OnInit {
                 })
             )
             .subscribe({
-                next: () => {
-                    this.addMitarbeiterAccessRole();
-                    this.doSaveBenutzer();
+                next: async () => {
+                    await this.addMitarbeiterAccessRoleAndSaveBenutzer();
                 },
                 error: err => LOG.error(err)
             });
     }
 
-    private deleteMitarbeiterAccessRole(): void {
-        this.adminUtilKeycloakAdminService
-            .deleteMitarbeiterAccessRole(this.selectedUser.externalUUID)
-            .subscribe(response => {
-                if (HttpStatusCode.Ok === response.status) {
-                    this.isDisabled = true;
-                    this.navigateBackToUsersList();
-                } else {
-                    LOG.error(
-                        'Failed to delete MITARBEITER_ACCESS role. Caused by: ' +
-                            response.body
-                    );
-                    this.initSelectedUser();
-                }
-            });
-    }
-
-    private addMitarbeiterAccessRole(): void {
-        this.adminUtilKeycloakAdminService
-            .addMitarbeiterAccessRole(this.selectedUser.externalUUID)
-            .subscribe(response => {
-                if (HttpStatusCode.Ok === response.status) {
-                    this.isDisabled = true;
-                    this.navigateBackToUsersList();
-                } else {
-                    LOG.error(
-                        'Failed to add MITARBEITER_ACCESS role. Caused by: ' +
-                            response.body
-                    );
-                    this.initSelectedUser();
-                }
-            });
+    private async addMitarbeiterAccessRoleAndSaveBenutzer(): Promise<void> {
+        await this.doSaveBenutzer();
+        this.initSelectedUser();
     }
 
     public inactivateBenutzer(): void {
@@ -292,6 +258,16 @@ export class BenutzerComponent implements OnInit {
     private initSelectedUser(): void {
         this.currentBerechtigung = this.selectedUser.berechtigungen[0];
         this.futureBerechtigung = this.selectedUser.berechtigungen[1];
+
+        // deep copy to not assign the same memory block to initialCurrentBerechtigung and initialFutureBerechtigung
+        //this.initialCurrentBerechtigung = this.currentBerechtigung; => same location in memory, both variables are always identical
+        this.initialCurrentBerechtigung = this.currentBerechtigung
+            ? JSON.parse(JSON.stringify(this.currentBerechtigung))
+            : undefined;
+        this.initialFutureBerechtigung = this.futureBerechtigung
+            ? JSON.parse(JSON.stringify(this.futureBerechtigung))
+            : undefined;
+
         if (this.isSuperAdmin()) {
             this.benutzerRS
                 .getBerechtigungHistoriesForBenutzer(this.selectedUser.username)
@@ -302,14 +278,25 @@ export class BenutzerComponent implements OnInit {
         }
     }
 
-    private isAdminRole(): boolean {
-        return this.isAtLeastOneRoleInList(TSRoleUtil.getAdministratorRoles());
+    /**
+     * Diese Methode prüft, ob die Berechtigungen des Benutzers geändert wurden.
+     * Dazu wird der deep copied this.initialCurrentBerechtigung mit this.currentBerechtigung verglichen.
+     * Der Vergleich muss jedoch als string passieren:
+     * object !== object: Only checks if they are the same instance in memory (which they aren't, because it is cloned/deep copied)
+     * Two objects with identical properties are still !== if they're different instances in memory
+     * JSON.stringify(object) !== JSON.stringify(object): Checks if the actual data inside the objects is different.
+     */
+    private hasBerechtigungenChanged(): boolean {
+        return (
+            JSON.stringify(this.initialCurrentBerechtigung) !==
+                JSON.stringify(this.currentBerechtigung) ||
+            JSON.stringify(this.initialFutureBerechtigung) !==
+                JSON.stringify(this.futureBerechtigung)
+        );
     }
 
-    private isMoreThanGesuchstellerRole(): boolean {
-        return this.isAtLeastOneRoleInList(
-            TSRoleUtil.getAllRolesButGesuchsteller()
-        );
+    private isAdminRole(): boolean {
+        return this.isAtLeastOneRoleInList(TSRoleUtil.getAdministratorRoles());
     }
 
     public isSuperAdmin(): boolean {
@@ -330,7 +317,7 @@ export class BenutzerComponent implements OnInit {
         );
     }
 
-    private doSaveBenutzer(): void {
+    private async doSaveBenutzer(): Promise<void> {
         this.selectedUser.berechtigungen = [];
 
         this.currentBerechtigung.prepareForSave();
@@ -340,17 +327,14 @@ export class BenutzerComponent implements OnInit {
             this.futureBerechtigung.prepareForSave();
             this.selectedUser.berechtigungen.push(this.futureBerechtigung);
         }
-
-        this.benutzerRS
-            .saveBenutzerBerechtigungen(this.selectedUser)
-            .then(() => {
-                this.isDisabled = true;
-                this.navigateBackToUsersList();
-            })
-            .catch(err => {
-                LOG.error('Could not save Benutzer', err);
-                this.initSelectedUser();
-            });
+        try {
+            await this.benutzerRS.saveBenutzer(this.selectedUser);
+            this.isDisabled = true;
+            this.navigateBackToUsersList();
+        } catch (err) {
+            LOG.error('Could not save Benutzer', err);
+            this.initSelectedUser();
+        }
     }
 
     private navigateBackToUsersList(): void {

@@ -33,7 +33,7 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-radio-input-x',
     templateUrl: './dv-radio-input-x.component.html',
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.Eager,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     styleUrls: ['./dv-radio-input-x.component.less'],
     standalone: false

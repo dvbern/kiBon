@@ -18,8 +18,6 @@
 
 package ch.dvbern.ebegu.batch.jobs.zahlungslauf;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Properties;
 
 import jakarta.batch.api.AbstractBatchlet;
@@ -31,12 +29,8 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
-import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.WorkJobConstants;
-import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
-import ch.dvbern.ebegu.services.MandantService;
 import ch.dvbern.ebegu.services.ZahlungService;
-import ch.dvbern.ebegu.util.DateUtil;
 
 @Named("zahlungslaufErstellenBatchlet")
 @Dependent
@@ -46,79 +40,21 @@ public class ZahlungslaufErstellenBatchlet extends AbstractBatchlet {
 	private JobContext jobCtx;
 
 	@Inject
-	private MandantService mandantService;
-
-	@Inject
 	private ZahlungService zahlungService;
 
 	@Override
 	public String process() throws Exception {
 		zahlungService
-			.zahlungsauftragErstellen(
-				getZahlungslaufTyp(),
-				getGemeindeId(),
-				getFaelligkeitsdatum(),
-				getBeschreibung(),
-				getAuszahlungInZukunftFlag(),
-				getDatumGeneriert(),
-				getMandant()
+			.zahlungsauftragBearbeiten(
+				getZahlungsauftragId()
 			);
 		return BatchStatus.COMPLETED.toString();
 	}
 
-	private Mandant getMandant() {
-		String mandantId = getParameters().getProperty(
-			WorkJobConstants.REPORT_MANDANT_ID
-		);
-		return mandantService.getMandant(mandantId);
-	}
-
-	private ZahlungslaufTyp getZahlungslaufTyp() {
-		var zahlungslaufTyp = getParameters().getProperty(
-			WorkJobConstants.ZAHLUNGSLAUFTYP
-		);
-		return ZahlungslaufTyp.valueOf(zahlungslaufTyp);
-	}
-
-	private String getGemeindeId() {
+	private String getZahlungsauftragId() {
 		return getParameters().getProperty(
-			WorkJobConstants.GEMEINDE_ID_PARAM
+			WorkJobConstants.ZAHLUNGSAUFTRAG_ID
 		);
-	}
-
-	private LocalDate getFaelligkeitsdatum() {
-		String datumFaelligkeitString = getParameters().getProperty(
-			WorkJobConstants.DATUM_FAELLIGKEIT
-		);
-		return DateUtil.parseStringToDate(datumFaelligkeitString);
-	}
-
-	private LocalDateTime getDatumGeneriert() {
-		String stringDatumGeneriert = getParameters().getProperty(
-			WorkJobConstants.DATUM_GENERIERT
-		);
-		LocalDateTime datumGeneriert;
-		if (stringDatumGeneriert != null) {
-			datumGeneriert = DateUtil.parseStringToDateOrReturnNow(
-				stringDatumGeneriert
-			).atStartOfDay();
-		} else {
-			datumGeneriert = LocalDateTime.now();
-		}
-		return datumGeneriert;
-	}
-
-	private String getBeschreibung() {
-		return getParameters().getProperty(
-			WorkJobConstants.BESCHREIBUNG
-		);
-	}
-
-	private Boolean getAuszahlungInZukunftFlag() {
-		var auszahlungInZukunft = getParameters().getProperty(
-			WorkJobConstants.AUSZAHLUNG_IN_ZUKUNFT
-		);
-		return Boolean.parseBoolean(auszahlungInZukunft);
 	}
 
 	private Properties getParameters() {

@@ -195,9 +195,7 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 	@Override
 	@Nonnull
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES,
-		unit = TimeUnit.MINUTES)
-	public Zahlungsauftrag zahlungsauftragErstellen(
+	public Zahlungsauftrag createEmptyZahlungsauftrag(
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
 		@Nonnull String gemeindeId,
 		@Nonnull LocalDate datumFaelligkeit,
@@ -206,25 +204,26 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		@Nonnull LocalDateTime datumGeneriert,
 		@Nonnull Mandant mandant
 	) {
+
 		Gemeinde gemeinde = gemeindeService.findGemeinde(gemeindeId)
 			.orElseThrow(
 				() -> new EbeguEntityNotFoundException(
-					"zahlungsauftragErstellen",
+					"createEmptyZahlungsauftrag",
 					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
 					gemeindeId
 				)
 			);
-
-		boolean isInfomaZahlung = isInfomaZahlung(gemeinde);
-
 		// Es darf immer nur ein Zahlungsauftrag im Status ENTWURF sein
 		Optional<Zahlungsauftrag> lastZahlungsauftragOptional =
 			findLastZahlungsauftrag(zahlungslaufTyp, gemeinde);
 		if (lastZahlungsauftragOptional.isPresent()
-			&& lastZahlungsauftragOptional.get().getStatus().isEntwurf()) {
+			&& (lastZahlungsauftragOptional.get().getStatus().isEntwurf()
+				|| lastZahlungsauftragOptional.get()
+					.getStatus()
+					.isAngefragt())) {
 			throw new EbeguRuntimeException(
 				KibonLogLevel.DEBUG,
-				"zahlungsauftragErstellen called from ZahlungsServiceBean",
+				"createEmptyZahlungsauftrag called from ZahlungsServiceBean",
 				ErrorCodeEnum.ERROR_ZAHLUNG_ERSTELLEN
 			);
 		}
@@ -239,7 +238,7 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 
 		Zahlungsauftrag zahlungsauftrag = new Zahlungsauftrag();
 		zahlungsauftrag.setZahlungslaufTyp(zahlungslaufTyp);
-		zahlungsauftrag.setStatus(ZahlungauftragStatus.ENTWURF);
+		zahlungsauftrag.setStatus(ZahlungauftragStatus.ANGEFRAGT);
 		zahlungsauftrag.setBeschrieb(beschreibung);
 		zahlungsauftrag.setDatumFaellig(datumFaelligkeit);
 		zahlungsauftrag.setDatumGeneriert(datumGeneriert);
@@ -251,9 +250,6 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		// Zahlung bis 30.09.
 		int anzahlMonateInZukunft = auszahlungInZukunft ? 1 : 0;
 
-		// Falls es eine Wiederholung des Auftrags ist, muessen nur noch die Korrekturen beruecksichtigt werden, welche
-		// seit dem letzten Auftrag erstellt wurden
-		boolean isRepetition = false;
 		// Falls fuer denselben Zeitraum (oder den letzten Teil davon) schon ein Auftrag vorhanden ist, kann das
 		// DatumVon nicht
 		// einfach an den letzten Auftrag anschliessen
@@ -271,10 +267,6 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 				zeitabschnittBis,
 				lastZahlungsauftrag
 			);
-			isRepetition = ZahlungslaufUtil.isZahlunglaufRepetition(
-				zeitabschnittBis,
-				lastZahlungsauftrag
-			);
 		} else {
 			zeitabschnittVon = Constants.START_OF_DATETIME.toLocalDate(); // Default, falls dies der erste Auftrag ist
 		}
@@ -282,13 +274,66 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		zahlungsauftrag.setGueltigkeit(
 			new DateRange(zeitabschnittVon, zeitabschnittBis)
 		);
-
 		if (!zahlungsauftrag.getGueltigkeit().isValid()) {
 			throw new EbeguRuntimeException(
-				"zahlungsauftragErstellen",
+				"createEmptyZahlungsauftrag",
 				ErrorCodeEnum.ERROR_ZAHLUNGSAUFTRAG_GENERIERT_BEFORE_LAST_ZAHLUNGSAUFTRAG_GENERIERT,
 				datumGeneriert.toLocalDate(),
 				zeitabschnittVon
+			);
+		}
+		return persistence.merge(zahlungsauftrag);
+	}
+
+	@Override
+	@Nonnull
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
+	public Zahlungsauftrag zahlungsauftragBearbeiten(
+		@Nonnull String zahlungsauftragId
+	) {
+		Zahlungsauftrag zahlungsauftrag =
+			persistence.find(Zahlungsauftrag.class, zahlungsauftragId);
+		if (zahlungsauftrag == null
+			|| !zahlungsauftrag.getStatus().isAngefragt()) {
+			throw new EbeguRuntimeException(
+				KibonLogLevel.DEBUG,
+				"zahlungsauftragBearbeiten called from ZahlungsServiceBean",
+				ErrorCodeEnum.ERROR_ZAHLUNG_ERSTELLEN
+			);
+		}
+		zahlungsauftrag.setStatus(ZahlungauftragStatus.ENTWURF);
+		Gemeinde gemeinde = zahlungsauftrag.getGemeinde();
+		ZahlungslaufTyp zahlungslaufTyp = zahlungsauftrag.getZahlungslaufTyp();
+
+		boolean isInfomaZahlung = isInfomaZahlung(gemeinde);
+
+		LOGGER.info(
+			"Bearbeitete Zahlungsauftrag für Gemeinde {} ({}), Fälligkeit: {}, Datum generiert: {}",
+			gemeinde.getName(),
+			gemeinde.getId(),
+			Constants.DATE_FORMATTER.format(zahlungsauftrag.getDatumFaellig()),
+			Constants.DATE_FORMATTER.format(zahlungsauftrag.getDatumGeneriert())
+		);
+
+		LocalDate zeitabschnittVon = zahlungsauftrag.getGueltigkeit()
+			.getGueltigAb();
+		LocalDate zeitabschnittBis = zahlungsauftrag.getGueltigkeit()
+			.getGueltigBis();
+
+		// Falls es eine Wiederholung des Auftrags ist, muessen nur noch die Korrekturen beruecksichtigt werden, welche
+		// seit dem letzten Auftrag erstellt wurden
+		boolean isRepetition = false;
+
+		Optional<Zahlungsauftrag> lastFreigegebeneZahlungsauftragOptional =
+			findLastFreigegebeneZahlungsauftrag(zahlungslaufTyp, gemeinde);
+		if (lastFreigegebeneZahlungsauftragOptional.isPresent()) {
+			final Zahlungsauftrag lastZahlungsauftrag =
+				lastFreigegebeneZahlungsauftragOptional.get();
+			isRepetition = ZahlungslaufUtil.isZahlunglaufRepetition(
+				zeitabschnittBis,
+				lastZahlungsauftrag
 			);
 		}
 
@@ -302,7 +347,7 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			LOGGER.info(
 				"Ermittle normale Zahlungen für Gemeinde {} ({}) im Zeitraum {}. Identifiziere relevante Zeitabschnitte.",
 				gemeinde.getName(),
-				gemeindeId,
+				gemeinde.getId(),
 				zahlungsauftrag.getGueltigkeit().toRangeString()
 			);
 
@@ -317,7 +362,7 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 				"{} Zeitabschnitte für normale Zahlungen für Gemeinde {} ({}) identifiziert. Erstelle Zahlungspositionen.",
 				gueltigeVerfuegungZeitabschnitte.size(),
 				gemeinde.getName(),
-				gemeindeId
+				gemeinde.getId()
 			);
 
 			for (VerfuegungZeitabschnitt zeitabschnitt : gueltigeVerfuegungZeitabschnitte) {
@@ -346,14 +391,14 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			LOGGER.info(
 				"Zahlungspositionen für normale Zahlungen für Gemeinde {} ({}) erstellt.",
 				gemeinde.getName(),
-				gemeindeId
+				gemeinde.getId()
 			);
 		}
 
 		LOGGER.info(
 			"Identifiziere Zeitabschnitte für Korrekturzahlungen für Gemeinde {} ({}).",
 			gemeinde.getName(),
-			gemeindeId
+			gemeinde.getId()
 		);
 
 		// Korrekturen und Nachzahlungen
@@ -373,7 +418,7 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			"{} Zeitabschnitte für Korrekturzahlungen für Gemeinde {} ({}) identifiziert. Erstelle Zahlungspositionen.",
 			verfuegungsZeitabschnitte.size(),
 			gemeinde.getName(),
-			gemeindeId
+			gemeinde.getId()
 		);
 		for (VerfuegungZeitabschnitt zeitabschnitt : verfuegungsZeitabschnitte) {
 
@@ -402,17 +447,25 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			"Zahlungsauftrag{} für Gemeinde {} ({}) und Gültigkeit {} erstellt. Auftrag wird gespeichert.",
 			(isRepetition ? "-Repetition" : ""),
 			gemeinde.getName(),
-			gemeindeId,
+			gemeinde.getId(),
 			zahlungsauftrag.getGueltigkeit().toRangeString()
 		);
 
 		calculateZahlungsauftrag(zahlungsauftrag);
+		zahlungsauftrag.setDatumBeendet(LocalDateTime.now());
 		Zahlungsauftrag persistedAuftrag = persistence.merge(zahlungsauftrag);
+		// we need to flush in order to ensure that the Zahlungsauftrag is written in the database
+		persistence.getEntityManager().flush();
+		LOGGER.info(
+			"Zahlungsauftrag für Gemeinde {} ({}) wurde gespeichert.",
+			gemeinde.getName(),
+			gemeinde.getId()
+		);
 
 		LOGGER.info(
 			"Zahlungsauftrag für Gemeinde {} ({}) wurde gespeichert.",
 			gemeinde.getName(),
-			gemeindeId
+			gemeinde.getId()
 		);
 
 		return persistedAuftrag;
@@ -1133,6 +1186,44 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		return Optional.empty();
 	}
 
+	@Nonnull
+	private Optional<Zahlungsauftrag> findLastFreigegebeneZahlungsauftrag(
+		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
+		@Nonnull Gemeinde gemeinde
+	) {
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<Zahlungsauftrag> query = cb.createQuery(
+			Zahlungsauftrag.class
+		);
+		Root<Zahlungsauftrag> root = query.from(Zahlungsauftrag.class);
+
+		// Der Zahlungsauftrag muss der uebergebenen Gemeinde zugeordnet sein
+		Predicate predicateGemeinde = cb.equal(
+			root.get(Zahlungsauftrag_.gemeinde),
+			gemeinde
+		);
+		// und den richtigen Typ haben
+		Predicate predicateTyp = cb.equal(
+			root.get(Zahlungsauftrag_.zahlungslaufTyp),
+			zahlungslaufTyp
+		);
+		// und den richtigen Status
+		Predicate predicateStatus = root.get(Zahlungsauftrag_.status)
+			.in(ZahlungauftragStatus.getFreigegebeneStatus());
+
+		query.where(predicateGemeinde, predicateTyp, predicateStatus);
+
+		query.orderBy(cb.desc(root.get(AbstractEntity_.timestampErstellt)));
+		List<Zahlungsauftrag> criteriaResults = persistence.getCriteriaResults(
+			query,
+			1
+		);
+		if (!criteriaResults.isEmpty()) {
+			return Optional.of(criteriaResults.get(0));
+		}
+		return Optional.empty();
+	}
+
 	@Override
 	@Nonnull
 	public Zahlungsauftrag zahlungsauftragAktualisieren(
@@ -1412,6 +1503,9 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		case "datumGeneriert":
 			sortExpression = root.get(Zahlungsauftrag_.datumGeneriert);
 			break;
+		case "datumBeendet":
+			sortExpression = root.get(Zahlungsauftrag_.datumBeendet);
+			break;
 		case "gemeinde":
 			sortExpression = joinGemeinde.get(Gemeinde_.name);
 			break;
@@ -1619,6 +1713,21 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 			potenziellZuLoeschenZahlungenList
 		);
 		removeAllEmptyZahlungsauftraege(zahlungsauftraegeList);
+	}
+
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void setZahlungsauftragstatusHasFailed(String zahlungsauftragId) {
+		Zahlungsauftrag zahlungsauftrag = persistence.find(
+			Zahlungsauftrag.class,
+			zahlungsauftragId
+		);
+		if (zahlungsauftrag == null) {
+			return;
+		}
+		zahlungsauftrag.setStatus(ZahlungauftragStatus.FAILED);
+		zahlungsauftrag.setDatumBeendet(LocalDateTime.now());
+		persistence.merge(zahlungsauftrag);
 	}
 
 	/**

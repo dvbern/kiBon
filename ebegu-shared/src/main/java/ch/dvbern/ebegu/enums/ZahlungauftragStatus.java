@@ -15,18 +15,25 @@
 
 package ch.dvbern.ebegu.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Enum fuer den Status eines Zahlungsauftrags
  */
 public enum ZahlungauftragStatus {
 
-	ENTWURF, AUSGELOEST, BESTAETIGT;
+	ANGEFRAGT, ENTWURF, AUSGELOEST, BESTAETIGT, FAILED;
 
 	public boolean isEntwurf() {
 		return ENTWURF.equals(this);
 	}
 
-	public boolean isAusgeloest() {
-		return AUSGELOEST.equals(this);
+	public boolean isAngefragt() {
+		return ANGEFRAGT.equals(this);
+	}
+
+	public static List<ZahlungauftragStatus> getFreigegebeneStatus() {
+		return Arrays.asList(AUSGELOEST, BESTAETIGT);
 	}
 }

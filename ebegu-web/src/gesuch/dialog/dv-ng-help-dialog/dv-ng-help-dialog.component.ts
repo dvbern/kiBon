@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, inject} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {KiBonGuidedTourService} from '../../../app/kibonTour/service/KiBonGuidedTourService';
@@ -30,6 +30,7 @@ import {TSRoleUtil} from '../../../utils/TSRoleUtil';
     selector: 'dv-ng-help-dialog',
     styleUrls: ['./dv-ng-help-dialog.component.less'],
     templateUrl: './dv-ng-help-dialog.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DvNgHelpDialogComponent {

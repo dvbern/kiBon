@@ -38,6 +38,7 @@ const createZahlungTodayAction = (
     cy.getByData('beschrieb').type(zahlungBeschrieb + ' ' + dateToday);
     ZahlungslaufPO.getZahlungErstellenButton().click();
     cy.getByData('remove-ok').click();
+    cy.wait(1500);
 };
 
 const zahlungAusloesenAction = () => {
@@ -46,10 +47,11 @@ const zahlungAusloesenAction = () => {
 };
 
 const userChangeAction = (user: User) => {
+    cy.ignoreUncaughtException();
     cy.wait(1500);
     cy.login(user);
-    cy.wait(1500);
     cy.visit('/#/zahlungsauftrag');
+    cy.wait(1500);
 };
 
 const mandantAndUserChangeAction = (mandant: KiBonMandant, user: User) => {
@@ -58,11 +60,20 @@ const mandantAndUserChangeAction = (mandant: KiBonMandant, user: User) => {
 };
 
 const downloadExcelAndCheckValuesAction = () => {
+    // let any re-render triggered by the preceding sort dblclick settle
+    // before we try to click inside a row
+    cy.get('mat-row', {timeout: 10000}).should('have.length.greaterThan', 0);
+    cy.wait(500);
+
+    getElementWithContent('mat-row', 'Entwurf')
+        .findByData('ExcelDownloadButton')
+        .should('be.visible')
+        .as('excelDownloadButton');
+
     cy.getDownloadUrl(() => {
-        getElementWithContent('mat-row', 'Entwurf')
-            .findByData('ExcelDownloadButton')
-            .click();
+        cy.get('@excelDownloadButton').click();
     }).as('downloadUrl');
+
     cy.get<string>('@downloadUrl', {timeout: 15000}).then(url => {
         cy.log(`downloading ${url}`);
         cy.downloadFile(url, fileName).as('download');
@@ -86,6 +97,7 @@ const getDownloadExcel = (institution: string) => {
     cy.getDownloadUrl(() => {
         cy.contains('mat-row', institution)
             .findByData('ExcelDownloadButton')
+            .should('be.visible')
             .click();
     }).as('downloadUrl');
     cy.get<string>('@downloadUrl', {timeout: 15000}).then(url => {
@@ -95,7 +107,10 @@ const getDownloadExcel = (institution: string) => {
 };
 
 const getElementWithContent = (selector: string, text: string) => {
-    return cy.contains(selector, text);
+    return cy
+        .contains(selector, text, {timeout: 10000})
+        .should('exist')
+        .and('be.visible');
 };
 
 const zahlungAlsInstitutionBestaetigenAction = (
@@ -107,16 +122,20 @@ const zahlungAlsInstitutionBestaetigenAction = (
         '.mat-sort-header-container',
         'Generiert'
     ).dblclick();
+    cy.wait(500);
     ZahlungslaufPO.getElementWithContent(
         'mat-cell',
         zahlungBeschrieb + ' ' + dateToday
     ).click();
+    cy.wait(500);
     ZahlungslaufPO.getElementWithContent('mat-cell', institution).click();
+    cy.wait(500);
     ZahlungslaufPO.getElementWithContent(
         'mat-cell',
         'Zahlung erhalten'
     ).click();
-    cy.getByData('zahlungErhalten').eq(0).click();
+    cy.wait(500);
+    cy.getByData('zahlungErhalten').eq(0).should('be.visible').click();
     ZahlungslaufPO.getElementWithContent('mat-cell', bestaetigungText);
 };
 
@@ -164,17 +183,24 @@ const betreuungBestaetigenZahlungAnElternAction = (betreuung: string) => {
 };
 
 const gesuchVerfueungZahlungAnElternAction = () => {
+    cy.wait(1500);
     cy.getByData('sidenav.VERFUEGEN').click();
+    cy.wait(1500);
     cy.getByData('finSitStatus.radio-value.AKZEPTIERT').click();
+    cy.wait(1500);
     cy.getByData('container.geprueft').click();
+    cy.wait(1500);
     cy.getByData('container.confirm').click();
+    cy.wait(1500);
     cy.getByData('container.verfuegen').click();
+    cy.wait(1500);
     cy.getByData('container.confirm').click();
     cy.wait(1500);
 };
 
 const editZahlungsauftragAction = () => {
-    cy.getByData('editZahlungsauftrag').click();
+    cy.wait(1500);
+    cy.getByData('editZahlungsauftrag').should('be.visible').click();
     cy.getByData('zahlungsauftragBeschrieb').type(' edit');
     cy.getByData('saveZahlungsauftrag').click();
     ZahlungslaufPO.getElementWithContent(
@@ -201,10 +227,12 @@ const isZahlungBestaetigtAction = (
     bestaetigungText: string
 ) => {
     ZahlungslaufPO.userChangeAction(user);
+    cy.ignoreUncaughtException();
     ZahlungslaufPO.getElementWithContent(
         '.mat-sort-header-container',
         'Generiert'
     ).dblclick();
+    cy.wait(500);
     ZahlungslaufPO.getElementWithContent(
         'mat-cell',
         zahlungBeschrieb + ' ' + dateToday
@@ -216,6 +244,34 @@ const waitForZahlungAusloesenAction = () => {
     cy.waitForRequest('PUT', '**/v1/zahlungen/ausloesen/**', () => {
         ZahlungslaufPO.zahlungAusloesenAction();
     });
+};
+
+const waitForRefreshAction = () => {
+    cy.waitForRequest(
+        'GET',
+        '**/v1/zahlungen/**',
+        () => {
+            // Trigger a refresh by re-selecting the current filter value.
+            cy.get('body').then($body => {
+                if ($body.find('select[name="gemeindeFilter"]').length > 0) {
+                    cy.get('select[name="gemeindeFilter"]').then($select => {
+                        const currentValue = $select.val();
+                        cy.get('select[name="gemeindeFilter"]').select(
+                            currentValue as string,
+                            {force: true}
+                        );
+                    });
+                } else if (
+                    $body.find('.dv-switch-animation-container').length > 0
+                ) {
+                    cy.get('.dv-switch-animation-container').first().click();
+                    cy.wait(500);
+                    cy.get('.dv-switch-animation-container').first().click();
+                }
+            });
+        },
+        {waitOptions: {timeout: 35000}}
+    );
 };
 
 const getZahlungenSwitchButton = () => {
@@ -242,5 +298,6 @@ export const ZahlungslaufPO = {
     clearAndEditZahlungslaufAction,
     isZahlungBestaetigtAction,
     waitForZahlungAusloesenAction,
+    waitForRefreshAction,
     getZahlungenSwitchButton
 };

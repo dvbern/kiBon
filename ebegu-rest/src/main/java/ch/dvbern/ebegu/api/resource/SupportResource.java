@@ -58,7 +58,7 @@ public class SupportResource {
 		@Context HttpServletResponse response
 	) {
 
-		mailService.sendSupportAnfrage(fallJAXP);
+		mailService.prepareToSendSupportAnfrage(fallJAXP);
 		return Response.ok().build();
 	}
 }

@@ -1,53 +1,76 @@
 package ch.dvbern.ebegu.services.zahlungen;
 
-import java.time.LocalDate;
 import java.util.Properties;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import jakarta.batch.operations.JobOperator;
 import jakarta.batch.runtime.BatchRuntime;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.entities.Workjob;
 import ch.dvbern.ebegu.enums.WorkJobConstants;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
-import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.enums.reporting.BatchJobStatus;
+import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
+import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.services.WorkjobService;
+
+import static ch.dvbern.ebegu.enums.WorkJobConstants.LANGUAGE;
 
 @Stateless
 public class WorkjobZahlungslaufService {
 
 	@Inject
+	private Persistence persistence;
+
+	@Inject
 	private PrincipalBean principalBean;
 
-	public long startZahlungslaufWorkjob(
+	@Inject
+	private WorkjobService workjobService;
+
+	/**
+	 * Start the Zahlaugslauf process
+	 *
+	 * @param zahlungslaufTyp the type of Zahlungslauf
+	 * @param gemeindeId the id of the Gemeinde
+	 * @param auszahlungInZukunft should the next month be paid in advance
+	 * @param zahlungsauftragId id of the zahlungsauftrag
+	 * @param workjob the workjob to save
+	 * @return
+	 */
+	public Workjob startZahlungslaufWorkjob(
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
 		@Nonnull String gemeindeId,
 		@Nonnull Boolean auszahlungInZukunft,
-		@Nonnull LocalDate datumFaelligkeit,
-		@Nonnull String beschreibung,
-		@Nullable String datumGeneriert
+		@Nonnull String zahlungsauftragId,
+		@Nonnull Workjob workjob
 	) {
 		JobOperator jobOperator = BatchRuntime.getJobOperator();
 		final Properties jobParameters = buildJobParameter(
 			zahlungslaufTyp,
 			gemeindeId,
 			auszahlungInZukunft,
-			datumFaelligkeit,
-			beschreibung,
-			datumGeneriert
+			zahlungsauftragId
 		);
-		return jobOperator.start("zahlungslaufbatch", jobParameters);
+		workjob.setStatus(BatchJobStatus.REQUESTED);
+		workjob = workjobService.saveWorkjob(workjob);
+		persistence.getEntityManager().flush();
+
+		long jobId = jobOperator.start("zahlungslaufbatch", jobParameters);
+		workjob.setExecutionId(jobId);
+		workjob = workjobService.saveWorkjob(workjob);
+
+		return workjob;
 	}
 
 	private Properties buildJobParameter(
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
 		@Nonnull String gemeindeId,
 		@Nonnull Boolean auszahlungInZukunft,
-		@Nonnull LocalDate datumFaelligkeit,
-		@Nonnull String beschreibung,
-		@Nullable String datumGeneriert
+		@Nonnull String zahlungsauftragId
 	) {
 		Properties jobParameters = new Properties();
 
@@ -67,6 +90,11 @@ public class WorkjobZahlungslaufService {
 		);
 
 		jobParameters.setProperty(
+			LANGUAGE,
+			LocaleThreadLocal.get().getLanguage()
+		);
+
+		jobParameters.setProperty(
 			WorkJobConstants.GEMEINDE_ID_PARAM,
 			gemeindeId
 		);
@@ -82,16 +110,10 @@ public class WorkjobZahlungslaufService {
 		);
 
 		jobParameters.setProperty(
-			WorkJobConstants.DATUM_FAELLIGKEIT,
-			Constants.SQL_DATE_FORMAT.format(datumFaelligkeit)
+			WorkJobConstants.ZAHLUNGSAUFTRAG_ID,
+			zahlungsauftragId
 		);
-		jobParameters.setProperty(WorkJobConstants.BESCHREIBUNG, beschreibung);
-		if (datumGeneriert != null) {
-			jobParameters.setProperty(
-				WorkJobConstants.DATUM_GENERIERT,
-				datumGeneriert
-			);
-		}
+
 		return jobParameters;
 	}
 }

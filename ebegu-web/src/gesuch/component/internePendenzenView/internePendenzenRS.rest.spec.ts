@@ -1,4 +1,8 @@
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {
+    provideHttpClient,
+    withInterceptorsFromDi,
+    withXhr
+} from '@angular/common/http';
 import {TestBed} from '@angular/core/testing';
 import {InternePendenzenRS} from './internePendenzenRS.rest';
 
@@ -8,7 +12,7 @@ describe('InternePendenzenRS', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [],
-            providers: [provideHttpClient(withInterceptorsFromDi())]
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi())]
         });
         service = TestBed.inject(InternePendenzenRS);
     });

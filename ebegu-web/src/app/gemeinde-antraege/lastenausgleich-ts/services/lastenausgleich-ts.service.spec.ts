@@ -14,7 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {
+    provideHttpClient,
+    withInterceptorsFromDi,
+    withXhr
+} from '@angular/common/http';
 import {TestBed} from '@angular/core/testing';
 import {TranslateService} from '@ngx-translate/core';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
@@ -38,7 +42,7 @@ describe('LastenausgleichTSService', () => {
             providers: [
                 {provide: ErrorService, useValue: errorServiceSpy},
                 {provide: TranslateService, useValue: translateSpy},
-                provideHttpClient(withInterceptorsFromDi())
+                provideHttpClient(withXhr(), withInterceptorsFromDi())
             ]
         });
         service = TestBed.inject(LastenausgleichTSService);

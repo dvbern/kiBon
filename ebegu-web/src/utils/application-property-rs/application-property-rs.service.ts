@@ -224,4 +224,13 @@ export class ApplicationPropertyRsService {
             )
         );
     }
+
+    public getBenutzendeEditNameAllowed(): Observable<boolean> {
+        return this.getPublicPropertiesCached().pipe(
+            map(
+                (response: TSPublicAppConfig) =>
+                    response.benutzendeEditNameAllowed
+            )
+        );
+    }
 }

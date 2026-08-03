@@ -31,12 +31,13 @@ const betreuungVerfuegen = (kindIndex: number, betreuungIndex: number) => {
             VerfuegenPO.getVerfuegung(kindIndex, betreuungIndex).click();
         }
     );
-
+    cy.wait(1000);
     VerfuegungPO.getVerfuegungsBemerkungenKontrolliert().click();
-
     cy.waitForRequest('PUT', '**/verfuegung/verfuegen/**', () => {
         VerfuegungPO.getVerfuegenButton().click();
+        cy.wait(1000);
         ConfirmDialogPO.getDvLoadingConfirmButton().click();
+        cy.wait(1000);
     });
 };
 
