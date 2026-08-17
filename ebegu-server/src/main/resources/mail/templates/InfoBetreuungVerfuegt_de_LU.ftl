@@ -38,7 +38,7 @@ ${templateConfiguration.mailCss}
 		<tbody>
 		<tr>
 			<td width="300">Fall:</td>
-			<td width="300">${fall.getPaddedFallnummer()} ${gesuchsteller.nachname}</td>
+			<td width="300"><a href="${frontendUrl}/gesuch/betreuungen/${betreuung.extractGesuch().id}">${fall.getPaddedFallnummer()} ${gesuchsteller.nachname}</a></td>
 		</tr>
 		<tr>
 			<td>Kind:</td>

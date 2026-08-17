@@ -26,7 +26,7 @@ ${templateConfiguration.mailCss}
 		Guten Tag
 	</p>
 	<p>
-		Der Antrag mit der Fallnummer ${gesuch.dossier.fall.fallNummer?string("#")} wurde verfügt. Es können nun auch die
+		Der Antrag mit der Fallnummer <a href="${frontendUrl}/gesuch/verfuegen/${gesuch.id}">${gesuch.dossier.fall.fallNummer?string("#")}</a> wurde verfügt. Es können nun auch die
 		Tagesschulanmeldungen abgeschlossen werden.
 	</p>
 	<p>

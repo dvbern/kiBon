@@ -29,7 +29,7 @@ Content-Type: text/html;charset=utf-8
 	</p>
 	<p>
 		Freundliche Grüsse<br/>
-		kiBon - Team
+		kiBon-Team
 	</p>
 	<p>
 		Dies ist eine automatisch versendete E-Mail. Bitte antworten Sie nicht auf diese Nachricht.

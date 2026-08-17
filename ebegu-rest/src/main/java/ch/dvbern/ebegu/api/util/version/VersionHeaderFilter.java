@@ -24,6 +24,8 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 
+import ch.dvbern.ebegu.version.VersionInfoBean;
+
 /**
  * All responses that are sent to the client get a new header-param with the server version.
  */

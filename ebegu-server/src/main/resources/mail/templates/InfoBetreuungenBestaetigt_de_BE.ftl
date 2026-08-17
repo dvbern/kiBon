@@ -1,0 +1,51 @@
+<#-- @ftlvariable name="gesuch" type="ch.dvbern.ebegu.entities.Gesuch" -->
+<#-- @ftlvariable name="senderFullName" type="java.lang.String" -->
+<#-- @ftlvariable name="templateConfiguration" type="ch.dvbern.ebegu.mail.MailTemplateConfiguration" -->
+<#-- @ftlvariable name="configuration" type="ch.dvbern.ebegu.config.EbeguConfiguration" -->
+<#-- @ftlvariable name="empfaengerMail" type="java.lang.String" -->
+<#-- @ftlvariable name="gesuchsteller" type="ch.dvbern.ebegu.entities.Gesuchsteller" -->
+<#-- @ftlvariable name="isSozialdienst" type="java.lang.Boolean" -->
+<#-- @ftlvariable name="hostname" type="java.lang.String" -->
+<#-- @ftlvariable name="gruss" type="java.lang.String" -->
+<#-- @ftlvariable name="fall" type="ch.dvbern.ebegu.entities.Fall"-->
+<#-- @ftlvariable name="gesuchsperiode" type="ch.dvbern.ebegu.entities.Gesuchsperiode"-->
+From: ${configuration.senderAddress}
+To: <@base64Header>${senderFullName}</@base64Header> <${empfaengerMail}>
+Subject: ${fall.getPaddedFallnummer()}, ${gesuchsperiode.getGesuchsperiodeString()}, <@base64Header>kiBon <#if configuration.isDevmode>Testsystem</#if> – <#if isSozialdienst>Antrag für ${gesuchsteller.fullName}<#else>Antrag</#if> kann freigegeben werden</@base64Header>
+Content-Type: text/html;charset=utf-8
+
+<html>
+<head>
+${templateConfiguration.mailCss}
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>kiBon <#if configuration.isDevmode>Testsystem</#if> – <#if isSozialdienst>Antrag für ${gesuchsteller.fullName}<#else>Antrag</#if> kann freigegeben werden</title>
+
+</head>
+
+<body>
+
+<div>
+	<p>
+		Guten Tag
+	</p>
+	<p>
+		Für sämtliche Betreuungsangebote wurden die Plätze bestätigt. <#if isSozialdienst>Der Antrag für ${gesuchsteller.fullName}<#else>Der Antrag</#if> kann
+		<a href="${frontendUrl}/gesuch/freigabe/${gesuch.id}">hier</a>
+		freigegeben werden.
+	<p>
+		Freundliche Grüsse <br/>
+		${gruss}
+	</p>
+
+	<p>
+		<#if configuration.isDevmode>
+		<b>Hierbei handelt es sich um eine Nachricht von einem Testsystem. Dieses Testsystem wird für Schulungen verwendet. Über dieses System abgehandelte Anträge verfügen über keine Zahlungsberechtigung!</b><br><br>
+		</#if>
+		Dies ist eine automatisch versendete E-Mail. Bitte antworten Sie nicht auf diese Nachricht.
+	</p>
+</div>
+
+</body>
+
+</html>

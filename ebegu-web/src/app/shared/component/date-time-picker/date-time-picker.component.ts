@@ -6,17 +6,10 @@ import {
     model
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {
-    MatDatepicker,
-    MatDatepickerInput,
-    MatDatepickerToggle
-} from '@angular/material/datepicker';
-import {MatFormField, MatInput} from '@angular/material/input';
-import {
-    MatTimepicker,
-    MatTimepickerInput,
-    MatTimepickerToggle
-} from '@angular/material/timepicker';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatTimepickerModule} from '@angular/material/timepicker';
 import {TranslatePipe} from '@ngx-translate/core';
 import {DateUtil} from '../../../../utils/date/DateUtil';
 import {FormsModule, ValidationErrors} from '@angular/forms';
@@ -27,18 +20,14 @@ import {ErrorMessagesComponent} from '../../../core/component/dv-error-messages/
 @Component({
     selector: 'lib-shared-ui-date-time-picker',
     imports: [
+        MatFormFieldModule,
+        MatDatepickerModule,
+        MatTimepickerModule,
+        MatInputModule,
         CommonModule,
-        MatTimepickerToggle,
-        MatTimepicker,
-        MatTimepickerInput,
-        MatFormField,
         FormsModule,
-        MatDatepickerInput,
-        MatDatepickerToggle,
-        MatDatepicker,
         ErrorMessagesComponent,
-        TranslatePipe,
-        MatInput
+        TranslatePipe
     ],
     templateUrl: './date-time-picker.component.html',
     styleUrl: './date-time-picker.component.less',

@@ -31,7 +31,6 @@ ${templateConfiguration.mailCss}
 		<#if gesuch.gesuchsteller1.gesuchstellerJA.geschlecht == "MAENNLICH" >Sehr geehrter Herr ${gesuch.gesuchsteller1.gesuchstellerJA.nachname}</#if><#if (gesuch.gesuchsteller2)??>, <br></#if>
 		<#if (gesuch.gesuchsteller2)?? && gesuch.gesuchsteller2.gesuchstellerJA.geschlecht == "WEIBLICH" >Sehr geehrte Frau ${gesuch.gesuchsteller2.gesuchstellerJA.nachname}</#if>
 		<#if (gesuch.gesuchsteller2)?? && gesuch.gesuchsteller2.gesuchstellerJA.geschlecht == "MAENNLICH" >Sehr geehrter Herr ${gesuch.gesuchsteller2.gesuchstellerJA.nachname}</#if>
-
 	</p>
 	<p>
 		Am ${gesuch.getEingangsdatumFormated()} haben Sie einen Antrag <#if isSozialdienst>für ${gesuchsteller.fullName}</#if> via kiBon eingereicht.

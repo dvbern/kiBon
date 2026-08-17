@@ -61,7 +61,7 @@
         <version.jackson>2.12.7.20221012</version.jackson>
         <version.hamcrest>2.2</version.hamcrest>
         <version.poi>5.2.3</version.poi>
-        <version.iso20022>7.0.2</version.iso20022>
+        <version.iso20022>9.0.0</version.iso20022>
         <version.jakarata-xml>2.3.3</version.jakarata-xml>
         <version.jaxb-runtime>2.3.5</version.jaxb-runtime>
         <version.junit5>5.9.2</version.junit5>

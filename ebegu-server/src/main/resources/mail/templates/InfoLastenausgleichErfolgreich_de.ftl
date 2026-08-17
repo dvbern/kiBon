@@ -27,6 +27,10 @@ Content-Type: text/html;charset=utf-8
 		Der Lastenausgleich-Prozess des Jahres ${jahr} wurde erfolgreich beendet und kann <a href="${frontendUrl}/lastenausgleich">hier</a> eingesehen werden.
 	</p>
 	<p>
+		Freundliche Grüsse<br/>
+		kiBon-Team
+	</p>
+	<p>
 		<#if configuration.isDevmode>
 			<b>Hierbei handelt es sich um eine Nachricht von einem Testsystem. Dieses Testsystem wird zu Testzwecken verwendet. Über dieses System abgehandelte Anträge verfügen über keine Zahlungsberechtigung!</b><br><br>
 		</#if>

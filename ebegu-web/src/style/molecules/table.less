@@ -445,12 +445,12 @@ table,
         text-overflow: ellipsis;
         vertical-align: middle;
         white-space: nowrap;
+    }
 
-        span:first-child {
-            margin: 0 calc(0.8rem - 0.25rem) 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    &:not(.admin-view) mat-cell span:first-child {
+        margin: 0 calc(0.8rem - 0.25rem) 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     mat-cell.mat-mdc-cell,

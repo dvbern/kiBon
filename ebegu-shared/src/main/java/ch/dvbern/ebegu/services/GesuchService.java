@@ -181,6 +181,21 @@ public interface GesuchService {
 	);
 
 	/**
+	 * Retrieves the most recently authorized {@link Gesuch} associated with the given {@link Dossier}.
+	 * The method ensures the associated {@link Gesuch} has been verfuegt (i.e., has a non-null
+	 * timestampVerfuegt) and is gueltig. Results are ordered by the timestamp of verfuegung in descending order.
+	 *
+	 * @param dossier the dossier for which the latest authorized 'Gesuch' is to be retrieved.
+	 * Must not be null.
+	 * @return an {@link Optional} containing the most recent verfuegte {@link Gesuch} associated with
+	 * the specified {@link Dossier}, or {@link Optional#empty()} if no such {@link Gesuch} exists.
+	 */
+	@Nonnull
+	Optional<String> getMailOfGesuchForDossierWithLatestMutationOfGS2(
+		@Nonnull Dossier dossier
+	);
+
+	/**
 	 * Gibt das neueste Gesuch der im selben Fall und Periode wie das gegebene Gesuch ist.
 	 * Es wird nach Erstellungsdatum geschaut
 	 */

@@ -98,8 +98,10 @@ import ch.dvbern.ebegu.entities.GesuchDeletionLog;
 import ch.dvbern.ebegu.entities.Gesuch_;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Gesuchsperiode_;
+import ch.dvbern.ebegu.entities.Gesuchsteller;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer_;
+import ch.dvbern.ebegu.entities.Gesuchsteller_;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten_;
@@ -1831,6 +1833,48 @@ public class GesuchServiceBean extends AbstractBaseService implements
 			authorizer.checkReadAuthorization(gesuch);
 		}
 		return Optional.of(gesuch);
+	}
+
+	@Override
+	@Nonnull
+	public Optional<String> getMailOfGesuchForDossierWithLatestMutationOfGS2(
+		@Nonnull Dossier dossier
+	) {
+		authorizer.checkReadAuthorizationDossier(dossier);
+
+		var cb = persistence.getCriteriaBuilder();
+
+		final CriteriaQuery<String> query = cb.createQuery(String.class);
+		Root<Gesuch> root = query.from(Gesuch.class);
+		Join<Gesuch, GesuchstellerContainer> gesuchstellerJoin = root.join(
+			Gesuch_.gesuchsteller2,
+			JoinType.INNER
+		);
+		Join<GesuchstellerContainer, Gesuchsteller> gesDataJoin =
+			gesuchstellerJoin.join(
+				GesuchstellerContainer_.gesuchstellerJA,
+				JoinType.INNER
+			);
+		Predicate gesuchOfDossier = cb.equal(
+			root.get(Gesuch_.dossier),
+			dossier
+		);
+		Path<String> gsEmail = gesDataJoin.get(Gesuchsteller_.mail);
+		query.select(gsEmail);
+		query.where(gesuchOfDossier);
+		query.orderBy(
+			cb.desc(gesDataJoin.get(Gesuchsteller_.timestampMutiert))
+		);
+		TypedQuery<String> typedQuery = persistence.getEntityManager()
+			.createQuery(query);
+		typedQuery.setMaxResults(1);
+
+		String email = typedQuery.getResultList().get(0);
+		if (email == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of(email);
 	}
 
 	private Optional<Gesuch> getNeustesGeprueftesGesuchInAnotherDossier(

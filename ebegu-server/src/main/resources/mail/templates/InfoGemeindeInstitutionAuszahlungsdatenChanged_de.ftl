@@ -28,7 +28,7 @@ ${templateConfiguration.mailCss}
     </p>
 	<p>
         Freundliche Grüsse<br/>
-        kiBon - Team
+        kiBon-Team
 	</p>
     <p>
         <#if configuration.isDevmode>

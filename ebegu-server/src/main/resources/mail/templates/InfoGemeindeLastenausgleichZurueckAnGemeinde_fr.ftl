@@ -29,7 +29,7 @@ Content-Type: text/html;charset=utf-8
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>
-		kiBon - Team
+		kiBon-Team
 	</p>
 	<p>
 		Merci de ne pas répondre à ce message automatique.

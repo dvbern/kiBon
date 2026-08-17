@@ -22,16 +22,21 @@ import ch.dvbern.ebegu.util.EbeguUtil;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.zahlungslauf.ZahlungslaufHelper;
 import ch.dvbern.ebegu.util.zahlungslauf.ZahlungslaufHelperFactory;
+import ch.dvbern.ebegu.version.VersionInfoBean;
 import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
 import ch.dvbern.oss.lib.iso20022.dtos.pain.AuszahlungDTO;
 import ch.dvbern.oss.lib.iso20022.dtos.pain.Pain001DTO;
-import ch.dvbern.oss.lib.iso20022.pain001.v00103ch02.Pain001Service;
+import ch.dvbern.oss.lib.iso20022.dtos.pain.Pain001SoftwareDTO;
+import ch.dvbern.oss.lib.iso20022.pain001.v00109ch03.Pain001Service;
 
 @Dependent
 public class ZahlungsfileGeneratorPain implements IZahlungsfileGenerator {
 
 	@Inject
 	private Pain001Service pain001Service;
+
+	@Inject
+	private VersionInfoBean versionInfoBean;
 
 	@Override
 	@Nonnull
@@ -86,7 +91,7 @@ public class ZahlungsfileGeneratorPain implements IZahlungsfileGenerator {
 		pain001DTO.setSchuldnerBIC(debitorBic);
 		// Wir setzen explizit keine SchuldnerIBAN, da dieses Feld zwar optional ist, aber bei einigen Banken Probleme macht
 		pain001DTO.setSchuldnerIBANGebuehren(null);
-		pain001DTO.setSoftwareName("kiBon");
+		pain001DTO.setSoftwareDetails(getKiBonSoftwareDetails());
 		// we use the currentTimeMillis so that it is always different
 		//noinspection StringConcatenationMissingWhitespace
 		pain001DTO.setMsgId("kiBon" + System.currentTimeMillis());
@@ -134,10 +139,6 @@ public class ZahlungsfileGeneratorPain implements IZahlungsfileGenerator {
 				);
 				auszahlungDTO.setZahlungsempfaengerIBAN(
 					ibanToUnformattedString(ibanInstitution)
-				);
-				auszahlungDTO.setZahlungsempfaengerBankClearingNumber(
-					ibanInstitution
-						.extractClearingNumberWithoutLeadingZeros()
 				);
 
 				Adresse adresseKontoinhaber = zahlungslaufHelper
@@ -192,6 +193,15 @@ public class ZahlungsfileGeneratorPain implements IZahlungsfileGenerator {
 			});
 
 		return pain001DTO;
+	}
+
+	@Nonnull
+	private Pain001SoftwareDTO getKiBonSoftwareDetails() {
+		return new Pain001SoftwareDTO(
+			"kiBon",
+			"Dv Bern",
+			versionInfoBean.getVersionInfo().orElseThrow().getVersion()
+		);
 	}
 
 	@Nonnull

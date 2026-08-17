@@ -299,7 +299,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
-	public void prepareToSendInfoMitteilungErhalten(
+	public void prepareTemplateAndSendInfoMitteilungErhalten(
 		@Nonnull Mitteilung mitteilung
 	) {
 		List<Sprache> sprachen =
@@ -330,30 +330,30 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 					"skipping sendInfoMitteilungErhalten because Mitteilungsempfaenger is null"
 				);
 			}
-
-			if (mitteilung.getBetreuung() != null) {
-				Gesuch gesuch = mitteilung.getBetreuung().extractGesuch();
-				if (shouldSendEmailToGS2(gesuch)) {
-					Gesuchsteller gs2 = gesuch.extractGesuchsteller2()
-						.get();
-					String mail2 = gs2.getMail();
-					if (mail2 != null) {
-						toOutboxMail(
-							mailTemplateConfig.getInfoMitteilungErhalten(
-								mitteilung,
-								mail2,
-								sprachen
-							),
-							mail2,
-							gesuch.extractMandant().getMandantIdentifier()
-						);
-					}
-					logSentEmail(
-						"InfoMitteilungErhalten",
-						mail2
-					);
-				}
+			if (!isMailSendingToGS2Enabled(mandant)) {
+				return;
 			}
+			var mailOpt = gesuchService
+				.getMailOfGesuchForDossierWithLatestMutationOfGS2(
+					mitteilung.getDossier()
+				);
+			if (mailOpt.isEmpty()) {
+				return;
+			}
+			var mailGS2 = mailOpt.get();
+			toOutboxMail(
+				mailTemplateConfig.getInfoMitteilungErhalten(
+					mitteilung,
+					mailGS2,
+					sprachen
+				),
+				mailGS2,
+				mandant.getMandantIdentifier()
+			);
+			logSentEmail(
+				"InfoMitteilungErhalten",
+				mailGS2
+			);
 		}
 	}
 
@@ -1234,16 +1234,22 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	private boolean shouldSendEmailToGS2(@Nonnull Gesuch gesuch) {
-		boolean propertyEnabled = Boolean.TRUE.equals(
-			applicationPropertyService.findApplicationPropertyAsBoolean(
-				ApplicationPropertyKey.MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2,
-				gesuch.extractMandant()
-			)
+		boolean propertyEnabled = isMailSendingToGS2Enabled(
+			gesuch.extractMandant()
 		);
 
 		return propertyEnabled
 			&& !gesuch.getDossier().getFall().isSozialdienstFall()
 			&& gesuch.extractGesuchsteller2().isPresent();
+	}
+
+	private boolean isMailSendingToGS2Enabled(Mandant mandant) {
+		return Boolean.TRUE.equals(
+			applicationPropertyService.findApplicationPropertyAsBoolean(
+				ApplicationPropertyKey.MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2,
+				mandant
+			)
+		);
 	}
 
 	/**

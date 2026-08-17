@@ -2299,7 +2299,7 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 			false
 		);
 		mailService.prepareToSendBenutzerEinladung(besitzer, einladung);
-		mailService.prepareToSendInfoMitteilungErhalten(mitteilung);
+		mailService.prepareTemplateAndSendInfoMitteilungErhalten(mitteilung);
 		mailService.prepareToSendInfoGemeindeAngebotAktiviert(
 			gemeinde,
 			angebotTyp

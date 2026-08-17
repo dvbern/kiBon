@@ -99,9 +99,13 @@ public interface MailService {
 	);
 
 	/**
-	 * Vorbereitet zu Senden eine Email mit der Benachrichtigung, dass eine In-System Nachricht erhalten wurde.
+	 * Prepares and sends an email notification conveying that a new {@link Mitteilung} has been received.
+	 *
+	 * @param mitteilung the {@link Mitteilung} containing the information to be included in the mail; must not be null.
 	 */
-	void prepareToSendInfoMitteilungErhalten(@Nonnull Mitteilung mitteilung);
+	void prepareTemplateAndSendInfoMitteilungErhalten(
+		@Nonnull Mitteilung mitteilung
+	);
 
 	/**
 	 * Vorbereitet zu Senden eine Email mit der Information, dass ein Gesuch Verfügt wurde.
