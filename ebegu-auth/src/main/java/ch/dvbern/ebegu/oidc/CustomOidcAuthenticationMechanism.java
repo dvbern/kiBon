@@ -396,7 +396,7 @@ public class CustomOidcAuthenticationMechanism implements
 		String originalUrl =
 			HttpStorageController.getInstance(configuration, request, response)
 				.getAsString(ORIGINAL_REQUEST)
-				.get(); // checked before
+				.orElse(""); // checked before
 
 		if (originalUrl.contains("?")) {
 			originalUrl = originalUrl.substring(0, originalUrl.indexOf('?'));

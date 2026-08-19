@@ -87,6 +87,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
 
         ZahlungslaufPO.getDownloadExcel(institution);
         ZahlungslaufPO.getElementWithContent('mat-cell', bestaetigt);
+        cy.wait(500);
 
         ZahlungslaufPO.isZahlungBestaetigtAction(
             adminGemeindeUserLondon,

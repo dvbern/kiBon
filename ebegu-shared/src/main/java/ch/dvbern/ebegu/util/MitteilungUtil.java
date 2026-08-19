@@ -19,13 +19,16 @@ package ch.dvbern.ebegu.util;
 
 import java.math.BigDecimal;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Betreuungsmitteilung;
+import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Mitteilung;
+import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.entities.containers.PensumUtil;
 import ch.dvbern.ebegu.enums.MitteilungStatus;
 import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
@@ -79,5 +82,22 @@ public final class MitteilungUtil {
 				betreuung.extractGemeinde()
 			)
 		);
+	}
+
+	public static boolean areZeitabschnittIgnorierend(Gesuch gesuch) {
+		return gesuch.getKindContainers()
+			.stream()
+			.flatMap(kindContainer -> kindContainer.getBetreuungen().stream())
+			.map(Betreuung::getVerfuegung)
+			.filter(Objects::nonNull)
+			.flatMap(verfuegung -> verfuegung.getZeitabschnitte().stream())
+			.anyMatch(MitteilungUtil::hasIgnorierenderZahlungsstatus);
+	}
+
+	private static boolean hasIgnorierenderZahlungsstatus(
+		VerfuegungZeitabschnitt zeitabschnitt
+	) {
+		return zeitabschnitt.getZahlungsstatusInstitution().isIgnorierend()
+			|| zeitabschnitt.getZahlungsstatusAntragsteller().isIgnorierend();
 	}
 }

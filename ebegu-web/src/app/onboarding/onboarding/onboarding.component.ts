@@ -24,14 +24,17 @@ import {
     ChangeDetectionStrategy
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {DomSanitizer} from '@angular/platform-browser';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {MANDANTS} from '@models/mandant';
 import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {MandantService} from '../../../utils/mandant-service/mandant.service';
 import {OnboardingHelpDialogComponent} from '../onboarding-help-dialog/onboarding-help-dialog.component';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
+import {map, takeUntil} from 'rxjs/operators';
+import {EbeguUtil} from '../../../utils/EbeguUtil';
+import {VideoPlayerLinkVisitor} from '../../core/constants/VideoPlayerLinkVisitor';
 
 @Component({
     selector: 'dv-onboarding',
@@ -63,6 +66,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     public isMultimandantEnabled$: Observable<boolean>;
     public isLuzern$: Observable<boolean>;
     private readonly unsubscribe$ = new Subject<void>();
+    public videoPlayerLink$: Observable<SafeResourceUrl | null>;
 
     public constructor() {
         this.isDummyMode$ = this.applicationPropertyRS.isDummyMode();
@@ -94,6 +98,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
                 console.error(err);
             }
         });
+        this.initVideoPlayerLink();
     }
 
     public ngOnDestroy(): void {
@@ -123,5 +128,23 @@ export class OnboardingComponent implements OnInit, OnDestroy {
         $event.preventDefault();
         const dialogConfig = new MatDialogConfig();
         this.dialog.open(OnboardingHelpDialogComponent, dialogConfig);
+    }
+
+    private initVideoPlayerLink(): void {
+        const mandant$ = this.mandantService.mandant$.pipe(
+            takeUntil(this.unsubscribe$)
+        );
+        const isGerman$ = this.isGerman$().pipe(takeUntil(this.unsubscribe$));
+        this.videoPlayerLink$ = combineLatest([mandant$, isGerman$]).pipe(
+            map(([mandant, isGerman]) => {
+                const url = new VideoPlayerLinkVisitor(isGerman).process(
+                    mandant
+                );
+                if (EbeguUtil.isNullOrUndefined(url)) {
+                    return null;
+                }
+                return url;
+            })
+        );
     }
 }

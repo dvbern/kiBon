@@ -121,9 +121,11 @@ describe('Kibon - Gesuch zu Steuerverwaltung senden', () => {
         );
         cy.wait(1000);
         cy.waitForRequest('POST', '**/search/search', () => {
+            cy.wait(1000);
             KommentarPO.getSTVPruefungZurueckAnGemeindeButton().click();
             cy.wait(1000);
             ConfirmDialogPO.getDvLoadingConfirmButton().click();
+            cy.wait(1000);
         });
         FaelleListePO.getAntrag(fallnummer).should('not.exist');
 

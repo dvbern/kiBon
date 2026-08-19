@@ -150,6 +150,7 @@ import org.slf4j.LoggerFactory;
 
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_MITTAGSTISCH;
 import static ch.dvbern.ebegu.enums.ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND;
+import static ch.dvbern.ebegu.util.MitteilungUtil.areZeitabschnittIgnorierend;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -2524,28 +2525,6 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 			return translatedError;
 		}
 		return null;
-	}
-
-	private boolean areZeitabschnittIgnorierend(Gesuch gesuch) {
-		return gesuch.getKindContainers()
-			.stream()
-			.anyMatch(
-				kindContainer -> kindContainer.getBetreuungen()
-					.stream()
-					.anyMatch(
-						betreuung -> betreuung.getVerfuegung()
-							.getZeitabschnitte()
-							.stream()
-							.anyMatch(
-								verfuegungZeitabschnitt -> verfuegungZeitabschnitt
-									.getZahlungsstatusInstitution()
-									.isIgnorierend()
-									|| verfuegungZeitabschnitt
-										.getZahlungsstatusAntragsteller()
-										.isIgnorierend()
-							)
-					)
-			);
 	}
 
 	private boolean canGesuchBeAutomatischVerfuegt(Gesuch mutation) {

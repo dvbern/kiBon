@@ -34,6 +34,7 @@ import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.BetreuungUtil;
 import ch.dvbern.ebegu.util.ValidationMessageUtil;
 
@@ -53,6 +54,11 @@ public class CheckBetreuungsmitteilungValidator implements
 	//http://stackoverflow.com/questions/18267269/correct-way-to-do-an-entitymanager-query-during-hibernate-validation
 	@PersistenceUnit(unitName = "ebeguPersistenceUnit")
 	private EntityManagerFactory entityManagerFactory;
+
+	// in order to query the same Betreuung that is already part of the mitteilung that we read or write
+	// we need to use the same persistence that the one use for the read/write operation
+	@Inject
+	private Persistence persistence;
 
 	public CheckBetreuungsmitteilungValidator() {
 	}
@@ -75,7 +81,7 @@ public class CheckBetreuungsmitteilungValidator implements
 	) {
 
 		try (EntityManager em = createEntityManager()) {
-			final Betreuung betreuung = em.find(
+			final Betreuung betreuung = persistence.find(
 				Betreuung.class,
 				mitteilung.getBetreuung().getId()
 			);

@@ -26,6 +26,8 @@ import jakarta.annotation.PreDestroy;
 import jakarta.annotation.security.RunAs;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
@@ -118,6 +120,7 @@ public class AnmeldungBestaetigungEventKafkaConsumer {
 
 	}
 
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	@Schedule(info = "consume kafka events",
 		second = "*/12",
 		minute = "*",

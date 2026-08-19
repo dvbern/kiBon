@@ -201,7 +201,9 @@ const gesuchVerfueungZahlungAnElternAction = () => {
 const editZahlungsauftragAction = () => {
     cy.wait(1500);
     cy.getByData('editZahlungsauftrag').should('be.visible').click();
+    cy.wait(1500);
     cy.getByData('zahlungsauftragBeschrieb').type(' edit');
+    cy.wait(1500);
     cy.getByData('saveZahlungsauftrag').click();
     ZahlungslaufPO.getElementWithContent(
         'mat-cell',
@@ -228,6 +230,7 @@ const isZahlungBestaetigtAction = (
 ) => {
     ZahlungslaufPO.userChangeAction(user);
     cy.ignoreUncaughtException();
+    cy.wait(500);
     ZahlungslaufPO.getElementWithContent(
         '.mat-sort-header-container',
         'Generiert'
@@ -237,6 +240,7 @@ const isZahlungBestaetigtAction = (
         'mat-cell',
         zahlungBeschrieb + ' ' + dateToday
     ).click();
+    cy.wait(500);
     ZahlungslaufPO.getElementWithContent('mat-cell', bestaetigungText);
 };
 

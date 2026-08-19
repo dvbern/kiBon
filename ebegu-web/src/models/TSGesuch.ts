@@ -278,7 +278,7 @@ export class TSGesuch extends TSAbstractAntragEntity {
         const listResult: Array<TSKindContainer> = [];
         if (this.kindContainers) {
             this.kindContainers.forEach(kind => {
-                if (kind.kindJA.familienErgaenzendeBetreuung) {
+                if (kind.kindJA?.familienErgaenzendeBetreuung) {
                     listResult.push(kind);
                 }
             });

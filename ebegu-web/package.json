@@ -50,7 +50,7 @@
     "@angular/language-service": "22.0.6",
     "@schematics/angular": "^20.3.6",
     "@swc-node/register": "^1.10.9",
-    "@swc/cli": "^0.6.0",
+    "@swc/cli": "^0.8.1",
     "@swc/core": "^1.10.18",
     "@swc/helpers": "^0.5.15",
     "@types/angular": "^1.7.0",
@@ -132,9 +132,9 @@
     "@angular/platform-browser-dynamic": "22.0.6",
     "@angular/router": "22.0.6",
     "@angular/upgrade": "22.0.6",
-    "@kolkov/angular-editor": "^3.0.0-beta.2",
-    "@ngrx/operators": "^21.0.0",
-    "@ngrx/signals": "^21.0.0",
+    "@kolkov/angular-editor": "3.1.0",
+    "@ngrx/operators": "22.0.0-rc.0",
+    "@ngrx/signals": "22.0.0-rc.0",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "@sentry/browser": "^6.19.7",
@@ -173,7 +173,7 @@
     "ng-file-upload": "~12.2.8",
     "ngx-cookie-service": "^20.1.0",
     "ngx-guided-tour": "^2.0.1",
-    "ngx-iban": "^20.0.0",
+    "ngx-iban": "20.0.0",
     "randomcolor": "^0.5.4",
     "rxjs": "^7.8.2",
     "tslib": "^2.6.0",
@@ -182,23 +182,23 @@
   },
   "overrides": {
     "@uirouter/angular": {
-      "@angular/common": "^22.0.0",
-      "@angular/core": "^22.0.0"
+      "@angular/common": "$@angular/common",
+      "@angular/core": "$@angular/core"
     },
     "@uirouter/angular-hybrid": {
-      "@angular/common": "^22.0.0",
-      "@angular/core": "^22.0.0",
-      "@angular/upgrade": "^22.0.0",
-      "@uirouter/angular": "^21.0.0"
+      "@angular/common": "$@angular/common",
+      "@angular/core": "$@angular/core",
+      "@angular/upgrade": "$@angular/upgrade",
+      "@uirouter/angular": "$@uirouter/angular"
     },
     "ngx-iban": {
-      "@angular/forms": "^22.0.0"
+      "@angular/forms": "$@angular/forms"
     }
   },
   "allowScripts": {
-    "@parcel/watcher@2.5.6": true,
-    "@swc/core@1.15.43": true,
-    "cypress@14.5.4": true,
+    "@parcel/watcher@2.6.0": true,
+    "@swc/core@1.16.0": true,
+    "cypress@15.20.1": true,
     "fsevents@2.3.3": true,
     "msgpackr-extract@3.0.4": true,
     "lmdb@3.5.4": true,

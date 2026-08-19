@@ -17,11 +17,11 @@
 
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {StateService} from '@uirouter/core';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {MandantService} from '@utils/mandant';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ITourParams} from '../../../gesuch/gesuch.route';
-import {MandantLogoNameVisitor} from '@models/mandant';
+import {MandantLogoNameVisitor, MANDANTS} from '@models/mandant';
 import {
     navigateToStartPageForRole,
     navigateToStartPageForRoleWithParams
@@ -43,6 +43,7 @@ export class WelcomeMainComponent {
     private readonly mandantService = inject(MandantService);
 
     logoUrl$ = this.mandantService.mandant$.pipe(
+        filter(mandant => mandant !== MANDANTS.NONE),
         map(mandant => {
             const filename = new MandantLogoNameVisitor().process(mandant);
             return `url("assets/images/${filename}")`;

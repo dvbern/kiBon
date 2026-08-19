@@ -19,6 +19,19 @@ export default {
             }
         }
     },
+    '/videos': {
+        target: 'http://localhost:80/',
+        secure: false,
+        proxyTimeout: 240000,
+        on: {
+            onProxyReq(proxyReq, req, res) {
+                customSetHeader(proxyReq);
+            },
+            onProxyRes(proxyReq, req, res) {
+                customSetHeader(proxyReq);
+            }
+        }
+    },
     '/assets/translations/gemeinde': {
         target: 'http://localhost:8080/',
         secure: false,

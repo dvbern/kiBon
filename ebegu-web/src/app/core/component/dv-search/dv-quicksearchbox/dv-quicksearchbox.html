@@ -15,6 +15,7 @@
 
 <md-autocomplete
     flex=""
+    data-test="quicksearch"
     md-input-name="autocompleteField"
     md-min-length="3"
     md-no-cache="vm.noCache"
@@ -34,6 +35,7 @@
             md-highlight-text="vm.searchQuery"
             md-highlight-flags="i"
             ng-class="{ALL: 'allresults-link'}[item.entity]"
+            data-test="quicksearch-result"
         >
             {{ item.antragDTO.getQuicksearchString()
             }}{{ item.text ? ' (' + item.text + ') ' : '' }}

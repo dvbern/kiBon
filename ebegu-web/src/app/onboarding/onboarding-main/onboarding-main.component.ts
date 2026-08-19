@@ -21,8 +21,8 @@ import {
     OnInit,
     ChangeDetectionStrategy
 } from '@angular/core';
-import {map} from 'rxjs/operators';
-import {MandantLogoWhiteNameVisitor} from '@models/mandant';
+import {filter, map} from 'rxjs/operators';
+import {MandantLogoWhiteNameVisitor, MANDANTS} from '@models/mandant';
 import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {LogFactory} from '../../../utils/log-factory/LogFactory';
 import {MandantService} from '../../../utils/mandant-service/mandant.service';
@@ -49,6 +49,7 @@ export class OnboardingMainComponent implements OnInit {
     onboardingPlaceholderService = inject(OnboardingPlaceholderService);
 
     logoFileNameWhite$ = this.mandantService.mandant$.pipe(
+        filter(mandant => mandant !== MANDANTS.NONE),
         map(mandant => {
             const fileName = new MandantLogoWhiteNameVisitor().process(mandant);
             return `url('assets/images/${fileName}')`;
