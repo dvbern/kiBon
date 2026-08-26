@@ -947,6 +947,7 @@
                                     ng-required="true"
                                     ng-change="vm.onChangeAbrechnungGutscheine()"
                                     dv-enable-element
+                                    dv-enable-allowed-roles="vm.rolesAllowedForAbrechnungGutscheine"
                                     dv-enable-expression="vm.showAbrechnungGutscheine()"
                                 >
                                     <dv-error-messages
@@ -980,7 +981,8 @@
                                     maxlength="4000"
                                     ng-required="true"
                                     dv-enable-element
-                                    ng-disabled="!vm.showAbrechnungGutscheine()"
+                                    dv-enable-allowed-roles="vm.rolesAllowedForAbrechnungGutscheine"
+                                    dv-enable-expression="vm.showAbrechnungGutscheine()"
                                     ng-model="vm.getBetreuungModel().begruendungAuszahlungAnInstitution"
                                 ></textarea>
                                 <dv-error-messages

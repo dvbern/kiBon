@@ -40,7 +40,10 @@ import {TSInstitutionStammdatenSummary} from '../../../models/entity/TSInstituti
 import {TSBedarfsstufe} from '../../../models/enums/betreuung/TSBedarfsstufe';
 import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
 import {HoehereBeitraegeTyp} from '../../../models/enums/HoehereBeitraegeTyp';
-import {PERMISSIONS_BETREUUNG} from '../../../models/enums/permission-betreuung/PermissionBetreuung';
+import {
+    PermissionBetreuung,
+    PERMISSIONS_BETREUUNG
+} from './PermissionBetreuung';
 import {TSAnmeldungMutationZustand} from '../../../models/enums/TSAnmeldungMutationZustand';
 import {
     isAnyStatusOfGeprueftVerfuegenVerfuegtOrAbgeschlossenButJA,
@@ -177,6 +180,8 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
     public provMonatlicheBetreuungskosten: number;
     public abweichungenAktiviert: boolean;
     public auszahlungAnEltern: boolean;
+    public rolesAllowedForAbrechnungGutscheine =
+        PERMISSIONS_BETREUUNG[PermissionBetreuung.ABRECHNUNG_GUTSCHEINE];
     public readonly demoFeature = TSDemoFeature.FACHSTELLEN_UEBERGANGSLOESUNG;
     public texteSz25Enabled: boolean = false;
     public hoehereBeitraegeWegenBeeintraechtigungBeantragt: boolean = false;
@@ -2948,7 +2953,9 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
     }
 
     public getRolesForTabellarischeMaske() {
-        return PERMISSIONS_BETREUUNG['TABELLARISCHE_BETREUUNG_MASKE'];
+        return PERMISSIONS_BETREUUNG[
+            PermissionBetreuung.TABELLARISCHE_BETREUUNG_MASKE
+        ];
     }
 
     public isHoehereBeitraegeEinstellungAktiviert() {

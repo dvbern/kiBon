@@ -159,6 +159,14 @@
                                     "
                                     ng-bind-html="'ERWERBSPENSUM_SELBSTSTAENDIG_SELBSTDEKLARATION' | translate"
                                 ></span>
+
+                                <span
+                                    ng-if="
+                                        vm.model.erwerbspensumJA.taetigkeit ===
+                                        'RAV'
+                                    "
+                                    ng-bind-html="'ERWERBSPENSUM_ARBEITSSUCHEND_SELBSTDEKLARATION' | translate"
+                                ></span>
                             </div>
                         </div>
                     </div>
