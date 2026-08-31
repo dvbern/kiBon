@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2023 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+@use '../../style/variables' as *;
+@use '../../style/mixins' as *;
+@use '../../style/atoms/checkbox.scss' as *;
+@use '../../style/atoms/radio.scss' as *;
+
+#kommentarDialog {
+    border: 1px $secondary solid;
+}
+
+#stepDialog {
+    max-width: 550px;
+
+    p {
+        line-height: normal;
+    }
+
+    .step-hint {
+        margin-top: 0.5rem;
+        padding-left: 3rem;
+        transition: font-weight 0.4s ease-in-out;
+
+        &.disabled p {
+            color: #858585;
+        }
+    }
+
+    md-radio-button {
+        margin: 4rem 0 0 0;
+    }
+
+    md-radio-button:focus {
+        outline: unset !important;
+    }
+
+    .checkbox {
+        margin: 4rem 0;
+    }
+
+    .hint-transition {
+        font-weight: bold;
+    }
+}
+
+#input-year-dialog {
+    .contrast-input:not(.ng-touched) {
+        background-color: $contrast-lighter;
+    }
+}
+
+.long-text-dialog {
+    p {
+        @include ebeguP;
+        font-size: 1.6rem;
+    }
+}
+
+.md-bigger-frame-theme {
+    padding: 2rem 1rem;
+}
+
+.md-bigger-frame-theme-content {
+    padding: 1.7rem 0;
+}

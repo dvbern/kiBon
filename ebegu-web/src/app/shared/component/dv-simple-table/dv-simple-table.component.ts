@@ -17,7 +17,7 @@ import {DvSimpleTableConfig} from './dv-simple-table-config';
 @Component({
     selector: 'dv-simple-table',
     templateUrl: './dv-simple-table.component.html',
-    styleUrls: ['./dv-simple-table.component.less'],
+    styleUrls: ['./dv-simple-table.component.scss'],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false

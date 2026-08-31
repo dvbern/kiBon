@@ -32,7 +32,7 @@ const LOG = LogFactory.createLog('GemeindeKennzahlenUiComponent');
 @Component({
     selector: 'dv-gemeinde-kennzahlen-ui',
     templateUrl: './gemeinde-kennzahlen-ui.component.html',
-    styleUrls: ['./gemeinde-kennzahlen-ui.component.less'],
+    styleUrls: ['./gemeinde-kennzahlen-ui.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

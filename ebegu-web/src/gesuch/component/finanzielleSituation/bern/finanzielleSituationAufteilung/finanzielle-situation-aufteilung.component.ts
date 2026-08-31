@@ -39,7 +39,7 @@ const LOG = LogFactory.createLog('FinanzielleSituationAufteilungComponent');
 @Component({
     selector: 'dv-finanzielle-situation-aufteilung',
     templateUrl: './finanzielle-situation-aufteilung.component.html',
-    styleUrls: ['./finanzielle-situation-aufteilung.component.less'],
+    styleUrls: ['./finanzielle-situation-aufteilung.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

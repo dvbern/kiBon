@@ -31,7 +31,7 @@ import {GesuchModelManager} from '../../../../../service/gesuchModelManager';
 @Component({
     selector: 'dv-aufteilung',
     templateUrl: './aufteilung.component.html',
-    styleUrls: ['./aufteilung.component.less'],
+    styleUrls: ['./aufteilung.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false

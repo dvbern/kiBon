@@ -26,7 +26,8 @@
                             }
                         ],
                         "styles": [
-                            "src/styles.less",
+                            "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                            "src/styles.scss",
                             "src/style/lib-imports.css",
                             "node_modules/@kolkov/angular-editor/themes/default.scss"
                         ],
@@ -133,7 +134,7 @@
                         "polyfills": "src/polyfills.ts",
                         "tsConfig": "src/tsconfig.spec.json",
                         "scripts": [],
-                        "styles": ["src/styles.less"],
+                        "styles": ["src/styles.scss"],
                         "assets": ["src/assets", "src/favicon.ico"],
                         "fileReplacements": [
                             {
@@ -155,7 +156,7 @@
     "schematics": {
         "@schematics/angular:component": {
             "prefix": "dv",
-            "style": "less",
+            "style": "scss",
             "changeDetection": "OnPush"
         },
         "@schematics/angular:directive": {

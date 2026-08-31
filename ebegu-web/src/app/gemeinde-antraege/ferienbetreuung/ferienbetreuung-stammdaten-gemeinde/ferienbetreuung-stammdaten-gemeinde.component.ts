@@ -75,7 +75,7 @@ export const MY_FORMATS = {
 @Component({
     selector: 'dv-ferienbetreuung-stammdaten-gemeinde',
     templateUrl: './ferienbetreuung-stammdaten-gemeinde.component.html',
-    styleUrls: ['./ferienbetreuung-stammdaten-gemeinde.component.less'],
+    styleUrls: ['./ferienbetreuung-stammdaten-gemeinde.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: MAT_DATE_FORMATS, useValue: MY_FORMATS}],
     standalone: false

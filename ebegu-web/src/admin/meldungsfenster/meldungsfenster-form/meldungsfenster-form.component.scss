@@ -1,0 +1,143 @@
+@use 'style/variables' as *;
+
+.background-grey {
+    background-color: #e5e5e58f;
+}
+
+.dv-meldungsfenster-form {
+    margin-bottom: 6rem;
+
+    ::ng-deep mat-select.mat-mdc-select-disabled {
+        background: #cccccc;
+        color: black;
+
+        mat-select-trigger {
+            color: black;
+        }
+    }
+}
+
+form > div {
+    padding-right: 2rem;
+    padding-left: 2rem;
+}
+
+.padding-r-2 {
+    padding-right: 2rem;
+}
+
+.margin-r-2 {
+    margin-right: 2rem;
+}
+
+.m-t-2 {
+    margin-top: 2rem;
+}
+
+.p-t-1 {
+    padding-top: 1rem;
+}
+
+.p-b-2 {
+    padding-bottom: 2rem;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+textarea {
+    min-height: 12rem;
+}
+
+.select-wrapper {
+    flex-shrink: 1;
+    flex-basis: 100%;
+    min-width: 0;
+}
+
+.meldung-heading {
+    margin-bottom: 1rem;
+
+    .float-right {
+        float: right;
+    }
+
+    .active-language {
+        text-decoration: underline;
+    }
+}
+
+::ng-deep
+    angular-editor.ng-invalid.ng-touched
+    > .angular-editor
+    > .angular-editor-wrapper {
+    background-color: #ffe6e6;
+}
+
+::ng-deep .angular-editor {
+    overflow-wrap: break-word !important; /* Breaks long words to prevent horizontal scrolling */
+    word-wrap: break-word; /* Ensures long words break instead of expanding the editor */
+    word-break: break-word; /* Forces breaking of long words */
+
+    .angular-editor-toolbar {
+        .angular-editor-button {
+            width: 3rem;
+            height: 3rem;
+        }
+    }
+
+    //overwrite wysiwyg editor background textarea
+    .angular-editor-wrapper {
+        background-color: $white;
+
+        & > .angular-editor-textarea[contenteditable='false'] {
+            background-color: #cccccc !important;
+        }
+    }
+
+    .select-heading,
+    .select-font-size {
+        // wider selects
+        width: 12rem !important;
+
+        .ae-picker-label {
+            //increase fontsize and button size
+            font-size: 16px;
+            height: 3rem;
+
+            svg {
+                // position icons in middle
+                top: 0;
+            }
+        }
+    }
+
+    .ae-picker-options {
+        .ae-picker-item {
+            // increase fontsize
+            font-size: 12px;
+
+            &.focused {
+                background-color: $red !important;
+                color: $white !important;
+            }
+
+            &.selected {
+                background-color: $red !important;
+                color: $white !important;
+            }
+
+            &:hover {
+                background-color: $red !important;
+                color: $white !important;
+            }
+        }
+    }
+
+    .angular-editor-button {
+        &.active {
+            background: $lred !important;
+        }
+    }
+}

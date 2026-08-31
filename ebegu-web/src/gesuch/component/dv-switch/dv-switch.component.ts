@@ -34,7 +34,7 @@ import {
 @Component({
     selector: 'dv-switch',
     templateUrl: './dv-switch.component.html',
-    styleUrls: ['./dv-switch.component.less'],
+    styleUrls: ['./dv-switch.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('switchValue', [

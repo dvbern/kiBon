@@ -1869,12 +1869,11 @@ public class GesuchServiceBean extends AbstractBaseService implements
 			.createQuery(query);
 		typedQuery.setMaxResults(1);
 
-		String email = typedQuery.getResultList().get(0);
-		if (email == null) {
-			return Optional.empty();
-		}
+		var results = typedQuery.getResultList();
 
-		return Optional.of(email);
+		return results.isEmpty() || results.get(0) == null ?
+			Optional.empty() :
+			Optional.of(results.get(0));
 	}
 
 	private Optional<Gesuch> getNeustesGeprueftesGesuchInAnotherDossier(

@@ -69,7 +69,7 @@ import {PosteingangService} from '../service/posteingang.service';
 @Component({
     selector: 'posteingang-view',
     templateUrl: './posteingang-view.component.html',
-    styleUrls: ['./posteingang-view.component.less'],
+    styleUrls: ['./posteingang-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

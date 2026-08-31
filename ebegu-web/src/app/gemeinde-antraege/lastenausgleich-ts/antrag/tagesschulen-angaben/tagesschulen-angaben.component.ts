@@ -77,7 +77,7 @@ const LOG = LogFactory.createLog('TagesschulenAngabenComponent');
 @Component({
     selector: 'dv-tagesschulen-angaben',
     templateUrl: './tagesschulen-angaben.component.html',
-    styleUrls: ['./tagesschulen-angaben.component.less'],
+    styleUrls: ['./tagesschulen-angaben.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     standalone: false

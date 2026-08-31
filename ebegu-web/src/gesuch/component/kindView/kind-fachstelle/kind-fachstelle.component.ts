@@ -41,7 +41,7 @@ const LOG = LogFactory.createLog('KindFachstelleComponennt');
 @Component({
     selector: 'dv-kind-fachstelle',
     templateUrl: './kind-fachstelle.component.html',
-    styleUrls: ['./kind-fachstelle.component.less'],
+    styleUrls: ['./kind-fachstelle.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

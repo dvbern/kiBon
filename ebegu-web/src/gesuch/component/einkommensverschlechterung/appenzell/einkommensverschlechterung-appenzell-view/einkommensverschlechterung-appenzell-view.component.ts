@@ -42,7 +42,7 @@ import {FinanzielleSituationAppenzellService} from '../../../finanzielleSituatio
 @Component({
     selector: 'dv-einkommensverschlechterung-appenzell-view',
     templateUrl: './einkommensverschlechterung-appenzell-view.component.html',
-    styleUrls: ['./einkommensverschlechterung-appenzell-view.component.less'],
+    styleUrls: ['./einkommensverschlechterung-appenzell-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

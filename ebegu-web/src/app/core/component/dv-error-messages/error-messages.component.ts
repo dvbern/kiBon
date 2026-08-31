@@ -30,7 +30,7 @@ import {TranslateService} from '@ngx-translate/core';
 @Component({
     selector: 'dv-error-messages',
     templateUrl: './error-messages.component.html',
-    styleUrls: ['./dv-error-messages.less'],
+    styleUrls: ['./dv-error-messages.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
 })

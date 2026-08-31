@@ -45,7 +45,7 @@ const LOG = LogFactory.createLog('EditGemeindeStammdatenComponent');
 
 @Component({
     selector: 'dv-edit-gemeinde-stammdaten',
-    styleUrl: './edit-gemeinde-stammdaten.component.less',
+    styleUrl: './edit-gemeinde-stammdaten.component.scss',
     templateUrl: './edit-gemeinde-stammdaten.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],

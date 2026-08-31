@@ -1,0 +1,109 @@
+/*
+ * Copyright (C) 2018 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+@use '../../../style/variables' as *;
+
+md-input-container:not(.md-input-has-value) input:not(:focus),
+.dv-betreuung-input {
+    color: $contrast-darkest !important;
+}
+
+:host {
+    display: flex;
+    height: 4rem;
+    margin-left: 2px;
+    outline: 1px solid $contrast-darkest !important;
+    width: 100%;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:focus {
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        outline: 2px solid $contrast-darkest !important;
+    }
+
+    &.disabled {
+        .dv-switch-background {
+            background: $contrast;
+        }
+
+        .dv-switch-animation-label {
+            color: $contrast;
+        }
+
+        &:hover {
+            cursor: not-allowed;
+        }
+        &:focus {
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            outline: 1px solid $contrast-darkest !important;
+        }
+    }
+}
+
+.dv-switch-container,
+.dv-switch-background-container {
+    align-items: flex-start;
+    background: $contrast-lightest;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    position: relative !important;
+    width: 100%;
+}
+
+.dv-switch-animation-container {
+    bottom: 0;
+    display: flex;
+    left: 0;
+    position: absolute !important;
+    right: 0;
+    top: 0;
+}
+
+.dv-switch-animation {
+    background: #4a4a4a;
+}
+
+.dv-switch-animation,
+.dv-switch-background {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 50%;
+}
+
+.dv-switch-animation-label {
+    color: $contrast-lightest;
+    font-weight: bold;
+}
+
+.dv-switch-background-label {
+    color: $contrast-darkest;
+    min-width: 60px;
+    text-align: center;
+}
+
+.dv-switch-background-label,
+.dv-switch-animation-label {
+    user-select: none;
+}

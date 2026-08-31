@@ -40,7 +40,7 @@ const LOG = LogFactory.createLog('FerienbetreuungComponent');
 @Component({
     selector: 'dv-ferienbetreuung',
     templateUrl: './ferienbetreuung.component.html',
-    styleUrls: ['./ferienbetreuung.component.less'],
+    styleUrls: ['./ferienbetreuung.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

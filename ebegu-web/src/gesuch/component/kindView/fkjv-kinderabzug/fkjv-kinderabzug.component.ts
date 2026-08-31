@@ -44,7 +44,7 @@ const LOG = LogFactory.createLog('FkjvKinderabzugComponent');
 @Component({
     selector: 'dv-fkjv-kinderabzug',
     templateUrl: './fkjv-kinderabzug.component.html',
-    styleUrls: ['./fkjv-kinderabzug.component.less'],
+    styleUrls: ['./fkjv-kinderabzug.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

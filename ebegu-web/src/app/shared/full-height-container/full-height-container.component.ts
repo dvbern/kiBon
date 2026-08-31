@@ -20,7 +20,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 @Component({
     selector: 'dv-full-height-container',
     templateUrl: './full-height-container.component.html',
-    styleUrls: ['./full-height-container.component.less'],
+    styleUrls: ['./full-height-container.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

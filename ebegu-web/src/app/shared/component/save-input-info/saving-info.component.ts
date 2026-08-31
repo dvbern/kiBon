@@ -31,7 +31,7 @@ const LOG = LogFactory.createLog('SavingInfo');
 @Component({
     selector: 'dv-saving-info',
     templateUrl: './saving-info.component.html',
-    styleUrls: ['./saving-info.component.less'],
+    styleUrls: ['./saving-info.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

@@ -55,7 +55,7 @@ const LOG = LogFactory.createLog('FerienbetreuungAngebotComponent');
 @Component({
     selector: 'dv-ferienbetreuung-angebot',
     templateUrl: './ferienbetreuung-angebot.component.html',
-    styleUrls: ['./ferienbetreuung-angebot.component.less'],
+    styleUrls: ['./ferienbetreuung-angebot.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

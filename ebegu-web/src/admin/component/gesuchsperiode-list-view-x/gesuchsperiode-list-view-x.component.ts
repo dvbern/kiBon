@@ -35,7 +35,7 @@ import {AbstractAdminViewX} from '../../abstractAdminViewX';
 @Component({
     selector: 'dv-gesuchsperiode-list-view-x',
     templateUrl: './gesuchsperiode-list-view-x.component.html',
-    styleUrls: ['./gesuchsperiode-list-view-x.component.less'],
+    styleUrls: ['./gesuchsperiode-list-view-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

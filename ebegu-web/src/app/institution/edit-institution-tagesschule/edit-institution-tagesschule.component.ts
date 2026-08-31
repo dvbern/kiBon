@@ -66,7 +66,7 @@ import {DialogImportFromOtherInstitutionComponent} from './dialog-import-from-ot
 @Component({
     selector: 'dv-edit-institution-tagesschule',
     templateUrl: './edit-institution-tagesschule.component.html',
-    styleUrls: ['./edit-institution-tagesschule.component.less'],
+    styleUrls: ['./edit-institution-tagesschule.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false

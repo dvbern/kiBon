@@ -17,7 +17,7 @@ export interface GesuchUiMutationDialogData {
     selector: 'lib-gesuch-ui-mutation-dialog',
     imports: [MatDialogActions, MatDialogTitle, TranslateModule],
     templateUrl: './mutation-dialog.component.html',
-    styleUrl: './mutation-dialog.component.less',
+    styleUrl: './mutation-dialog.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MutationDialogComponent {

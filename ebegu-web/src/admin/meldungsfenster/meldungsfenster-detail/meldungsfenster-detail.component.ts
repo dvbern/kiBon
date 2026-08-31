@@ -9,7 +9,7 @@ import {MeldungsfensterFormComponent} from '../meldungsfenster-form/meldungsfens
     imports: [MeldungsfensterFormComponent, TranslatePipe],
     templateUrl: 'meldungsfenster-detail.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: 'meldungsfenster-detail.component.less'
+    styleUrl: 'meldungsfenster-detail.component.scss'
 })
 export class MeldungsfensterDetailComponent {
     private readonly params = inject(UIRouterGlobals);

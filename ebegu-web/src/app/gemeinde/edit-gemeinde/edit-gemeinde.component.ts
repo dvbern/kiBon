@@ -58,7 +58,7 @@ const LOG = LogFactory.createLog('EditGemeindeComponent');
     selector: 'dv-edit-gemeinde',
     templateUrl: './edit-gemeinde.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    styleUrls: ['./edit-gemeinde.component.less'],
+    styleUrls: ['./edit-gemeinde.component.scss'],
     standalone: false
 })
 export class EditGemeindeComponent implements OnInit {

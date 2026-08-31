@@ -40,7 +40,7 @@ import {TSRoleUtil} from '../../../utils/TSRoleUtil';
     selector: 'dv-edit-institution-betreuungsgutscheine',
     templateUrl: './edit-institution-betreuungsgutscheine.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    styleUrls: ['./edit-institution-betreuungsgutscheine.component.less'],
+    styleUrls: ['./edit-institution-betreuungsgutscheine.component.scss'],
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false
 })

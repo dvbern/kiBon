@@ -28,7 +28,7 @@ import {ZemisDialogDTO} from './zemisDialog.interface';
 @Component({
     selector: 'zemis-dialog',
     templateUrl: 'zemis-dialog.template.html',
-    styleUrls: ['zemis-dialog.component.less'],
+    styleUrls: ['zemis-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

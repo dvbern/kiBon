@@ -45,7 +45,7 @@ import {TSLastenausgleichTagesschulenStatusHistory} from '../../../../../models/
 @Component({
     selector: 'dv-freigabe',
     templateUrl: './freigabe.component.html',
-    styleUrls: ['./freigabe.component.less'],
+    styleUrls: ['./freigabe.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     standalone: false

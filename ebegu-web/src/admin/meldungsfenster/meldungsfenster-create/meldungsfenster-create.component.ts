@@ -14,7 +14,7 @@ import {MeldungsfensterFormComponent} from '../meldungsfenster-form/meldungsfens
     selector: 'lib-admin-ui-meldungsfenster-create',
     imports: [MeldungsfensterFormComponent, TranslateModule],
     templateUrl: './meldungsfenster-create.component.html',
-    styleUrl: './meldungsfenster-create.component.less',
+    styleUrl: './meldungsfenster-create.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MeldungsfensterCreateComponent {

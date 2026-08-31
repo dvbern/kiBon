@@ -33,7 +33,7 @@ const LOG = LogFactory.createLog('ResultatComponent');
 @Component({
     selector: ' dv-massgebendes-einkommen',
     templateUrl: './massgebendes-einkommen.component.html',
-    styleUrls: ['./massgebendes-einkommen.component.less'],
+    styleUrls: ['./massgebendes-einkommen.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

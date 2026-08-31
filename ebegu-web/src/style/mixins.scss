@@ -1,0 +1,214 @@
+/*
+ * Ki-Tax: System for the management of external childcare subsidies
+ * Copyright (C) 2017 City of Bern Switzerland
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+@forward './variables';
+@use './variables' as *;
+
+@mixin vendor($property, $value) {
+    -webkit-#{$property}: $value;
+    -khtml-#{$property}: $value;
+    -moz-#{$property}: $value;
+    #{$property}: $value;
+}
+
+@mixin ebeguFont-family {
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+}
+
+@mixin ebeguNormal {
+    font-style: normal;
+    font-weight: 400;
+}
+
+@mixin ebeguItalic {
+    font-style: italic;
+    font-weight: 400;
+}
+
+@mixin ebeguSemi-bold {
+    font-style: normal;
+    font-weight: 600;
+}
+
+@mixin ebeguBold {
+    font-style: normal;
+    font-weight: 700;
+}
+
+@mixin ebeguCapitalize {
+    text-transform: capitalize;
+}
+
+@mixin ebeguVertical($a) {
+    @if $a == middle {
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+@mixin ebeguPlaceholder-specs {
+    @include ebeguNormal;
+    color: $contrast-dark;
+    font-size: 1.4rem;
+    height: 4rem;
+    letter-spacing: 0.1rem;
+    line-height: normal;
+}
+
+@mixin ebeguPlaceholder {
+    &::-webkit-input-placeholder {
+        @include ebeguPlaceholder-specs;
+    }
+    &::-moz-placeholder {
+        @include ebeguPlaceholder-specs;
+        line-height: 4rem;
+    }
+    &:-moz-placeholder {
+        @include ebeguPlaceholder-specs;
+        line-height: 4rem;
+    }
+    &:-ms-input-placeholder {
+        @include ebeguPlaceholder-specs;
+    }
+}
+
+@mixin ebeguDisabledPlaceholder {
+    &::-webkit-input-placeholder {
+        color: $contrast;
+        -webkit-text-fill-color: $contrast;
+    }
+    &::-moz-placeholder {
+        color: $contrast;
+        -webkit-text-fill-color: $contrast;
+    }
+    &:-moz-placeholder {
+        color: $contrast;
+        -webkit-text-fill-color: $contrast;
+    }
+    &:-ms-input-placeholder {
+        color: $contrast;
+        -webkit-text-fill-color: $contrast;
+    }
+    &::placeholder {
+        color: $contrast;
+        -webkit-text-fill-color: $contrast;
+    }
+}
+
+@mixin ebeguH1 {
+    @include ebeguBold;
+    display: inline-block;
+    font-size: 1.6rem;
+    letter-spacing: 0.1rem;
+    line-height: 2rem;
+    margin-bottom: 1rem;
+    margin-top: 0;
+}
+
+@mixin ebeguH2 {
+    @include ebeguSemi-bold;
+    font-size: 2rem;
+    letter-spacing: 0.15rem;
+    line-height: 2rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+@mixin ebeguH3 {
+    @include ebeguSemi-bold;
+    font-size: 1.4rem;
+    letter-spacing: 0.1rem;
+    line-height: 2.5rem;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+}
+
+@mixin ebeguLabel {
+    @include ebeguNormal;
+    font-size: 1.4rem;
+    height: auto;
+    letter-spacing: 0.1rem;
+    line-height: normal;
+    margin: 0;
+    min-height: 3rem;
+    padding: 0;
+    position: static;
+    text-align: left;
+    white-space: normal;
+}
+
+@mixin ebeguP {
+    @include ebeguNormal;
+    font-size: 1.4rem;
+    letter-spacing: 0.135rem;
+    line-height: 2.8rem;
+    margin-bottom: 0;
+    text-align: left;
+}
+
+@mixin ebeguSmall-text {
+    @include ebeguNormal;
+    font-size: 1.2rem;
+    letter-spacing: 0.1rem;
+    line-height: 2rem;
+}
+
+@mixin ebeguA {
+    @include ebeguNormal;
+    font-size: 1.3rem;
+    letter-spacing: 0.1rem;
+    line-height: 2rem;
+    text-decoration: underline;
+}
+
+@mixin menu-item-link {
+    font-size: 1.6rem;
+    height: 4rem !important;
+    letter-spacing: 0.15rem;
+    line-height: 4rem;
+    min-width: unset;
+    text-align: left;
+    text-decoration: none;
+    span {
+        text-align: left;
+    }
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+@mixin ErrorInput {
+    background-color: $background-error-color;
+    border-color: $state-danger-text;
+}
+
+@mixin DisabledInput {
+    background: $contrast;
+    color: $contrast-darkest;
+    &:focus {
+        outline: 0;
+    }
+    &:hover {
+        cursor: not-allowed;
+    }
+}
+
+@mixin MatMenuFontFamily {
+    font-family: var(
+        --mat-typography-body1-font-family,
+        var(--mat-typography-font-family, Roboto, sans-serif)
+    ) !important;
+}

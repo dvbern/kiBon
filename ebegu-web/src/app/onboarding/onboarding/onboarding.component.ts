@@ -39,7 +39,7 @@ import {VideoPlayerLinkVisitor} from '../../core/constants/VideoPlayerLinkVisito
 @Component({
     selector: 'dv-onboarding',
     templateUrl: './onboarding.component.html',
-    styleUrls: ['./onboarding.component.less', '../onboarding.less'],
+    styleUrls: ['./onboarding.component.scss', '../onboarding.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

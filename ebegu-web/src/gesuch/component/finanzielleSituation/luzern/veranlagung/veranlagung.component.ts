@@ -32,7 +32,7 @@ import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern
 @Component({
     selector: 'dv-veranlagung',
     templateUrl: './veranlagung.component.html',
-    styleUrls: ['./veranlagung.component.less'],
+    styleUrls: ['./veranlagung.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false

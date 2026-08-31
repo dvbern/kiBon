@@ -45,7 +45,7 @@ export interface HTMLInputEvent extends Event {
 @Component({
     selector: 'dv-multiple-file-upload',
     templateUrl: './multiple-file-upload.component.html',
-    styleUrls: ['./multiple-file-upload.component.less'],
+    styleUrls: ['./multiple-file-upload.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

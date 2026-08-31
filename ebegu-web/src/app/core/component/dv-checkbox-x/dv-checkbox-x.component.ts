@@ -32,7 +32,7 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-checkbox-x',
     templateUrl: './dv-checkbox-x.component.html',
-    styleUrls: ['./dv-checkbox-x.component.less'],
+    styleUrls: ['./dv-checkbox-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

@@ -27,7 +27,7 @@ import {TableUebersichtVersendeteMails} from '../uebersichtVersendeteMails.compo
         SharedModule
     ],
     templateUrl: './versendete-mail-detail.html',
-    styleUrls: ['./versendete-mail-detail.less'],
+    styleUrls: ['./versendete-mail-detail.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VersendeteMailDetail {

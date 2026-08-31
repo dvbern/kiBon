@@ -73,7 +73,7 @@ import {MeldungsfensterService} from '../../../utils/meldungsfenster/meldungsfen
         MatInput
     ],
     templateUrl: './meldungsfenster.component.html',
-    styleUrl: './meldungsfenster.component.less',
+    styleUrl: './meldungsfenster.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MeldungsfensterComponent implements AfterViewInit {

@@ -1,0 +1,113 @@
+/*
+ * Copyright (C) 2023 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+@use '../../../style/variables' as *;
+@use '../../../style/mixins' as *;
+
+.dv-table {
+    padding-top: 3rem;
+
+    &-resultcount {
+        display: inline-block;
+        margin: 0 0 0 auto;
+    }
+    &-resultCombo,
+    &-actions {
+        align-items: center;
+        display: flex;
+        margin-bottom: 1rem;
+
+        button {
+            margin-right: 13px;
+
+            i {
+                margin-right: 2px;
+            }
+        }
+    }
+
+    &-actionButton {
+        align-items: center;
+        display: flex;
+        float: right;
+        padding-bottom: 1rem;
+    }
+
+    .mitteilung-neu,
+    .mitteilung-alt {
+        cursor: pointer;
+        mat-row:first-child {
+            padding-left: 3rem;
+        }
+    }
+
+    .mitteilung-neu {
+        mat-cell {
+            font-weight: 900;
+        }
+        mat-row:first-child {
+            &:before {
+                color: $primary;
+                content: '\f111';
+                display: inline-block;
+                font-family: FontAwesome, sans-serif;
+                font-size: 1.2rem;
+                height: 100%;
+                left: 1rem;
+                line-height: 6rem;
+                position: absolute;
+                text-align: center;
+                top: 0;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    .mat-column-actions,
+    .mat-column-actions-filter {
+        flex: 0 0 60px !important;
+
+        button {
+            margin-right: 12px;
+        }
+    }
+
+    .closed-mitteilungen md-checkbox {
+        margin-right: 0;
+    }
+
+    .bottom-pagination {
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+    }
+
+    ::ng-deep .mat-checkbox-label {
+        @include ebeguSemi-bold;
+        color: #333;
+    }
+
+    ::ng-deep .mat-mdc-form-field-label {
+        @include ebeguBold;
+        color: #333;
+    }
+
+    .flex-fill {
+        flex-basis: 0;
+        flex-grow: 1;
+        flex-shrink: 1;
+    }
+}

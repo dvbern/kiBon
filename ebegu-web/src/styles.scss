@@ -1,0 +1,1123 @@
+/*
+ * Ki-Tax: System for the management of external childcare subsidies
+ * Copyright (C) 2017 City of Bern Switzerland
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@use 'style/variables' as *;
+@use 'style/mixins' as *;
+
+@import 'angular-material/angular-material.css';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import 'font-awesome/css/font-awesome.css';
+
+@import 'style/atoms/mat-menu';
+@import 'style/atoms/button';
+@import 'style/atoms/checkbox';
+@import 'style/atoms/radio';
+@import 'style/molecules/table';
+@import 'style/molecules/dv-ebegu-calendar';
+@import 'style/organisms/sidenav';
+@import 'style/typography';
+
+/*this must be import before all angularjs styles*/
+@import 'style/atoms/input';
+
+@import 'style/angular-material-theme';
+@import 'style/angularjs';
+@import 'style/mediaqueries';
+
+// flex helper classes
+@import 'style/flex-helpers';
+
+.access-for-all-title:not(.ignore-kibon-legacy) {
+    display: block;
+    font-size: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    width: 0;
+}
+
+dv-posteingang {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.fixedtable {
+    table-layout: fixed;
+}
+
+.loaded {
+    opacity: 1 !important;
+    -moz-transition: opacity 0.3s ease;
+    -o-transition: opacity 0.3s ease;
+    -webkit-transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease;
+}
+
+html {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+dv-bisher,
+.dv-bisher {
+    //display: none;
+}
+
+[mat-dialog-title].mat-mdc-dialog-title.mdc-dialog__title {
+    @include ebeguFont-family();
+    font-weight: bold;
+}
+
+mat-dialog-content.mat-mdc-dialog-content.mdc-dialog__content {
+    @include ebeguFont-family();
+    font-size: 1.6rem;
+    padding: 24px 20px 12px 24px;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+[mat-dialog-title]
+    + mat-dialog-content.mat-mdc-dialog-content.mdc-dialog__content {
+    padding: 0 24px;
+}
+
+body {
+    @include ebeguFont-family();
+    font-size: 1.6rem;
+
+    .starter-template {
+        padding: 4rem 1.5rem;
+        text-align: center;
+    }
+
+    &.ebegu {
+        background-color: $contrast-lightest;
+    }
+
+    app-root {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        left: 0;
+        max-height: 100vh;
+        position: fixed;
+        right: 0;
+    }
+}
+
+.ui-absolute-view {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow: hidden;
+
+    ui-view-ng-upgrade {
+        display: flex;
+        flex: 1;
+        height: 100%;
+        max-height: 100vh;
+    }
+
+    ui-view {
+        display: flex;
+        flex: 1;
+        height: 100%;
+        max-height: 100vh;
+        max-width: 100%;
+
+        & > * {
+            height: 100%;
+            max-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            width: 100%;
+        }
+    }
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+.overflow-scroll {
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+.dv-progressbar,
+.mat-progress-bar {
+    height: 0.5rem !important;
+    position: fixed !important;
+    top: 5rem;
+    width: 100%;
+    z-index: $z-index-progressbar;
+
+    .md-container {
+        background: none;
+
+        .md-bar {
+            background: $contrast;
+            height: 0.5rem;
+        }
+    }
+}
+
+.mat-progress-bar-fill:after {
+    background-color: #ffffff;
+    height: 0.5rem;
+}
+
+.mat-progress-bar-secondary.mat-progress-bar-fill:after,
+.mat-progress-bar-buffer,
+.mat-progress-bar-background {
+    background-color: rgba(0, 0, 0, 0) !important;
+    fill: rgba(0, 0, 0, 0) !important;
+}
+
+.mat-progress-bar[mode='indeterminate'],
+.mat-progress-bar[mode='query'] {
+    .mat-progress-bar-primary,
+    .mat-progress-bar-primary:after {
+        animation: mat-progress-bar-primary-indeterminate-translate1 4s infinite !important;
+    }
+    .mat-progress-bar-secondary,
+    .mat-progress-bar-secondary:after {
+        animation:
+            mat-progress-bar-secondary-indeterminate-translate1 4s infinite,
+            mat-progress-bar-secondary-indeterminate-scale-translate1 4s
+                infinite !important;
+    }
+}
+
+@-webkit-keyframes mat-progress-bar-primary-indeterminate-translate1 {
+    0% {
+        -webkit-animation-timing-function: linear;
+        animation-timing-function: linear;
+        left: -15.166667%;
+        transform: scaleX(0.3);
+    }
+    2% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.5,
+            0,
+            0.70173,
+            0.49582
+        );
+        animation-timing-function: cubic-bezier(0.5, 0, 0.70173, 0.49582);
+        left: -15.16667%;
+        transform: scaleX(0.3);
+    }
+    69.15% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.30244,
+            0.38135,
+            0.55,
+            0.95635
+        );
+        animation-timing-function: cubic-bezier(
+            0.30244,
+            0.38135,
+            0.55,
+            0.95635
+        );
+        left: 21.5%;
+        transform: scaleX(0.83);
+    }
+    100% {
+        left: 95.4444%;
+        transform: scaleX(0.1);
+    }
+}
+
+@keyframes mat-progress-bar-primary-indeterminate-translate1 {
+    0% {
+        -webkit-animation-timing-function: linear;
+        animation-timing-function: linear;
+        left: -15.166667%;
+        transform: scaleX(0.3);
+    }
+    2% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.5,
+            0,
+            0.70173,
+            0.49582
+        );
+        animation-timing-function: cubic-bezier(0.5, 0, 0.70173, 0.49582);
+        left: -15.16667%;
+        transform: scaleX(0.3);
+    }
+    69.15% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.30244,
+            0.38135,
+            0.55,
+            0.95635
+        );
+        animation-timing-function: cubic-bezier(
+            0.30244,
+            0.38135,
+            0.55,
+            0.95635
+        );
+        left: 21.5%;
+        transform: scaleX(0.83);
+    }
+    100% {
+        left: 95.4444%;
+        transform: scaleX(0.1);
+    }
+}
+
+@-webkit-keyframes mat-progress-bar-secondary-indeterminate-scale-translate1 {
+    0% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.20503,
+            0.05705,
+            0.57661,
+            0.45397
+        );
+        animation-timing-function: cubic-bezier(
+            0.20503,
+            0.05705,
+            0.57661,
+            0.45397
+        );
+        -webkit-transform: scaleX(0.1);
+        transform: scaleX(0.1);
+    }
+    19.15% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.15231,
+            0.19643,
+            0.64837,
+            1.00432
+        );
+        animation-timing-function: cubic-bezier(
+            0.15231,
+            0.19643,
+            0.64837,
+            1.00432
+        );
+        -webkit-transform: scaleX(0.57);
+        transform: scaleX(0.57);
+    }
+    44.15% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.25776,
+            -0.00316,
+            0.21176,
+            1.38179
+        );
+        animation-timing-function: cubic-bezier(
+            0.25776,
+            -0.00316,
+            0.21176,
+            1.38179
+        );
+        -webkit-transform: scaleX(0.91);
+        transform: scaleX(0.91);
+    }
+    100% {
+        -webkit-transform: scaleX(0.1);
+        transform: scaleX(0.1);
+    }
+}
+
+@keyframes mat-progress-bar-secondary-indeterminate-scale-translate1 {
+    0% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.20503,
+            0.05705,
+            0.57661,
+            0.45397
+        );
+        animation-timing-function: cubic-bezier(
+            0.20503,
+            0.05705,
+            0.57661,
+            0.45397
+        );
+        -webkit-transform: scaleX(0.1);
+        transform: scaleX(0.1);
+    }
+    19.15% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.15231,
+            0.19643,
+            0.64837,
+            1.00432
+        );
+        animation-timing-function: cubic-bezier(
+            0.15231,
+            0.19643,
+            0.64837,
+            1.00432
+        );
+        -webkit-transform: scaleX(0.57);
+        transform: scaleX(0.57);
+    }
+    44.15% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.25776,
+            -0.00316,
+            0.21176,
+            1.38179
+        );
+        animation-timing-function: cubic-bezier(
+            0.25776,
+            -0.00316,
+            0.21176,
+            1.38179
+        );
+        -webkit-transform: scaleX(0.91);
+        transform: scaleX(0.91);
+    }
+    100% {
+        -webkit-transform: scaleX(0.1);
+        transform: scaleX(0.1);
+    }
+}
+
+@-webkit-keyframes mat-progress-bar-secondary-indeterminate-translate1 {
+    0% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.15,
+            0,
+            0.51506,
+            0.40968
+        );
+        animation-timing-function: cubic-bezier(0.15, 0, 0.51506, 0.40968);
+        left: -54.88889%;
+    }
+    25% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.31033,
+            0.28406,
+            0.8,
+            0.73372
+        );
+        animation-timing-function: cubic-bezier(0.31033, 0.28406, 0.8, 0.73372);
+        left: -17.25%;
+    }
+    48.35% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.4,
+            0.62703,
+            0.6,
+            0.90203
+        );
+        animation-timing-function: cubic-bezier(0.4, 0.62703, 0.6, 0.90203);
+        left: 29.5%;
+    }
+    100% {
+        left: 117.38889%;
+    }
+}
+
+@keyframes mat-progress-bar-secondary-indeterminate-translate1 {
+    0% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.15,
+            0,
+            0.51506,
+            0.40968
+        );
+        animation-timing-function: cubic-bezier(0.15, 0, 0.51506, 0.40968);
+        left: -54.88889%;
+    }
+    25% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.31033,
+            0.28406,
+            0.8,
+            0.73372
+        );
+        animation-timing-function: cubic-bezier(0.31033, 0.28406, 0.8, 0.73372);
+        left: -17.25%;
+    }
+    48.35% {
+        -webkit-animation-timing-function: cubic-bezier(
+            0.4,
+            0.62703,
+            0.6,
+            0.90203
+        );
+        animation-timing-function: cubic-bezier(0.4, 0.62703, 0.6, 0.90203);
+        left: 29.5%;
+    }
+    100% {
+        left: 117.38889%;
+    }
+}
+
+#Intro {
+    align-content: flex-end;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    height: $navbar-height;
+    min-height: $navbar-height;
+    top: 0;
+    width: 100%;
+    z-index: ($z-index-error + 1);
+}
+
+dv-home-icon,
+dv-countdown,
+dv-downloadmenu {
+    align-content: center;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: $navbar-height;
+
+    &:nth-child(2) {
+        margin-left: auto;
+    }
+}
+
+.logo-bern {
+    background-position: left 0.7rem center;
+    background-repeat: no-repeat;
+    background-size: Auto $navbar-height;
+}
+
+.logo-house,
+.dv-countdown-countdown {
+    height: $navbar-height;
+    line-height: $navbar-height;
+    padding: 0;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    vertical-align: middle;
+    width: $navbar-height;
+
+    &:hover,
+    &:focus:hover {
+        background: $contrast;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        outline: 0;
+    }
+
+    &:focus {
+        background: $contrast;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        outline: 2px solid $contrast-darkest !important;
+        outline-offset: -1rem;
+    }
+}
+
+.dv-countdown-countdown:hover {
+    background-color: transparent;
+    cursor: default;
+}
+
+.logo-text {
+    @include ebeguBold();
+    @include ebeguCapitalize();
+    @include ebeguVertical(middle);
+    color: $contrast-darkest;
+    font-size: 1.6rem;
+    letter-spacing: 0.1rem;
+    position: relative;
+    text-align: center;
+    width: 15rem;
+}
+
+.user-menu {
+    background-position: right 2rem center;
+    background-size: Auto 4rem;
+    float: right;
+}
+
+.empty-table {
+    color: gray;
+    font-style: italic;
+}
+
+.form-horizontal {
+    dv-error-messages {
+        padding-left: 0.1rem;
+    }
+}
+
+//roter hintergund bei den feldern die invalid sind
+form {
+    &.ng-submitted {
+        input,
+        textarea,
+        .form-control,
+        .input-element,
+        md-radio-group {
+            &.ng-invalid {
+                @include ErrorInput();
+            }
+        }
+
+        dv-valueinput.input-element.ng-invalid {
+            form-control {
+                @include ErrorInput();
+            }
+        }
+    }
+
+    // style der den Hintergrund der inputs on-blur Rot markiert wenn nicht valid
+    .form-control.ng-invalid, .input-element.ng-invalid, md-radio-group.ng-invalid /*, :not(md-checkbox.input-element.ng-invalid)*/ {
+        &.ng-touched {
+            @include ErrorInput();
+        }
+    }
+
+    dv-valueinput.input-element {
+        &.ng-invalid.ng-touched {
+            .form-control {
+                @include ErrorInput();
+            }
+        }
+    }
+}
+
+.row.is-flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.row.is-flex > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+}
+
+.md-dialog-container {
+    z-index: $z-index-dialog;
+}
+
+md-backdrop.md-dialog-backdrop {
+    z-index: $z-index-dialog;
+}
+
+md-dialog.md-default-theme,
+md-dialog {
+    border-radius: 0;
+
+    .md-dialog-content {
+        padding: 2.5rem;
+    }
+
+    .font-color-warning {
+        color: $red;
+    }
+
+    .disabled {
+        color: #858585;
+    }
+}
+
+.md-virtual-repeat-container.md-autocomplete-suggestions-container {
+    box-shadow: none;
+    max-height: 99999999px !important;
+    z-index: $z-index-mobile-toolbar;
+}
+
+.md-autocomplete-suggestions-container.md-default-theme,
+.md-autocomplete-suggestions-container {
+    background: $secondary;
+}
+
+.md-autocomplete-suggestions-container li {
+    color: $contrast-lightest;
+
+    .highlight {
+        color: $contrast-lightest;
+        font-weight: bold;
+    }
+
+    .allresults-link {
+        background: transparent;
+        color: $contrast-lightest;
+    }
+
+    &:hover,
+    &:focus {
+        background: $secondary-dark;
+    }
+}
+
+dv-quicksearchbox {
+    align-content: center;
+    display: flex;
+    justify-content: center;
+    min-width: 43rem;
+    text-align: center;
+
+    md-autocomplete,
+    md-autocomplete input:not(.md-input):not(.ignore-kibon-legacy) {
+        background: $contrast-light;
+        height: $navbar-height;
+
+        md-autocomplete-wrap {
+            height: $navbar-height;
+
+            input {
+                transition: all 0.5s ease;
+            }
+
+            input::-webkit-input-placeholder {
+                color: $contrast-darkest;
+                font-family: FontAwesome, sans-serif;
+                opacity: 1 !important;
+                text-align: right;
+            }
+
+            input:-moz-placeholder {
+                color: $contrast-darkest;
+                font-family: FontAwesome, sans-serif;
+                opacity: 1 !important;
+                text-align: right;
+            }
+
+            input::-moz-placeholder {
+                color: $contrast-darkest;
+                font-family: FontAwesome, sans-serif;
+                opacity: 1 !important;
+                text-align: right;
+            }
+
+            input:-ms-input-placeholder {
+                color: $contrast-darkest;
+                font-family: FontAwesome, sans-serif;
+                opacity: 1 !important;
+                text-align: right;
+            }
+        }
+    }
+
+    md-autocomplete {
+        md-progress-linear.md-default-theme .md-bar,
+        md-progress-linear .md-bar {
+            background-color: $secondary;
+        }
+
+        md-progress-linear.md-default-theme .md-container,
+        md-progress-linear .md-container {
+            background-color: $contrast-light;
+        }
+    }
+
+    .md-whiteframe-z1 {
+        box-shadow: none;
+    }
+
+    button:hover,
+    button:focus,
+    button:active {
+        background: none;
+
+        &:after {
+            content: none;
+        }
+    }
+}
+
+.betreuung-view {
+    md-autocomplete {
+        border-radius: 0;
+        height: 4rem;
+        padding: 0;
+
+        :focus {
+            box-shadow: none /*$secondary-dark*/;
+            outline: 2px solid $contrast-darkest;
+            outline-offset: 0;
+        }
+    }
+
+    md-autocomplete-wrap {
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+        height: 4rem !important;
+
+        button {
+            font-size: 1rem;
+            height: 15px;
+            width: 15px;
+            //display: none;
+        }
+
+        button md-icon {
+            -webkit-transform: translate3d(-50%, -50%, 0) scale(0.5);
+            transform: translate3d(-50%, -50%, 0) scale(0.5);
+        }
+    }
+
+    md-autocomplete input:not(.md-input) {
+        @include ebeguPlaceholder();
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.6rem;
+        font-style: normal;
+        font-weight: 700;
+        height: 4rem;
+        letter-spacing: 0.1rem;
+        line-height: 2rem;
+        padding-left: 1rem;
+    }
+
+    md-autocomplete input.ng-touched.ng-invalid {
+        @include ErrorInput();
+    }
+}
+
+.institution-autocomplete {
+    background-color: $white;
+    max-width: unset;
+    //border: 1px solid blue;
+
+    .md-autocomplete-suggestions li {
+        color: $black;
+        font-size: 1.7rem;
+        height: 4rem;
+        line-height: 4rem;
+        margin: 0;
+        padding: 0 0 0 1rem;
+    }
+
+    .md-autocomplete-suggestions {
+        li:hover,
+        li:focus {
+            background: $grey;
+            color: $black;
+        }
+    }
+
+    .highlight {
+        color: $black !important;
+    }
+}
+
+.skiplinks {
+    display: block !important;
+
+    .skiplinks-list {
+        height: 0;
+        list-style: none;
+        margin: 0;
+    }
+
+    .skip {
+        height: 1px;
+        left: -1000px;
+        overflow: hidden;
+        position: fixed;
+        text-align: left;
+        top: -1000px;
+        width: 1px;
+        z-index: 108;
+
+        &:active,
+        &:focus,
+        &:hover {
+            background: $primary;
+            border-bottom: 2px solid $contrast-darkest;
+            border-right: 2px solid $contrast-darkest;
+            box-shadow: none;
+            color: $contrast-lightest;
+            display: block;
+            font-size: 1.8rem;
+            font-weight: bold;
+            height: $navbar-height;
+            left: 0;
+            line-height: 3rem;
+            outline: none;
+            overflow: visible;
+            padding: 1rem;
+            text-decoration: none;
+            top: 0;
+            width: auto;
+        }
+    }
+}
+
+.row-button-th,
+.row-button-td {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 0;
+}
+
+.row-button-button {
+    height: 1px;
+    left: -1000px;
+    overflow: hidden;
+    position: fixed;
+    text-align: left;
+    top: -1000px;
+    width: 1px;
+    z-index: 108;
+
+    &:active,
+    &:focus,
+    &:hover {
+        background: $primary;
+        border: 2px solid $contrast-darkest;
+        box-shadow: none;
+        color: $contrast-lightest;
+        display: block;
+        font-size: 1.8rem;
+        font-weight: bold;
+
+        height: 100%;
+        line-height: 3rem;
+        outline: none;
+        overflow: visible;
+        padding: 0;
+        position: static;
+        text-decoration: none;
+        width: 100%;
+    }
+}
+
+mat-dialog-content.dv-dialog-content.mat-mdc-dialog-content {
+    padding-bottom: 10px;
+}
+
+.dv-dialog-text {
+    font-size: 1.6rem;
+    letter-spacing: normal;
+    line-height: 50px;
+}
+
+.dv-dialog-compact-text {
+    font-size: 1.6rem;
+    letter-spacing: normal;
+    line-height: 25px;
+}
+
+.dv-dialog-actions {
+    align-items: stretch;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+
+    .dv-btn {
+        flex-basis: auto;
+        flex-grow: 1;
+        flex-shrink: 0;
+        // flex:1; is not the same in IE11 as in other browsers:
+        margin: 0 0.75em;
+        max-width: 25rem;
+        text-transform: uppercase;
+    }
+}
+
+@media all and (-ms-high-contrast: none) {
+    .dv-dialog-actions {
+        .dv-btn {
+            flex-basis: 200px;
+        }
+    }
+}
+
+html.cdk-global-scrollblock {
+    overflow-y: visible;
+}
+
+.uppercase,
+.uppercase span {
+    text-transform: uppercase;
+}
+
+// IE11 hack for vertically centering table contents
+// no other fix available due to (yet?) buggy implementation of flexbox
+/*stylelint-disable*/
+_:-ms-fullscreen,
+.mat-cell {
+    padding-top: 15px;
+}
+
+/*stylelint-enable*/
+.mat-cell-clickable {
+    cursor: pointer;
+}
+
+.mat-row:hover {
+    background: rgba(220, 220, 220, 0.2);
+}
+
+.mat-mdc-cell.cdk-column-detail,
+.mat-mdc-header-cell.cdk-column-detail,
+.mat-mdc-cell.cdk-column-remove,
+.mat-mdc-header-cell.cdk-column-remove {
+    flex: 0 0 50px;
+    padding: 0 5px;
+}
+
+.environment {
+    display: none;
+    font-size: 3.6rem;
+    font-weight: bold;
+    left: 0;
+    margin: 0 auto;
+    position: fixed;
+    right: 0;
+    text-align: center;
+    width: 10rem;
+    // IE11 needs z-index
+    z-index: 999;
+}
+
+// this class can be used to align child items horizontal. do NOT use it for mobile screens
+.dv-navigation-mobileless {
+    float: left;
+    width: 100%;
+
+    button {
+        margin: 1rem 0 0 1rem;
+        width: auto;
+    }
+
+    span {
+        margin: 1rem;
+        width: auto;
+    }
+}
+
+.dv-mat-dialog-ts,
+.interne-pendenzen-dialog,
+.steuerdaten-email-dialog {
+    .mat-mdc-dialog-container .mdc-dialog__surface {
+        background-color: $lgrey;
+    }
+}
+
+.max-width-container-750 {
+    max-width: 750px;
+}
+
+.pointer-cursor {
+    cursor: pointer;
+}
+.not-allowed-cursor {
+    cursor: not-allowed;
+}
+
+.italic {
+    @include ebeguItalic();
+}
+
+.green {
+    color: $dgreen;
+}
+
+.red {
+    color: $red;
+}
+
+.mat-mdc-radio-button
+    .mdc-radio__native-control:focus
+    + .mdc-radio__background::before {
+    opacity: 0 !important;
+}
+
+.dv-table .mat-sort-header-arrow svg,
+.meldungsfenster-table .mat-sort-header-arrow svg {
+    transform: scale(0.8);
+}
+
+// dv-radio-container component umrandung (boxshadow)
+md-radio-group {
+    &.radio {
+        &.ng-pristine {
+            md-radio-button {
+                &.md-checked {
+                    .md-container {
+                        // no box-shadow on new page load
+                        box-shadow: none !important;
+                    }
+                }
+            }
+        }
+
+        &.ng-not-empty {
+            // when clicked / focused
+            &:focus {
+                md-radio-button {
+                    &.md-checked {
+                        .md-container {
+                            // Set new box-shadow values
+                            box-shadow: 0 0 0 7px rgba(0, 0, 0, 0.09);
+                            border-radius: 10px;
+                        }
+                    }
+                }
+            }
+
+            // hover
+            md-radio-button {
+                // dv-radio-container component set new hover umrandung (boxshadow)
+                .md-container {
+                    &:hover {
+                        // Set new box-shadow values
+                        box-shadow: 0 0 0 7px rgba(0, 0, 0, 0.09) !important;
+                        border-radius: 10px;
+                    }
+                }
+            }
+
+            md-radio-button[disabled] {
+                .md-container {
+                    &:hover {
+                        // remove hover effect when geuch readonly / disabled radio button
+                        box-shadow: none !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.margin-bottom-40,
+ul.margin-bottom-40 {
+    margin-bottom: 4rem;
+}
+
+.flex-basis-0,
+.mdc-tab.flex-basis-0 {
+    flex-basis: 0;
+}
+
+#titleText {
+    display: inline-block;
+}
+
+#refreshIcon {
+    display: inline-block;
+    margin-left: 0;
+    margin-bottom: 1rem;
+}

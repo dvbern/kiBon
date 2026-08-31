@@ -128,4 +128,23 @@ export class SozialdienstRS {
                 })
             );
     }
+
+    public saveSozialdienstName(
+        sozialdienst: TSSozialdienst
+    ): Observable<TSSozialdienst> {
+        let restSozialdienst = {};
+        restSozialdienst = this.ebeguRestUtil.sozialdienstToRestObject(
+            restSozialdienst,
+            sozialdienst
+        );
+        return this.$http.put(`${this.serviceURL}/name`, restSozialdienst).pipe(
+            map((response: any) => {
+                LOG.debug('PARSING Sozialdienst object ', response);
+                return this.ebeguRestUtil.parseSozialdienst(
+                    new TSSozialdienst(),
+                    response
+                );
+            })
+        );
+    }
 }

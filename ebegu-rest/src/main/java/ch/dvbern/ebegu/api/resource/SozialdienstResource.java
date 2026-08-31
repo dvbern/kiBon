@@ -28,6 +28,7 @@ import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -49,6 +50,7 @@ import ch.dvbern.ebegu.api.converter.JaxSozialdienstConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.sozialdienst.JaxSozialdienst;
 import ch.dvbern.ebegu.api.dtos.sozialdienst.JaxSozialdienstStammdaten;
+import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstStammdaten;
@@ -80,6 +82,9 @@ public class SozialdienstResource {
 
 	@Inject
 	private MandantService mandantService;
+
+	@Inject
+	private PrincipalBean principalBean;
 
 	@Operation(summary = "Erstellt eine neue Sozialdienst in der Datenbank")
 	@Nullable
@@ -216,12 +221,14 @@ public class SozialdienstResource {
 			convertedStammdaten.getSozialdienst()
 				.setStatus(SozialdienstStatus.AKTIV);
 		}
-		// Name ist editierbar in die Stammdaten
-		convertedStammdaten.getSozialdienst()
-			.setName(jaxStammdaten.getSozialdienst().getName());
+		// Name ist editierbar in die Stammdaten aber nur fuer Super Admin
+		if (principalBean.isCallerInRole(SUPER_ADMIN)) {
+			convertedStammdaten.getSozialdienst()
+				.setName(jaxStammdaten.getSozialdienst().getName());
+		}
 
 		authorizer.checkWriteAuthorization(
-			convertedStammdaten.getSozialdienst()
+			convertedStammdaten
 		);
 
 		SozialdienstStammdaten persistedStammdaten =
@@ -231,6 +238,47 @@ public class SozialdienstResource {
 
 		return jaxSozialdienstConverter.sozialdienstStammdatenToJAX(
 			persistedStammdaten
+		);
+	}
+
+	@Operation(summary = "Speichert die SozialdienstStammdaten")
+	@Nullable
+	@PUT
+	@Path("/name")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	public JaxSozialdienst saveSozialdienstName(
+		@Nonnull @NotNull @Valid JaxSozialdienst jaxSozialDienst,
+		@Context UriInfo uriInfo,
+		@Context HttpServletResponse response
+	) {
+		Sozialdienst sozialdienst =
+			sozialdienstService.findSozialdienst(
+				jaxSozialDienst.getId()
+			)
+				.orElseThrow(
+					() -> new EntityNotFoundException(
+						"Sozialdienst not found for "
+							+ jaxSozialDienst.getId()
+					)
+				);
+
+		// Name ist editierbar in die Stammdaten aber nur fuer Super Admin
+		sozialdienst
+			.setName(jaxSozialDienst.getName());
+
+		authorizer.checkWriteAuthorization(
+			sozialdienst
+		);
+
+		Sozialdienst persistedSozialdienst =
+			sozialdienstService.saveSozialdienst(
+				sozialdienst
+			);
+
+		return jaxSozialdienstConverter.sozialdienstToJAX(
+			persistedSozialdienst
 		);
 	}
 }

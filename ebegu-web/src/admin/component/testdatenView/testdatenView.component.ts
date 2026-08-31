@@ -49,7 +49,7 @@ const LOG = LogFactory.createLog('TestdatenView');
 @Component({
     selector: 'dv-testdaten-view',
     templateUrl: './testdatenView.component.html',
-    styleUrls: ['./testdatenView.component.less'],
+    styleUrls: ['./testdatenView.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

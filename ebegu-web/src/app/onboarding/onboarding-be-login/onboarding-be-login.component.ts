@@ -21,7 +21,7 @@ import {Transition} from '@uirouter/core';
 @Component({
     selector: 'dv-onboarding-be-login',
     templateUrl: './onboarding-be-login.component.html',
-    styleUrls: ['./onboarding-be-login.component.less', '../onboarding.less'],
+    styleUrls: ['./onboarding-be-login.component.scss', '../onboarding.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

@@ -39,7 +39,7 @@ type LocalLoginUser = {
 @Component({
     selector: 'dv-local-login',
     templateUrl: './local-login.component.html',
-    styleUrls: ['./local-login.component.less'],
+    styleUrls: ['./local-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

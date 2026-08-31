@@ -67,7 +67,7 @@ const LOG = LogFactory.createLog('StatistikComponent');
 @Component({
     selector: 'dv-statistik',
     templateUrl: './statistik.component.html',
-    styleUrls: ['./statistik.component.less'],
+    styleUrls: ['./statistik.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

@@ -39,7 +39,7 @@ const initialSort: Sort = {active: 'zeitpunktVersand', direction: 'desc'};
 @Component({
     selector: 'dv-uebersicht-Versendete-Mails',
     templateUrl: './uebersichtVersendeteMails.component.html',
-    styleUrls: ['./uebersichtVersendeteMails.component.less'],
+    styleUrls: ['./uebersichtVersendeteMails.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

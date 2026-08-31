@@ -42,8 +42,8 @@ const LOG = LogFactory.createLog('OnboardingGsAbschliessenComponent');
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './onboarding-gs-abschliessen.component.html',
     styleUrls: [
-        './onboarding-gs-abschliessen.component.less',
-        '../onboarding.less'
+        './onboarding-gs-abschliessen.component.scss',
+        '../onboarding.scss'
     ],
     standalone: false
 })

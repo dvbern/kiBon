@@ -55,7 +55,7 @@ const LOG = LogFactory.createLog('FinanzielleSituationAppenzellViewComponent');
 @Component({
     selector: 'dv-finanzielle-situation-appenzell-view',
     templateUrl: './finanzielle-situation-appenzell-view.component.html',
-    styleUrls: ['./finanzielle-situation-appenzell-view.component.less'],
+    styleUrls: ['./finanzielle-situation-appenzell-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

@@ -72,7 +72,7 @@ const LOG = LogFactory.createLog('EditInstitutionComponent');
 @Component({
     selector: 'dv-edit-institution',
     templateUrl: './edit-institution.component.html',
-    styleUrls: ['./edit-institution.component.less'],
+    styleUrls: ['./edit-institution.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

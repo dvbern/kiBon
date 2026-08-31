@@ -24,7 +24,7 @@ import {getEntityTargetState} from '../einladung-routing/einladung-helpers';
 @Component({
     selector: 'dv-einladung-abschliessen',
     templateUrl: './einladung-abschliessen.component.html',
-    styleUrls: ['./einladung-abschliessen.component.less'],
+    styleUrls: ['./einladung-abschliessen.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

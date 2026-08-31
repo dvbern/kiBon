@@ -40,7 +40,7 @@ const LOG = LogFactory.createLog('LastenausgleichTSComponent');
 @Component({
     selector: 'dv-lastenausgleich-ts',
     templateUrl: './lastenausgleich-ts.component.html',
-    styleUrls: ['./lastenausgleich-ts.component.less'],
+    styleUrls: ['./lastenausgleich-ts.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

@@ -2696,6 +2696,7 @@
     "SOZIALDIENST_PERSIST_ERROR": "Il y a eu une erreur lors de la sauvergarde des données du service de soutien",
     "SOZIALDIENST_HINZUFUEGEN": "Ajouter un service de soutien",
     "NEUE_SOZIALDIENST": "Nouveau service de soutien",
+    "NAME_UNTERSTUETZUNGDIENST": "Nom service de soutien",
     "SOZIALDIENST_STAMMDATEN": "Donnnée de base du service de soutien",
     "SOZIALDIENST_EDIT": "Modifier le service de soutien",
     "SOZIALDIENST_SPEICHERN": "Enregistrer le service de soutien",

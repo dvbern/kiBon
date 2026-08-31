@@ -25,7 +25,7 @@ import {TSModulTagesschuleGroup} from '../../../models/entity/TSModulTagesschule
 @Component({
     selector: 'lib-modul-tagesschule-dialog',
     templateUrl: './info-schnittstelle-dialog.template.html',
-    styleUrls: ['./info-schnittstelle-dialog.component.less'],
+    styleUrls: ['./info-schnittstelle-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [SharedModule]
 })

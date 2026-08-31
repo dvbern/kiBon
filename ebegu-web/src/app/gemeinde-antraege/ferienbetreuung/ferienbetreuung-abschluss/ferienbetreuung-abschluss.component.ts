@@ -57,7 +57,7 @@ const LOG = LogFactory.createLog('FerienbetreuungAbschlussComponent');
 @Component({
     selector: 'dv-ferienbetreuung-abschluss',
     templateUrl: './ferienbetreuung-abschluss.component.html',
-    styleUrls: ['./ferienbetreuung-abschluss.component.less'],
+    styleUrls: ['./ferienbetreuung-abschluss.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     standalone: false

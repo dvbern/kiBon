@@ -51,7 +51,7 @@ const LOG = LogFactory.createLog('PendenzenBetreuungenListView');
         CommonModule
     ],
     templateUrl: './pendenzen-betreuungen-list-view.component.html',
-    styleUrl: './pendenzen-betreuungen-list-view.component.less',
+    styleUrl: './pendenzen-betreuungen-list-view.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PendenzenBetreuungenListView implements OnInit {

@@ -20,7 +20,7 @@ import {firstValueFrom} from 'rxjs';
 @Component({
     selector: 'dv-interne-pendenzen-table',
     templateUrl: './interne-pendenzen-table.component.html',
-    styleUrls: ['./interne-pendenzen-table.component.less'],
+    styleUrls: ['./interne-pendenzen-table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

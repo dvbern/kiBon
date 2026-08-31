@@ -74,7 +74,7 @@ const LOG = LogFactory.createLog('NavbarComponent');
 @Component({
     selector: 'dv-navbar',
     templateUrl: './navbar.component.html',
-    styleUrls: ['./navbar.component.less'],
+    styleUrls: ['./navbar.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

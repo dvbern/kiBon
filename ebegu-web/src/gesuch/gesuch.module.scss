@@ -1,0 +1,518 @@
+/*
+ * Ki-Tax: System for the management of external childcare subsidies
+ * Copyright (C) 2017 City of Bern Switzerland
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+@use '../style/variables' as *;
+@use '../style/mixins' as *;
+
+#ewk {
+    background: $contrast-lightest;
+    color: $contrast-darkest;
+    display: flex;
+    max-width: 100%;
+    min-width: 55rem;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 2rem;
+    text-overflow: ellipsis;
+    top: ($navbar-height * 2) + 4rem;
+    width: 57rem;
+    z-index: $z-index-sidenav;
+}
+
+.ewk-content {
+    overflow: unset;
+    padding: 0;
+}
+
+.main-title {
+    margin-top: 0;
+}
+
+.freigabe-dialog {
+    select {
+        background: $contrast-lighter;
+    }
+}
+
+.mobile-sidenav-scroll {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.mobile-sidenav-toggle {
+    @include ebeguBold;
+    background: $contrast-lightest;
+    border-bottom: 0.1rem $contrast solid;
+    border-top: 0.1rem $contrast solid;
+    box-sizing: border-box;
+    color: $contrast-darkest;
+    flex: 0 0 auto;
+    height: $navbar-height;
+    position: relative;
+
+    &.mobile-open {
+        border-left: 0.7rem $primary solid;
+    }
+
+    &.mobile-close {
+        border-right: 0.7rem $primary solid;
+    }
+
+    .mobile-active {
+        padding: 0 1.5rem 0 2.5rem;
+
+        &:focus {
+            outline: none;
+        }
+
+        span {
+            display: none;
+            font-size: 1.6rem;
+            letter-spacing: 0.15rem;
+
+            &.gesuch-name,
+            &.active-element,
+            &.fa-angle-down {
+                display: block;
+                max-width: 40%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            &.active-element {
+                color: $primary;
+                margin-left: auto;
+                margin-right: 2rem;
+                max-width: 55%;
+            }
+
+            &.fa-angle-down {
+                display: block;
+                font-size: 2rem;
+                max-width: 5%;
+                overflow: visible;
+            }
+        }
+    }
+
+    button {
+        background: transparent;
+        bottom: 0;
+        color: $contrast-darkest;
+        display: block;
+        height: auto;
+        left: 0;
+        max-width: unset;
+        position: absolute;
+        right: 0;
+        //IE Fallback
+        text-align: right;
+        text-align: end;
+        top: 0;
+        width: 100%;
+
+        &.active,
+        &:active,
+        &:hover,
+        &:focus,
+        &[disabled],
+        &[disabled]:hover {
+            background: transparent;
+            color: $contrast-darkest;
+            outline: 0;
+        }
+
+        &.mobile-sidenav-close {
+            padding: 0 1.5rem 0;
+        }
+
+        span {
+            font-size: 2rem;
+            height: $navbar-height;
+            line-height: $navbar-height;
+        }
+    }
+}
+
+#gesuchContainer {
+    background: $contrast-light;
+    display: block;
+    flex: 1 1 auto;
+    min-width: 3rem;
+    overflow-y: scroll;
+    position: relative;
+
+    dv-navigation,
+    .dv-navigation {
+        bottom: 4rem;
+        left: 0;
+        margin: 0;
+        padding: 0 3rem;
+        position: absolute;
+        right: 0;
+        transform: unset;
+
+        dv-navigation,
+        .dv-navigation {
+            flex: 1;
+            padding: 0;
+            position: static;
+        }
+    }
+
+    .dv-navigation,
+    .dv-navigation-flex {
+        align-items: center;
+
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+    }
+
+    .dv-navigation-flex:first-child {
+        flex: 0;
+    }
+
+    .dv-navigation-flex {
+        flex: 1;
+
+        .dv-navigation-item {
+            padding: 0.75rem;
+        }
+    }
+
+    .dv-navigation--verfuegen-list {
+        flex-direction: row;
+    }
+
+    .betreuung-view .dv-navigation-flex span,
+    .verfuegen-list-view .dv-navigation-flex .ie11-fix,
+    .verfuegen-view .dv-navigation-flex .ie11-fix,
+    .sozialdienst-view .dv-navigation-flex span {
+        align-items: center;
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+    }
+
+    .betreuung-view .dv-navigation-flex dv-loading-button,
+    .verfuegen-list-view .dv-navigation-flex dv-loading-button,
+    .verfuegen-view .dv-navigation-flex dv-loading-button,
+    .sozialdienst-view .dv-navigation-flex dv-loading-button {
+        padding: 0.75rem;
+    }
+
+    .dv-navigation--verfuegen {
+        flex-direction: row;
+
+        dv-navigation,
+        .dv-navigation-flex,
+        .dv-navigation {
+            flex: 0;
+        }
+
+        .dv-navigation-flex {
+            flex-direction: row-reverse;
+        }
+    }
+
+    & > div {
+        min-height: 100%;
+
+        & > * {
+            max-height: none;
+            min-height: 100%;
+
+            .gesuch-modul {
+                min-height: 100%;
+            }
+
+            & > * {
+                max-height: none;
+
+                & > * {
+                    max-height: none;
+                }
+            }
+        }
+    }
+
+    @media only screen and (min-device-width: 320px) and (max-device-width: 700px) {
+        .dv-navigation-flex {
+            flex-wrap: wrap-reverse;
+        }
+    }
+}
+
+#kommentarContainer {
+    background: $contrast-lightest;
+    bottom: 0;
+    flex: 0 0 auto;
+    padding: 0;
+    right: 0;
+    width: 45rem;
+}
+
+.fixed-toolbar {
+    position: fixed;
+    top: 10rem;
+    width: 100%;
+    z-index: $z-index-toolbar;
+}
+
+.gesuch-modul {
+    padding: 5rem 3rem 10rem;
+    position: relative;
+
+    &.betreuung-view {
+        padding: 5rem 3rem 14rem;
+
+        .well:not(.non-full-space) {
+            margin-left: -3rem;
+            margin-right: -3rem;
+        }
+    }
+
+    // exclude angular-material radio button and checkbox from static position
+    &.static-position
+        div:not(
+            .md-container,
+            .md-off,
+            .md-on,
+            .md-icon,
+            .mat-mdc-radio-group,
+            .mat-mdc-radio-button,
+            .mat-mdc-radio-label,
+            .mat-mdc-radio-container,
+            .mat-mdc-radio-label-content,
+            .mdc-radio__outer-circle,
+            .mdc-form-field,
+            .mdc-checkbox,
+            .mdc-checkbox > *,
+            .mdc-radio,
+            .mat-mdc-radio-touch-target,
+            .mdc-radio__background,
+            .mdc-radio__inner-circle,
+            .mat-ripple,
+            .mat-ripple-element,
+            .mat-checkbox,
+            .mat-checkbox-layout,
+            .mat-checkbox-inner-container,
+            .mat-checkbox-input,
+            .mat-checkbox-background,
+            .mat-checkbox-frame,
+            .mat-ripple,
+            .mat-sort-header-arrow
+        ) {
+        position: static;
+    }
+
+    .mat-mdc-radio-group .mat-mdc-radio-button {
+        .mdc-radio__background,
+        .mat-mdc-radio-touch-target,
+        input.mdc-radio__native-control {
+            height: 3rem !important;
+            width: 3rem !important;
+        }
+
+        .mdc-radio__native-control:checked
+            + .mdc-radio__background
+            .mdc-radio__inner-circle {
+            transform: scale(0.35);
+        }
+
+        .mdc-radio__inner-circle {
+            border-radius: 50%;
+            border-width: 0;
+            background-color: #424242;
+            height: 1.5rem;
+            width: 1.5rem;
+        }
+
+        .mdc-form-field .mdc-radio {
+            padding: 1px;
+            width: 2rem;
+
+            & + span.mdc-label {
+                color: #000;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 2.2rem;
+                padding-left: 0.6rem;
+            }
+        }
+        &.mat-mdc-radio-disabled > label.mdc-form-field {
+            &,
+            & > span.mdc-label {
+                color: #858585;
+            }
+        }
+
+        .mdc-radio__outer-circle {
+            border-width: 1px;
+        }
+    }
+}
+
+.betreuung-table-header {
+    width: 40rem;
+}
+
+.betreuung-status {
+    position: relative !important;
+
+    div {
+        @include ebeguH3;
+        display: block;
+        height: 100% !important;
+        line-height: 6rem;
+        margin: 0;
+        overflow: hidden;
+        position: relative !important;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .betreuung-bar {
+        border-bottom: 0.5rem solid;
+        bottom: 0;
+        height: 0.5rem;
+        left: 0.8rem;
+        position: absolute;
+        width: 3rem;
+    }
+
+    &.verfuegen-view .betreuung-bar {
+        left: 0;
+    }
+
+    /*stylelint-disable*/
+
+    &.verfuegen-view.NICHT_EINGETRETEN {
+        border-bottom: 1px solid $contrast-darkest;
+    }
+
+    &.BESTAETIGT .betreuung-bar,
+    &.SCHULAMT_ANMELDUNG_UEBERNOMMEN .betreuung-bar {
+        border-color: $success;
+    }
+
+    &.WARTEN .betreuung-bar,
+    &.SCHULAMT_FALSCHE_INSTITUTION .betreuung-bar,
+    &.SCHULAMT_ANMELDUNG_ABGELEHNT .betreuung-bar {
+        border-color: $warning;
+    }
+
+    &.ABGEWIESEN .betreuung-bar,
+    &.SCHULAMT_ANMELDUNG_STORNIERT .betreuung-bar {
+        border-color: $danger;
+    }
+
+    &.VERFUEGT .betreuung-bar {
+        border-color: $purple;
+    }
+}
+
+.AUSSTEHEND {
+}
+
+.WARTEN {
+}
+
+.SCHULAMT {
+}
+
+.ABGEWIESEN {
+}
+
+.BESTAETIGT {
+}
+
+/*stylelint-enable*/
+.right-side {
+    background-color: #ecf1f4;
+}
+
+.gesuch-status {
+    color: $contrast-darkest;
+    margin: 5rem 2.5rem 2.5rem 2.5rem;
+
+    .status {
+        @include ebeguBold;
+        font-size: 1.4rem;
+        letter-spacing: 0.1rem;
+    }
+
+    .gesuch-zusatz-info {
+        @include ebeguItalic;
+        font-size: 1.2rem;
+        letter-spacing: 0.1rem;
+    }
+
+    .gesperrt {
+        color: red;
+        font-size: 1.2rem;
+        letter-spacing: 0.1rem;
+    }
+
+    .uploaded-document {
+        margin-left: 0.5rem;
+    }
+}
+
+.gesuchbody.row {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gesuchbody.row > [class*='col-'] {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+md-checkbox:not(.dv-ebegu-calendar--tagesschule) {
+    &.md-checked {
+        // checkbox md-checkbox, overwrite default behaviour and replace with new mat-checkbox svg
+        .md-icon::after {
+            content: '' !important;
+            display: block;
+            width: 16px;
+            height: 16px;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="white" stroke-width="3" d="M1.73,12.91 8.1,19.28 22.79,4.59"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-color: #424242;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+    }
+
+    // checkbox md-checkbox, overwrite default behaviour and replace with new mat-checkbox svg
+    .md-icon::after {
+        content: '' !important;
+    }
+}
+
+md-checkbox[disabled]:not(.dv-ebegu-calendar--tagesschule) {
+    .md-icon::after {
+        background-color: #858585 !important;
+    }
+}

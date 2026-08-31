@@ -20,7 +20,7 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 @Component({
     selector: 'dv-input-container-x',
     templateUrl: './dv-input-container-x.component.html',
-    styleUrls: ['./dv-input-container.less'],
+    styleUrls: ['./dv-input-container.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

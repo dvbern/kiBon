@@ -25,7 +25,7 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     templateUrl: 'open-tabellarische-maske-button.component.html',
     imports: [LoadingButtonDirective, TranslatePipe],
     changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: './open-tabellarische-maske-button.component.less'
+    styleUrl: './open-tabellarische-maske-button.component.scss'
 })
 export class OpenTabellarischeMaskeButtonComponent implements OnInit {
     // we cannot use signal input, because then we cannot downgrade the component

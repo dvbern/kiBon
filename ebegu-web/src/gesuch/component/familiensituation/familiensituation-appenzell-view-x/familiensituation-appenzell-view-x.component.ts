@@ -22,7 +22,7 @@ const LOG = LogFactory.createLog('FamiliensituationAppenzellViewXComponent');
 @Component({
     selector: 'dv-familiensituation-appenzell-view-x',
     templateUrl: './familiensituation-appenzell-view-x.component.html',
-    styleUrls: ['./familiensituation-appenzell-view-x.component.less'],
+    styleUrls: ['./familiensituation-appenzell-view-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

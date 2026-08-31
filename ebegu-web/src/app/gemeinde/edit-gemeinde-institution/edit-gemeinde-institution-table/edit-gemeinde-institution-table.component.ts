@@ -31,7 +31,7 @@ import {EditInfomaDialogComponent} from '../edit-infoma-dialog/edit-infoma-dialo
     selector: 'dv-edit-gemeinde-institution-table',
     imports: [SharedModule, MatDialogModule],
     templateUrl: './edit-gemeinde-institution-table.component.html',
-    styleUrl: './edit-gemeinde-institution-table.component.less',
+    styleUrl: './edit-gemeinde-institution-table.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
 })

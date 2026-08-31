@@ -1,0 +1,80 @@
+/*
+ * Copyright (C) 2019 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+@use '../../../style/variables' as *;
+
+.input-error {
+    height: 4rem;
+    width: 26.3rem;
+}
+
+form:not(.ng-submitted) .input-error ::ng-deep .error {
+    display: none;
+}
+
+.onboarding-login {
+    line-height: 2.8rem;
+    margin-top: 10vh;
+    text-align: center;
+
+    a {
+        color: $primary;
+    }
+}
+
+:host {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.onboarding-neubenutzer {
+    .neu-bg-checkbox {
+        margin-left: 0;
+        margin-top: 2rem;
+    }
+
+    .neu-ts-checkbox {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .neu-besondere-volksschule-checkbox {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    ::ng-deep .mat-checkbox-label {
+        color: #222222;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 14px;
+        letter-spacing: 1px;
+        line-height: 19px;
+        padding-left: 0.5rem;
+        white-space: pre-wrap;
+    }
+}
+
+.neu-besondere-volksschule-checkbox {
+    & > * > ::ng-deep .mat-checkbox-layout {
+        padding-left: 60px;
+    }
+}
+
+.fa {
+    color: $primary;
+    margin-right: 0.5rem;
+}

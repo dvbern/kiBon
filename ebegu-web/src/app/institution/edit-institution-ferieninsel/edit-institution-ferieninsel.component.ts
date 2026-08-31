@@ -35,7 +35,7 @@ import {EbeguUtil} from '../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-edit-institution-ferieninsel',
     templateUrl: './edit-institution-ferieninsel.component.html',
-    styleUrls: ['./edit-institution-ferieninsel.component.less'],
+    styleUrls: ['./edit-institution-ferieninsel.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false

@@ -22,7 +22,7 @@ const LOG = LogFactory.createLog('GemeindeKontaktdatenComponent');
     imports: [SharedModule],
     templateUrl: './gemeinde-kontaktdaten.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: 'gemeinde-kontaktdaten.component.less'
+    styleUrl: 'gemeinde-kontaktdaten.component.scss'
 })
 export class GemeindeKontaktdatenComponent implements OnInit {
     @Input({required: true}) stammdaten!: TSGemeindeStammdaten;

@@ -20,7 +20,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 @Component({
     selector: 'dv-ferienbetreuung-freigabe',
     templateUrl: './ferienbetreuung-freigabe.component.html',
-    styleUrls: ['./ferienbetreuung-freigabe.component.less'],
+    styleUrls: ['./ferienbetreuung-freigabe.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

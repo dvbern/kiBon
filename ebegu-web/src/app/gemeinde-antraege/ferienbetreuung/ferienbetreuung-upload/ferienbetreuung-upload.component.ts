@@ -51,7 +51,7 @@ const LOG = LogFactory.createLog('FerienbetreuungUploadComponent');
 @Component({
     selector: 'dv-ferienbetreuung-upload',
     templateUrl: './ferienbetreuung-upload.component.html',
-    styleUrls: ['./ferienbetreuung-upload.component.less'],
+    styleUrls: ['./ferienbetreuung-upload.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

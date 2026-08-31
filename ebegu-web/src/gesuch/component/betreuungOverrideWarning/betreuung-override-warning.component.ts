@@ -32,7 +32,7 @@ import {EbeguUtil} from '../../../utils/EbeguUtil';
 @Component({
     selector: 'betreuung-override-waring',
     templateUrl: './betreuung-override-warning.component.html',
-    styleUrls: ['./betreuung-override-warning.component.less'],
+    styleUrls: ['./betreuung-override-warning.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

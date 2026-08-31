@@ -32,7 +32,7 @@ import {EKVViewUtil} from '../../EKVViewUtil';
 @Component({
     selector: 'dv-einkommensverschlechterung-luzern-view',
     templateUrl: './einkommensverschlechterung-luzern-view.component.html',
-    styleUrls: ['./einkommensverschlechterung-luzern-view.component.less'],
+    styleUrls: ['./einkommensverschlechterung-luzern-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

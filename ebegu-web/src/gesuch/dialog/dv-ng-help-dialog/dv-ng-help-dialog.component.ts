@@ -28,7 +28,7 @@ import {TSRoleUtil} from '../../../utils/TSRoleUtil';
  */
 @Component({
     selector: 'dv-ng-help-dialog',
-    styleUrls: ['./dv-ng-help-dialog.component.less'],
+    styleUrls: ['./dv-ng-help-dialog.component.scss'],
     templateUrl: './dv-ng-help-dialog.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false

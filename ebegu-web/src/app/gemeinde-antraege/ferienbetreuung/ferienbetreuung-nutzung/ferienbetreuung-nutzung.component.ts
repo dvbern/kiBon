@@ -50,7 +50,7 @@ const LOG = LogFactory.createLog('FerienbetreuungNutzungComponent');
 @Component({
     selector: 'dv-ferienbetreuung-nutzung',
     templateUrl: './ferienbetreuung-nutzung.component.html',
-    styleUrls: ['./ferienbetreuung-nutzung.component.less'],
+    styleUrls: ['./ferienbetreuung-nutzung.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

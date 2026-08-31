@@ -36,7 +36,7 @@ import {AbstractEinkommensverschlechterungResultat} from '../../AbstractEinkomme
     templateUrl:
         './einkommensverschlechterung-solothurn-resultate-view.component.html',
     styleUrls: [
-        './einkommensverschlechterung-solothurn-resultate-view.component.less'
+        './einkommensverschlechterung-solothurn-resultate-view.component.scss'
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false

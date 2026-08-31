@@ -1,0 +1,150 @@
+/*
+ * Ki-Tax: System for the management of external childcare subsidies
+ * Copyright (C) 2017 City of Bern Switzerland
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+@use 'variables' as *;
+@use 'mixins' as *;
+
+h1,
+h2,
+h3,
+label,
+label:after,
+p,
+a {
+    color: $contrast-darkest;
+    .form-group & {
+        color: $contrast-darkest;
+    }
+}
+
+h1,
+.ebegu-h1 {
+    @include ebeguH1();
+}
+
+md-dialog .md-dialog-content h2,
+h2:not(.ignore-kibon-legacy),
+.ebegu-h2 {
+    @include ebeguH2();
+}
+
+h3,
+.ebegu-h3 {
+    @include ebeguH3();
+}
+
+h4 {
+    font-size: 1.8rem;
+}
+
+p,
+.md-dialog-content ul {
+    @include ebeguP();
+}
+
+p.with-space {
+    @include ebeguP();
+    margin: revert;
+}
+
+.p-bg {
+    @include ebeguP();
+    font-size: 2.5rem;
+}
+
+a {
+    @include ebeguA();
+}
+
+md-input-container label:not(.md-container-ignore),
+label,
+span.mdc-label {
+    @include ebeguLabel;
+    display: block;
+    &:not(.ignore-danger-font-color) {
+        color: $danger;
+    }
+    &.ignore-danger-font-color {
+        color: $black;
+    }
+    &:after {
+        @include ebeguLabel;
+        display: inline-block;
+        &:not(.ignore-danger-font-color) {
+            color: $danger;
+        }
+        &.ignore-danger-font-color {
+            color: $black;
+        }
+    }
+}
+
+md-input-container:not(.md-input-invalid).md-input-has-value,
+md-input-container,
+md-input-container:not(.md-input-invalid).md-input-focused,
+md-input-container:not(.md-input-focused):not(.md-input-invalid),
+.form-group {
+    label,
+    label.md-required {
+        @include ebeguLabel;
+        color: $contrast-darkest;
+        &:after {
+            @include ebeguLabel;
+            color: $contrast-darkest;
+            display: inline-block;
+        }
+    }
+}
+
+md-input-container label:not(.md-container-ignore).md-required {
+    &:after {
+        @include ebeguLabel;
+        color: $contrast-darkest;
+        display: inline-block;
+    }
+}
+
+.mat-datepicker-toggle:not(.ignore-kibon-legacy) {
+    background: $contrast-light;
+    display: block;
+    float: right;
+    height: 4rem;
+    width: 4rem;
+    .mat-mdc-icon-button {
+        font-size: 1rem;
+        height: 4rem;
+        line-height: 2rem;
+        width: 4rem;
+    }
+}
+
+.form-group {
+    display: block;
+    margin: 0 0 3rem;
+}
+
+.dv-view {
+    padding: 3rem;
+}
+
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 5rem;
+}
+
+.nl2br {
+    white-space: pre-wrap;
+}

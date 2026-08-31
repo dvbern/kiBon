@@ -20,7 +20,7 @@ import {InputUtil} from '../../util/InputUtil';
         FormsModule
     ],
     templateUrl: 'tabellarische-maske-tfo.component.html',
-    styleUrl: 'tabellarische-maske-tfo.component.less',
+    styleUrl: 'tabellarische-maske-tfo.component.scss',
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true
 })

@@ -38,7 +38,7 @@ const LOG = LogFactory.createLog('DebuggingComponent');
 @Component({
     selector: 'dv-debugging',
     templateUrl: './debugging.component.html',
-    styleUrls: ['./debugging.component.less'],
+    styleUrls: ['./debugging.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

@@ -25,7 +25,7 @@ import {PERMISSIONS_KIND} from '../../../models/permissions/PermissionsKind';
         DvDatePickerXAngularjswrapperComponent
     ],
     templateUrl: './kind-gueltigkeit-terminiert.component.html',
-    styleUrl: './kind-gueltigkeit-terminiert.component.less',
+    styleUrl: './kind-gueltigkeit-terminiert.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class KindGueltigkeitTerminiertComponent

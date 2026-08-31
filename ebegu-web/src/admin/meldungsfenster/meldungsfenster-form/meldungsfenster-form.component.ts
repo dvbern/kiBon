@@ -45,7 +45,7 @@ import {MeldungsfensterFormMode} from './MeldungsfensterFormMode';
         ErrorMessagesComponent
     ],
     templateUrl: './meldungsfenster-form.component.html',
-    styleUrl: './meldungsfenster-form.component.less',
+    styleUrl: './meldungsfenster-form.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true
 })

@@ -84,7 +84,7 @@ const LOG = LogFactory.createLog('DVAntragListController');
 @Component({
     selector: 'dv-new-antrag-list',
     templateUrl: './new-antrag-list.component.html',
-    styleUrls: ['./new-antrag-list.component.less'],
+    styleUrls: ['./new-antrag-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     // we need this to overwrite angular material styles
     encapsulation: ViewEncapsulation.None,

@@ -35,7 +35,7 @@ import {from} from 'rxjs';
 @Component({
     selector: 'dv-ng-support-dialog',
     templateUrl: './dv-ng-support-dialog.template.html',
-    styleUrls: ['./dv-ng-support-dialog.component.less'],
+    styleUrls: ['./dv-ng-support-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

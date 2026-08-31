@@ -8,7 +8,7 @@ import {TSSprache} from '../../../models/enums/TSSprache';
 @Component({
     selector: 'lib-shared-ui-meldungsfenster',
     templateUrl: './ui-meldungsfenster.component.html',
-    styleUrl: './ui-meldungsfenster.component.less',
+    styleUrl: './ui-meldungsfenster.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UiMeldungsfensterComponent {

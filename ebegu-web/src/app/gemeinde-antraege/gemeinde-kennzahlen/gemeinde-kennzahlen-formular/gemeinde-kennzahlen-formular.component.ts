@@ -54,7 +54,7 @@ const LOG = LogFactory.createLog('GemeindeKennzahlenFormularComponent');
 @Component({
     selector: 'dv-gemeinde-kennzahlen-formular',
     templateUrl: './gemeinde-kennzahlen-formular.component.html',
-    styleUrls: ['./gemeinde-kennzahlen-formular.component.less'],
+    styleUrls: ['./gemeinde-kennzahlen-formular.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

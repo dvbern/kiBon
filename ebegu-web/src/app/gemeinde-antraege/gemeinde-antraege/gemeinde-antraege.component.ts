@@ -82,7 +82,7 @@ const LOG = LogFactory.createLog('GemeindeAntraegeComponent');
 @Component({
     selector: 'dv-gemeinde-antraege',
     templateUrl: './gemeinde-antraege.component.html',
-    styleUrls: ['./gemeinde-antraege.component.less'],
+    styleUrls: ['./gemeinde-antraege.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     standalone: false

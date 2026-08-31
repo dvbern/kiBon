@@ -50,7 +50,7 @@ const LOG = LogFactory.createLog('FerienbetreuungKostenEinnahmenComponent');
 @Component({
     selector: 'dv-ferienbetreuung-kosten-einnahmen',
     templateUrl: './ferienbetreuung-kosten-einnahmen.component.html',
-    styleUrls: ['./ferienbetreuung-kosten-einnahmen.component.less'],
+    styleUrls: ['./ferienbetreuung-kosten-einnahmen.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

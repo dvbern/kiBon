@@ -18,7 +18,7 @@ import {BetreuungMonitoringRS} from '../../service/betreuungMonitoringRS.rest';
 @Component({
     selector: 'dv-betreuung-monitoring',
     templateUrl: './betreuung-monitoring.component.html',
-    styleUrls: ['./betreuung-monitoring.component.less'],
+    styleUrls: ['./betreuung-monitoring.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

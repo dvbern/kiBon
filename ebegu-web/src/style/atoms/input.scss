@@ -1,0 +1,251 @@
+/*
+ * Copyright (C) 2023 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+@use '../variables' as *;
+@use '../mixins' as *;
+
+//    error styling
+md-input-container {
+    margin: 0;
+    padding: 0;
+}
+
+.contrast {
+    /*stylelint-disable*/
+
+    dv-timepicker {
+        /*stylelint-enable*/
+        background: $contrast-light;
+    }
+}
+
+[disabled] md-input-container .md-input {
+    @include DisabledInput;
+    @include ebeguDisabledPlaceholder;
+}
+
+input[type='text'],
+input[type='number'],
+input[type='email'],
+textarea,
+textarea.md-input,
+.form-control,
+.dv-select-style select,
+dv-input-container-x .form-control {
+    @include ebeguPlaceholder;
+    @include ebeguSemi-bold;
+    @include ebeguH1;
+    -moz-appearance: textfield; // spinner in firefox sieht doof aus -> disable
+    background: $contrast-lightest;
+    border: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0) /*$secondary-dark*/;
+
+    color: $contrast-darkest;
+    height: 4rem;
+    margin: 0;
+    outline: 0;
+    padding: 0 0 0 1rem;
+    transition: background 0.5s ease;
+    width: 100%;
+
+    &.dv-mat-datepicker {
+        width: calc(100% - 4.5rem);
+    }
+
+    .table &,
+    &.contrast {
+        background: $contrast-lighter;
+    }
+
+    &[disabled],
+    &:disabled {
+        @include ebeguDisabledPlaceholder;
+        @include DisabledInput;
+        -webkit-text-fill-color: $contrast-darkest;
+    }
+
+    &:focus {
+        box-shadow: none /*$secondary-dark*/;
+        outline: 2px solid $contrast-darkest;
+        outline-offset: 0;
+    }
+}
+
+mat-datepicker-toggle:not(.no-box-shadow) > button.cdk-focused {
+    box-shadow: none /*$secondary-dark*/;
+    outline: 2px solid $contrast-darkest;
+    outline-offset: 0;
+}
+
+input[type='number'] {
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+.dv-select-style {
+    background: none;
+    display: block;
+    position: relative !important;
+
+    &.dv-dialog-select {
+        select {
+            background: $contrast-lighter;
+        }
+    }
+
+    select {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        margin: 0;
+        outline: none;
+        width: 100%;
+
+        &[disabled],
+        &:disabled {
+            @include DisabledInput;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    &::after {
+        content: ' \F107';
+        display: none;
+        font-family: FontAwesome, sans-serif;
+        font-size: 1.6rem;
+        pointer-events: none;
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        z-index: 2;
+    }
+}
+
+@supports (-webkit-appearance: none) or (appearance: none) or
+    ((-moz-appearance: none) and (mask-type: alpha)) {
+    .dv-select-style::after {
+        display: block;
+    }
+
+    .dv-select-style select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: none;
+        padding-right: 2em;
+    }
+}
+
+//noinspection CssInvalidPropertyValue
+@-moz-document url-prefix() {
+    .dv-select-style {
+        overflow: hidden;
+    }
+    .dv-select-style::after {
+        display: block;
+    }
+    .dv-select-style select {
+        border: none;
+
+        /* Firefox < 4 */
+        min-width: 6em;
+
+        /* Firefox 4-15 */
+        min-width: -moz-calc(0);
+
+        /* Firefox 16+ */
+        min-width: calc(0em);
+        overflow: -moz-hidden-unscrollable;
+        padding-right: 0.4em;
+        width: 130%;
+        width: -moz-calc(100% + 2.4em);
+        width: calc(100% + 2.4em);
+    }
+    @supports (mask-type: alpha) {
+        .dv-select-style {
+            overflow: visible;
+        }
+
+        .dv-select-style select {
+            -moz-appearance: none;
+            padding-right: 2em;
+            width: 100%;
+        }
+    }
+}
+
+.dv-select-style select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    .dv-select-style select::-ms-expand {
+        display: none;
+    }
+
+    .dv-select-style select:focus::-ms-value {
+        color: #222;
+    }
+
+    .dv-select-style select {
+        border: none;
+        padding-right: 2em;
+    }
+
+    .dv-select-style::after {
+        display: block;
+    }
+}
+
+textarea.md-input,
+textarea.form-control {
+    @include ebeguNormal;
+    padding: 1rem;
+
+    .md-input-focused & {
+        padding: 1rem;
+    }
+}
+
+input.filter {
+    margin-bottom: 2em;
+    outline-style: solid;
+    outline-width: 2px;
+}
+
+.mat-mdc-select {
+    display: flex !important;
+
+    .mat-mdc-select-trigger {
+        height: 100%;
+        display: inline-flex !important;
+
+        .mat-mdc-select-arrow-wrapper {
+            display: flex !important;
+        }
+    }
+}

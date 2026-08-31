@@ -38,7 +38,7 @@ import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
 @Component({
     selector: 'dv-search-list',
     templateUrl: './dv-search-list.component.html',
-    styleUrls: ['./dv-search-list.component.less'],
+    styleUrls: ['./dv-search-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

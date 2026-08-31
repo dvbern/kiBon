@@ -1,0 +1,198 @@
+/*
+ * Ki-Tax: System for the management of external childcare subsidies
+ * Copyright (C) 2018 City of Bern Switzerland
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+@use '../../../../style/variables' as *;
+@use '../../../../style/mixins' as *;
+
+$dropDown: false;
+
+mat-toolbar {
+    background-color: $primary;
+    border-color: $primary;
+    z-index: $z-index-navbar;
+}
+
+.dv-navbar-mat {
+    .dv-mat-toolbar {
+        font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+        z-index: $z-index-navbar;
+        height: 5rem;
+
+        .dv-nav-break {
+            display: none;
+        }
+
+        @media (width < 1400px) {
+            height: 100%;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+
+            .dv-ng-navbar-element {
+                flex-grow: 1;
+            }
+
+            .dv-nav-break {
+                display: block;
+                width: 100%;
+                height: 0;
+            }
+        }
+
+        @media (width < 1000px) {
+            .dv-nav-break2 {
+                display: block;
+                width: 100%;
+                height: 0;
+            }
+        }
+
+        .dv-ng-navbar-element.active {
+            ::ng-deep dv-posteingang {
+                a,
+                > a:hover,
+                > a:focus {
+                    @include ebeguBold;
+                    border-bottom: 0.5rem solid $contrast-lightest;
+                    display: inline-block;
+                }
+            }
+        }
+
+        ::ng-deep dv-posteingang {
+            a {
+                color: #fff;
+                font-size: 1.6rem;
+                height: 5rem;
+                letter-spacing: 0.15rem;
+                line-height: 5rem;
+                text-decoration: none;
+
+                &:hover {
+                    background-color: $primary;
+                    color: $primary-light;
+                }
+            }
+        }
+
+        span,
+        div {
+            a {
+                font-style: normal;
+                font-weight: 400;
+                box-sizing: border-box;
+                color: #ffffff;
+                font-size: 1.6rem;
+                height: 5rem;
+                letter-spacing: 0.15rem;
+                line-height: 5rem;
+                padding: 0;
+                text-align: center;
+                text-decoration: none;
+
+                &:hover {
+                    background-color: $primary;
+                    color: $primary-light;
+                }
+            }
+
+            &.active {
+                a,
+                > a:hover,
+                > a:focus {
+                    @include ebeguBold;
+                    border-bottom: 0.5rem solid $contrast-lightest;
+                    display: inline-block;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .navbar-default .navbar-nav .open .dropdown-menu {
+        > li > a {
+            color: $contrast-lightest;
+
+            &:hover,
+            &:focus {
+                color: $primary-light;
+            }
+        }
+
+        > .active {
+            > a,
+            > a:hover,
+            > a:focus {
+                background-color: $primary;
+                color: $primary-light;
+            }
+        }
+    }
+}
+
+.dv-btn.dv-ng-navbar-button {
+    font-size: 1.6rem;
+    letter-spacing: 0.116rem;
+    color: white;
+
+    .fa {
+        margin-right: 1rem;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &[disabled],
+    &[disabled]:hover {
+        background: $contrast;
+        color: $contrast-lightest;
+    }
+
+    .md-button:not([disabled]):hover,
+    &:active {
+        background: $contrast;
+    }
+
+    &.mat-mdc-menu-item,
+    &.mat-mdc-menu-item:visited,
+    &.mat-mdc-menu-item:link {
+        color: var(--mat-menu-item-label-text-color);
+    }
+}
+
+::ng-deep .mat-button-focus-overlay {
+    background: $contrast;
+}
+
+.dv-ng-navbar-element {
+    cursor: pointer;
+    height: 100%;
+    margin-left: auto;
+
+    &-fall-eroeffnen {
+        @extend .dv-ng-navbar-element !optional;
+        z-index: $z-index-navbar - 1;
+    }
+}
+
+.fall-eroeffnen {
+    span {
+        vertical-align: inherit !important;
+    }
+}
+
+::ng-deep .cdk-overlay-backdrop {
+    z-index: auto !important;
+}

@@ -37,7 +37,7 @@ const LOG = LogFactory.createLog('InternePendenzenComponent');
 @Component({
     selector: 'interne-pendenzen-view',
     templateUrl: './interne-pendenzen.component.html',
-    styleUrls: ['./interne-pendenzen.component.less'],
+    styleUrls: ['./interne-pendenzen.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

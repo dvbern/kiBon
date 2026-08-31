@@ -37,7 +37,7 @@ import {AbstractEinkommensverschlechterungResultat} from '../../AbstractEinkomme
 @Component({
     selector: 'dv-einkommensverschlechterung-resultate-view',
     templateUrl: './einkommensverschlechterung-resultate-view.component.html',
-    styleUrls: ['./einkommensverschlechterung-resultate-view.component.less'],
+    styleUrls: ['./einkommensverschlechterung-resultate-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

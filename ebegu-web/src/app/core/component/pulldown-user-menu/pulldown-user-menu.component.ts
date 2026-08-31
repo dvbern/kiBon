@@ -39,7 +39,7 @@ import {DvNgOkDialogComponent} from '../dv-ng-ok-dialog/dv-ng-ok-dialog.componen
 @Component({
     selector: 'dv-pulldown-user-menu',
     templateUrl: './pulldown-user-menu.component.html',
-    styleUrls: ['./pulldown-user-menu.component.less'],
+    styleUrls: ['./pulldown-user-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     standalone: false

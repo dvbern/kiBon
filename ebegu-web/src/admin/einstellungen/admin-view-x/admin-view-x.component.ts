@@ -31,7 +31,7 @@ export interface DisplayedGroup {
 @Component({
     selector: 'dv-admin-view-x',
     templateUrl: './admin-view-x.component.html',
-    styleUrls: ['./admin-view-x.component.less'],
+    styleUrls: ['./admin-view-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     standalone: false

@@ -31,7 +31,7 @@ import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 @Component({
     selector: 'dv-pulldown-user-menu-button',
     templateUrl: './pulldown-user-menu-button.component.html',
-    styleUrls: ['./pulldown-user-menu-button.component.less'],
+    styleUrls: ['./pulldown-user-menu-button.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

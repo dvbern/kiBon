@@ -34,7 +34,7 @@ export interface HTMLInputEvent extends Event {
 @Component({
     selector: 'dv-single-file-upload',
     templateUrl: './single-file-upload.component.html',
-    styleUrls: ['./single-file-upload.component.less'],
+    styleUrls: ['./single-file-upload.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

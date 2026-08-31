@@ -37,7 +37,7 @@ import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
 @Component({
     selector: 'dv-add-sozialdienst',
     templateUrl: './add-sozialdienst.component.html',
-    styleUrls: ['./add-sozialdienst.component.less'],
+    styleUrls: ['./add-sozialdienst.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

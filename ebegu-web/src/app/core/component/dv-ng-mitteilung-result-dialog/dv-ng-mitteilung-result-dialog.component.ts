@@ -42,7 +42,7 @@ const LOG = LogFactory.createLog('DvNgMitteilungResultDialogComponent');
 @Component({
     selector: 'dv-ng-mitteilung-result-dialog',
     templateUrl: './dv-ng-mitteilung-result-dialog.template.html',
-    styleUrls: ['./dv-ng-mitteilung-result-dialog.template.less'],
+    styleUrls: ['./dv-ng-mitteilung-result-dialog.template.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

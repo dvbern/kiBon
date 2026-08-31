@@ -24,7 +24,7 @@ import {MandantService} from '@utils/mandant';
 @Component({
     selector: 'dv-tutorial-gemeinde-login',
     templateUrl: './tutorial-gemeinde-login.component.html',
-    styleUrls: ['../tutorial-login.component.less'],
+    styleUrls: ['../tutorial-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

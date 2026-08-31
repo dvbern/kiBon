@@ -21,7 +21,7 @@ import {EbeguUtil} from '../../utils/EbeguUtil';
     selector: 'lib-admin-ui-tagesschule-modul-list',
     imports: [SharedModule],
     templateUrl: './tagesschule-modul-list.component.html',
-    styleUrl: './tagesschule-modul-list.component.less',
+    styleUrl: './tagesschule-modul-list.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TagesschuleModulListComponent {

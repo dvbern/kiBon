@@ -53,7 +53,7 @@ import {
 @Component({
     selector: 'dv-steuerabfrage-response-hints',
     templateUrl: './steuerabfrage-response-hints.component.html',
-    styleUrls: ['./steuerabfrage-response-hints.component.less'],
+    styleUrls: ['./steuerabfrage-response-hints.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     standalone: false

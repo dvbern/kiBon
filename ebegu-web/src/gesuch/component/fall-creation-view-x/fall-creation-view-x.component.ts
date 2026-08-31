@@ -55,7 +55,7 @@ const LOG = LogFactory.createLog('FallCreationViewXComponent');
 @Component({
     selector: 'dv-fall-creation-view-x',
     templateUrl: './fall-creation-view-x.component.html',
-    styleUrls: ['./fall-creation-view-x.component.less'],
+    styleUrls: ['./fall-creation-view-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

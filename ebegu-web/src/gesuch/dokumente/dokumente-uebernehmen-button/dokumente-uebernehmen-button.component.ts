@@ -13,7 +13,7 @@ import {DokumenteUebernehmenSelectionComponent} from '@gesuch/dokumente';
     selector: 'lib-gesuch-open-dokumente-uebernehmen-button',
     imports: [CommonModule, SharedModule],
     templateUrl: './dokumente-uebernehmen-button.component.html',
-    styleUrl: './dokumente-uebernehmen-button.component.less',
+    styleUrl: './dokumente-uebernehmen-button.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DokumenteUebernehmenButtonComponent {

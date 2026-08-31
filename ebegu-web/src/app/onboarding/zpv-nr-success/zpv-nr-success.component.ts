@@ -5,7 +5,7 @@ import {ZPVUpdateResult} from './ZPVUpdateResult';
 @Component({
     selector: 'dv-zpv-nr-success',
     templateUrl: './zpv-nr-success.component.html',
-    styleUrls: ['./zpv-nr-success.component.less'],
+    styleUrls: ['./zpv-nr-success.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

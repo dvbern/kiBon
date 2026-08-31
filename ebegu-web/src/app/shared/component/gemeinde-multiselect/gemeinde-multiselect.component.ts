@@ -41,7 +41,7 @@ let nextId = 0;
 @Component({
     selector: 'dv-gemeinde-multiselect',
     templateUrl: './gemeinde-multiselect.component.html',
-    styleUrls: ['./gemeinde-multiselect.component.less'],
+    styleUrls: ['./gemeinde-multiselect.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false

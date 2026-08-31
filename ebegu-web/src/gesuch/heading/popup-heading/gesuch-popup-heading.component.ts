@@ -5,7 +5,7 @@ import {HeadingHeaderComponent} from '../internal/heading-header/heading-header.
     selector: 'lib-gesuch-popup-heading',
     imports: [HeadingHeaderComponent],
     templateUrl: './gesuch-popup-heading.component.html',
-    styleUrl: './gesuch-popup-heading.component.less',
+    styleUrl: './gesuch-popup-heading.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GesuchPopupHeadingComponent {}

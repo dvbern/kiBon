@@ -33,8 +33,8 @@ import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.se
     selector: 'dv-onboarding-info-institution',
     templateUrl: './onboarding-info-institution.component.html',
     styleUrls: [
-        './onboarding-info-institution.component.less',
-        '../onboarding.less'
+        './onboarding-info-institution.component.scss',
+        '../onboarding.scss'
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false

@@ -67,7 +67,7 @@ const LOG = LogFactory.createLog('ZahlungsauftragViewXComponent');
 @Component({
     selector: 'zahlungsauftrag-view',
     templateUrl: './zahlungsauftrag-view-x.component.html',
-    styleUrls: ['./zahlungsauftrag-view-x.component.less'],
+    styleUrls: ['./zahlungsauftrag-view-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

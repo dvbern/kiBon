@@ -17,7 +17,7 @@ import {InputUtil} from '../../util/InputUtil';
         FormsModule
     ],
     templateUrl: 'tabellarische-maske-mittagstisch.component.html',
-    styleUrl: 'tabellarische-maske-mittagstisch.component.less',
+    styleUrl: 'tabellarische-maske-mittagstisch.component.scss',
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true
 })

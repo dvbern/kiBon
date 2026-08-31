@@ -23,7 +23,7 @@ import {InputUtil} from '../../util/InputUtil';
         FormsModule
     ],
     templateUrl: 'tabellarische-maske-kita.component.html',
-    styleUrl: 'tabellarische-maske-kita.component.less',
+    styleUrl: 'tabellarische-maske-kita.component.scss',
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true
 })

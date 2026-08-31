@@ -56,6 +56,6 @@
     "FINANZIELLE_SITUATION_EINKOMMEN_VEREINFACHTEM_VERFAHREN": "Haben Sie ein Einkommen erzielt, das im vereinfachten Verfahren abgerechnet wurde? (Quellensteuer)?",
     "FINANZIELLE_SITUATION_EINKOMMEN_VEREINFACHTEM_VERFAHREN_TOOLTIP": "Einkommen aus vereinfachtem Abrechnungsverfahren, das quellenbesteuert wurde (z. B. Tätigkeiten in der Haushaltsreinigung). Das Einkommen ist in der Steuererklärung in Formular 2, Ziffer 2.25 eingetragen (nicht steuerbare Einkünfte).\nAndere nicht steuerbare Einkünfte (Sozialhilfe, Ergänzungsleistungen, Stipendien, etc.) nicht in diesem Feld eintragen.",
     "DEUTSCH_ODER_FRANZOESISCH": "Deutsch und/oder Französisch",
-    "IMPRESSUM_TEXT": "<h1>Impressum</h1><h2>Gesamtverantwortung</h2>Gesundheits-, Sozial- und Integrationsdirektion des Kantons Bern<br>Amt für Integration und Soziales<br>Rathausgasse 1<br>CH-3011 Bern<br><br><h2>Betrieb & Technik</h2>DV Bern<br>Nussbaumstrasse 21<br>CH-3000 Bern 22 · Schweiz",
+    "IMPRESSUM_TEXT": "<h1>Impressum</h1><h2>Gesamtverantwortung</h2>Gesundheits-, Sozial- und Integrationsdirektion des Kantons Bern<br>Amt für Integration und Soziales<br>Rathausgasse 1<br>CH-3011 Bern<br><br>Bildungs- und Kulturdirektion des Kantons Bern <br>Amt für Kindergarten, Volksschule und Beratung <br>Sulgeneckstrasse 70 <br>CH-3005 Bern <br><br><h2>Betrieb & Technik</h2>DV Bern<br>Nussbaumstrasse 21<br>CH-3000 Bern 22 · Schweiz",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

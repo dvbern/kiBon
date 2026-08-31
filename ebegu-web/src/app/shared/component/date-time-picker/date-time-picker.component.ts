@@ -30,7 +30,7 @@ import {ErrorMessagesComponent} from '../../../core/component/dv-error-messages/
         TranslatePipe
     ],
     templateUrl: './date-time-picker.component.html',
-    styleUrl: './date-time-picker.component.less',
+    styleUrl: './date-time-picker.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DateTimePickerComponent {

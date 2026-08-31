@@ -93,7 +93,7 @@ const VERSENDETE_MAILS_MAT_DATE_FORMAT: MatDateFormats = {
         provideMomentDateAdapter(VERSENDETE_MAILS_MAT_DATE_FORMAT)
     ],
     templateUrl: './versendete-mail-filter.html',
-    styleUrls: ['./versendete-mail-filter.less'],
+    styleUrls: ['./versendete-mail-filter.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VersendeteMailFilter {

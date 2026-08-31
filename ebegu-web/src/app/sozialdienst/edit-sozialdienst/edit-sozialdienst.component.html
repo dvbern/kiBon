@@ -15,7 +15,7 @@
 ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 <dv-full-height-inner-padding-container>
-    @if (stammdaten$ | async; as stammdaten) {
+    @if (stammdaten(); as stammdaten) {
         <form
             role="form"
             #form="ngForm"
@@ -51,7 +51,7 @@
                                         translate
                                         for="name_id"
                                     >
-                                        NAME
+                                        NAME_UNTERSTUETZUNGDIENST
                                     </h3>
                                     <input
                                         id="name_id"
@@ -63,6 +63,9 @@
                                         "
                                         [maxlength]="255"
                                         class="form-control"
+                                        [disabled]="
+                                            !isUnterstuetzungNameEditable()
+                                        "
                                         required
                                     />
                                     <dv-error-messages
@@ -96,6 +99,7 @@
                                             stammdaten.adresse.organisation
                                         "
                                         [maxlength]="255"
+                                        [disabled]="!isStammdatenEditable()"
                                         class="form-control"
                                         required
                                     />
@@ -127,6 +131,7 @@
                                         [(ngModel)]="stammdaten.mail"
                                         email
                                         [maxlength]="255"
+                                        [disabled]="!isStammdatenEditable()"
                                         class="form-control"
                                         required
                                     />
@@ -156,6 +161,7 @@
                                         #name="ngModel"
                                         [(ngModel)]="stammdaten.adresse.strasse"
                                         [maxlength]="255"
+                                        [disabled]="!isStammdatenEditable()"
                                         class="form-control"
                                         required
                                     />
@@ -182,6 +188,7 @@
                                             stammdaten.adresse.hausnummer
                                         "
                                         [maxlength]="255"
+                                        [disabled]="!isStammdatenEditable()"
                                         class="form-control"
                                     />
                                     <dv-error-messages
@@ -205,6 +212,7 @@
                                         #name="ngModel"
                                         [(ngModel)]="stammdaten.telefon"
                                         [maxlength]="255"
+                                        [disabled]="!isStammdatenEditable()"
                                         class="form-control"
                                         [pattern]="CONSTANTS.PATTERN_PHONE"
                                     />
@@ -234,6 +242,7 @@
                                         #name="ngModel"
                                         [(ngModel)]="stammdaten.adresse.plz"
                                         [maxlength]="255"
+                                        [disabled]="!isStammdatenEditable()"
                                         class="form-control"
                                         required
                                     />
@@ -261,6 +270,7 @@
                                         #name="ngModel"
                                         [(ngModel)]="stammdaten.adresse.ort"
                                         [maxlength]="255"
+                                        [disabled]="!isStammdatenEditable()"
                                         class="form-control"
                                         required
                                     />
@@ -285,6 +295,7 @@
                                         #name="ngModel"
                                         [(ngModel)]="stammdaten.webseite"
                                         [maxlength]="255"
+                                        [disabled]="!isStammdatenEditable()"
                                         class="form-control"
                                         placeholder="{{
                                             'BEISPIEL_WEBSITE' | translate
@@ -375,7 +386,7 @@
             </div>
             <!-- Buttons -->
             <div class="dv-footer">
-                @if (isStammdatenEditable()) {
+                @if (isStammdatenEditable() || isUnterstuetzungNameEditable()) {
                     <button [type]="'submit'" class="dv-btn next-button">
                         {{ submitButtonLabel() }}
                     </button>

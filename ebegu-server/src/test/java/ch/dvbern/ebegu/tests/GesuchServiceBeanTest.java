@@ -17,15 +17,34 @@
 
 package ch.dvbern.ebegu.tests;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.Nonnull;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Berechtigung;
+import ch.dvbern.ebegu.entities.Dossier;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuch_;
+import ch.dvbern.ebegu.entities.Gesuchsteller;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer_;
+import ch.dvbern.ebegu.entities.Gesuchsteller_;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.AntragTyp;
 import ch.dvbern.ebegu.enums.Eingangsart;
@@ -34,8 +53,8 @@ import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
 import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.DossierService;
-import ch.dvbern.ebegu.services.FallService;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.GesuchServiceBean;
 import ch.dvbern.ebegu.services.SuperAdminService;
@@ -46,6 +65,7 @@ import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -58,6 +78,8 @@ import static org.easymock.EasyMock.replay;
 
 @ExtendWith(EasyMockExtension.class)
 class GesuchServiceBeanTest extends EasyMockSupport {
+
+	private static final String GS2_MAIL = "gesuchsteller2@example.com";
 
 	@TestSubject
 	private GesuchServiceBean gesuchService;
@@ -72,9 +94,9 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 	@Mock
 	private CriteriaQueryHelper criteriaQueryHelper;
 	@Mock
-	private FallService fallService;
-	@Mock
 	private SuperAdminService superAdminService;
+	@Mock
+	private Authorizer authorizer;
 
 	@Test
 	void removeAntragAsGesuchstellerPapiergesuchNotAllowed() {
@@ -290,5 +312,112 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 		expect(principalBean.isCallerInAnyOfRole(role)).andReturn(true);
 		expect(principalBean.isCallerInAnyOfRole(anyObject(List.class)))
 			.andReturn(false);
+	}
+
+	@Nested
+	class GetMailOfGesuchForDossierWithLatestMutationOfGS2Test {
+
+		@Test
+		void getMailOfGesuchForDossierWithLatestMutationOfGS2_shouldReturnEmptyOptional_ifCriteriaResultIsEmpty() {
+			Dossier dossier = TestDataUtil.createDefaultDossier();
+			TypedQuery<String> typedQuery = mockMailOfGS2Query(dossier);
+			expect(typedQuery.getResultList()).andReturn(List.of());
+
+			replayAll();
+
+			Assertions.assertEquals(
+				Optional.empty(),
+				gesuchService.getMailOfGesuchForDossierWithLatestMutationOfGS2(
+					dossier
+				)
+			);
+			verifyAll();
+		}
+
+		@Test
+		void getMailOfGesuchForDossierWithLatestMutationOfGS2_shouldReturnEmail_ifCriteriaResultIsNotEmpty() {
+			Dossier dossier = TestDataUtil.createDefaultDossier();
+			TypedQuery<String> typedQuery = mockMailOfGS2Query(dossier);
+			expect(typedQuery.getResultList()).andReturn(List.of(GS2_MAIL));
+
+			replayAll();
+
+			Assertions.assertEquals(
+				Optional.of(GS2_MAIL),
+				gesuchService.getMailOfGesuchForDossierWithLatestMutationOfGS2(
+					dossier
+				)
+			);
+			verifyAll();
+		}
+
+		@Test
+		void getMailOfGesuchForDossierWithLatestMutationOfGS2_shouldReturnEmail_ifCriteriaResultIsNotEmptyButFirstElementIsNull() {
+			Dossier dossier = TestDataUtil.createDefaultDossier();
+			TypedQuery<String> typedQuery = mockMailOfGS2Query(dossier);
+			expect(typedQuery.getResultList()).andReturn(
+				Collections.singletonList(null)
+			);
+			replayAll();
+
+			Assertions.assertEquals(
+				Optional.empty(),
+				gesuchService.getMailOfGesuchForDossierWithLatestMutationOfGS2(
+					dossier
+				)
+			);
+			verifyAll();
+		}
+
+		@Nonnull
+		private TypedQuery<String> mockMailOfGS2Query(
+			@Nonnull Dossier dossier
+		) {
+			CriteriaBuilder cb = mock(CriteriaBuilder.class);
+			CriteriaQuery<String> query = mock(CriteriaQuery.class);
+			Root<Gesuch> root = mock(Root.class);
+			Join<Gesuch, GesuchstellerContainer> gesuchstellerJoin =
+				mock(Join.class);
+			Join<GesuchstellerContainer, Gesuchsteller> gesDataJoin =
+				mock(Join.class);
+			Path<Dossier> dossierPath = mock(Path.class);
+			Path<String> mailPath = mock(Path.class);
+			Path<LocalDateTime> timestampMutiertPath = mock(Path.class);
+			Predicate gesuchOfDossier = mock(Predicate.class);
+			Order orderByTimestampMutiert = mock(Order.class);
+			EntityManager entityManager = mock(EntityManager.class);
+			TypedQuery<String> typedQuery = mock(TypedQuery.class);
+
+			authorizer.checkReadAuthorizationDossier(dossier);
+			expectLastCall().andVoid();
+
+			expect(persistence.getCriteriaBuilder()).andReturn(cb);
+			expect(cb.createQuery(String.class)).andReturn(query);
+			expect(query.from(Gesuch.class)).andReturn(root);
+			expect(root.join(Gesuch_.gesuchsteller2, JoinType.INNER))
+				.andReturn(gesuchstellerJoin);
+			expect(
+				gesuchstellerJoin.join(
+					GesuchstellerContainer_.gesuchstellerJA,
+					JoinType.INNER
+				)
+			).andReturn(gesDataJoin);
+			expect(root.get(Gesuch_.dossier)).andReturn(dossierPath);
+			expect(cb.equal(dossierPath, dossier)).andReturn(gesuchOfDossier);
+			expect(gesDataJoin.get(Gesuchsteller_.mail)).andReturn(mailPath);
+			expect(query.select(mailPath)).andReturn(query);
+			expect(query.where(gesuchOfDossier)).andReturn(query);
+			expect(gesDataJoin.get(Gesuchsteller_.timestampMutiert))
+				.andReturn(timestampMutiertPath);
+			expect(cb.desc(timestampMutiertPath))
+				.andReturn(orderByTimestampMutiert);
+			expect(query.orderBy(orderByTimestampMutiert)).andReturn(query);
+			expect(persistence.getEntityManager()).andReturn(entityManager);
+			expect(entityManager.createQuery(query)).andReturn(typedQuery);
+			expect(typedQuery.setMaxResults(1)).andReturn(typedQuery);
+
+			return typedQuery;
+		}
+
 	}
 }

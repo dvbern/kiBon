@@ -4,7 +4,7 @@ import {TranslateModule} from '@ngx-translate/core';
 @Component({
     selector: 'dv-warning',
     templateUrl: './warning.component.html',
-    styleUrls: ['./warning.component.less'],
+    styleUrls: ['./warning.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [TranslateModule]
 })

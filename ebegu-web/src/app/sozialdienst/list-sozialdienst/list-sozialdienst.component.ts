@@ -32,7 +32,7 @@ import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
 @Component({
     selector: 'dv-list-sozialdienst',
     templateUrl: './list-sozialdienst.component.html',
-    styleUrls: ['./list-sozialdienst.component.less'],
+    styleUrls: ['./list-sozialdienst.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

@@ -42,7 +42,7 @@ const LOG = LogFactory.createLog('GesuchsperiodeViewXComponent');
 @Component({
     selector: 'dv-gesuchsperiode-view-x',
     templateUrl: './gesuchsperiode-view-x.component.html',
-    styleUrls: ['./gesuchsperiode-view-x.component.less'],
+    styleUrls: ['./gesuchsperiode-view-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

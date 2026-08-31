@@ -22,6 +22,7 @@ import {AddSozialdienstComponent} from './add-sozialdienst/add-sozialdienst.comp
 import {EditSozialdienstComponent} from './edit-sozialdienst/edit-sozialdienst.component';
 import {ListSozialdienstComponent} from './list-sozialdienst/list-sozialdienst.component';
 import {SozialdienstRoutingModule} from './sozialdienst-routing/sozialdienst-routing.module';
+import {UnterstuetzungdienstPermissionService} from '../authorisation/permissions/unterstuetzungdienst/Unterstuetzungdienst.permission.service';
 
 @NgModule({
     declarations: [
@@ -33,6 +34,7 @@ import {SozialdienstRoutingModule} from './sozialdienst-routing/sozialdienst-rou
         SharedModule,
         SozialdienstRoutingModule,
         WebseiteValidatorDirective
-    ]
+    ],
+    providers: [UnterstuetzungdienstPermissionService]
 })
 export class SozialdienstModule {}

@@ -64,7 +64,7 @@ const LOG = LogFactory.createLog('EditGemeindeBGComponent');
 @Component({
     selector: 'dv-edit-gemeinde-bg',
     templateUrl: './edit-gemeinde-bg.component.html',
-    styleUrls: ['./edit-gemeinde-bg.component.less'],
+    styleUrls: ['./edit-gemeinde-bg.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false

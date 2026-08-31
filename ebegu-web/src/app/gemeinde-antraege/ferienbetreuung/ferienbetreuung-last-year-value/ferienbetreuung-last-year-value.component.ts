@@ -22,7 +22,7 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-ferienbetreuung-last-year-value',
     templateUrl: './ferienbetreuung-last-year-value.component.html',
-    styleUrls: ['./ferienbetreuung-last-year-value.component.less'],
+    styleUrls: ['./ferienbetreuung-last-year-value.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false

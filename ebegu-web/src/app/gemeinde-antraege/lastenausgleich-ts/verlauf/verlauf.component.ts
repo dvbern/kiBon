@@ -22,7 +22,7 @@ const LOG = LogFactory.createLog('VerlaufComponent');
 @Component({
     selector: 'dv-verlauf',
     templateUrl: './verlauf.component.html',
-    styleUrls: ['./verlauf.component.less'],
+    styleUrls: ['./verlauf.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

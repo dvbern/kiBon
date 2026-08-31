@@ -51,7 +51,7 @@ const LOG = LogFactory.createLog('LastenausgleichViewXComponent');
 @Component({
     selector: 'dv-lastenausgleich-view-x',
     templateUrl: './lastenausgleich-view-x.component.html',
-    styleUrls: ['./lastenausgleich-view-x.component.less'],
+    styleUrls: ['./lastenausgleich-view-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

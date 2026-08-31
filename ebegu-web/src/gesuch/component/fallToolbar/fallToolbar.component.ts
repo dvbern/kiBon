@@ -54,7 +54,7 @@ const LOG = LogFactory.createLog('FallToolbarComponent');
 @Component({
     selector: 'dv-fall-toolbar',
     templateUrl: './fallToolbar.template.html',
-    styleUrls: ['./fallToolbar.less'],
+    styleUrls: ['./fallToolbar.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

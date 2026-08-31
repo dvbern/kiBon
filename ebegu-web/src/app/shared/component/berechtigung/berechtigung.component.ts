@@ -38,7 +38,7 @@ let nextId = 0;
 @Component({
     selector: 'dv-berechtigung',
     templateUrl: './berechtigung.component.html',
-    styleUrls: ['./berechtigung.component.less'],
+    styleUrls: ['./berechtigung.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false

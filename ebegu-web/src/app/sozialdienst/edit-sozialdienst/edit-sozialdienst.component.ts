@@ -18,28 +18,26 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    inject,
     OnInit,
     QueryList,
-    ViewChildren,
-    inject
+    signal,
+    ViewChildren
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
-import {Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
-import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../models/enums/TSRole';
 import {TSSozialdienstStammdaten} from '../../../models/sozialdienst/TSSozialdienstStammdaten';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {CONSTANTS} from '@models/constants';
-import {ErrorService} from '../../core/errors/service/ErrorService';
 import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
+import {UnterstuetzungdienstPermissionService} from '../../authorisation/permissions/unterstuetzungdienst/Unterstuetzungdienst.permission.service';
+import {TSSozialdienst} from '../../../models/sozialdienst/TSSozialdienst';
 
 @Component({
     selector: 'dv-edit-sozialdienst',
     templateUrl: './edit-sozialdienst.component.html',
-    styleUrls: ['./edit-sozialdienst.component.less'],
+    styleUrls: ['./edit-sozialdienst.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
@@ -47,16 +45,17 @@ export class EditSozialdienstComponent implements OnInit {
     private readonly $transition$ = inject(Transition);
     private readonly $state = inject(StateService);
     private readonly sozialdienstRS = inject(SozialdienstRS);
-    private readonly authServiceRS = inject(AuthServiceRS);
     private readonly translate = inject(TranslateService);
     private readonly changeDetectorRef = inject(ChangeDetectorRef);
-    private readonly errorService = inject(ErrorService);
+    private readonly unterstuetzungdienstPermissionService = inject(
+        UnterstuetzungdienstPermissionService
+    );
 
     public readonly CONSTANTS: any = CONSTANTS;
 
     @ViewChildren(NgForm) public forms: QueryList<NgForm>;
 
-    public stammdaten$: Observable<TSSozialdienstStammdaten>;
+    public stammdaten = signal<TSSozialdienstStammdaten | null>(null);
     public sozialdienstId: string;
     public editMode: boolean;
     public ebeguUtil = EbeguUtil;
@@ -72,7 +71,12 @@ export class EditSozialdienstComponent implements OnInit {
 
     public onSubmit(stammdaten: TSSozialdienstStammdaten): void {
         if (this.editMode) {
-            this.persistStammdaten(stammdaten);
+            if (this.isStammdatenEditable()) {
+                this.persistStammdaten(stammdaten);
+            } else {
+                this.persistSozialdienstName(stammdaten.sozialdienst);
+            }
+
             return;
         }
         this.editMode = true;
@@ -83,16 +87,19 @@ export class EditSozialdienstComponent implements OnInit {
     }
 
     public isStammdatenEditable(): boolean {
-        return this.authServiceRS.isOneOfRoles([
-            TSRole.SUPER_ADMIN,
-            TSRole.ADMIN_SOZIALDIENST
-        ]);
+        return this.unterstuetzungdienstPermissionService.canEditStammdaten();
+    }
+
+    public isUnterstuetzungNameEditable(): boolean {
+        return this.unterstuetzungdienstPermissionService.canEditName();
     }
 
     private loadStammdaten(): void {
-        this.stammdaten$ = this.sozialdienstRS.getSozialdienstStammdaten(
-            this.sozialdienstId
-        );
+        this.sozialdienstRS
+            .getSozialdienstStammdaten(this.sozialdienstId)
+            .subscribe(stammdaten => {
+                this.stammdaten.set(stammdaten);
+            });
     }
 
     private persistStammdaten(stammdaten: TSSozialdienstStammdaten): void {
@@ -107,14 +114,37 @@ export class EditSozialdienstComponent implements OnInit {
             EbeguUtil.selectFirstInvalid();
             return;
         }
-        this.stammdaten$ = this.sozialdienstRS
+        this.sozialdienstRS
             .saveSozialdienstStammdaten(stammdaten)
-            .pipe(
-                tap(() => {
-                    this.editMode = false;
-                })
-            );
-        this.changeDetectorRef.markForCheck();
+            .subscribe(savedStammdaten => {
+                this.stammdaten.set(savedStammdaten);
+                this.editMode = false;
+                this.changeDetectorRef.markForCheck();
+            });
+    }
+
+    private persistSozialdienstName(sozialdienst: TSSozialdienst) {
+        let valid = true;
+        this.forms.forEach(form => {
+            if (!form.valid) {
+                valid = false;
+            }
+        });
+
+        if (!valid) {
+            EbeguUtil.selectFirstInvalid();
+            return;
+        }
+        this.sozialdienstRS
+            .saveSozialdienstName(sozialdienst)
+            .subscribe(updatedSozialdienst => {
+                this.stammdaten.update(stammdaten => {
+                    stammdaten.sozialdienst = updatedSozialdienst;
+                    return stammdaten;
+                });
+                this.editMode = false;
+                this.changeDetectorRef.markForCheck();
+            });
     }
 
     public submitButtonLabel(): string {

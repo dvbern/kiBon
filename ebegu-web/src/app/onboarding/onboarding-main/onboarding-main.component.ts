@@ -33,7 +33,7 @@ const LOG = LogFactory.createLog('OnboardingMainComponent');
 @Component({
     selector: 'dv-onboarding-main',
     templateUrl: './onboarding-main.component.html',
-    styleUrls: ['./onboarding-main.component.less', '../onboarding.less'],
+    styleUrls: ['./onboarding-main.component.scss', '../onboarding.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

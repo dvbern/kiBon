@@ -37,8 +37,8 @@ import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.se
     selector: 'dv-onboarding-info-gem',
     templateUrl: './onboarding-info-gemeinde.component.html',
     styleUrls: [
-        './onboarding-info-gemeinde.component.less',
-        '../onboarding.less'
+        './onboarding-info-gemeinde.component.scss',
+        '../onboarding.scss'
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false

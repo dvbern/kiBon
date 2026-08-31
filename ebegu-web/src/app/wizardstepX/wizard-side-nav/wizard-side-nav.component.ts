@@ -32,7 +32,7 @@ import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
 @Component({
     selector: 'dv-wizard-side-nav',
     templateUrl: './wizard-side-nav.component.html',
-    styleUrls: ['./wizard-side-nav.component.less'],
+    styleUrls: ['./wizard-side-nav.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

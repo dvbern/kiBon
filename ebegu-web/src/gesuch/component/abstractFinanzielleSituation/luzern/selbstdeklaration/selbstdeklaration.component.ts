@@ -37,7 +37,7 @@ const LOG = LogFactory.createLog('SelbstdeklarationComponent');
 @Component({
     selector: 'dv-selbstdeklaration',
     templateUrl: './selbstdeklaration.component.html',
-    styleUrls: ['./selbstdeklaration.component.less'],
+    styleUrls: ['./selbstdeklaration.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

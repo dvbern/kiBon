@@ -37,7 +37,7 @@ const LOG = LogFactory.createLog('GesuchsperiodeViewXComponent');
         DokumenteZuUebernehmenEinstellungGroupComponent
     ],
     templateUrl: './gesuchsperioden-einstellungen.component.html',
-    styleUrl: './gesuchsperioden-einstellungen.component.less',
+    styleUrl: './gesuchsperioden-einstellungen.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GesuchsperiodenEinstellungenComponent {

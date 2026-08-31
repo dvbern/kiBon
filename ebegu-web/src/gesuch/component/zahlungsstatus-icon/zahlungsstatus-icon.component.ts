@@ -31,7 +31,7 @@ import {TSZahlungsstatusIconLabel} from './TSZahlungsstatusIconLabel';
 @Component({
     selector: 'dv-zahlungsstatus-icon',
     templateUrl: './zahlungsstatus-icon.component.html',
-    styleUrls: ['./zahlungsstatus-icon.component.less'],
+    styleUrls: ['./zahlungsstatus-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

@@ -32,7 +32,7 @@ import {KiBonGuidedTourService} from '../../kibonTour/service/KiBonGuidedTourSer
 @Component({
     selector: 'dv-welcome-main',
     templateUrl: './welcome-main.component.html',
-    styleUrls: ['./welcome-main.component.less'],
+    styleUrls: ['./welcome-main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

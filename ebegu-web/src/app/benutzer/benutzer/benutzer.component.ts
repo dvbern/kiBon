@@ -53,7 +53,7 @@ const LOG = LogFactory.createLog('BenutzerComponent');
 @Component({
     selector: 'dv-benutzer',
     templateUrl: './benutzer.component.html',
-    styleUrls: ['./benutzer.component.less'],
+    styleUrls: ['./benutzer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

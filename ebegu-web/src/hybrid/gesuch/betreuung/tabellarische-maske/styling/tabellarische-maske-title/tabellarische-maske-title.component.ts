@@ -6,6 +6,6 @@ import {TranslateModule} from '@ngx-translate/core';
     imports: [TranslateModule],
     templateUrl: './tabellarische-maske-title.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: './tabellarische-maske-title.component.less'
+    styleUrl: './tabellarische-maske-title.component.scss'
 })
 export class TabellarischeMaskeTitleComponent {}

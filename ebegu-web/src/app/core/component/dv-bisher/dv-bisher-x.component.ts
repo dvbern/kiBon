@@ -45,7 +45,7 @@ import {CONSTANTS} from '@models/constants';
 @Component({
     selector: 'dv-bisher-x',
     templateUrl: './dv-bisher-x.component.html',
-    styleUrls: ['./dv-bisher-x.component.less'],
+    styleUrls: ['./dv-bisher-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

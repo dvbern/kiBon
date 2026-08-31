@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) 2021 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+@use './../../../../style/variables' as *;
+
+dv-date-picker-x dv-input-container-x .dv-input-container {
+    display: block;
+}
+
+::ng-deep form.ng-submitted {
+    dv-date-picker-x {
+        dv-error-messages {
+            display: block;
+        }
+    }
+}
+
+input.ng-touched.ng-invalid {
+    background-color: $background-error-color;
+}
+
+.dv-date-picker-x > .form-group input.dv-mat-datepicker {
+    width: calc(100% - 4.5rem);
+}
+
+&.dv-mat-datepicker-wide {
+    width: 100%;
+}
+
+.dv-date-picker-x {
+    &.disabled mat-datepicker-toggle .mat-mdc-button-persistent-ripple::before {
+        background: none !important;
+    }
+
+    @media screen and (min-width: 1921px) {
+        .mat-datepicker-toggle {
+            .mdc-icon-button {
+                line-height: 0;
+            }
+        }
+    }
+}

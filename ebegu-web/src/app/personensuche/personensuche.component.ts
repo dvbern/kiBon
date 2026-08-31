@@ -8,7 +8,7 @@ import {EwkRS} from '../core/service/ewkRS.rest';
 @Component({
     selector: 'dv-personensuche',
     templateUrl: './personensuche.component.html',
-    styleUrls: ['./personensuche.component.less'],
+    styleUrls: ['./personensuche.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

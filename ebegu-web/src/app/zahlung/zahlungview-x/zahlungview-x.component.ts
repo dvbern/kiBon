@@ -33,7 +33,7 @@ const LOG = LogFactory.createLog('ZahlungviewXComponent');
 @Component({
     selector: 'dv-zahlungview-x',
     templateUrl: './zahlungview-x.component.html',
-    styleUrls: ['./zahlungview-x.component.less'],
+    styleUrls: ['./zahlungview-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

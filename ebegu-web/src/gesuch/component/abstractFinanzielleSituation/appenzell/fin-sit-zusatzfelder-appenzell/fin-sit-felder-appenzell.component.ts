@@ -38,7 +38,7 @@ const LOG = LogFactory.createLog('FinSitZusatzfelderAppenzell');
 @Component({
     selector: 'dv-fin-sit-felder-appenzell',
     templateUrl: './fin-sit-felder-appenzell.component.html',
-    styleUrls: ['./fin-sit-felder-appenzell.component.less'],
+    styleUrls: ['./fin-sit-felder-appenzell.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

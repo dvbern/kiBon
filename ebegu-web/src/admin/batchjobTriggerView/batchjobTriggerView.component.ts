@@ -27,7 +27,7 @@ const LOG = LogFactory.createLog('BatchjobTriggerViewComponent');
 @Component({
     selector: 'dv-batchjob-trigger-view',
     templateUrl: './batchjobTriggerView.component.html',
-    styleUrls: ['./batchjobTrigger.component.less'],
+    styleUrls: ['./batchjobTrigger.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

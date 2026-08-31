@@ -26,7 +26,7 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-benutzer-entry',
     templateUrl: './dv-benutzer-entry.component.html',
-    styleUrls: ['./dv-benutzer-entry.component.less'],
+    styleUrls: ['./dv-benutzer-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

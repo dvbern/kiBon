@@ -55,7 +55,7 @@ const LOG = LogFactory.createLog('BenutzerListXComponent');
 @Component({
     selector: 'dv-benutzer-list-x',
     templateUrl: './benutzer-list-x.component.html',
-    styleUrls: ['./benutzer-list-x.component.less'],
+    styleUrls: ['./benutzer-list-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

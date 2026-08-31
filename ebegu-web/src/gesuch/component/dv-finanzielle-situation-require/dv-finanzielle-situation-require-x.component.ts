@@ -41,7 +41,7 @@ const LOG = LogFactory.createLog('DvFinanzielleSituationRequireXComponent');
 @Component({
     selector: 'dv-finanzielle-situation-require-x',
     templateUrl: './dv-finanzielle-situation-require-x.component.html',
-    styleUrl: './dv-finanzielle-situation-require-x.component.less',
+    styleUrl: './dv-finanzielle-situation-require-x.component.scss',
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false

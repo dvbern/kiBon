@@ -39,7 +39,7 @@ const LOG = LogFactory.createLog('FerienbetreuungSidePanelComponent');
 @Component({
     selector: 'dv-ferienbetreuung-side-panel',
     templateUrl: './ferienbetreuung-side-panel.component.html',
-    styleUrls: ['./ferienbetreuung-side-panel.component.less'],
+    styleUrls: ['./ferienbetreuung-side-panel.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

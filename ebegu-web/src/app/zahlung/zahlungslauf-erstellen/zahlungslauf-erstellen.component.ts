@@ -43,7 +43,7 @@ const LOG = LogFactory.createLog('ZahlungslaufErstellenComponent');
         ReactiveFormsModule
     ],
     templateUrl: './zahlungslauf-erstellen.component.html',
-    styleUrl: './zahlungslauf-erstellen.component.less',
+    styleUrl: './zahlungslauf-erstellen.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ZahlungslaufErstellenComponent {

@@ -30,7 +30,7 @@ export interface DvMultiSelectDialogItem {
 @Component({
     selector: 'dv-ng-multi-select-dialog',
     templateUrl: './dv-ng-multi-select-dialog.template.html',
-    styleUrls: ['./dv-ng-multi-select-dialog.component.less'],
+    styleUrls: ['./dv-ng-multi-select-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

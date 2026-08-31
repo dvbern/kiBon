@@ -49,7 +49,7 @@ import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
     selector: 'dv-add-gemeinde',
     templateUrl: './add-gemeinde.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    styleUrls: ['./add-gemeinde.component.less'],
+    styleUrls: ['./add-gemeinde.component.scss'],
     standalone: false
 })
 export class AddGemeindeComponent implements OnInit {

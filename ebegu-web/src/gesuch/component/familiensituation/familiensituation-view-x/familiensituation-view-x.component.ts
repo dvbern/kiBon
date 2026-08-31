@@ -64,7 +64,7 @@ const LOG = LogFactory.createLog('FamiliensitutionViewComponent');
 @Component({
     selector: 'dv-familiensituation-view-x',
     templateUrl: './familiensituation-view-x.component.html',
-    styleUrls: ['./familiensituation-view-x.component.less'],
+    styleUrls: ['./familiensituation-view-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

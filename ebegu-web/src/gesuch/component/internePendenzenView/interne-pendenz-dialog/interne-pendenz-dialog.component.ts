@@ -29,7 +29,7 @@ import moment from 'moment';
 @Component({
     selector: 'interne-pendenz-dialog',
     templateUrl: './interne-pendenz-dialog.template.html',
-    styleUrls: ['./interne-pendenz-dialog.component.less'],
+    styleUrls: ['./interne-pendenz-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

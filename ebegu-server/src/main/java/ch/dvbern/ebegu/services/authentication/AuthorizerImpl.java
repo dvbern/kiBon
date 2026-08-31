@@ -17,6 +17,7 @@
 
 package ch.dvbern.ebegu.services.authentication;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -77,6 +78,7 @@ import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.Laste
 import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.LastenausgleichTagesschuleAngabenInstitutionContainer;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFall;
+import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstStammdaten;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
@@ -2462,7 +2464,18 @@ public class AuthorizerImpl implements Authorizer, BooleanAuthorizer {
 			)) {
 			return;
 		}
-		this.checkWriteAuthorization(sozialdienst);
+		List<UserRole> userRolesForReadingSozialdienstData = new ArrayList<>(
+			UserRole.getMandantSuperadminRoles()
+		);
+		userRolesForReadingSozialdienstData.addAll(
+			UserRole.getAllSozialdienstRoles()
+		);
+		if (principalBean.isCallerInAnyOfRole(
+			userRolesForReadingSozialdienstData
+		)) {
+			return;
+		}
+		throwViolation(sozialdienst);
 	}
 
 	/**
@@ -2481,9 +2494,28 @@ public class AuthorizerImpl implements Authorizer, BooleanAuthorizer {
 			if (allSozialdienstAllowed) {
 				return;
 			}
+			throwViolation(sozialdienst);
+		}
+	}
+
+	/**
+	 * For now only admin sozialdienst and super admin allowed
+	 */
+	@Override
+	public void checkWriteAuthorization(
+		@Nullable SozialdienstStammdaten sozialdienstStammdaten
+	) {
+		if (sozialdienstStammdaten != null) {
+			checkMandantMatches(sozialdienstStammdaten.getSozialdienst());
+			boolean allSozialdienstAllowed =
+				principalBean.isCallerInAnyOfRole(
+					SUPER_ADMIN
+				);
+			if (allSozialdienstAllowed) {
+				return;
+			}
 			if (principalBean.isCallerInAnyOfRole(
-				ADMIN_SOZIALDIENST,
-				SACHBEARBEITER_SOZIALDIENST
+				ADMIN_SOZIALDIENST
 			)) {
 				Sozialdienst benutzerSozialdienst = principalBean.getBenutzer()
 					.getSozialdienst();
@@ -2494,12 +2526,14 @@ public class AuthorizerImpl implements Authorizer, BooleanAuthorizer {
 						principalBean.getBenutzer()
 					)
 				);
-				if (benutzerSozialdienst.equals(sozialdienst)) {
+				if (benutzerSozialdienst.equals(
+					sozialdienstStammdaten.getSozialdienst()
+				)) {
 					return;
 				}
 			}
 
-			throwViolation(sozialdienst);
+			throwViolation(sozialdienstStammdaten);
 
 		}
 	}

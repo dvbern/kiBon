@@ -35,7 +35,7 @@ import {TSRole} from '../../../../models/enums/TSRole';
 @Component({
     selector: 'dv-stammdaten-header',
     templateUrl: './stammdaten-header.component.html',
-    styleUrls: ['./stammdaten-header.component.less'],
+    styleUrls: ['./stammdaten-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

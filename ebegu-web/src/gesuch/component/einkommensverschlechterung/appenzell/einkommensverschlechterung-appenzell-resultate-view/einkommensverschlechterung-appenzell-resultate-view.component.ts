@@ -38,7 +38,7 @@ import {AbstractEinkommensverschlechterungResultat} from '../../AbstractEinkomme
     templateUrl:
         './einkommensverschlechterung-appenzell-resultate-view.component.html',
     styleUrls: [
-        './einkommensverschlechterung-appenzell-resultate-view.component.less'
+        './einkommensverschlechterung-appenzell-resultate-view.component.scss'
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false

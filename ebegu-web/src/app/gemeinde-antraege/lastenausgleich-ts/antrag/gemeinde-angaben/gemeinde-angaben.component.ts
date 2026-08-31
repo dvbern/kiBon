@@ -83,7 +83,7 @@ const LOG = LogFactory.createLog('GemeindeAngabenComponent');
 @Component({
     selector: 'dv-gemeinde-angaben',
     templateUrl: './gemeinde-angaben.component.html',
-    styleUrls: ['./gemeinde-angaben.component.less'],
+    styleUrls: ['./gemeinde-angaben.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     standalone: false

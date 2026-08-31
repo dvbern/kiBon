@@ -18,7 +18,7 @@ import {FinanzielleSituationSolothurnService} from '../finanzielle-situation-sol
 @Component({
     selector: 'dv-finanzielle-situation-start-solothurn',
     templateUrl: './finanzielle-situation-solothurn.component.html',
-    styleUrls: ['./finanzielle-situation-start-solothurn.component.less'],
+    styleUrls: ['./finanzielle-situation-start-solothurn.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

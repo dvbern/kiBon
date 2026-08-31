@@ -24,7 +24,7 @@ import {EbeguUtil} from '../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-eingabe-hint',
     templateUrl: './dv-eingabe-hint.component.html',
-    styleUrls: ['./dv-eingabe-hint.component.less'],
+    styleUrls: ['./dv-eingabe-hint.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

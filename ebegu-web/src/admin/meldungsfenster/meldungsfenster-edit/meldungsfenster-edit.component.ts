@@ -10,7 +10,7 @@ import {MeldungsfensterFormComponent} from '../meldungsfenster-form/meldungsfens
     selector: 'lib-admin-ui-meldungsfenster-edit',
     imports: [MeldungsfensterFormComponent, TranslateModule],
     templateUrl: './meldungsfenster-edit.component.html',
-    styleUrl: './meldungsfenster-edit.component.less',
+    styleUrl: './meldungsfenster-edit.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MeldungsfensterEditComponent {

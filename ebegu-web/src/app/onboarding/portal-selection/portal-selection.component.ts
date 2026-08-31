@@ -33,7 +33,7 @@ const LOG = LogFactory.createLog('PortalSelectionComponent');
 @Component({
     selector: 'dv-portal-selection',
     templateUrl: './portal-selection.component.html',
-    styleUrls: ['./portal-selection.component.less', './../onboarding.less'],
+    styleUrls: ['./portal-selection.component.scss', './../onboarding.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

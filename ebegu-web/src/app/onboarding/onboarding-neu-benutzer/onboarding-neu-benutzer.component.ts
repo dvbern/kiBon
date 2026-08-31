@@ -40,8 +40,8 @@ import {OnboardingHelpDialogComponent} from '../onboarding-help-dialog/onboardin
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './onboarding-neu-benutzer.component.html',
     styleUrls: [
-        './onboarding-neu-benutzer.component.less',
-        '../onboarding.less'
+        './onboarding-neu-benutzer.component.scss',
+        '../onboarding.scss'
     ],
     standalone: false
 })

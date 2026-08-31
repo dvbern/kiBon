@@ -35,7 +35,7 @@ import {TSModulTagesschuleName} from '../../../models/enums/TSModulTagesschuleNa
 @Component({
     selector: 'modul-tagesschule-dialog',
     templateUrl: './modul-tagesschule-dialog.template.html',
-    styleUrls: ['./modul-tagesschule-dialog.component.less'],
+    styleUrls: ['./modul-tagesschule-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

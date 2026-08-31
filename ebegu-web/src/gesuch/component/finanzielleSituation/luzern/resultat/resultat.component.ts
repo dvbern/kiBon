@@ -33,7 +33,7 @@ const LOG = LogFactory.createLog('ResultatComponent');
 @Component({
     selector: 'dv-resultat',
     templateUrl: './resultat.component.html',
-    styleUrls: ['./resultat.component.less'],
+    styleUrls: ['./resultat.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

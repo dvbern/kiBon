@@ -8,7 +8,7 @@ import {
 @Component({
     selector: 'dv-radio-container-x',
     templateUrl: './dv-radio-container-x.component.html',
-    styleUrls: ['./dv-radio-container-x.component.less'],
+    styleUrls: ['./dv-radio-container-x.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     standalone: false

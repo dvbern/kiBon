@@ -21,7 +21,7 @@ import {
     selector: 'lib-dv-edit-einstellung',
     imports: [FormsModule, SharedModule],
     templateUrl: './admin-edit-einstellung.component.html',
-    styleUrl: './admin-edit-einstellung.component.less',
+    styleUrl: './admin-edit-einstellung.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditEinstellungComponent {

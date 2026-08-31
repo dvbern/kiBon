@@ -41,7 +41,7 @@ import {CONSTANTS} from '@models/constants';
 @Component({
     selector: 'dv-gemeinde-fi-konfiguration',
     templateUrl: './gemeinde-fi-konfig.component.html',
-    styleUrls: ['./gemeinde-fi-konfig.component.less'],
+    styleUrls: ['./gemeinde-fi-konfig.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false

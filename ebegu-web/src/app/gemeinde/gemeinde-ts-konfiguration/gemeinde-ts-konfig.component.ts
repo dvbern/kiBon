@@ -50,7 +50,7 @@ import {TSDokumentUploadTyp} from '../../../models/enums/TSDokumentUploadTyp';
 @Component({
     selector: 'dv-gemeinde-ts-konfiguration',
     templateUrl: './gemeinde-ts-konfig.component.html',
-    styleUrls: ['./gemeinde-ts-konfig.component.less'],
+    styleUrls: ['./gemeinde-ts-konfig.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

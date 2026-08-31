@@ -36,7 +36,7 @@ import {AbstractGesuchViewX} from '../../../abstractGesuchViewX';
 @Component({
     selector: 'dv-einkommensverschlechterung-solothurn-view',
     templateUrl: './einkommensverschlechterung-solothurn-view.component.html',
-    styleUrls: ['./einkommensverschlechterung-solothurn-view.component.less'],
+    styleUrls: ['./einkommensverschlechterung-solothurn-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })

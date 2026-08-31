@@ -31,7 +31,7 @@ import {InstitutionStammdatenRS} from '../../../core/service/institutionStammdat
 @Component({
     selector: 'dv-ng-gemeinde-dialog',
     templateUrl: './dialog-import-from-other-institution.template.html',
-    styleUrls: ['./dialog-import-from-other-institution.component.less'],
+    styleUrls: ['./dialog-import-from-other-institution.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })

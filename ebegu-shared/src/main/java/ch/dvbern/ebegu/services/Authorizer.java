@@ -56,6 +56,7 @@ import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.Laste
 import ch.dvbern.ebegu.entities.gemeindeantrag.lastenausgleichtagesschulen.LastenausgleichTagesschuleAngabenInstitutionContainer;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFall;
+import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstStammdaten;
 
 /**
  * Interface fuer eine Klasse welche prueft ob der aktuelle Benutzer fuer ein Gesuch berechtigt ist
@@ -330,6 +331,10 @@ public interface Authorizer {
 	void checkReadAuthorization(@Nullable Sozialdienst sozialdienst);
 
 	void checkWriteAuthorization(@Nullable Sozialdienst sozialdienst);
+
+	void checkWriteAuthorization(
+		@Nullable SozialdienstStammdaten sozialdienstStammdaten
+	);
 
 	void checkReadAuthorization(@Nullable SozialdienstFall sozialdienstFall);
 
