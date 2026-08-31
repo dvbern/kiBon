@@ -179,4 +179,16 @@ public final class DateUtil {
 	) {
 		return !date.isBefore(compareTo);
 	}
+
+	/**
+	 * Formats the given LocalDate into a string representation based on the DATE_FORMATTER
+	 * constant.
+	 *
+	 * @param date the LocalDate to be formatted. Must not be null
+	 * @return a string representation of the formatted date
+	 */
+	@Nonnull
+	public static String toFormattedDate(@Nonnull LocalDate date) {
+		return Constants.DATE_FORMATTER.format(date);
+	}
 }

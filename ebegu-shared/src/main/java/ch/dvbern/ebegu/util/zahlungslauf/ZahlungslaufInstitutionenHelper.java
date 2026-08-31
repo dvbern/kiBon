@@ -165,11 +165,24 @@ public class ZahlungslaufInstitutionenHelper implements ZahlungslaufHelper {
 		@Nonnull BGCalculationResult resultNeu,
 		@Nonnull BGCalculationResult resultBisher
 	) {
+		boolean differentHoehereBeitraege = !MathUtil.isSame(
+			resultBisher.getHoehererBeitrag(),
+			resultNeu.getHoehererBeitrag()
+		);
+
+		boolean auszahlungAnInstitution = !(resultBisher.isAuszahlungAnEltern()
+			&& resultNeu.isAuszahlungAnEltern());
+
+		boolean differentBgAuszahlung = !MathUtil.isSame(
+			resultNeu.getVerguenstigung(),
+			resultBisher.getVerguenstigung()
+		);
+
+		boolean differentAusbezahlterBetrag = differentHoehereBeitraege
+			|| (auszahlungAnInstitution && differentBgAuszahlung);
+
 		inputNeu.setSameAusbezahlterBetragInstitution(
-			MathUtil.isSame(
-				resultNeu.getVerguenstigung(),
-				resultBisher.getVerguenstigung()
-			)
+			!differentAusbezahlterBetrag
 		);
 	}
 

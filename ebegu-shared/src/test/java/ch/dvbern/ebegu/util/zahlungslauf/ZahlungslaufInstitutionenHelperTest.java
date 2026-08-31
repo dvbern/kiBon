@@ -18,7 +18,10 @@
 package ch.dvbern.ebegu.util.zahlungslauf;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
+import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.HoehereBeitraegeTyp;
 import org.easymock.EasyMockExtension;
@@ -185,5 +188,341 @@ public class ZahlungslaufInstitutionenHelperTest extends EasyMockSupport {
 		verifyAll();
 
 		assertEquals(0, verguenstigung.compareTo(result));
+	}
+
+	@Test
+	public void testSetIsSameAusbezahlteVerguenstigung_NoOldZeitabschnittFound_BothInputsSetToNotSame() {
+		ZahlungslaufInstitutionenHelper helper =
+			new ZahlungslaufInstitutionenHelper(
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
+		VerfuegungZeitabschnitt newZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		BGCalculationInput inputAsivNeu = mock(BGCalculationInput.class);
+		BGCalculationInput inputGemeindeNeu = mock(BGCalculationInput.class);
+
+		expect(newZeitabschnitt.getBgCalculationInputAsiv()).andReturn(
+			inputAsivNeu
+		);
+		expect(newZeitabschnitt.getBgCalculationInputGemeinde()).andReturn(
+			inputGemeindeNeu
+		);
+		inputAsivNeu.setSameAusbezahlterBetragInstitution(false);
+		inputGemeindeNeu.setSameAusbezahlterBetragInstitution(false);
+
+		replayAll();
+		helper.setIsSameAusbezahlteVerguenstigung(
+			Optional.empty(),
+			newZeitabschnitt
+		);
+		verifyAll();
+	}
+
+	@Test
+	public void testSetIsSameAusbezahlteVerguenstigung_SameHoehererBeitragAndSameVerguenstigung_IsSetToTrue() {
+		ZahlungslaufInstitutionenHelper helper =
+			new ZahlungslaufInstitutionenHelper(
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
+		VerfuegungZeitabschnitt newZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		VerfuegungZeitabschnitt oldZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		BGCalculationInput inputAsivNeu = mock(BGCalculationInput.class);
+		BGCalculationResult resultAsivNeu = mock(BGCalculationResult.class);
+		BGCalculationResult resultAsivBisher = mock(
+			BGCalculationResult.class
+		);
+
+		BigDecimal hoehererBeitrag = new BigDecimal("10.00");
+		BigDecimal verguenstigung = new BigDecimal("100.00");
+
+		expect(newZeitabschnitt.getBgCalculationInputAsiv()).andReturn(
+			inputAsivNeu
+		);
+		expect(newZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivNeu
+		);
+		expect(oldZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivBisher
+		);
+		expect(newZeitabschnitt.isHasGemeindeSpezifischeBerechnung())
+			.andReturn(false);
+
+		expect(resultAsivBisher.getHoehererBeitrag()).andReturn(
+			hoehererBeitrag
+		);
+		expect(resultAsivNeu.getHoehererBeitrag()).andReturn(hoehererBeitrag);
+		// resultBisher.isAuszahlungAnEltern() is false, so the && is short-circuited
+		// and resultNeu.isAuszahlungAnEltern() is never called
+		expect(resultAsivBisher.isAuszahlungAnEltern()).andReturn(false);
+		expect(resultAsivNeu.getVerguenstigung()).andReturn(verguenstigung);
+		expect(resultAsivBisher.getVerguenstigung()).andReturn(
+			verguenstigung
+		);
+		inputAsivNeu.setSameAusbezahlterBetragInstitution(true);
+
+		replayAll();
+		helper.setIsSameAusbezahlteVerguenstigung(
+			Optional.of(oldZeitabschnitt),
+			newZeitabschnitt
+		);
+		verifyAll();
+	}
+
+	@Test
+	public void testSetIsSameAusbezahlteVerguenstigung_DifferentHoehererBeitrag_IsSetToFalse() {
+		ZahlungslaufInstitutionenHelper helper =
+			new ZahlungslaufInstitutionenHelper(
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
+		VerfuegungZeitabschnitt newZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		VerfuegungZeitabschnitt oldZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		BGCalculationInput inputAsivNeu = mock(BGCalculationInput.class);
+		BGCalculationResult resultAsivNeu = mock(BGCalculationResult.class);
+		BGCalculationResult resultAsivBisher = mock(
+			BGCalculationResult.class
+		);
+
+		BigDecimal verguenstigung = new BigDecimal("100.00");
+
+		expect(newZeitabschnitt.getBgCalculationInputAsiv()).andReturn(
+			inputAsivNeu
+		);
+		expect(newZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivNeu
+		);
+		expect(oldZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivBisher
+		);
+		expect(newZeitabschnitt.isHasGemeindeSpezifischeBerechnung())
+			.andReturn(false);
+
+		expect(resultAsivBisher.getHoehererBeitrag()).andReturn(
+			new BigDecimal("10.00")
+		);
+		expect(resultAsivNeu.getHoehererBeitrag()).andReturn(
+			new BigDecimal("20.00")
+		);
+		// resultBisher.isAuszahlungAnEltern() is false, so the && is short-circuited
+		// and resultNeu.isAuszahlungAnEltern() is never called
+		expect(resultAsivBisher.isAuszahlungAnEltern()).andReturn(false);
+		expect(resultAsivNeu.getVerguenstigung()).andReturn(verguenstigung);
+		expect(resultAsivBisher.getVerguenstigung()).andReturn(
+			verguenstigung
+		);
+		inputAsivNeu.setSameAusbezahlterBetragInstitution(false);
+
+		replayAll();
+		helper.setIsSameAusbezahlteVerguenstigung(
+			Optional.of(oldZeitabschnitt),
+			newZeitabschnitt
+		);
+		verifyAll();
+	}
+
+	@Test
+	public void testSetIsSameAusbezahlteVerguenstigung_DifferentVerguenstigungButAuszahlungAnInstitution_IsSetToFalse() {
+		ZahlungslaufInstitutionenHelper helper =
+			new ZahlungslaufInstitutionenHelper(
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
+		VerfuegungZeitabschnitt newZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		VerfuegungZeitabschnitt oldZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		BGCalculationInput inputAsivNeu = mock(BGCalculationInput.class);
+		BGCalculationResult resultAsivNeu = mock(BGCalculationResult.class);
+		BGCalculationResult resultAsivBisher = mock(
+			BGCalculationResult.class
+		);
+
+		BigDecimal hoehererBeitrag = new BigDecimal("10.00");
+
+		expect(newZeitabschnitt.getBgCalculationInputAsiv()).andReturn(
+			inputAsivNeu
+		);
+		expect(newZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivNeu
+		);
+		expect(oldZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivBisher
+		);
+		expect(newZeitabschnitt.isHasGemeindeSpezifischeBerechnung())
+			.andReturn(false);
+
+		expect(resultAsivBisher.getHoehererBeitrag()).andReturn(
+			hoehererBeitrag
+		);
+		expect(resultAsivNeu.getHoehererBeitrag()).andReturn(hoehererBeitrag);
+		// resultBisher.isAuszahlungAnEltern() is false, so the && is short-circuited
+		// and resultNeu.isAuszahlungAnEltern() is never called; it's still paid out to institution
+		expect(resultAsivBisher.isAuszahlungAnEltern()).andReturn(false);
+		expect(resultAsivNeu.getVerguenstigung()).andReturn(
+			new BigDecimal("100.00")
+		);
+		expect(resultAsivBisher.getVerguenstigung()).andReturn(
+			new BigDecimal("200.00")
+		);
+		inputAsivNeu.setSameAusbezahlterBetragInstitution(false);
+
+		replayAll();
+		helper.setIsSameAusbezahlteVerguenstigung(
+			Optional.of(oldZeitabschnitt),
+			newZeitabschnitt
+		);
+		verifyAll();
+	}
+
+	@Test
+	public void testSetIsSameAusbezahlteVerguenstigung_DifferentVerguenstigungButAuszahlungAnEltern_IsSetToTrue() {
+		ZahlungslaufInstitutionenHelper helper =
+			new ZahlungslaufInstitutionenHelper(
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
+		VerfuegungZeitabschnitt newZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		VerfuegungZeitabschnitt oldZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		BGCalculationInput inputAsivNeu = mock(BGCalculationInput.class);
+		BGCalculationResult resultAsivNeu = mock(BGCalculationResult.class);
+		BGCalculationResult resultAsivBisher = mock(
+			BGCalculationResult.class
+		);
+
+		BigDecimal hoehererBeitrag = new BigDecimal("10.00");
+
+		expect(newZeitabschnitt.getBgCalculationInputAsiv()).andReturn(
+			inputAsivNeu
+		);
+		expect(newZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivNeu
+		);
+		expect(oldZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivBisher
+		);
+		expect(newZeitabschnitt.isHasGemeindeSpezifischeBerechnung())
+			.andReturn(false);
+
+		expect(resultAsivBisher.getHoehererBeitrag()).andReturn(
+			hoehererBeitrag
+		);
+		expect(resultAsivNeu.getHoehererBeitrag()).andReturn(hoehererBeitrag);
+		// Both sides paid to parents, so the Gutschein (Verguenstigung) becomes irrelevant for the institution
+		expect(resultAsivBisher.isAuszahlungAnEltern()).andReturn(true);
+		expect(resultAsivNeu.isAuszahlungAnEltern()).andReturn(true);
+		expect(resultAsivNeu.getVerguenstigung()).andReturn(
+			new BigDecimal("100.00")
+		);
+		expect(resultAsivBisher.getVerguenstigung()).andReturn(
+			new BigDecimal("200.00")
+		);
+		inputAsivNeu.setSameAusbezahlterBetragInstitution(true);
+
+		replayAll();
+		helper.setIsSameAusbezahlteVerguenstigung(
+			Optional.of(oldZeitabschnitt),
+			newZeitabschnitt
+		);
+		verifyAll();
+	}
+
+	@Test
+	public void testSetIsSameAusbezahlteVerguenstigung_HasGemeindeSpezifischeBerechnung_BothAsivAndGemeindeAreCompared() {
+		ZahlungslaufInstitutionenHelper helper =
+			new ZahlungslaufInstitutionenHelper(
+				HoehereBeitraegeTyp.DEAKTIVIERT
+			);
+		VerfuegungZeitabschnitt newZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		VerfuegungZeitabschnitt oldZeitabschnitt = mock(
+			VerfuegungZeitabschnitt.class
+		);
+		BGCalculationInput inputAsivNeu = mock(BGCalculationInput.class);
+		BGCalculationResult resultAsivNeu = mock(BGCalculationResult.class);
+		BGCalculationResult resultAsivBisher = mock(
+			BGCalculationResult.class
+		);
+		BGCalculationInput inputGemeindeNeu = mock(BGCalculationInput.class);
+		BGCalculationResult resultGemeindeNeu = mock(
+			BGCalculationResult.class
+		);
+		BGCalculationResult resultGemeindeBisher = mock(
+			BGCalculationResult.class
+		);
+
+		BigDecimal hoehererBeitrag = new BigDecimal("10.00");
+		BigDecimal verguenstigung = new BigDecimal("100.00");
+
+		// ASIV: nothing changed -> same
+		expect(newZeitabschnitt.getBgCalculationInputAsiv()).andReturn(
+			inputAsivNeu
+		);
+		expect(newZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivNeu
+		);
+		expect(oldZeitabschnitt.getBgCalculationResultAsiv()).andReturn(
+			resultAsivBisher
+		);
+		expect(resultAsivBisher.getHoehererBeitrag()).andReturn(
+			hoehererBeitrag
+		);
+		expect(resultAsivNeu.getHoehererBeitrag()).andReturn(hoehererBeitrag);
+		// resultBisher.isAuszahlungAnEltern() is false, so the && is short-circuited
+		// and resultNeu.isAuszahlungAnEltern() is never called
+		expect(resultAsivBisher.isAuszahlungAnEltern()).andReturn(false);
+		expect(resultAsivNeu.getVerguenstigung()).andReturn(verguenstigung);
+		expect(resultAsivBisher.getVerguenstigung()).andReturn(
+			verguenstigung
+		);
+		inputAsivNeu.setSameAusbezahlterBetragInstitution(true);
+
+		// Gemeinde: Höherer Beitrag changed -> different
+		expect(newZeitabschnitt.isHasGemeindeSpezifischeBerechnung())
+			.andReturn(true);
+		expect(newZeitabschnitt.getBgCalculationResultGemeinde()).andReturn(
+			resultGemeindeNeu
+		).times(2);
+		expect(oldZeitabschnitt.getBgCalculationResultGemeinde()).andReturn(
+			resultGemeindeBisher
+		).times(2);
+		expect(newZeitabschnitt.getBgCalculationInputGemeinde()).andReturn(
+			inputGemeindeNeu
+		);
+		expect(resultGemeindeBisher.getHoehererBeitrag()).andReturn(
+			new BigDecimal("10.00")
+		);
+		expect(resultGemeindeNeu.getHoehererBeitrag()).andReturn(
+			new BigDecimal("30.00")
+		);
+		// resultBisher.isAuszahlungAnEltern() is false, so the && is short-circuited
+		// and resultNeu.isAuszahlungAnEltern() is never called
+		expect(resultGemeindeBisher.isAuszahlungAnEltern()).andReturn(false);
+		expect(resultGemeindeNeu.getVerguenstigung()).andReturn(
+			verguenstigung
+		);
+		expect(resultGemeindeBisher.getVerguenstigung()).andReturn(
+			verguenstigung
+		);
+		inputGemeindeNeu.setSameAusbezahlterBetragInstitution(false);
+
+		replayAll();
+		helper.setIsSameAusbezahlteVerguenstigung(
+			Optional.of(oldZeitabschnitt),
+			newZeitabschnitt
+		);
+		verifyAll();
 	}
 }

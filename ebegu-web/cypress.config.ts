@@ -90,5 +90,6 @@ export default defineConfig({
         experimentalMemoryManagement: true
     },
     scrollBehavior: 'nearest',
-    chromeWebSecurity: false
+    chromeWebSecurity: false,
+    allowCypressEnv: false
 });

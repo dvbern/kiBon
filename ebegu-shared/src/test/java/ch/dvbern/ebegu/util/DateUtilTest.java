@@ -127,4 +127,16 @@ class DateUtilTest {
 			Assertions.assertTrue(DateUtil.isSameDateOrAfter(date, compareTo));
 		}
 	}
+
+	@Nested
+	class formatDateTests {
+
+		@Test
+		void formatDateShouldReturnFormattedDate() {
+			final LocalDate date = LocalDate.of(2017, 1, 1);
+			final String formattedDate = DateUtil.toFormattedDate(date);
+
+			Assertions.assertEquals("01.01.2017", formattedDate);
+		}
+	}
 }

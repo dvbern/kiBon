@@ -147,7 +147,7 @@ public enum MergeFieldMahlzeitenverguenstigung implements MergeFieldProvider {
 			BIGDECIMAL_CONVERTER
 		)
 	), famGroesse(
-		new SimpleMergeField<>("famGroesseTotal", BIGDECIMAL_CONVERTER)
+		new SimpleMergeField<>("famGroesse", BIGDECIMAL_CONVERTER)
 	), massgebendesEinkommenNachFamAbzug(
 		new SimpleMergeField<>(
 			"massgebendesEinkommenNachFamAbzug",

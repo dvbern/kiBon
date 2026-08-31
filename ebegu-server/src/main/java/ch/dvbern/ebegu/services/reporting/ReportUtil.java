@@ -260,6 +260,12 @@ public final class ReportUtil {
 	 * when evaluating formulars, apostrophes are replaced with aigus. You can find more information about this bug in
 	 * the kiBon-Task, the linked bugzilla bug or the test of this class.
 	 * </p>
+	 * <p>
+	 * To avoid running into the DV Excel Merger Bug, where a custom parser was implemented that only handle empty space
+	 * instead of using the already build-in Apache POI formular parser that handle all types for special caracters that
+	 * can be interpretated has an excel formula.
+	 * So we remove the most obvious operator, the plus and the minus and replace them with an empty space.
+	 * </p>
 	 *
 	 * @param workbook the {@code Workbook} instance where the sheet will be created
 	 * @param proposedName the desired name for the sheet
@@ -272,7 +278,14 @@ public final class ReportUtil {
 		String proposedName
 	) {
 		String replacedAiguName = proposedName.replace('\'', '´');
-		String safeName = WorkbookUtil.createSafeSheetName(replacedAiguName);
+		String replacedMinusOperatorInName = replacedAiguName.replace('-', ' ');
+		String replacedPlusOperatorInName = replacedMinusOperatorInName.replace(
+			'+',
+			' '
+		);
+		String safeName = WorkbookUtil.createSafeSheetName(
+			replacedPlusOperatorInName
+		);
 		final int MAX_LEN = 31;
 
 		// truncate if name is too long

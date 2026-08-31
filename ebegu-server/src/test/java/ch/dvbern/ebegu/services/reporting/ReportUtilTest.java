@@ -141,6 +141,36 @@ class ReportUtilTest {
 
 			assertThat(uniqueSheetName, is("L´embrace"));
 		}
+
+		@Test
+		void shouldReplaceMinusWithEmptySpace_whenProposedNameHasMinus() {
+			var name = "Tagesschule-test";
+
+			Workbook workbook = new XSSFWorkbook();
+			workbook.createSheet(name);
+
+			String uniqueSheetName = ReportUtil.createUniqueSheetName(
+				workbook,
+				name
+			);
+
+			assertThat(uniqueSheetName, is("Tagesschule test"));
+		}
+
+		@Test
+		void shouldReplacePlusWithEmptySpace_whenProposedNameHasPlus() {
+			var name = "Tagesschule+test";
+
+			Workbook workbook = new XSSFWorkbook();
+			workbook.createSheet(name);
+
+			String uniqueSheetName = ReportUtil.createUniqueSheetName(
+				workbook,
+				name
+			);
+
+			assertThat(uniqueSheetName, is("Tagesschule test"));
+		}
 	}
 
 	@Nested
