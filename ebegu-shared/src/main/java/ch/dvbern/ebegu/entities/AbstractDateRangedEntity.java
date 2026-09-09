@@ -41,6 +41,7 @@ import org.hibernate.envers.Audited;
 @EqualsAndHashCode(callSuper = true)
 public abstract class AbstractDateRangedEntity extends AbstractMutableEntity
 	implements
+	AbstractDateRangeAccessible,
 	Gueltigkeit {
 
 	private static final long serialVersionUID = -7541083148864749528L;

@@ -31,15 +31,18 @@ import ch.dvbern.ebegu.api.dtos.JaxBenutzer;
 import ch.dvbern.ebegu.api.dtos.JaxBenutzerNoDetails;
 import ch.dvbern.ebegu.api.dtos.JaxBerechtigung;
 import ch.dvbern.ebegu.api.dtos.JaxBerechtigungHistory;
+import ch.dvbern.ebegu.api.dtos.JaxFutureBerechtigung;
 import ch.dvbern.ebegu.api.dtos.JaxGemeinde;
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Benutzer;
-import ch.dvbern.ebegu.entities.Berechtigung;
-import ch.dvbern.ebegu.entities.BerechtigungHistory;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Traegerschaft;
+import ch.dvbern.ebegu.entities.berechtigung.Berechtigung;
+import ch.dvbern.ebegu.entities.berechtigung.BerechtigungAccessible;
+import ch.dvbern.ebegu.entities.berechtigung.BerechtigungHistory;
+import ch.dvbern.ebegu.entities.berechtigung.FutureBerechtigung;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
@@ -110,6 +113,22 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 				benutzer.getBerechtigungen(),
 				benutzer
 			);
+
+		if (null == jaxBenutzer.getFutureBerechtigung()) {
+			benutzer.setFutureBerechtigung(null);
+		} else {
+			FutureBerechtigung futureBerechtigung = benutzer
+				.getFutureBerechtigung();
+			if (null == futureBerechtigung) {
+				futureBerechtigung = new FutureBerechtigung();
+			}
+			futureBerechtigung = (FutureBerechtigung) berechtigungToEntity(
+				jaxBenutzer.getFutureBerechtigung(),
+				futureBerechtigung
+			);
+			benutzer.setFutureBerechtigung(futureBerechtigung);
+		}
+
 		//change the existing collection to reflect changes
 		// Already tested: All existing module of the list remain as they were, that means their data are updated
 		// and the objects are not created again. ID and InsertTimeStamp are the same as before
@@ -138,10 +157,11 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 				)
 				.reduce(StreamsUtil.toOnlyElement())
 				.orElseGet(Berechtigung::new);
-			final Berechtigung berechtigungToAdd = berechtigungToEntity(
-				jaxBerechtigung,
-				berechtigungToMergeWith
-			);
+			final Berechtigung berechtigungToAdd =
+				(Berechtigung) berechtigungToEntity(
+					jaxBerechtigung,
+					berechtigungToMergeWith
+				);
 			berechtigungToAdd.setBenutzer(benutzer);
 			final boolean added = convertedBerechtigungen.add(
 				berechtigungToAdd
@@ -175,9 +195,9 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 		return jaxLoginElement;
 	}
 
-	public Berechtigung berechtigungToEntity(
+	public BerechtigungAccessible berechtigungToEntity(
 		JaxBerechtigung jaxBerechtigung,
-		Berechtigung berechtigung
+		BerechtigungAccessible berechtigung
 	) {
 		convertAbstractDateRangedFieldsToEntity(jaxBerechtigung, berechtigung);
 		berechtigung.setRole(jaxBerechtigung.getRole());
@@ -246,7 +266,10 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 		}
 
 		// Gemeinden: Duerfen nicht vom Frontend übernommen werden, sondern müssen aus der DB gelesen werden!
-		loadGemeindenFromJax(jaxBerechtigung, berechtigung);
+		berechtigung.setGemeindeList(
+			toEntities(jaxBerechtigung.getGemeindeList())
+		);
+
 		return berechtigung;
 	}
 
@@ -272,6 +295,12 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 				.collect(Collectors.toCollection(TreeSet::new));
 		}
 		jaxLoginElement.setBerechtigungen(jaxBerechtigungen);
+		if (benutzer.hasFutureBerechtigung()) {
+			assert benutzer.getFutureBerechtigung() != null;
+			jaxLoginElement.setFutureBerechtigung(
+				futureBerechtigungToJax(benutzer.getFutureBerechtigung())
+			);
+		}
 		jaxLoginElement.setSendMailWennOffenePendenzen(
 			benutzer.isSendMailWennOffenePendenzen()
 		);
@@ -281,6 +310,39 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 
 	public JaxBerechtigung berechtigungToJax(Berechtigung berechtigung) {
 		JaxBerechtigung jaxBerechtigung = new JaxBerechtigung();
+		convertAbstractDateRangedFieldsToJAX(berechtigung, jaxBerechtigung);
+		jaxBerechtigung.setRole(berechtigung.getRole());
+		if (berechtigung.getInstitution() != null) {
+			jaxBerechtigung.setInstitution(
+				institutionToJAX(berechtigung.getInstitution())
+			);
+		}
+		if (berechtigung.getTraegerschaft() != null) {
+			jaxBerechtigung.setTraegerschaft(
+				traegerschaftLightToJAX(berechtigung.getTraegerschaft())
+			);
+		}
+		if (berechtigung.getSozialdienst() != null) {
+			jaxBerechtigung.setSozialdienst(
+				jaxSozialdienstConverter.sozialdienstToJAX(
+					berechtigung.getSozialdienst()
+				)
+			);
+		}
+		// Gemeinden
+		Set<JaxGemeinde> jaxGemeinden = berechtigung.getGemeindeList()
+			.stream()
+			.map(this::gemeindeToJAX)
+			.collect(Collectors.toCollection(TreeSet::new));
+		jaxBerechtigung.setGemeindeList(jaxGemeinden);
+
+		return jaxBerechtigung;
+	}
+
+	public JaxFutureBerechtigung futureBerechtigungToJax(
+		FutureBerechtigung berechtigung
+	) {
+		JaxFutureBerechtigung jaxBerechtigung = new JaxFutureBerechtigung();
 		convertAbstractDateRangedFieldsToJAX(berechtigung, jaxBerechtigung);
 		jaxBerechtigung.setRole(berechtigung.getRole());
 		if (berechtigung.getInstitution() != null) {
@@ -342,12 +404,9 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 		return jaxHistory;
 	}
 
-	private void loadGemeindenFromJax(
-		@Nonnull JaxBerechtigung jaxBerechtigung,
-		@Nonnull Berechtigung berechtigung
-	) {
-		final Set<Gemeinde> gemeindeListe = new HashSet<>();
-		for (JaxGemeinde jaxGemeinde : jaxBerechtigung.getGemeindeList()) {
+	private Set<Gemeinde> toEntities(Set<JaxGemeinde> jaxGemeinden) {
+		final Set<Gemeinde> gemeindeSet = new HashSet<>();
+		for (JaxGemeinde jaxGemeinde : jaxGemeinden) {
 			if (jaxGemeinde.getId() != null) {
 				Gemeinde gemeinde = gemeindeService.findGemeinde(
 					jaxGemeinde.getId()
@@ -359,9 +418,9 @@ public class JaxBenutzerConverter extends AbstractBaseConverter {
 							jaxGemeinde.getId()
 						)
 					);
-				gemeindeListe.add(gemeinde);
+				gemeindeSet.add(gemeinde);
 			}
 		}
-		berechtigung.setGemeindeList(gemeindeListe);
+		return gemeindeSet;
 	}
 }

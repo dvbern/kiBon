@@ -29,10 +29,10 @@ import ch.dvbern.ebegu.authentication.KibonJwt;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Benutzer_;
-import ch.dvbern.ebegu.entities.Berechtigung;
 import ch.dvbern.ebegu.entities.Fall;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.entities.berechtigung.Berechtigung;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.errors.BenutzerExistException;
@@ -269,11 +269,11 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 			berechtigung.setGueltigkeit(new DateRange());
 			berechtigung.setRole(UserRole.GESUCHSTELLER);
 			benutzer.getBerechtigungen().add(berechtigung);
-			keycloakApi.logout(benutzer);
 			authorizer.checkWriteAuthorization(benutzer);
 			expect(persistence.merge(benutzer)).andReturn(benutzer);
 			expect(keycloakApi.deleteMitarbeiterAccessBenutzerRole(benutzer))
 				.andReturn(true);
+			keycloakApi.logout(benutzer);
 			replayAll();
 			benutzerServiceBean.saveBenutzerAndBerechtigungen(
 				benutzer,

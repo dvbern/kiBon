@@ -133,7 +133,8 @@ public abstract class AbstractAsivBernRechner extends AbstractBernRechner {
 		);
 
 		BigDecimal verguenstigung = verguenstigungVorVollkostenUndMinimalbetrag
-			.min(vollkostenMinusMinimaltarif);
+			.min(vollkostenMinusMinimaltarif)
+			.max(BigDecimal.ZERO);
 
 		BigDecimal elternbeitrag = EXACT.subtract(vollkosten, verguenstigung);
 		elternbeitrag = elternbeitrag.compareTo(BigDecimal.ZERO) < 0 ?

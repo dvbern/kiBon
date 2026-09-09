@@ -78,7 +78,7 @@ Content-Type: text/html;charset=utf-8
 	</p>
 	<p>
 		Ihre Anmeldung für Simon Wälti / Tagesschule Bern wurde abgelehnt.
-		Die Betreuungsangebote können
+		Die Module können
 		<a href="https://be.kibon.example.com/gesuch/betreuungen/<ID-1>">hier</a>
 		eingesehen werden.
 	</p>
@@ -101,7 +101,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungAbgelehnt[BERN_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – Rejet de l'inscription
+Subject: 000042, 2017/2018, kiBon – Rejet de l'inscription
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -116,7 +116,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Rejet de l'inscription</title>
+	<title>kiBon – Rejet de l'inscription</title>
 
 </head>
 
@@ -200,7 +200,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungAbgelehnt[DVB_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – Rejet de l'inscription
+Subject: 000042, 2017/2018, kiBon – Rejet de l'inscription
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -215,7 +215,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Rejet de l'inscription</title>
+	<title>kiBon – Rejet de l'inscription</title>
 
 </head>
 
@@ -545,7 +545,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungFerieninselUebernommen[BERN_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – L'inscription pour Simon Wälti a été acceptée
+Subject: 000042, 2017/2018, kiBon – L'inscription pour Simon Wälti a été acceptée
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -560,7 +560,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Inscription acceptée</title>
+	<title>kiBon – Inscription acceptée</title>
 
 </head>
 
@@ -641,7 +641,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungFerieninselUebernommen[DVB_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – L'inscription pour Simon Wälti a été acceptée
+Subject: 000042, 2017/2018, kiBon – L'inscription pour Simon Wälti a été acceptée
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -656,7 +656,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Inscription acceptée</title>
+	<title>kiBon – Inscription acceptée</title>
 
 </head>
 
@@ -975,7 +975,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungStorniert[BERN_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – Annulation de l'inscription
+Subject: 000042, 2017/2018, kiBon – Annulation de l'inscription
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -990,7 +990,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Annulation de l'inscription</title>
+	<title>kiBon – Annulation de l'inscription</title>
 
 </head>
 
@@ -1069,7 +1069,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungStorniert[DVB_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – Annulation de l'inscription
+Subject: 000042, 2017/2018, kiBon – Annulation de l'inscription
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -1084,7 +1084,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Annulation de l'inscription</title>
+	<title>kiBon – Annulation de l'inscription</title>
 
 </head>
 
@@ -1400,7 +1400,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungTagesschuleAkzeptiert[BERN_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – Inscription pour Simon Wälti acceptée
+Subject: 000042, 2017/2018, kiBon – Inscription pour Simon Wälti acceptée
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -1415,7 +1415,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Inscription acceptée</title>
+	<title>kiBon – Inscription acceptée</title>
 
 </head>
 
@@ -1496,7 +1496,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungTagesschuleAkzeptiert[DVB_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – Inscription pour Simon Wälti acceptée
+Subject: 000042, 2017/2018, kiBon – Inscription pour Simon Wälti acceptée
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -1511,7 +1511,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Inscription acceptée</title>
+	<title>kiBon – Inscription acceptée</title>
 
 </head>
 
@@ -1830,7 +1830,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungTagesschuleUebernommen[BERN_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – Inscription pour Simon Wälti acceptée
+Subject: 000042, 2017/2018, kiBon – Inscription pour Simon Wälti acceptée
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -1845,7 +1845,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Inscription acceptée</title>
+	<title>kiBon – Inscription acceptée</title>
 
 </head>
 
@@ -1924,7 +1924,7 @@ Content-Type: text/html;charset=utf-8
 InfoSchulamtAnmeldungTagesschuleUebernommen[DVB_FRANZOESISCH]=[
 From: kibon@dvbern.ch
 To: Dagmar Wälti <empfaenger@dvbern.ch>
-Subject: 000042, 2017/2018, kiBon  – Inscription pour Simon Wälti acceptée
+Subject: 000042, 2017/2018, kiBon – Inscription pour Simon Wälti acceptée
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -1939,7 +1939,7 @@ Content-Type: text/html;charset=utf-8
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon  – Inscription acceptée</title>
+	<title>kiBon – Inscription acceptée</title>
 
 </head>
 

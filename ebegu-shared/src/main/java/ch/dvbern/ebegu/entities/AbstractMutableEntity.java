@@ -32,7 +32,8 @@ import org.hibernate.envers.Audited;
 @MappedSuperclass
 @Audited
 @EqualsAndHashCode(callSuper = true)
-public abstract class AbstractMutableEntity extends AbstractEntity {
+public abstract class AbstractMutableEntity extends AbstractEntity implements
+	AbstractMutableEntityAccessible {
 
 	private static final long serialVersionUID = -979322154020183445L;
 
@@ -41,11 +42,13 @@ public abstract class AbstractMutableEntity extends AbstractEntity {
 	@Size(min = Constants.UUID_LENGTH, max = Constants.UUID_LENGTH)
 	private String vorgaengerId;
 
+	@Override
 	@Nullable
 	public String getVorgaengerId() {
 		return vorgaengerId;
 	}
 
+	@Override
 	public void setVorgaengerId(@Nullable String vorgaengerId) {
 		this.vorgaengerId = vorgaengerId;
 	}

@@ -38,6 +38,7 @@ import {TSRole} from '../../../models/enums/TSRole';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBerechtigung} from '../../../models/TSBerechtigung';
 import {TSBerechtigungHistory} from '../../../models/TSBerechtigungHistory';
+import {TSFutureBerechtigung} from '../../../models/TSFutureBerechtigung';
 import {MomentUtil} from '../../../utils/date/MomentUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {Log, LogFactory} from '../../../utils/log-factory/LogFactory';
@@ -81,7 +82,7 @@ export class BenutzerComponent implements OnInit {
     public selectedUser: TSBenutzer;
 
     public currentBerechtigung: TSBerechtigung;
-    public futureBerechtigung?: TSBerechtigung;
+    public futureBerechtigung?: TSFutureBerechtigung;
     public isDefaultVerantwortlicher: boolean = false;
     public isDisabled = true;
     private initialCurrentBerechtigung: TSBerechtigung;
@@ -223,11 +224,12 @@ export class BenutzerComponent implements OnInit {
         return EbeguUtil.isNullOrUndefined(this.futureBerechtigung);
     }
 
-    public addBerechtigung(): void {
-        const berechtigung = new TSBerechtigung();
+    public addFutureBerechtigung(): void {
+        const berechtigung = new TSFutureBerechtigung();
         berechtigung.role = TSRole.GESUCHSTELLER;
         berechtigung.gueltigkeit = new TSDateRange();
         berechtigung.gueltigkeit.gueltigAb = this.tomorrow;
+        berechtigung.predecessor = this.currentBerechtigung;
         this.futureBerechtigung = berechtigung;
     }
 
@@ -235,7 +237,7 @@ export class BenutzerComponent implements OnInit {
         this.isDisabled = false;
     }
 
-    public removeBerechtigung(): void {
+    public removeFutureBerechtigung(): void {
         this.futureBerechtigung = undefined;
     }
 
@@ -257,7 +259,7 @@ export class BenutzerComponent implements OnInit {
 
     private initSelectedUser(): void {
         this.currentBerechtigung = this.selectedUser.berechtigungen[0];
-        this.futureBerechtigung = this.selectedUser.berechtigungen[1];
+        this.futureBerechtigung = this.selectedUser.futureBerechtigung;
 
         // deep copy to not assign the same memory block to initialCurrentBerechtigung and initialFutureBerechtigung
         //this.initialCurrentBerechtigung = this.currentBerechtigung; => same location in memory, both variables are always identical
@@ -267,7 +269,6 @@ export class BenutzerComponent implements OnInit {
         this.initialFutureBerechtigung = this.futureBerechtigung
             ? JSON.parse(JSON.stringify(this.futureBerechtigung))
             : undefined;
-
         if (this.isSuperAdmin()) {
             this.benutzerRS
                 .getBerechtigungHistoriesForBenutzer(this.selectedUser.username)
@@ -324,8 +325,9 @@ export class BenutzerComponent implements OnInit {
         this.selectedUser.berechtigungen.push(this.currentBerechtigung);
 
         if (this.futureBerechtigung) {
-            this.futureBerechtigung.prepareForSave();
-            this.selectedUser.berechtigungen.push(this.futureBerechtigung);
+            this.selectedUser.futureBerechtigung = this.futureBerechtigung;
+        } else {
+            this.selectedUser.futureBerechtigung = undefined;
         }
         try {
             await this.benutzerRS.saveBenutzer(this.selectedUser);
@@ -409,4 +411,5 @@ export class BenutzerComponent implements OnInit {
     }
 
     protected readonly CONSTANTS = CONSTANTS;
+    protected readonly moment = moment;
 }

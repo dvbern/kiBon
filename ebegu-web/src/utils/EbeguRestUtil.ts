@@ -137,6 +137,7 @@ import {TSFinanzielleSituationContainer} from '../models/TSFinanzielleSituationC
 import {TSFinanzielleSituationSelbstdeklaration} from '../models/TSFinanzielleSituationSelbstdeklaration';
 import {TSFinanzModel} from '../models/TSFinanzModel';
 import {TSFinSitZusatzangabenAppenzell} from '../models/TSFinSitZusatzangabenAppenzell';
+import {TSFutureBerechtigung} from '../models/TSFutureBerechtigung';
 import {TSGemeindeKonfiguration} from '../models/TSGemeindeKonfiguration';
 import {TSGemeindeRegistrierung} from '../models/TSGemeindeRegistrierung';
 import {TSGemeindeStammdaten} from '../models/TSGemeindeStammdaten';
@@ -4718,6 +4719,12 @@ export class EbeguRestUtil {
         user.mandant = this.mandantToRestObject({}, userTS.mandant);
         user.status = userTS.status;
         user.sendMailWennOffenePendenzen = userTS.sendMailWennOffenePendenzen;
+        if (userTS.futureBerechtigung) {
+            user.futureBerechtigung = this.berechtigungToRestObject(
+                {},
+                userTS.futureBerechtigung
+            );
+        }
         if (userTS.berechtigungen) {
             user.berechtigungen = [];
             userTS.berechtigungen.forEach((berecht: TSBerechtigung) => {
@@ -4725,6 +4732,7 @@ export class EbeguRestUtil {
                     this.berechtigungToRestObject({}, berecht)
                 );
             });
+            user.currentBerechtigung = user.berechtigungen[0];
             return user;
         }
 
@@ -4766,6 +4774,11 @@ export class EbeguRestUtil {
             userTS.berechtigungen = this.parseBerechtigungen(
                 userFromServer.berechtigungen
             );
+            userTS.futureBerechtigung = this.parseFutureBerechtigung(
+                new TSFutureBerechtigung(),
+                userFromServer.futureBerechtigung
+            );
+
             userTS.sendMailWennOffenePendenzen =
                 userFromServer.sendMailWennOffenePendenzen;
             return userTS;
@@ -4872,6 +4885,18 @@ export class EbeguRestUtil {
                 new TSSozialdienst(),
                 berechtigungFromServer.sozialdienst
             );
+            return berechtigungTS;
+        }
+        return undefined;
+    }
+
+    public parseFutureBerechtigung(
+        berechtigungTS: TSFutureBerechtigung,
+        berechtigungFromServer: any
+    ): TSFutureBerechtigung {
+        if (berechtigungFromServer) {
+            this.parseBerechtigung(berechtigungTS, berechtigungFromServer);
+            berechtigungTS.predecessor = berechtigungFromServer.predecessor;
             return berechtigungTS;
         }
         return undefined;

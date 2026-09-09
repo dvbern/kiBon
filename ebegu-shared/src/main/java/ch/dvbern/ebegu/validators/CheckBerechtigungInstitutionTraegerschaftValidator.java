@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import ch.dvbern.ebegu.entities.Berechtigung;
+import ch.dvbern.ebegu.entities.berechtigung.Berechtigung;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.util.EnumUtil;
 

@@ -60,6 +60,9 @@ public class JaxBenutzer implements Serializable {
 	@Nullable
 	private JaxBerechtigung currentBerechtigung;
 
+	@Nullable
+	private JaxFutureBerechtigung futureBerechtigung;
+
 	@Nonnull
 	private Set<JaxBerechtigung> berechtigungen = new LinkedHashSet<>();
 

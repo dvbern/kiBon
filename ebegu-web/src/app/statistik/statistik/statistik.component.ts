@@ -239,7 +239,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
 
     private refreshUserJobs(): void {
         this.batchJobRS
-            .getBatchJobsOfUser()
+            .getStatistikJobsForUser()
             .subscribe((response: TSWorkJob[]) => {
                 this.userjobs = new MatTableDataSource(response);
                 this.cd.markForCheck();

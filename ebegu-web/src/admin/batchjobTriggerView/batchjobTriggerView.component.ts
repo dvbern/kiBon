@@ -200,4 +200,22 @@ export class BatchjobTriggerViewComponent {
 
         this.dialog.open(DvNgOkDialogComponent, dialogConfig);
     }
+
+    public runBatchAbgelaufeneRollen(): void {
+        this.dailyBatchRS.runBatchAbgelaufeneRollen().subscribe({
+            next: response => {
+                if (response.endsWith('{true}')) {
+                    this.createAndOpenDialog(
+                        'Abgelaufene Rollen erfolgreich durchgeführt behandelt'
+                    );
+                } else {
+                    this.createAndOpenDialog(
+                        'Der Batch Job wurde beendet mit Fehlern'
+                    );
+                }
+            },
+            error: () => LOG.error('Der Batch Job wurde beendet mit Fehlern')
+        });
+        this.createAndOpenDialog('Batch Job gestarted');
+    }
 }

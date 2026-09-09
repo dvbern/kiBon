@@ -21,7 +21,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
 
-import ch.dvbern.ebegu.entities.Berechtigung;
+import ch.dvbern.ebegu.entities.berechtigung.Berechtigung;
 import ch.dvbern.ebegu.services.BenutzerService;
 
 public class BerechtigungChangedEntityListener {

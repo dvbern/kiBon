@@ -35,7 +35,7 @@ public interface DailyBatch {
 
 	void runBatchCleanWorkjobs();
 
-	void runBatchAbgelaufeneRollen();
+	Future<Boolean> runBatchAbgelaufeneRollen();
 
 	void runBatchInfoOffenePendenzenNeueMitteilungInstitution();
 

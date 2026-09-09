@@ -137,4 +137,21 @@ public class DailyBatchResource {
 		LOGGER.error(errorMessage, e);
 		return Response.serverError().build();
 	}
+
+	@Operation(
+		summary = "Führt den Job zur Behandlung abgelaufener Rollen aus.")
+	@Nullable
+	@GET
+	@Path("/runBatchAbgelaufeneRollen")
+	@Consumes(MediaType.WILDCARD)
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response runBatchAbgelaufeneRollen() {
+		Future<Boolean> booleanFuture = dailyBatch
+			.runBatchAbgelaufeneRollen();
+
+		return executeFuture(
+			booleanFuture,
+			"runBatchAbgelaufeneRollen"
+		);
+	}
 }

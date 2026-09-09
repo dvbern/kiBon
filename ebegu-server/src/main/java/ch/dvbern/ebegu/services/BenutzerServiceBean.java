@@ -21,9 +21,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,7 +35,6 @@ import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
 import jakarta.inject.Inject;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -64,10 +61,6 @@ import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Benutzer_;
-import ch.dvbern.ebegu.entities.Berechtigung;
-import ch.dvbern.ebegu.entities.BerechtigungHistory;
-import ch.dvbern.ebegu.entities.BerechtigungHistory_;
-import ch.dvbern.ebegu.entities.Berechtigung_;
 import ch.dvbern.ebegu.entities.Fall;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
@@ -85,6 +78,11 @@ import ch.dvbern.ebegu.entities.Institution_;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Traegerschaft;
 import ch.dvbern.ebegu.entities.Traegerschaft_;
+import ch.dvbern.ebegu.entities.berechtigung.Berechtigung;
+import ch.dvbern.ebegu.entities.berechtigung.BerechtigungHistory;
+import ch.dvbern.ebegu.entities.berechtigung.BerechtigungHistory_;
+import ch.dvbern.ebegu.entities.berechtigung.Berechtigung_;
+import ch.dvbern.ebegu.entities.berechtigung.FutureBerechtigung;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst_;
 import ch.dvbern.ebegu.enums.AntragStatus;
@@ -100,7 +98,9 @@ import ch.dvbern.ebegu.errors.KibonLogLevel;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.authentication.KeycloakApi;
+import ch.dvbern.ebegu.services.berechtigung.BerechtigungExpirationRoutine;
 import ch.dvbern.ebegu.services.util.SearchUtil;
+import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.types.DateRange_;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.EnumUtil;
@@ -176,6 +176,9 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 	@Inject
 	private MandantService mandantService;
 
+	@Inject
+	private BerechtigungExpirationRoutine berechtigungExpirationRoutine;
+
 	@Nonnull
 	@Override
 	public Benutzer saveBenutzerAndBerechtigungen(
@@ -197,6 +200,7 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 			} else {
 				keycloakApi.addMitarbeiterAccessBenutzerRole(mergedBenutzer);
 			}
+			keycloakApi.logout(mergedBenutzer);
 		}
 		if (nameVornameUpdated) {
 			keycloakApi.updateUser(mergedBenutzer);
@@ -1246,33 +1250,23 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 		@Nonnull Benutzer benutzer,
 		boolean currentBerechtigungChanged
 	) {
-		List<Berechtigung> allSortedBerechtigungen = new LinkedList<>(
-			benutzer.getBerechtigungen()
-		);
-		allSortedBerechtigungen.sort(
-			Comparator.comparing(o -> o.getGueltigkeit().getGueltigAb())
-		);
 
-		final Berechtigung currentBerechtigung = allSortedBerechtigungen.get(0);
+		Berechtigung currentBerechtigung = benutzer.getCurrentBerechtigung();
+		FutureBerechtigung futureBerechtigung = benutzer
+			.getFutureBerechtigung();
 
-		handleGueltigkeitCurrentBerechtigung(
-			allSortedBerechtigungen,
-			currentBerechtigung,
-			currentBerechtigungChanged
-		);
-
-		for (Berechtigung berechtigung : allSortedBerechtigungen) {
-			prepareBerechtigungForSave(berechtigung);
-		}
-
-		// Ausloggen nur, wenn die aktuelle Berechtigung geändert hat
-		if (currentBerechtigungChanged) {
-			LOG.info(
-				"Aktuelle Berechtigung des Benutzers {} hat geändert, Benutzer wird ausgeloggt",
-				benutzer.getUsername()
+		if (null != futureBerechtigung) {
+			limitCurrentBerechtigungToStartOfFutureBerechtigung(
+				currentBerechtigung,
+				futureBerechtigung
 			);
-			keycloakApi.logout(benutzer);
 		}
+
+		if (currentBerechtigungChanged) {
+			currentBerechtigung.getGueltigkeit().setGueltigAb(LocalDate.now());
+		}
+
+		prepareBerechtigungForSave(currentBerechtigung);
 	}
 
 	/**
@@ -1283,25 +1277,17 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 	 * If the
 	 * currentBerechtigung changed it sets the gueltigAb of the currentBerechtigung to now()
 	 */
-	private void handleGueltigkeitCurrentBerechtigung(
-		@Nonnull List<Berechtigung> allSortedBerechtigungen,
+	private void limitCurrentBerechtigungToStartOfFutureBerechtigung(
 		@Nonnull Berechtigung currentBerechtigung,
-		boolean currentBerechtigungChanged
+		@Nonnull FutureBerechtigung futureBerechtigung
 	) {
 
-		currentBerechtigung.getGueltigkeit()
-			.setGueltigBis(
-				allSortedBerechtigungen.size() > 1 ?
-					allSortedBerechtigungen.get(1)
-						.getGueltigkeit()
-						.getGueltigAb()
-						.minusDays(1) :
-					Constants.END_OF_TIME
-			);
+		DateRange gueltigkeit = currentBerechtigung.getGueltigkeit();
+		gueltigkeit.setGueltigBis(
+			futureBerechtigung.getGueltigkeit().getGueltigAb().minusDays(1)
+		);
 
-		if (currentBerechtigungChanged) {
-			currentBerechtigung.getGueltigkeit().setGueltigAb(LocalDate.now());
-		}
+		currentBerechtigung.setGueltigkeit(gueltigkeit);
 	}
 
 	private void prepareBerechtigungForSave(
@@ -1976,118 +1962,12 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 			.getCriteriaResults(query);
 
 		for (Benutzer benutzer : userMitAbgelaufenerRolle) {
-			List<Berechtigung> abgelaufeneBerechtigungen = new ArrayList<>();
-			for (Berechtigung berechtigung : benutzer.getBerechtigungen()) {
-				if (berechtigung.isAbgelaufen()) {
-					abgelaufeneBerechtigungen.add(berechtigung);
-				}
-			}
-			try {
-				Berechtigung aktuelleBerechtigung =
-					getAktuellGueltigeBerechtigungFuerBenutzer(benutzer);
-				persistence.merge(aktuelleBerechtigung);
-			} catch (NoResultException nre) {
-				// Sonderfall: Die letzte Berechtigung ist abgelaufen. Wir erstellen sofort eine neue anschliessende
-				// Berechtigung als Gesuchsteller
-				Berechtigung futureGesuchstellerBerechtigung =
-					createFutureBerechtigungAsGesuchsteller(
-						LocalDate.now(),
-						benutzer
-					);
-				persistence.persist(futureGesuchstellerBerechtigung);
-			}
-			// Die abgelaufene Rolle löschen
-			for (Berechtigung abgelaufeneBerechtigung : abgelaufeneBerechtigungen) {
-				LOG.info(
-					"... Benutzerrolle ist abgelaufen: {}, war: {}, abgelaufen: {}",
-					benutzer.getUsername(),
-					abgelaufeneBerechtigung.getRole(),
-					abgelaufeneBerechtigung.getGueltigkeit().getGueltigBis()
-				);
-				benutzer.getBerechtigungen().remove(abgelaufeneBerechtigung);
-				persistence.merge(benutzer);
-				removeBerechtigung(abgelaufeneBerechtigung);
-			}
 
+			berechtigungExpirationRoutine.runExpirationRoutine(benutzer);
+			keycloakApi.logout(benutzer);
 		}
+
 		return userMitAbgelaufenerRolle.size();
-	}
-
-	private Berechtigung createFutureBerechtigungAsGesuchsteller(
-		LocalDate startDatum,
-		Benutzer benutzer
-	) {
-		Berechtigung futureGesuchstellerBerechtigung = new Berechtigung();
-		futureGesuchstellerBerechtigung.getGueltigkeit()
-			.setGueltigAb(startDatum);
-		futureGesuchstellerBerechtigung.getGueltigkeit()
-			.setGueltigBis(Constants.END_OF_TIME);
-		futureGesuchstellerBerechtigung.setRole(GESUCHSTELLER);
-		futureGesuchstellerBerechtigung.setBenutzer(benutzer);
-		return futureGesuchstellerBerechtigung;
-	}
-
-	@Nonnull
-	private Berechtigung getAktuellGueltigeBerechtigungFuerBenutzer(
-		@Nonnull Benutzer benutzer
-	) {
-		requireNonNull(benutzer);
-		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Berechtigung> query = cb.createQuery(
-			Berechtigung.class
-		);
-		Root<Berechtigung> root = query.from(Berechtigung.class);
-
-		ParameterExpression<Benutzer> benutzerParam = cb.parameter(
-			Benutzer.class,
-			"benutzer"
-		);
-		ParameterExpression<LocalDate> dateParam = cb.parameter(
-			LocalDate.class,
-			"date"
-		);
-
-		Predicate predicateBenutzer = cb.equal(
-			root.get(Berechtigung_.benutzer),
-			benutzerParam
-		);
-		Predicate predicateZeitraum = cb.between(
-			dateParam,
-			root.get(AbstractDateRangedEntity_.gueltigkeit)
-				.get(DateRange_.gueltigAb),
-			root.get(AbstractDateRangedEntity_.gueltigkeit)
-				.get(DateRange_.gueltigBis)
-		);
-
-		query.where(predicateBenutzer, predicateZeitraum);
-
-		TypedQuery<Berechtigung> q = persistence.getEntityManager()
-			.createQuery(query);
-		q.setParameter(dateParam, LocalDate.now());
-		q.setParameter(benutzerParam, benutzer);
-		List<Berechtigung> resultList = q.getResultList();
-
-		if (resultList.isEmpty()) {
-			throw new NoResultException(
-				"No Berechtigung found for Benutzer"
-					+ benutzer.getUsername()
-			);
-		}
-		if (resultList.size() > 1) {
-			throw new NonUniqueResultException(
-				"More than one Berechtigung found for Benutzer "
-					+ benutzer.getUsername()
-			);
-		}
-		return resultList.get(0);
-	}
-
-	private void removeBerechtigung(@Nonnull Berechtigung berechtigung) {
-		requireNonNull(berechtigung);
-		keycloakApi.logout(
-			berechtigung.getBenutzer()
-		);
-		persistence.remove(berechtigung);
 	}
 
 	@Override

@@ -50,11 +50,14 @@ import ch.dvbern.ebegu.api.dtos.JaxTextRessource;
 import ch.dvbern.ebegu.api.dtos.JaxTraegerschaft;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.entities.AbstractDateRangeAccessible;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity;
 import ch.dvbern.ebegu.entities.AbstractEntity;
+import ch.dvbern.ebegu.entities.AbstractEntityAccessible;
 import ch.dvbern.ebegu.entities.AbstractIntegerPensum;
 import ch.dvbern.ebegu.entities.AbstractMahlzeitenPensum;
 import ch.dvbern.ebegu.entities.AbstractMutableEntity;
+import ch.dvbern.ebegu.entities.AbstractMutableEntityAccessible;
 import ch.dvbern.ebegu.entities.AbstractPersonEntity;
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.entities.BfsGemeinde;
@@ -125,7 +128,7 @@ public abstract class AbstractBaseConverter {
 
 	@Nonnull
 	@CanIgnoreReturnValue
-	protected <T extends AbstractEntity> T convertAbstractFieldsToEntity(
+	protected <T extends AbstractEntityAccessible> T convertAbstractFieldsToEntity(
 		final JaxAbstractDTO jaxToConvert,
 		@Nonnull final T abstEntityToConvertTo
 	) {
@@ -155,7 +158,7 @@ public abstract class AbstractBaseConverter {
 
 	@Nonnull
 	@CanIgnoreReturnValue
-	protected <T extends AbstractMutableEntity> T convertAbstractVorgaengerFieldsToEntity(
+	protected <T extends AbstractMutableEntityAccessible> T convertAbstractVorgaengerFieldsToEntity(
 		final JaxAbstractDTO jaxToConvert,
 		@Nonnull final T abstEntityToConvertTo
 	) {
@@ -213,9 +216,9 @@ public abstract class AbstractBaseConverter {
 	 */
 	@Nonnull
 	@CanIgnoreReturnValue
-	protected AbstractDateRangedEntity convertAbstractDateRangedFieldsToEntity(
+	protected AbstractDateRangeAccessible convertAbstractDateRangedFieldsToEntity(
 		final JaxAbstractDateRangedDTO dateRangedJAXP,
-		final AbstractDateRangedEntity dateRangedEntity
+		final AbstractDateRangeAccessible dateRangedEntity
 	) {
 		convertAbstractVorgaengerFieldsToEntity(
 			dateRangedJAXP,

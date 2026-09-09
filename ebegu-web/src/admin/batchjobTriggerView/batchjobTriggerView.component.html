@@ -185,6 +185,20 @@
                 </div>
             </div>
 
+            <h2 class="margin-top-40">Tägliche Batch Jobs</h2>
+
+            <div class="row">
+                <div class="col-md-12 margin-top-20">
+                    <div>Abgelaufene Berechtigungen behandeln</div>
+                    <dv-loading-button
+                        (buttonClick)="runBatchAbgelaufeneRollen()"
+                        buttonClass="margin-top-20"
+                    >
+                        Batchjob ausführen
+                    </dv-loading-button>
+                </div>
+            </div>
+
             <!-- Manuelle Skripts ausfuehren -->
             <h2 class="margin-top-40">Manuelle Skripts ausführen</h2>
             <div class="row">

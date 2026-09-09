@@ -8,7 +8,7 @@
 <#-- @ftlvariable name="gruss" type="java.lang.String" -->
 From: ${configuration.senderAddress}
 To: <@base64Header>${senderFullName}</@base64Header> <${empfaengerMail}>
-Subject: <@base64Header>kiBon <#if configuration.isDevmode>Système de test</#if> – Activation de la nouvelle période couverte par la demande</@base64Header>
+Subject: <@base64Header>kiBon<#if configuration.isDevmode> Système de test</#if> – Activation de la nouvelle période couverte par la demande</@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -16,7 +16,7 @@ Content-Type: text/html;charset=utf-8
 ${templateConfiguration.mailCss}
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon <#if configuration.isDevmode>Système de test</#if> – Activation de la nouvelle période couverte par la demande</title>
+	<title>kiBon<#if configuration.isDevmode> Système de test</#if> – Activation de la nouvelle période couverte par la demande</title>
 </head>
 
 <body>

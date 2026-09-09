@@ -1,19 +1,21 @@
 /*
- * Ki-Tax: System for the management of external childcare subsidies
- * Copyright (C) 2018 City of Bern Switzerland
+ * Copyright (C) 2026 DV Bern AG, Switzerland
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
+ *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.dvbern.ebegu.entities;
+package ch.dvbern.ebegu.entities.berechtigung;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -37,6 +39,12 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 
+import ch.dvbern.ebegu.entities.AbstractDateRangedEntity;
+import ch.dvbern.ebegu.entities.AbstractEntity;
+import ch.dvbern.ebegu.entities.Benutzer;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Institution;
+import ch.dvbern.ebegu.entities.Traegerschaft;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.listener.BerechtigungChangedEntityListener;
@@ -45,7 +53,6 @@ import ch.dvbern.ebegu.validators.CheckBerechtigungInstitutionTraegerschaft;
 import ch.dvbern.ebegu.validators.CheckBerechtigungSozialdienst;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
@@ -59,9 +66,12 @@ import org.hibernate.envers.Audited;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Berechtigung extends AbstractDateRangedEntity implements
+	BerechtigungAccessible,
 	Comparable<Berechtigung> {
 
 	private static final long serialVersionUID = 6372688971894279665L;
+
+	private static final String NULL = "null";
 
 	@NotNull
 	@ManyToOne(optional = false)
@@ -110,59 +120,6 @@ public class Berechtigung extends AbstractDateRangedEntity implements
 	@JoinColumn(foreignKey = @ForeignKey(
 		name = "FK_berechtigung_sozialdienst_id"))
 	private Sozialdienst sozialdienst = null;
-
-	public Benutzer getBenutzer() {
-		return benutzer;
-	}
-
-	public void setBenutzer(Benutzer benutzer) {
-		this.benutzer = benutzer;
-	}
-
-	@Nonnull
-	public UserRole getRole() {
-		return role;
-	}
-
-	public void setRole(@Nonnull UserRole role) {
-		this.role = role;
-	}
-
-	@Nonnull
-	public Set<Gemeinde> getGemeindeList() {
-		return gemeindeList;
-	}
-
-	public void setGemeindeList(@Nonnull Set<Gemeinde> gemeindeList) {
-		this.gemeindeList = gemeindeList;
-	}
-
-	@Nullable
-	public Institution getInstitution() {
-		return institution;
-	}
-
-	public void setInstitution(@Nullable Institution institution) {
-		this.institution = institution;
-	}
-
-	@Nullable
-	public Traegerschaft getTraegerschaft() {
-		return traegerschaft;
-	}
-
-	public void setTraegerschaft(@Nullable Traegerschaft traegerschaft) {
-		this.traegerschaft = traegerschaft;
-	}
-
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this)
-			.appendSuper(super.toString())
-			.append("gueltigkeit", getGueltigkeit())
-			.append("role", role)
-			.toString();
-	}
 
 	@Override
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
@@ -224,11 +181,93 @@ public class Berechtigung extends AbstractDateRangedEntity implements
 			.collect(Collectors.joining(", "));
 	}
 
+	@Override
+	public String toString() {
+		return "Berechtigung{"
+			+
+			"benutzer="
+			+ (benutzer != null ? benutzer.getUsername() : NULL)
+			+
+			", role="
+			+ role
+			+
+			", institution="
+			+ (institution != null ? institution.getName() : NULL)
+			+
+			", traegerschaft="
+			+ (traegerschaft != null ? traegerschaft.getName() : NULL)
+			+
+			", gueltigkeit="
+			+ getGueltigkeit().toString()
+			+
+			", sozialdienst="
+			+ (sozialdienst != null ? sozialdienst.getName() : NULL)
+			+
+			", gemeindeList="
+			+ extractGemeindenForBerechtigungAsString()
+			+
+			'}';
+	}
+
+	@Override
+	public Benutzer getBenutzer() {
+		return benutzer;
+	}
+
+	@Override
+	public void setBenutzer(Benutzer benutzer) {
+		this.benutzer = benutzer;
+	}
+
+	@Override
+	public UserRole getRole() {
+		return role;
+	}
+
+	@Override
+	public void setRole(UserRole role) {
+		this.role = role;
+	}
+
+	@Override
+	public Set<Gemeinde> getGemeindeList() {
+		return gemeindeList;
+	}
+
+	@Override
+	public void setGemeindeList(Set<Gemeinde> gemeindeList) {
+		this.gemeindeList = gemeindeList;
+	}
+
+	@Override
+	@Nullable
+	public Institution getInstitution() {
+		return institution;
+	}
+
+	@Override
+	public void setInstitution(@Nullable Institution institution) {
+		this.institution = institution;
+	}
+
+	@Override
+	@Nullable
+	public Traegerschaft getTraegerschaft() {
+		return traegerschaft;
+	}
+
+	@Override
+	public void setTraegerschaft(@Nullable Traegerschaft traegerschaft) {
+		this.traegerschaft = traegerschaft;
+	}
+
+	@Override
 	@Nullable
 	public Sozialdienst getSozialdienst() {
 		return sozialdienst;
 	}
 
+	@Override
 	public void setSozialdienst(@Nullable Sozialdienst sozialdienst) {
 		this.sozialdienst = sozialdienst;
 	}

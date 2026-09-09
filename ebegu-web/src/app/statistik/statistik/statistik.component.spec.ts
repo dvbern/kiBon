@@ -58,7 +58,7 @@ describe('StatistikComponent', () => {
         'startDownloadGeneratedFile'
     ]);
     const batchJobRSSpy = jasmine.createSpyObj<BatchJobRS>(BatchJobRS.name, [
-        'getBatchJobsOfUser'
+        'getStatistikJobsForUser'
     ]);
     const errorServiceSpy = jasmine.createSpyObj<ErrorService>(
         ErrorService.name,
@@ -111,7 +111,7 @@ describe('StatistikComponent', () => {
         institutionStammdatenRSSpy.getBetreuungsangeboteForInstitutionenOfCurrentBenutzer.and.returnValue(
             Promise.resolve([])
         );
-        batchJobRSSpy.getBatchJobsOfUser.and.returnValue(of([]));
+        batchJobRSSpy.getStatistikJobsForUser.and.returnValue(of([]));
     }));
 
     beforeEach(waitForAsync(() => {

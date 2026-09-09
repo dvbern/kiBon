@@ -457,6 +457,7 @@ const fillTagesschulBetreuungsForm = (
         getKesbPlatzierung('nein').click();
         getXthTagesschulModulOfDay(0, TSDayOfWeek.MONDAY).click();
         getXthTagesschulModulOfDay(0, TSDayOfWeek.THURSDAY).click();
+        cy.wait(1000);
         getAGBTSAkzeptiert().click();
     });
 };

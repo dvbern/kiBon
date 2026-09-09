@@ -5,7 +5,7 @@
 <#-- @ftlvariable name="footer" type="java.lang.String" -->
 From: ${configuration.senderAddress}
 To: ${empfaengerMail}
-Subject: <@base64Header>kiBon <#if configuration.isDevmode>Système de test</#if> – cycle de paiement disponible</@base64Header>
+Subject: <@base64Header>kiBon<#if configuration.isDevmode> Système de test</#if> – cycle de paiement disponible</@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -13,7 +13,7 @@ Content-Type: text/html;charset=utf-8
 ${templateConfiguration.mailCss}
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon <#if configuration.isDevmode>Système de test</#if> – cycle de paiement disponible</title>
+	<title>kiBon<#if configuration.isDevmode> Système de test</#if> – cycle de paiement disponible</title>
 
 </head>
 

@@ -13,7 +13,7 @@
 <#-- @ftlvariable name="gesuchsperiode" type="ch.dvbern.ebegu.entities.Gesuchsperiode"-->
 From: ${configuration.senderAddress}
 To: <@base64Header>${institution.name}</@base64Header> <${empfaengerMail}>
-Subject: ${fall.getPaddedFallnummer()}, ${gesuchsperiode.getGesuchsperiodeString()}, <@base64Header>${institution.name}: kiBon <#if configuration.isDevmode>Système de test</#if> – Suppression de l'offre de prise en charge</@base64Header>
+Subject: ${fall.getPaddedFallnummer()}, ${gesuchsperiode.getGesuchsperiodeString()}, <@base64Header>${institution.name}: kiBon<#if configuration.isDevmode> Système de test</#if> – Suppression de l'offre de prise en charge</@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -21,7 +21,7 @@ Content-Type: text/html;charset=utf-8
 ${templateConfiguration.mailCss}
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>${institution.name}: kiBon <#if configuration.isDevmode>Système de test</#if> – Suppression de l'offre de prise en charge</title>
+	<title>${institution.name}: kiBon<#if configuration.isDevmode> Système de test</#if> – Suppression de l'offre de prise en charge</title>
 
 </head>
 

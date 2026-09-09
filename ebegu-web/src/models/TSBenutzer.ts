@@ -24,6 +24,7 @@ import {rolePrefix, TSRole} from './enums/TSRole';
 import {TSSozialdienst} from './sozialdienst/TSSozialdienst';
 import {TSBenutzerNoDetails} from './TSBenutzerNoDetails';
 import {TSBerechtigung} from './TSBerechtigung';
+import {TSFutureBerechtigung} from './TSFutureBerechtigung';
 
 export class TSBenutzer {
     private _nachname: string;
@@ -36,6 +37,7 @@ export class TSBenutzer {
     private _status: TSBenutzerStatus;
 
     private _currentBerechtigung: TSBerechtigung;
+    private _futureBerechtigung: TSFutureBerechtigung;
     private _berechtigungen: Array<TSBerechtigung> = [];
     public sendMailWennOffenePendenzen: boolean = true;
 
@@ -52,7 +54,8 @@ export class TSBenutzer {
         gemeinde?: TSGemeinde[],
         sozialdienst?: TSSozialdienst,
         status: TSBenutzerStatus = TSBenutzerStatus.AKTIV,
-        externalUUID?: string
+        externalUUID?: string,
+        futureBerechtigung?: TSFutureBerechtigung
     ) {
         this._vorname = vorname;
         this._nachname = nachname;
@@ -72,6 +75,7 @@ export class TSBenutzer {
             this._currentBerechtigung.gemeindeList = gemeinde;
         }
         this._berechtigungen.push(this._currentBerechtigung);
+        this._futureBerechtigung = futureBerechtigung;
     }
 
     public get nachname(): string {
@@ -239,5 +243,13 @@ export class TSBenutzer {
             }
         }
         return noDetails;
+    }
+
+    public get futureBerechtigung(): TSFutureBerechtigung {
+        return this._futureBerechtigung;
+    }
+
+    public set futureBerechtigung(value: TSFutureBerechtigung) {
+        this._futureBerechtigung = value;
     }
 }

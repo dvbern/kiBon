@@ -36,8 +36,10 @@ export class BatchJobRS {
         return this.getInfo(`${this.serviceURL}/jobs`);
     }
 
-    public getBatchJobsOfUser(): Observable<TSWorkJob[]> {
-        return this.getInfo(`${this.serviceURL}/userjobs/notokenrefresh`);
+    public getStatistikJobsForUser(): Observable<TSWorkJob[]> {
+        return this.getInfo(
+            `${this.serviceURL}/statistik/userjobs/notokenrefresh`
+        );
     }
 
     private getInfo(url: string): Observable<Array<TSWorkJob>> {

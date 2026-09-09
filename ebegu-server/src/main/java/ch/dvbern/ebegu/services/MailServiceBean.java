@@ -1490,7 +1490,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 			gesuchsteller,
 			adr
 		) -> mailTemplateConfig
-			.getInfoSchulamtAnmeldungTagesschuleAkzeptiert(
+			.getInfoSchulamtAnmeldungStorniert(
 				abstractAnmeldung,
 				gesuchsteller,
 				adr,

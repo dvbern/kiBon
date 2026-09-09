@@ -34,6 +34,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
@@ -43,6 +44,8 @@ import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.authentication.ExternalUUIDUtil;
 import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.KibonElasticsearchAnalyzerConfigurer;
+import ch.dvbern.ebegu.entities.berechtigung.Berechtigung;
+import ch.dvbern.ebegu.entities.berechtigung.FutureBerechtigung;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
 import ch.dvbern.ebegu.enums.RollenAbhaengigkeit;
@@ -127,8 +130,13 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
 	private String email = null;
 
-	@Transient
-	private Berechtigung currentBerechtigung = null;
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
+	@Nullable
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_benutzer_future_berechtigung"),
+		updatable = true,
+		nullable = true)
+	private FutureBerechtigung futureBerechtigung;
 
 	@Valid
 	@SortNatural
@@ -286,18 +294,29 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 
 	@Nonnull
 	public Berechtigung getCurrentBerechtigung() {
-		if (currentBerechtigung == null) {
-			for (Berechtigung berechtigung : berechtigungen) {
-				if (berechtigung.isGueltig()) {
-					currentBerechtigung = berechtigung;
-				}
-			}
+
+		if (null == berechtigungen || berechtigungen.isEmpty()) {
+			throw new IllegalStateException(
+				"Keine aktive Berechtigung vorhanden fuer Benutzer " + username
+			);
 		}
-		requireNonNull(
-			currentBerechtigung,
-			"Keine aktive Berechtigung vorhanden fuer Benutzer " + username
-		);
-		return currentBerechtigung;
+
+		return berechtigungen.stream().toList().get(0);
+	}
+
+	@Nullable
+	public FutureBerechtigung getFutureBerechtigung() {
+		return futureBerechtigung;
+	}
+
+	public void setFutureBerechtigung(
+		@Nullable FutureBerechtigung futureBerechtigung
+	) {
+		this.futureBerechtigung = futureBerechtigung;
+	}
+
+	public boolean hasFutureBerechtigung() {
+		return futureBerechtigung != null;
 	}
 
 	@Nonnull

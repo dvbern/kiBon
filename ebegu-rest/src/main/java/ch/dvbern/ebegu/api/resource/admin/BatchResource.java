@@ -48,6 +48,7 @@ import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Workjob;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.enums.UserRoleName;
+import ch.dvbern.ebegu.enums.WorkJobType;
 import ch.dvbern.ebegu.enums.reporting.BatchJobStatus;
 import ch.dvbern.ebegu.services.WorkjobService;
 
@@ -97,11 +98,11 @@ public class BatchResource {
 	}
 
 	@GET
-	@Path("/userjobs/notokenrefresh") //wir pollen diesen endpunkt daher notokenrefresh
+	@Path("/statistik/userjobs/notokenrefresh") //wir pollen diesen endpunkt daher notokenrefresh
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response getBatchJobsOfUser() {
+	public Response getStatistikUserJobs() {
 
 		// Fuer Gesuchsteller gibt es keine BatchJobs
 		if (principalBean.isCallerInRole(UserRole.GESUCHSTELLER)) {
@@ -117,7 +118,10 @@ public class BatchResource {
 
 		final JobOperator jobOperator = BatchRuntime.getJobOperator();
 
-		final List<JaxWorkJob> jobList = jobs.stream()
+		final List<JaxWorkJob> statistikJobs = jobs.stream()
+			.filter(
+				job -> job.getWorkJobType() == WorkJobType.REPORT_GENERATION
+			)
 			.map(job -> converter.toBatchJobInformation(job))
 			.peek((jaxWorkJob) -> {
 				JobExecution jobExecution = null;
@@ -136,6 +140,6 @@ public class BatchResource {
 			})
 			.collect(Collectors.toList());
 
-		return Response.ok(new JaxBatchJobList(jobList)).build();
+		return Response.ok(new JaxBatchJobList(statistikJobs)).build();
 	}
 }

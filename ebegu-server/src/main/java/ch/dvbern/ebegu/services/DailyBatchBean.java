@@ -250,7 +250,7 @@ public class DailyBatchBean implements DailyBatch {
 	}
 
 	@Override
-	public void runBatchAbgelaufeneRollen() {
+	public Future<Boolean> runBatchAbgelaufeneRollen() {
 		try {
 			LOGGER.info("Starting Job AbgelaufeneRollen...");
 			int abgelaufeneRollen = benutzerService.handleAbgelaufeneRollen(
@@ -260,10 +260,16 @@ public class DailyBatchBean implements DailyBatch {
 				"... Job AbgelaufeneRollen finished. Es wurden {} Benutzer zurückgesetzt",
 				abgelaufeneRollen
 			);
+			return new AsyncResult<>(
+				Boolean.TRUE
+			);
 		} catch (RuntimeException e) {
 			LOGGER.error(
 				"Batch-Job AbgelaufeneRollen konnte nicht durchgefuehrt werden!",
 				e
+			);
+			return new AsyncResult<>(
+				Boolean.FALSE
 			);
 		}
 	}

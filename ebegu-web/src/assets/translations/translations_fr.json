@@ -3198,5 +3198,6 @@
     "BENUTZENDE_EDIT_NAME_ALLOWED": "Modification du prénom et du nom des utilisateurs activée",
     "ZEIT": "Temps",
     "VERSENDETE_MAILS_SUCHE_WARNING": "La recherche textuelle est peu performante. Pour accélérer la recherche, vous pouvez limiter la plage de recherche en indiquant les dates de début et de fin.",
+    "INFO_FALLBACK_TO_CURRENT_BERECHTIGUNG": "<b>À l’issue de la période saisie, le rôle initial est automatiquement réattribué.</b> Cela s’applique lorsqu’une date de fin de validité est définie pour l’autorisation future. Dès que l’autorisation future devient active, le rôle initial est automatiquement enregistré comme nouvelle autorisation future sans date de fin de validité.",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

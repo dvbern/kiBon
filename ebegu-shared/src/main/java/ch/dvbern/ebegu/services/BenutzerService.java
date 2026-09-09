@@ -26,12 +26,12 @@ import ch.dvbern.ebegu.authentication.KibonJwt;
 import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.BenutzerTableMandantFilterDTO;
 import ch.dvbern.ebegu.einladung.Einladung;
 import ch.dvbern.ebegu.entities.Benutzer;
-import ch.dvbern.ebegu.entities.Berechtigung;
-import ch.dvbern.ebegu.entities.BerechtigungHistory;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Traegerschaft;
+import ch.dvbern.ebegu.entities.berechtigung.Berechtigung;
+import ch.dvbern.ebegu.entities.berechtigung.BerechtigungHistory;
 import ch.dvbern.ebegu.enums.UserRole;
 import org.apache.commons.lang3.tuple.Pair;
 

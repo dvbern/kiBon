@@ -53,6 +53,9 @@ import static org.hamcrest.Matchers.is;
  */
 public class KitaRechnerTest extends AbstractBGRechnerTest {
 
+	private static final BigDecimal DEFAULT_BETREUUNGSKOSTEN =
+		MathUtil.DEFAULT.fromNullSafe(2000);
+
 	private final BGRechnerParameterDTO parameterDTO = getParameter();
 	private final BGRechnerParameterDTO parameterGemeindeDTO = getParameter();
 	private final KitaRechner kitaRechner = new KitaRechner(
@@ -607,6 +610,22 @@ public class KitaRechnerTest extends AbstractBGRechnerTest {
 		);
 	}
 
+	@Test
+	public void verguenstigung_shouldbeZero_whenElternbeitragHoherAlsGutschein() {
+		testWithParams(
+			geburtstagBaby,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			intervall,
+			20,
+			20,
+			100000,
+			0.0,
+			BigDecimal.ZERO
+		);
+	}
+
 	private void testWithParams(
 		@Nonnull LocalDate geburtstag,
 		@Nonnull EinschulungTyp einschulungTyp,
@@ -628,7 +647,34 @@ public class KitaRechnerTest extends AbstractBGRechnerTest {
 			betreuungspensum,
 			anspruch,
 			einkommen,
-			defaultMatcher(expected)
+			defaultMatcher(expected),
+			DEFAULT_BETREUUNGSKOSTEN
+		);
+	}
+
+	private void testWithParams(
+		@Nonnull LocalDate geburtstag,
+		@Nonnull EinschulungTyp einschulungTyp,
+		boolean besondereBeduerfnisse,
+		boolean besondereBeduerfnisseBestaetigt,
+		@Nonnull DateRange intervall,
+		int betreuungspensum,
+		int anspruch,
+		int einkommen,
+		double expected,
+		@Nonnull BigDecimal monatlicheBetreuungskosten
+	) {
+		testWithParams(
+			geburtstag,
+			einschulungTyp,
+			besondereBeduerfnisse,
+			besondereBeduerfnisseBestaetigt,
+			intervall,
+			betreuungspensum,
+			anspruch,
+			einkommen,
+			defaultMatcher(expected),
+			monatlicheBetreuungskosten
 		);
 	}
 
@@ -643,6 +689,32 @@ public class KitaRechnerTest extends AbstractBGRechnerTest {
 		int einkommen,
 		@Nonnull Matcher<BGCalculationResult> matcher
 	) {
+		testWithParams(
+			geburtstag,
+			einschulungTyp,
+			besondereBeduerfnisse,
+			besondereBeduerfnisseBestaetigt,
+			intervall,
+			betreuungspensum,
+			anspruch,
+			einkommen,
+			matcher,
+			DEFAULT_BETREUUNGSKOSTEN
+		);
+	}
+
+	private void testWithParams(
+		@Nonnull LocalDate geburtstag,
+		@Nonnull EinschulungTyp einschulungTyp,
+		boolean besondereBeduerfnisse,
+		boolean besondereBeduerfnisseBestaetigt,
+		@Nonnull DateRange intervall,
+		int betreuungspensum,
+		int anspruch,
+		int einkommen,
+		@Nonnull Matcher<BGCalculationResult> matcher,
+		@Nonnull BigDecimal monatlicheBetreuungskosten
+	) {
 		BGCalculationInput inputAsiv = inputAsivVorbereiten(
 			geburtstag,
 			einschulungTyp,
@@ -651,7 +723,8 @@ public class KitaRechnerTest extends AbstractBGRechnerTest {
 			intervall,
 			betreuungspensum,
 			anspruch,
-			einkommen
+			einkommen,
+			monatlicheBetreuungskosten
 		);
 
 		BGCalculationResult result = kitaRechner.calculateAsiv(
@@ -670,7 +743,8 @@ public class KitaRechnerTest extends AbstractBGRechnerTest {
 		@Nonnull DateRange intervall,
 		int betreuungspensum,
 		int anspruch,
-		int einkommen
+		int einkommen,
+		@Nonnull BigDecimal monatlicheBetreuungskosten
 	) {
 		Verfuegung verfuegung = prepareVerfuegungKita(
 			geburtstag,
@@ -679,7 +753,7 @@ public class KitaRechnerTest extends AbstractBGRechnerTest {
 			einschulungTyp,
 			besondereBeduerfnisse,
 			MathUtil.DEFAULT.fromNullSafe(einkommen),
-			MathUtil.DEFAULT.fromNullSafe(2000)
+			monatlicheBetreuungskosten
 		);
 
 		VerfuegungZeitabschnitt verfuegungZeitabschnitt = verfuegung
@@ -726,7 +800,8 @@ public class KitaRechnerTest extends AbstractBGRechnerTest {
 			intervall,
 			betreuungspensum,
 			anspruch,
-			einkommen
+			einkommen,
+			DEFAULT_BETREUUNGSKOSTEN
 		);
 		if (bezahltVollkosten) {
 			inputAsiv.setBezahltVollkostenKomplett();

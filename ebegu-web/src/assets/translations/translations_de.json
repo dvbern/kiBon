@@ -3370,5 +3370,6 @@
     "BENUTZENDE_EDIT_NAME_ALLOWED": "Bearbeiten von Vor-/Nachname von Benutzenden aktiviert",
     "VERSENDETE_MAILS_SUCHE_WARNING": "Die Textsuche ist unperformant. Um die Suche zu beschleunigen, können Sie den Suchbereich mit dem von- und bis-Datum einschränken.",
     "ZEIT": "Zeit",
+    "INFO_FALLBACK_TO_CURRENT_BERECHTIGUNG": "<b>Nach Ablauf des erfassten Zeitraums wird automatisch wieder die ursprüngliche Rolle zugewiesen.</b> Dies erfolgt, wenn für die zukünftige Berechtigung ein Ablaufdatum hinterlegt ist. Sobald die zukünftige Berechtigung aktiv wird, wird die ursprüngliche Rolle automatisch als neue zukünftige Berechtigung ohne Ablaufdatum erfasst.",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

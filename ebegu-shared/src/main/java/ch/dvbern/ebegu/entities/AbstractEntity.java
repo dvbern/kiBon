@@ -145,7 +145,9 @@ import org.hibernate.usertype.UserTypeLegacyBridge;
 					type = Integer.class) }
 		))
 })
-public abstract class AbstractEntity implements Serializable {
+public abstract class AbstractEntity implements
+	Serializable,
+	AbstractEntityAccessible {
 
 	private static final long serialVersionUID = -979317154050183445L;
 

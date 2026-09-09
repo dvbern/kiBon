@@ -9,7 +9,7 @@
 <#-- @ftlvariable name="gesuchsperiode" type="ch.dvbern.ebegu.entities.Gesuchsperiode"-->
 From: ${configuration.senderAddress}
 To: <@base64Header>${senderFullName}</@base64Header> <${empfaengerMail}>
-Subject: ${fall.getPaddedFallnummer()}, ${gesuchsperiode.getGesuchsperiodeString()}, <@base64Header>kiBon <#if configuration.isDevmode>Système de test</#if> – L'inscription pour ${betreuung.kind.kindJA.fullName} a été acceptée</@base64Header>
+Subject: ${fall.getPaddedFallnummer()}, ${gesuchsperiode.getGesuchsperiodeString()}, <@base64Header>kiBon<#if configuration.isDevmode> Système de test</#if> – L'inscription pour ${betreuung.kind.kindJA.fullName} a été acceptée</@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -17,7 +17,7 @@ Content-Type: text/html;charset=utf-8
     ${templateConfiguration.mailCss}
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<title>kiBon <#if configuration.isDevmode>Système de test</#if> – Inscription acceptée</title>
+	<title>kiBon<#if configuration.isDevmode> Système de test</#if> – Inscription acceptée</title>
 
 </head>
 

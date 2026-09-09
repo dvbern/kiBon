@@ -5,7 +5,7 @@
 <#-- @ftlvariable name="hostname" type="java.lang.String" -->
 From: ${configuration.senderAddress}
 To: ${empfaengerMail}
-Subject: <@base64Header>kiBon <#if configuration.isDevmode>Système de test</#if> - compensation des charges comptabilisée</@base64Header>
+Subject: <@base64Header>kiBon<#if configuration.isDevmode> Système de test</#if> - compensation des charges comptabilisée</@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>

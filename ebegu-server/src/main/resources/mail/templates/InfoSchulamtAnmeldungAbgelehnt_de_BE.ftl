@@ -29,7 +29,7 @@ ${templateConfiguration.mailCss}
 	</p>
 	<p>
 		Ihre Anmeldung für ${betreuung.kind.kindJA.fullName} / ${betreuung.institutionStammdaten.institution.name} wurde abgelehnt.
-		Die Betreuungsangebote können
+		Die Module können
 		<a href="${frontendUrl}/gesuch/betreuungen/${betreuung.extractGesuch().id}">hier</a>
 		eingesehen werden.
 	</p>

@@ -51,6 +51,10 @@ export class DailyBatchService {
         );
     }
 
+    public runBatchAbgelaufeneRollen(): Observable<string> {
+        return this.callServer(`${this.serviceURL}/runBatchAbgelaufeneRollen`);
+    }
+
     private callServer(url: string): Observable<string> {
         return this.$http.get(url, {responseType: 'text'});
     }
