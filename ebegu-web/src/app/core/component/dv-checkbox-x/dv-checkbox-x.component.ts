@@ -60,6 +60,9 @@ export class DvCheckboxXComponent {
     @Input()
     public displayBisher: boolean = true;
 
+    @Input()
+    public hint: string;
+
     @Output()
     public readonly modelChange: EventEmitter<boolean> =
         new EventEmitter<boolean>();

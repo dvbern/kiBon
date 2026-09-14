@@ -82,7 +82,6 @@ import ch.dvbern.ebegu.file.FileSaverService;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.reporting.ReportMahlzeitenService;
-import ch.dvbern.ebegu.reporting.ReportService;
 import ch.dvbern.ebegu.reporting.mahlzeiten.MahlzeitenverguenstigungDataRow;
 import ch.dvbern.ebegu.reporting.mahlzeiten.MahlzeitenverguenstigungExcelConverter;
 import ch.dvbern.ebegu.services.GemeindeService;
@@ -119,9 +118,6 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean
 
 	@Inject
 	private Persistence persistence;
-
-	@Inject
-	private ReportService reportService;
 
 	@Inject
 	private GesuchService gesuchService;
@@ -328,12 +324,9 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean
 				.getFamiliensituationJA()
 				!= null) {
 			// Sozialhilfebezueger
-			boolean sozialhilfeBezueger = reportService.isSozialhilfeBezueger(
-				zeitabschnitt,
-				gueltigeGesuch.getFamiliensituationContainer(),
-				gueltigeGesuch.getFamiliensituationContainer()
-					.getFamiliensituationJA()
-			);
+			boolean sozialhilfeBezueger = zeitabschnitt
+				.getRelevantBgCalculationResult()
+				.isSozialhilfeAkzeptiert();
 			row.setSozialhilfeBezueger(sozialhilfeBezueger);
 
 			// IBAN-Nummer

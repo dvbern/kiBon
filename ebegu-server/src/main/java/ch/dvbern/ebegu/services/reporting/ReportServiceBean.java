@@ -80,8 +80,6 @@ import ch.dvbern.ebegu.entities.Betreuung_;
 import ch.dvbern.ebegu.entities.Dossier;
 import ch.dvbern.ebegu.entities.Dossier_;
 import ch.dvbern.ebegu.entities.Fall_;
-import ch.dvbern.ebegu.entities.Familiensituation;
-import ch.dvbern.ebegu.entities.FamiliensituationContainer;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gemeinde_;
 import ch.dvbern.ebegu.entities.Gesuch;
@@ -95,8 +93,6 @@ import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.KindContainer_;
 import ch.dvbern.ebegu.entities.Mandant;
-import ch.dvbern.ebegu.entities.SozialhilfeZeitraum;
-import ch.dvbern.ebegu.entities.SozialhilfeZeitraumContainer;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt_;
@@ -1460,52 +1456,6 @@ public class ReportServiceBean extends AbstractReportServiceBean implements
 				getContentTypeForExport()
 			);
 		}
-	}
-
-	@Override
-	public boolean isSozialhilfeBezueger(
-		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
-		@Nonnull FamiliensituationContainer familiensituationContainer,
-		@Nonnull Familiensituation familiensituation
-	) {
-		if (familiensituation.getSozialhilfeBezueger() == null
-			|| !familiensituation.getSozialhilfeBezueger()) {
-			return false;
-		}
-
-		// falls keine sozialhilfeContainer existieren, Sozialhilfe von Familiensituation nehmen
-		Set<SozialhilfeZeitraumContainer> sozialhilfeZeitraumContainers =
-			familiensituationContainer.getSozialhilfeZeitraumContainers();
-		if (sozialhilfeZeitraumContainers.isEmpty()) {
-			return familiensituation.getSozialhilfeBezueger();
-		}
-
-		// falls sozialhilfeContainer existieren, überprüfen ob diese für den aktuellen Zeitabschnitt gelten
-		return sozialhilfeZeitraumContainers.stream()
-			.anyMatch(sozialhilfeZeitraumContainer -> {
-				SozialhilfeZeitraum sozialhilfeZeitraumJA =
-					sozialhilfeZeitraumContainer
-						.getSozialhilfeZeitraumJA();
-				return sozialhilfeZeitraumJA != null
-					&&
-					zeitabschnitt.getGueltigkeit()
-						.getGueltigAb()
-						.compareTo(
-							sozialhilfeZeitraumJA
-								.getGueltigkeit()
-								.getGueltigAb()
-						)
-						>= 0
-					&&
-					zeitabschnitt.getGueltigkeit()
-						.getGueltigBis()
-						.compareTo(
-							sozialhilfeZeitraumJA
-								.getGueltigkeit()
-								.getGueltigBis()
-						)
-						<= 0;
-			});
 	}
 
 	@Nonnull

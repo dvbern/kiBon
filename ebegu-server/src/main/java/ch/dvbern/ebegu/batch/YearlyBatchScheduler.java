@@ -3,7 +3,6 @@ package ch.dvbern.ebegu.batch;
 import jakarta.annotation.security.RunAs;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
-import jakarta.ejb.Startup;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
@@ -12,7 +11,6 @@ import ch.dvbern.ebegu.services.MandantService;
 import lombok.extern.log4j.Log4j;
 import org.jboss.ejb3.annotation.RunAsPrincipal;
 
-@Startup
 @Singleton
 @RunAs(UserRoleName.SUPER_ADMIN)
 @RunAsPrincipal(PrincipalBean.KIBON_SERVICE_ACCOUNT)

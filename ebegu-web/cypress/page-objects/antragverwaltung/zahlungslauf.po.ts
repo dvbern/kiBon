@@ -122,20 +122,24 @@ const zahlungAlsInstitutionBestaetigenAction = (
         '.mat-sort-header-container',
         'Generiert'
     ).dblclick();
-    cy.wait(500);
-    ZahlungslaufPO.getElementWithContent(
-        'mat-cell',
-        zahlungBeschrieb + ' ' + dateToday
-    ).click();
-    cy.wait(500);
-    ZahlungslaufPO.getElementWithContent('mat-cell', institution).click();
-    cy.wait(500);
-    ZahlungslaufPO.getElementWithContent(
-        'mat-cell',
-        'Zahlung erhalten'
-    ).click();
-    cy.wait(500);
-    cy.getByData('zahlungErhalten').eq(0).should('be.visible').click();
+
+    cy.waitForRequest(
+        'GET',
+        '**/v1/zahlungen/zahlungsauftraginstitution/**',
+        () => {
+            ZahlungslaufPO.getElementWithContent(
+                'mat-cell',
+                zahlungBeschrieb + ' ' + dateToday
+            ).click();
+        }
+    );
+
+    ZahlungslaufPO.getElementWithContent('mat-cell', institution);
+    cy.get('[data-test="zahlungErhalten"]', {timeout: 15000})
+        .eq(0)
+        .should('be.visible')
+        .click();
+
     ZahlungslaufPO.getElementWithContent('mat-cell', bestaetigungText);
 };
 

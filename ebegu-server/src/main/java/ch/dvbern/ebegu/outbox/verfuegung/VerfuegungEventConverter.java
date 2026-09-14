@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
@@ -359,6 +360,61 @@ public class VerfuegungEventConverter {
 				zeitabschnitt.getBetreuungspensumZeiteinheit()
 			)
 			.setElternbeitrag(zeitabschnitt.getElternbeitrag())
+			.setSozialhilfe(
+				hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme(zeitabschnitt)
+			)
 			.build();
+	}
+
+	/**
+	 * Es gibt zwei Möglichkeiten, wie Sozialhilfe erkannt wird:
+	 * <ol>
+	 * <li>Für Gemeinden ohne Sozialhilfe-Zeiträume ist der Flag direkt gesetzt.</li>
+	 * <li>Für Gemeinden mit Sozialhilfe-Zeiträumen ist der Flag nicht gesetzt,
+	 * das massgebende Einkommen vor Abzug beträgt jedoch 0.00 Franken.</li>
+	 * </ol>
+	 *
+	 * Unterstützte Fälle:
+	 * <ul>
+	 * <li>Flag ist {@code true} → Sozialhilfe</li>
+	 * <li>Flag ist {@code false}, Einkommen vor Abzug > 0 → keine Sozialhilfe</li>
+	 * <li>Flag ist {@code false}, Einkommen vor Abzug = 0, Kategorie max Einkommen ist {@code true} → keine
+	 * Sozialhilfe</li>
+	 * <li>Flag ist {@code false}, Einkommen vor Abzug = 0 → Sozialhilfe,
+	 * falls Sozialhilfe-Zeiträume vorhanden sind</li>
+	 * </ul>
+	 */
+	protected boolean hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
+		BGCalculationResult result = zeitabschnitt.getBgCalculationResultAsiv();
+
+		if (result.isSozialhilfeAkzeptiert()) {
+			return true;
+		}
+
+		if (result.getMassgebendesEinkommenVorAbzugFamgr().signum() > 0
+			|| result.isKategorieMaxEinkommen()) {
+			return false;
+		}
+
+		return hasSozialhilfeZeitraum(zeitabschnitt);
+	}
+
+	private boolean hasSozialhilfeZeitraum(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
+		Verfuegung verfuegung = zeitabschnitt.getVerfuegung();
+
+		if (verfuegung.getBetreuung() != null) {
+			return !verfuegung.getBetreuung()
+				.getKind()
+				.getGesuch()
+				.getFamiliensituationContainer()
+				.getSozialhilfeZeitraumContainers()
+				.isEmpty();
+		}
+
+		return false;
 	}
 }

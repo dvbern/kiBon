@@ -87,7 +87,6 @@ import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.enums.Taetigkeit;
 import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.enums.WizardStepStatus;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungAngabenStatus;
 import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
@@ -943,7 +942,6 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 
 		InstitutionStammdatenBuilder institutionStammdatenBuilder =
 			testfallDependenciesVisitor.process(mandant);
-		;
 
 		if (WAELTI_DAGMAR.equals(fallid)) {
 			return createAndSaveGesuch(
@@ -1440,7 +1438,6 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 	) {
 		InstitutionStammdatenBuilder stammdatenBuilder =
 			testfallDependenciesVisitor.process(mandant);
-		;
 		return stammdatenBuilder.buildStammdaten();
 	}
 
@@ -2144,7 +2141,6 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		return famsit;
 	}
 
-	@Nonnull
 	private boolean isLastenausgleichEnabled() {
 		return Boolean.TRUE.equals(
 			this.applicationPropertyService
@@ -2155,7 +2151,6 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		);
 	}
 
-	@Nonnull
 	private boolean isTagesschuleEnabled() {
 		return Boolean.TRUE.equals(
 			this.applicationPropertyService
@@ -2166,7 +2161,6 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		);
 	}
 
-	@Nonnull
 	private boolean isLATSEnabled() {
 		return Boolean.TRUE.equals(
 			this.applicationPropertyService
@@ -2209,12 +2203,12 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		}
 		Gesuchsperiode gesuchsperiode = gesuchsperiodeService
 			.findNewestGesuchsperiode(mandant)
-			.orElseThrow(() -> new IllegalArgumentException());
+			.orElseThrow(IllegalArgumentException::new);
 		GemeindeStammdaten gemeindeStammdaten = gemeindeService
 			.getGemeindeStammdatenByGemeindeId(gemeinde.getId())
-			.orElseThrow(() -> new IllegalArgumentException());
+			.orElseThrow(IllegalArgumentException::new);
 		Benutzer besitzer = benutzerService.getCurrentBenutzer()
-			.orElseThrow(() -> new IllegalStateException());
+			.orElseThrow(IllegalStateException::new);
 		InstitutionStammdatenBuilder institutionStammdatenBuilder =
 			testfallDependenciesVisitor.process(mandant);
 		final Gesuch gesuch = createAndSaveGesuch(
@@ -2251,7 +2245,6 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 		mitteilung.setDossier(gesuch.getDossier());
 
 		Einladung einladung = Einladung.forMitarbeiter(besitzer);
-		firstBetreuung.setBetreuungsstatus(Betreuungsstatus.BESTAETIGT);
 
 		GemeindeAngebotTyp angebotTyp = GemeindeAngebotTyp.TAGESSCHULE;
 
@@ -2539,11 +2532,11 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 	) {
 		Gesuchsperiode gesuchsperiode = gesuchsperiodeService
 			.findGesuchsperiode(gesuchsperiodeId)
-			.orElseThrow(() -> new IllegalArgumentException());
+			.orElseThrow(IllegalArgumentException::new);
 		if (gemeindeId != null) {
 			Gemeinde gemeinde =
 				gemeindeService.findGemeinde(gemeindeId)
-					.orElseThrow(() -> new IllegalArgumentException());
+					.orElseThrow(IllegalArgumentException::new);
 			Einstellung normlohnkosten = einstellungService.findEinstellung(
 				EinstellungKey.LATS_LOHNNORMKOSTEN,
 				gemeinde,
@@ -2605,10 +2598,10 @@ public class TestfaelleServiceBean extends AbstractBaseService implements
 	) {
 		Gesuchsperiode gesuchsperiode = gesuchsperiodeService
 			.findGesuchsperiode(gesuchsperiodeId)
-			.orElseThrow(() -> new IllegalArgumentException());
+			.orElseThrow(IllegalArgumentException::new);
 		Gemeinde gemeinde =
 			gemeindeService.findGemeinde(gemeindeId)
-				.orElseThrow(() -> new IllegalArgumentException());
+				.orElseThrow(IllegalArgumentException::new);
 		FerienbetreuungAngabenContainer testantrag = (new Testantrag_FB(
 			gesuchsperiode,
 			gemeinde,

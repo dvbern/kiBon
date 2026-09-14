@@ -39,13 +39,13 @@ describe('Kibon - generate Statistiken', () => {
         StatistikPO.getGesuchsperiode().click();
         cy.get('mat-option').contains('2024/25').click();
 
-        cy.waitForRequest('GET', '**/admin/batch/userjobs/**', () => {
+        cy.waitForRequest('GET', '**/admin/batch/statistik/userjobs/**', () => {
             StatistikPO.getGenerierenButton().click();
         });
 
         cy.waitForRequest(
             'GET',
-            '**/admin/batch/userjobs/**',
+            '**/admin/batch/statistik/userjobs/**',
             () => {
                 StatistikPO.getStatistikJobStatus(0).should(
                     'include.text',

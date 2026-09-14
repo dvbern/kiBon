@@ -22,16 +22,20 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.FamiliensituationContainer;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.KindContainer;
+import ch.dvbern.ebegu.entities.SozialhilfeZeitraumContainer;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.outbox.ExportedEvent;
@@ -287,6 +291,120 @@ public class VerfuegungEventConverterTest {
 		);
 	}
 
+	@Test
+	public void hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme_shouldBeTrue_whenFlagIsTrue() {
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt =
+			new VerfuegungZeitabschnitt();
+		BGCalculationResult bgCalculationResult = new BGCalculationResult();
+		bgCalculationResult.setSozialhilfeAkzeptiert(true);
+		verfuegungZeitabschnitt.setBgCalculationResultAsiv(bgCalculationResult);
+		assertThat(
+			converter.hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme(
+				verfuegungZeitabschnitt
+			),
+			is(true)
+		);
+	}
+
+	@Test
+	public void hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme_shouldBeFalse_whenMassgegebenesIsBiggerThanZero() {
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt =
+			new VerfuegungZeitabschnitt();
+		BGCalculationResult bgCalculationResult = new BGCalculationResult();
+		bgCalculationResult.setSozialhilfeAkzeptiert(false);
+		bgCalculationResult.setMassgebendesEinkommenVorAbzugFamgr(
+			BigDecimal.ONE
+		);
+		verfuegungZeitabschnitt.setBgCalculationResultAsiv(bgCalculationResult);
+		assertThat(
+			converter.hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme(
+				verfuegungZeitabschnitt
+			),
+			is(false)
+		);
+	}
+
+	@Test
+	public void hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme_shouldBeFalse_whenKategoryMaxEinkommIsTrue() {
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt =
+			new VerfuegungZeitabschnitt();
+		BGCalculationResult bgCalculationResult = new BGCalculationResult();
+		bgCalculationResult.setSozialhilfeAkzeptiert(false);
+		bgCalculationResult.setMassgebendesEinkommenVorAbzugFamgr(
+			BigDecimal.ZERO
+		);
+		bgCalculationResult.setKategorieMaxEinkommen(true);
+		verfuegungZeitabschnitt.setBgCalculationResultAsiv(bgCalculationResult);
+		assertThat(
+			converter.hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme(
+				verfuegungZeitabschnitt
+			),
+			is(false)
+		);
+	}
+
+	@Test
+	public void hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme_shouldBeFalse_whenNoZeitraeume() {
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt =
+			new VerfuegungZeitabschnitt();
+		BGCalculationResult bgCalculationResult = new BGCalculationResult();
+		bgCalculationResult.setSozialhilfeAkzeptiert(false);
+		bgCalculationResult.setMassgebendesEinkommenVorAbzugFamgr(
+			BigDecimal.ZERO
+		);
+		bgCalculationResult.setKategorieMaxEinkommen(false);
+		verfuegungZeitabschnitt.setBgCalculationResultAsiv(bgCalculationResult);
+
+		Betreuung betreuung = new Betreuung();
+		betreuung.setKind(new KindContainer());
+		Gesuch gesuch = new Gesuch();
+		gesuch.setFamiliensituationContainer(new FamiliensituationContainer());
+		betreuung.getKind().setGesuch(gesuch);
+		verfuegungZeitabschnitt.setVerfuegung(new Verfuegung());
+		verfuegungZeitabschnitt.getVerfuegung().setBetreuung(betreuung);
+
+		assertThat(
+			converter.hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme(
+				verfuegungZeitabschnitt
+			),
+			is(false)
+		);
+	}
+
+	@Test
+	public void hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme_shouldBeTrue_whenZeitraeumeVorhanden() {
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt =
+			new VerfuegungZeitabschnitt();
+		BGCalculationResult bgCalculationResult = new BGCalculationResult();
+		bgCalculationResult.setSozialhilfeAkzeptiert(false);
+		bgCalculationResult.setMassgebendesEinkommenVorAbzugFamgr(
+			BigDecimal.ZERO
+		);
+		bgCalculationResult.setKategorieMaxEinkommen(false);
+		verfuegungZeitabschnitt.setBgCalculationResultAsiv(bgCalculationResult);
+
+		Betreuung betreuung = new Betreuung();
+		betreuung.setKind(new KindContainer());
+		Gesuch gesuch = new Gesuch();
+		SozialhilfeZeitraumContainer sozialhilfeZeitraumContainer =
+			new SozialhilfeZeitraumContainer();
+		gesuch.setFamiliensituationContainer(new FamiliensituationContainer());
+		gesuch.getFamiliensituationContainer()
+			.setSozialhilfeZeitraumContainers(
+				Set.of(sozialhilfeZeitraumContainer)
+			);
+		betreuung.getKind().setGesuch(gesuch);
+		verfuegungZeitabschnitt.setVerfuegung(new Verfuegung());
+		verfuegungZeitabschnitt.getVerfuegung().setBetreuung(betreuung);
+
+		assertThat(
+			converter.hasSozialhilfeOrSozialhilfeDurchZeitraumAusnahme(
+				verfuegungZeitabschnitt
+			),
+			is(true)
+		);
+	}
+
 	@Nonnull
 	private IsPojo<ZeitabschnittDTO> defaultZeitAbschnitt() {
 		return pojo(ZeitabschnittDTO.class)
@@ -327,7 +445,8 @@ public class VerfuegungEventConverterTest {
 				comparesEqualTo(BigDecimal.ZERO)
 			)
 			.where(ZeitabschnittDTO::getZeiteinheit, is(Zeiteinheit.DAYS))
-			.where(ZeitabschnittDTO::getRegelwerk, is(Regelwerk.ASIV));
+			.where(ZeitabschnittDTO::getRegelwerk, is(Regelwerk.ASIV))
+			.where(ZeitabschnittDTO::getSozialhilfe, is(false));
 	}
 
 	@Nonnull

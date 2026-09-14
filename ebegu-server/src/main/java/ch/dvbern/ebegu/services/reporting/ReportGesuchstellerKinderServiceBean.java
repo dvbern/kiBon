@@ -89,7 +89,6 @@ import ch.dvbern.ebegu.enums.reporting.ReportVorlage;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
 import ch.dvbern.ebegu.persistence.Persistence;
-import ch.dvbern.ebegu.reporting.ReportService;
 import ch.dvbern.ebegu.reporting.gesuchstellerKinderBetreuung.GesuchstellerKinderBetreuungDataRow;
 import ch.dvbern.ebegu.reporting.gesuchstellerKinderBetreuung.GesuchstellerKinderBetreuungExcelConverter;
 import ch.dvbern.ebegu.services.BenutzerService;
@@ -141,7 +140,6 @@ public class ReportGesuchstellerKinderServiceBean extends
 	private ExcelFileSaverService fileSaverService;
 	private GesuchsperiodeService gesuchsperiodeService;
 	private EinstellungService einstellungService;
-	private ReportService reportService;
 
 	@Inject
 	public ReportGesuchstellerKinderServiceBean(
@@ -152,8 +150,7 @@ public class ReportGesuchstellerKinderServiceBean extends
 		Persistence persistence,
 		ExcelFileSaverService fileSaverService,
 		GesuchsperiodeService gesuchsperiodeService,
-		EinstellungService einstellungService,
-		ReportService reportService
+		EinstellungService einstellungService
 	) {
 		this.benutzerService = benutzerService;
 		this.gesuchstellerKinderBetreuungExcelConverter =
@@ -164,7 +161,6 @@ public class ReportGesuchstellerKinderServiceBean extends
 		this.fileSaverService = fileSaverService;
 		this.gesuchsperiodeService = gesuchsperiodeService;
 		this.einstellungService = einstellungService;
-		this.reportService = reportService;
 	}
 
 	@Nonnull
@@ -1128,11 +1124,8 @@ public class ReportGesuchstellerKinderServiceBean extends
 				);
 			row.setFamiliensituation(familiensituation.getFamilienstatus());
 			row.setSozialhilfeBezueger(
-				reportService.isSozialhilfeBezueger(
-					zeitabschnitt,
-					familiensituationContainer,
-					familiensituation
-				)
+				zeitabschnitt.getRelevantBgCalculationResult()
+					.isSozialhilfeAkzeptiert()
 			);
 			// Auszahlungsdaten
 			addAuszahlungsdaten(row, familiensituation);
