@@ -16,7 +16,7 @@
  */
 
 import {IHttpPromise, IHttpService, ILogService, IPromise} from 'angular';
-import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
+import {GlobalCacheService} from '../../../legacy-gesuch/service/globalCacheService';
 import {InstitutionNameStammdatenIdDto} from '../../../models/dto/InstitutionNameStammdatenIdDto.interface';
 import {AdminModelEinstellungTagesschuleHasAnmeldung} from '../../../models/entity/institution-tagesschule-einstellungen/admin-model-einstellung-tagesschule-has-anmeldung';
 import {TSModulTagesschuleGroupHasAnmeldung} from '../../../models/entity/institution-tagesschule-einstellungen/TSModulTagesschuleGroupHasAnmeldung';

@@ -30,7 +30,7 @@ import {UIRouterGlobals} from '@uirouter/core';
 import {combineLatest, firstValueFrom, Observable, Subject} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSAdresse} from '../../../../models/entity/TSAdresse';
 import {TSFerienbetreuungFormularStatus} from '../../../../models/enums/TSFerienbetreuungFormularStatus';
 import {TSFerienbetreuungAngaben} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngaben';

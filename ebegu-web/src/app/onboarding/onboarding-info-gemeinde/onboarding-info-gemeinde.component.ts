@@ -26,7 +26,7 @@ import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSBfsGemeinde} from '../../../models/TSBfsGemeinde';
 import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../utils/EbeguUtil';

@@ -15,7 +15,7 @@
 
 import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import angular from 'angular';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';

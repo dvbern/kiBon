@@ -41,7 +41,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {StateService, UIRouterModule} from '@uirouter/angular';
 import {BehaviorSubject, of} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
 import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
 import {TSRole} from '../../../models/enums/TSRole';

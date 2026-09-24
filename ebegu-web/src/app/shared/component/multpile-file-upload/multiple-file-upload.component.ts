@@ -26,7 +26,7 @@ import {
     inject
 } from '@angular/core';
 import {Moment} from 'moment';
-import {DokumenteUtil} from '../../../../gesuch/component/DokumenteView/DokumenteUtil';
+import {DokumenteUtil} from '../../../../legacy-gesuch/component/DokumenteView/DokumenteUtil';
 import {
     isOfficeFileEnding,
     TSDokumentUploadTyp

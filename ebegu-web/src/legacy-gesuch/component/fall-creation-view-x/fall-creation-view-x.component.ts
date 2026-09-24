@@ -23,7 +23,7 @@ import {
     OnInit
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MutationDialogComponent} from '@gesuch/mutation/dialog';
+import {MutationDialogComponent} from '@legacy-gesuch/mutation/dialog';
 import {LogFactory} from '@utils/log';
 import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';

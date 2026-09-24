@@ -32,6 +32,7 @@ import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.gemeindeantrag.GemeindeAntrag;
 import ch.dvbern.ebegu.entities.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainer;
 import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlen;
@@ -131,7 +132,8 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements
 		@Nullable String status,
 		@Nullable String timestampMutiert,
 		@Nullable String einreichedatum,
-		@Nullable String usernameVerantwortlicher
+		@Nullable String usernameVerantwortlicher,
+		@Nonnull Mandant mandant
 	) {
 
 		Benutzer verantwortlicher = getVerantwortlicherBenutzerIfPresent(
@@ -169,7 +171,8 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements
 					gemeinde,
 					periode,
 					status,
-					timestampMutiert
+					timestampMutiert,
+					mandant
 				);
 			}
 			default:
@@ -186,7 +189,8 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements
 			status,
 			timestampMutiert,
 			einreichedatum,
-			verantwortlicher
+			verantwortlicher,
+			mandant
 		);
 
 	}
@@ -219,7 +223,8 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements
 		@Nullable String status,
 		@Nullable String timestampMutiert,
 		@Nullable String firstEinreichedatum,
-		@Nullable Benutzer verantworlicher
+		@Nullable Benutzer verantworlicher,
+		@Nonnull Mandant mandant
 	) {
 
 		List<GemeindeAntrag> antraege = new ArrayList<>();
@@ -253,7 +258,8 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements
 					gemeindeId,
 					periodeId,
 					status,
-					timestampMutiert
+					timestampMutiert,
+					mandant
 				);
 			antraege.addAll(gemeindeKennzahlenAntraege);
 		}

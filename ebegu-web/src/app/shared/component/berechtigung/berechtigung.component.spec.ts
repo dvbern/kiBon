@@ -20,7 +20,7 @@ import {NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {of} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
 import {TSRole} from '../../../../models/enums/TSRole';
 import {TSBerechtigung} from '../../../../models/TSBerechtigung';

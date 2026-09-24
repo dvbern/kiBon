@@ -7,7 +7,7 @@ import {
 import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../app/shared/shared.module';
 import {MatDialog} from '@angular/material/dialog';
-import {DokumenteUebernehmenSelectionComponent} from '@gesuch/dokumente';
+import {DokumenteUebernehmenSelectionComponent} from '../dokumente-uebernehmen-selection/dokumente-uebernehmen-selection.component';
 
 @Component({
     selector: 'lib-gesuch-open-dokumente-uebernehmen-button',

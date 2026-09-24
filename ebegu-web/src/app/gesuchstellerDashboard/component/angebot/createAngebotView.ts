@@ -18,7 +18,7 @@ import {IComponentOptions, IController} from 'angular';
 import moment from 'moment';
 import {CONSTANTS} from '@models/constants';
 import {BetreuungRS} from '@hybrid/gesuch/betreuung';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
 import {TSAnmeldungDTO} from '../../../../models/dto/TSAnmeldungDTO';
 import {TSInstitutionStammdaten} from '../../../../models/entity/TSInstitutionStammdaten';
 import {TSBetreuungsstatus} from '../../../../models/enums/betreuung/TSBetreuungsstatus';

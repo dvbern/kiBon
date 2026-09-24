@@ -14,7 +14,7 @@
  */
 
 import angular from 'angular';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {TSKind} from '../../../../models/entity/TSKind';
 import {TSDokumentGrundPersonType} from '../../../../models/enums/TSDokumentGrundPersonType';

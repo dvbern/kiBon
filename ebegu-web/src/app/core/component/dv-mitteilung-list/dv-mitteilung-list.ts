@@ -18,11 +18,11 @@
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, IOnInit, IPromise} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {RemoveDialogController} from '../../../../gesuch/dialog/RemoveDialogController';
-import {DossierRS} from '../../../../gesuch/service/dossierRS.rest';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
-import {GesuchRS} from '../../../../gesuch/service/gesuchRS.rest';
+import {RemoveDialogController} from '../../../../legacy-gesuch/dialog/RemoveDialogController';
+import {DossierRS} from '../../../../legacy-gesuch/service/dossierRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
+import {GesuchRS} from '../../../../legacy-gesuch/service/gesuchRS.rest';
 import {TSDemoFeature} from '../../../../models/enums/TSDemoFeature';
 import {TSMitteilungEvent} from '../../../../models/enums/TSMitteilungEvent';
 import {TSMitteilungStatus} from '../../../../models/enums/TSMitteilungStatus';
@@ -50,7 +50,7 @@ import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
 import IWindowService = angular.IWindowService;
 
-const removeDialogTemplate = require('../../../../gesuch/dialog/removeDialogTemplate.html');
+const removeDialogTemplate = require('../../../../legacy-gesuch/dialog/removeDialogTemplate.html');
 const LOG = LogFactory.createLog('DVMitteilungListConfig');
 
 export class DVMitteilungListConfig implements IComponentOptions {

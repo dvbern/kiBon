@@ -17,7 +17,7 @@ import {combineLatest} from 'rxjs';
 import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {ErrorServiceX} from '../../../app/core/errors/service/ErrorServiceX';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {SearchRS} from '../../../gesuch/service/searchRS.rest';
+import {SearchRS} from '../../../legacy-gesuch/service/searchRS.rest';
 import {TSApplicationProperty} from '../../../models/einstellung/TSApplicationProperty';
 import {TSApplicationPropertyKey} from '../../../models/einstellung/TSApplicationPropertyKey';
 import {AbstractAdminViewX} from '../../abstractAdminViewX';

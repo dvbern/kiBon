@@ -24,8 +24,8 @@ import {
 } from '@angular/core';
 import {StateService} from '@uirouter/core';
 import {BehaviorSubject, Subject, Subscription} from 'rxjs';
-import {GesuchModelManager} from '../../../../../gesuch/service/gesuchModelManager';
-import {SearchRS} from '../../../../../gesuch/service/searchRS.rest';
+import {GesuchModelManager} from '../../../../../legacy-gesuch/service/gesuchModelManager';
+import {SearchRS} from '../../../../../legacy-gesuch/service/searchRS.rest';
 import {TSAntragDTO} from '../../../../../models/TSAntragDTO';
 import {LogFactory} from '../../../../../utils/log-factory/LogFactory';
 import {DVAntragListFilter} from '../../../../shared/interfaces/DVAntragListFilter';

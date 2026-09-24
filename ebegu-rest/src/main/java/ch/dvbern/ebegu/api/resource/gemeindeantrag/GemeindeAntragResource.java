@@ -48,6 +48,7 @@ import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxPaginationDTO;
 import ch.dvbern.ebegu.api.dtos.gemeindeantrag.JaxGemeindeAntrag;
 import ch.dvbern.ebegu.api.resource.util.gemeindeantrag.GemeindeAntragUtil;
+import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
@@ -97,6 +98,8 @@ public class GemeindeAntragResource {
 	private JaxGemeindeAntragConverter converter;
 	@Inject
 	private EbeguConfiguration configuration;
+	@Inject
+	private PrincipalBean principalBean;
 
 	@Operation(
 		summary = "Erstellt fuer jede Gemeinde in der übergebenen Liste einen Gemeindeantrag des gewuenschten Typs fuer die gewuenschte "
@@ -331,7 +334,8 @@ public class GemeindeAntragResource {
 					status,
 					timestampMutiert,
 					einreichedatum,
-					usernameVerantowrtlicher
+					usernameVerantowrtlicher,
+					principalBean.getMandant()
 				);
 
 		/*

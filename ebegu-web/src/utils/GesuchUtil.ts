@@ -16,7 +16,7 @@
  */
 
 import {IPromise} from 'angular';
-import {GesuchModelManager} from '../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../legacy-gesuch/service/gesuchModelManager';
 import {TSGesuch} from '../models/TSGesuch';
 
 /**

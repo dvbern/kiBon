@@ -25,7 +25,7 @@ import {
 import {StateService, UIRouterGlobals} from '@uirouter/core';
 import moment from 'moment';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
-import {GesuchRS} from '../../gesuch/service/gesuchRS.rest';
+import {GesuchRS} from '../../legacy-gesuch/service/gesuchRS.rest';
 import {TSAntragStatusHistory} from '../../models/TSAntragStatusHistory';
 import {TSDossier} from '../../models/TSDossier';
 import {TSGesuch} from '../../models/TSGesuch';

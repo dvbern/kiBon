@@ -20,7 +20,7 @@ import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {IController} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {DossierRS} from '../../../../gesuch/service/dossierRS.rest';
+import {DossierRS} from '../../../../legacy-gesuch/service/dossierRS.rest';
 import {TSBetreuungsstatus} from '../../../../models/enums/betreuung/TSBetreuungsstatus';
 import {TSAntragStatusHistory} from '../../../../models/TSAntragStatusHistory';
 import {TSBetreuung} from '../../../../models/TSBetreuung';

@@ -14,7 +14,7 @@
  */
 
 import {IFormController, ILogService, IPromise} from 'angular';
-import {RemoveDialogParams} from '../../../../gesuch/dialog/RemoveDialogController';
+import {RemoveDialogParams} from '../../../../legacy-gesuch/dialog/RemoveDialogController';
 import IDialogOptions = angular.material.IDialogOptions;
 import IDialogService = angular.material.IDialogService;
 

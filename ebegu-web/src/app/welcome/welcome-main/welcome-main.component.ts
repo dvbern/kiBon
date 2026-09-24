@@ -20,7 +20,7 @@ import {StateService} from '@uirouter/core';
 import {filter, map} from 'rxjs/operators';
 import {MandantService} from '@utils/mandant';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {ITourParams} from '../../../gesuch/gesuch.route';
+import {ITourParams} from '../../../legacy-gesuch/gesuch.route';
 import {MandantLogoNameVisitor, MANDANTS} from '@models/mandant';
 import {
     navigateToStartPageForRole,

@@ -15,7 +15,7 @@
 
 import {IComponentOptions, IFormController} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
 import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSAdresseContainer} from '../../../../models/TSAdresseContainer';

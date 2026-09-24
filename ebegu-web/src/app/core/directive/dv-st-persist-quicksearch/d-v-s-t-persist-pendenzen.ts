@@ -21,7 +21,7 @@ import {
     IScope,
     extend
 } from 'angular';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
 import {DVQuicksearchListController} from '../../../quicksearch/component/dv-quicksearch-list/dv-quicksearch-list';
 import {LogFactory} from '@utils/log';
 import {BenutzerRSX} from '../../service/benutzerRSX.rest';

@@ -33,7 +33,7 @@ import moment from 'moment';
 import {from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';

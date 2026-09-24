@@ -17,8 +17,8 @@ import {StateService, UIRouterGlobals} from '@uirouter/core';
 import {IComponentOptions, IController, IIntervalService} from 'angular';
 import moment from 'moment';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {OkDialogController} from '../../../../gesuch/dialog/OkDialogController';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {OkDialogController} from '../../../../legacy-gesuch/dialog/OkDialogController';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
 import {TSRole} from '../../../../models/enums/TSRole';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
@@ -26,7 +26,7 @@ import {TSHTTPEvent} from '../../events/TSHTTPEvent';
 import IPromise = angular.IPromise;
 import IRootScopeService = angular.IRootScopeService;
 
-const dialogTemplate = require('../../../../gesuch/dialog/okDialogTemplate.html');
+const dialogTemplate = require('../../../../legacy-gesuch/dialog/okDialogTemplate.html');
 
 export class DvCountdownComponentConfig implements IComponentOptions {
     public transclude = false;

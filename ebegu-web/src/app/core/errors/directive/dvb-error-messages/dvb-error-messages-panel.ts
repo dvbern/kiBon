@@ -16,9 +16,9 @@
 import IComponentOptions = angular.IComponentOptions;
 import IScope = angular.IScope;
 import {IController, ILogService, IOnInit, element} from 'angular';
-import {RemoveDialogController} from '../../../../../gesuch/dialog/RemoveDialogController';
-import {GesuchRS} from '../../../../../gesuch/service/gesuchRS.rest';
-import {WizardStepManager} from '../../../../../gesuch/service/wizardStepManager';
+import {RemoveDialogController} from '../../../../../legacy-gesuch/dialog/RemoveDialogController';
+import {GesuchRS} from '../../../../../legacy-gesuch/service/gesuchRS.rest';
+import {WizardStepManager} from '../../../../../legacy-gesuch/service/wizardStepManager';
 import {TSErrorAction} from '../../../../../models/enums/TSErrorAction';
 import {TSMessageEvent} from '../../../../../models/enums/TSErrorEvent';
 import {TSErrorLevel} from '../../../../../models/enums/TSErrorLevel';
@@ -30,7 +30,7 @@ import {BroadcastService} from '../../../service/broadcast.service';
 import {ErrorService} from '../../service/ErrorService';
 import {ErrorServiceX} from '../../service/ErrorServiceX';
 
-const removeDialogTemplate = require('../../../../../gesuch/dialog/removeDialogTemplate.html');
+const removeDialogTemplate = require('../../../../../legacy-gesuch/dialog/removeDialogTemplate.html');
 
 export class DvErrorMessagesPanelComponentConfig implements IComponentOptions {
     public scope = {};

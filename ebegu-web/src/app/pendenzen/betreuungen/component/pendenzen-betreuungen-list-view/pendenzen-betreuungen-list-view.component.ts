@@ -20,7 +20,7 @@ import {LogFactory} from '@utils/log';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {InstitutionRS} from '../../../../core/service/institutionRS.rest';
-import {GemeindeRS} from '../../../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../../../legacy-gesuch/service/gemeindeRS.rest';
 import {GesuchsperiodeRS} from '../../../../core/service/gesuchsperiodeRS.rest';
 import {ApplicationPropertyRsService} from '../../../../../utils/application-property-rs';
 import {TSGemeinde} from '../../../../../models/entity/TSGemeinde';

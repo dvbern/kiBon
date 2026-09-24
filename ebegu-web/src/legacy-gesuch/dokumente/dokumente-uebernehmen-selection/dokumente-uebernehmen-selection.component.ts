@@ -7,6 +7,7 @@ import {
 import {rxResource} from '@angular/core/rxjs-interop';
 import {CommonModule} from '@angular/common';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {GesuchPopupHeadingComponent} from '../../../gesuch/shared/heading';
 import {TSDokumentGrundTyp} from '../../../models/enums/TSDokumentGrundTyp';
 import {DokumenteRS} from '../../service/dokumenteRS.rest';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
@@ -17,7 +18,6 @@ import {
     GrundWithDokumentDecision
 } from './types';
 import {TSDokumentGrund} from '../../../models/TSDokumentGrund';
-import {GesuchPopupHeadingComponent} from '@gesuch/heading';
 
 @Component({
     selector: 'lib-gesuch-dokumente-uebernehmen-selection',

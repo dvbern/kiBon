@@ -18,7 +18,7 @@
 import {StateService} from '@uirouter/core';
 import {IComponentOptions} from 'angular';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GesuchModelManager} from '../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../legacy-gesuch/service/gesuchModelManager';
 import {
     isAnyStatusOfVerfuegt,
     TSAntragStatus

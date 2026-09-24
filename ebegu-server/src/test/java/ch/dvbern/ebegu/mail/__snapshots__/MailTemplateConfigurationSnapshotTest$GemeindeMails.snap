@@ -34,6 +34,49 @@ Content-Type: text/html;charset=utf-8
 ]
 
 
+InfoGemeindeAngebotAktiviert[BERN_DEUTSCHFRANZOESISCH]=[
+From: kibon@dvbern.ch
+To: empfaenger@dvbern.ch
+Subject: kiBon  – Angebot Tagesschule wurde aktiviert / L'offre Ecole à journée continue a été activée 
+Content-Type: text/html;charset=utf-8
+
+<html>
+<head>
+<style type="text/css">
+        body {
+            font-family: "Open Sans", Arial, Helvetica, sans-serif;
+        }
+      .kursInfoHeader {background-color: #bce1ff; font-weight: bold;}
+      .signature { font-size: 90%;}
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>kiBon  – Angebot Tagesschule wurde aktiviert</title>
+
+</head>
+
+<body>
+
+<div>
+	<p>Das Angebot Tagesschule wurde für die Gemeinde London aktiviert.</p>
+	<p>Vervollständigen Sie das Profil für Tagesschule <a href="https://be.kibon.example.com/gemeinde/edit/<ID-1>/0">hier</a>.</p>
+</div>
+
+<hr>
+
+<div>
+	<p>L'offre Ecole à journée continue a été activée pour la commune London.</p>
+	<p>Veuillez compléter le profile pour Ecole à journée continue <a href="https://be.kibon.example.com/gemeinde/edit/<ID-1>/0">ici</a>.</p>
+</div>
+
+</body>
+
+</html>
+
+]
+
+
 InfoGemeindeAngebotAktiviert[BERN_DEUTSCH]=[
 From: kibon@dvbern.ch
 To: empfaenger@dvbern.ch
@@ -97,6 +140,49 @@ Content-Type: text/html;charset=utf-8
 <div>
 	<p>L'offre Ecole à journée continue a été activée pour la commune London.</p>
 	<p>Veuillez compléter le profile pour Ecole à journée continue <a href="https://be.kibon.example.com/gemeinde/edit/<ID-1>/0">ici</a>.</p>
+</div>
+
+</body>
+
+</html>
+
+]
+
+
+InfoGemeindeAngebotAktiviert[DVB_DEUTSCHFRANZOESISCH]=[
+From: kibon@dvbern.ch
+To: empfaenger@dvbern.ch
+Subject: kiBon  – Angebot Tagesschule wurde aktiviert / L'offre Ecole à journée continue a été activée 
+Content-Type: text/html;charset=utf-8
+
+<html>
+<head>
+<style type="text/css">
+        body {
+            font-family: "Open Sans", Arial, Helvetica, sans-serif;
+        }
+      .kursInfoHeader {background-color: #bce1ff; font-weight: bold;}
+      .signature { font-size: 90%;}
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>kiBon  – Angebot Tagesschule wurde aktiviert</title>
+
+</head>
+
+<body>
+
+<div>
+	<p>Das Angebot Tagesschule wurde für die Gemeinde London aktiviert.</p>
+	<p>Vervollständigen Sie das Profil für Tagesschule <a href="https://dv.kibon.example.com/gemeinde/edit/<ID-1>/0">hier</a>.</p>
+</div>
+
+<hr>
+
+<div>
+	<p>L'offre Ecole à journée continue a été activée pour la commune London.</p>
+	<p>Veuillez compléter le profile pour Ecole à journée continue <a href="https://dv.kibon.example.com/gemeinde/edit/<ID-1>/0">ici</a>.</p>
 </div>
 
 </body>
@@ -705,6 +791,69 @@ Content-Type: text/html;charset=utf-8
 ]
 
 
+InfoGemeindeLastenausgleichDurch[BERN_DEUTSCHFRANZOESISCH]=[
+From: kibon@dvbern.ch
+To: empfaenger@dvbern.ch
+Subject: kiBon  - Lastenausgleich verbucht - compensation des charges comptabilisée
+Content-Type: text/html;charset=utf-8
+
+<html>
+<head>
+    <style type="text/css">
+        body {
+            font-family: "Open Sans", Arial, Helvetica, sans-serif;
+        }
+      .kursInfoHeader {background-color: #bce1ff; font-weight: bold;}
+      .signature { font-size: 90%;}
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>Lastenausgleich 2025 verbucht - compensation des charges pour l'année 2025 comptabilisée</title>
+
+</head>
+
+<body>
+
+<div>
+	<p>
+		Guten Tag
+	</p>
+	<p>
+		Der Lastenausgleich des Jahres 2025 wurde verbucht. Die Berechnungsresultate sind <a href="https://be.kibon.example.com/lastenausgleich">hier</a> ersichtlich
+	</p>
+	<p>
+		Freundliche Grüsse<br/>
+		Ihr Kanton Bern
+	</p>
+	<p>
+		Dies ist eine automatisch versendete E-Mail. Bitte antworten Sie nicht auf diese Nachricht.
+	</p>
+</div>
+
+<div>
+	<p>
+		Bonjour,
+	</p>
+	<p>
+		La compensation des charges pour l'année 2025 a été comptabilisée. Les résultats sont disponibles <a href="https://be.kibon.example.com/lastenausgleich">ici</a>
+	</p>
+	<p>
+		Nous vous présentons nos meilleures salutations.<br/>
+		Votre canton
+	</p>
+	<p>
+		Merci de ne pas répondre à ce message automatique.
+	</p>
+</div>
+
+</body>
+
+</html>
+
+]
+
+
 InfoGemeindeLastenausgleichDurch[BERN_DEUTSCH]=[
 From: kibon@dvbern.ch
 To: empfaenger@dvbern.ch
@@ -782,6 +931,69 @@ Content-Type: text/html;charset=utf-8
 	</p>
 	<p>
 		La compensation des charges pour l'année 2025 a été comptabilisée. Les résultats sont disponibles <a href="https://be.kibon.example.com/lastenausgleich">ici</a>
+	</p>
+	<p>
+		Nous vous présentons nos meilleures salutations.<br/>
+		Votre canton
+	</p>
+	<p>
+		Merci de ne pas répondre à ce message automatique.
+	</p>
+</div>
+
+</body>
+
+</html>
+
+]
+
+
+InfoGemeindeLastenausgleichDurch[DVB_DEUTSCHFRANZOESISCH]=[
+From: kibon@dvbern.ch
+To: empfaenger@dvbern.ch
+Subject: kiBon  - Lastenausgleich verbucht - compensation des charges comptabilisée
+Content-Type: text/html;charset=utf-8
+
+<html>
+<head>
+    <style type="text/css">
+        body {
+            font-family: "Open Sans", Arial, Helvetica, sans-serif;
+        }
+      .kursInfoHeader {background-color: #bce1ff; font-weight: bold;}
+      .signature { font-size: 90%;}
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>Lastenausgleich 2025 verbucht - compensation des charges pour l'année 2025 comptabilisée</title>
+
+</head>
+
+<body>
+
+<div>
+	<p>
+		Guten Tag
+	</p>
+	<p>
+		Der Lastenausgleich des Jahres 2025 wurde verbucht. Die Berechnungsresultate sind <a href="https://dv.kibon.example.com/lastenausgleich">hier</a> ersichtlich
+	</p>
+	<p>
+		Freundliche Grüsse<br/>
+		Ihr Kanton Bern
+	</p>
+	<p>
+		Dies ist eine automatisch versendete E-Mail. Bitte antworten Sie nicht auf diese Nachricht.
+	</p>
+</div>
+
+<div>
+	<p>
+		Bonjour,
+	</p>
+	<p>
+		La compensation des charges pour l'année 2025 a été comptabilisée. Les résultats sont disponibles <a href="https://dv.kibon.example.com/lastenausgleich">ici</a>
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>
@@ -1129,6 +1341,71 @@ Content-Type: text/html;charset=utf-8
 ]
 
 
+InfoGemeindeLastenausgleichZurueckAnGemeinde[BERN_DEUTSCHFRANZOESISCH]=[
+From: kibon@dvbern.ch
+To: empfaenger@dvbern.ch
+Subject: kiBon - Lastenausgleich Tagesschule - Compensation des charges pour les écoles à journée continue
+Content-Type: text/html;charset=utf-8
+
+<html>
+<head>
+    <style type="text/css">
+        body {
+            font-family: "Open Sans", Arial, Helvetica, sans-serif;
+        }
+      .kursInfoHeader {background-color: #bce1ff; font-weight: bold;}
+      .signature { font-size: 90%;}
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>kiBon - Lastenausgleich Tagesschule - Compensation des charges pour les écoles à journée continue</title>
+
+</head>
+
+<body>
+
+<div>
+	<p>
+		Guten Tag
+	</p>
+	<p>
+		Wir möchten Sie darüber informieren, dass der Kanton Ihr Formular zum Lastenausgleich Tagesschulen zur erneuten Bearbeitung zurückgegeben hat.
+		Sie können es <a href="https://be.kibon.example.com/lastenausgleich-ts/<ID-1>/angaben-gemeinde">hier</a> ansehen.
+	</p>
+	<p>
+		Freundliche Grüsse<br/>
+		kiBon-Team
+	</p>
+	<p>
+		Dies ist eine automatisch versendete E-Mail. Bitte antworten Sie nicht auf diese Nachricht.
+	</p>
+</div>
+
+<div>
+	<p>
+		Bonjour,
+	</p>
+	<p>
+		Nous vous informons que le canton vous a renvoyé votre formulaire pour la compensation des charges pour les écoles à journée continue pour le traiter à nouveau.
+		Vous pouvez le consulter <a href="https://be.kibon.example.com/lastenausgleich-ts/<ID-1>/angaben-gemeinde">ici</a>.
+	</p>
+	<p>
+		Nous vous présentons nos meilleures salutations.<br/>
+		kiBon-Team
+	</p>
+	<p>
+		Merci de ne pas répondre à ce message automatique.
+	</p>
+</div>
+
+</body>
+
+</html>
+
+]
+
+
 InfoGemeindeLastenausgleichZurueckAnGemeinde[BERN_DEUTSCH]=[
 From: kibon@dvbern.ch
 To: empfaenger@dvbern.ch
@@ -1208,6 +1485,71 @@ Content-Type: text/html;charset=utf-8
 	<p>
 		Nous vous informons que le canton vous a renvoyé votre formulaire pour la compensation des charges pour les écoles à journée continue pour le traiter à nouveau.
 		Vous pouvez le consulter <a href="https://be.kibon.example.com/lastenausgleich-ts/<ID-1>/angaben-gemeinde">ici</a>.
+	</p>
+	<p>
+		Nous vous présentons nos meilleures salutations.<br/>
+		kiBon-Team
+	</p>
+	<p>
+		Merci de ne pas répondre à ce message automatique.
+	</p>
+</div>
+
+</body>
+
+</html>
+
+]
+
+
+InfoGemeindeLastenausgleichZurueckAnGemeinde[DVB_DEUTSCHFRANZOESISCH]=[
+From: kibon@dvbern.ch
+To: empfaenger@dvbern.ch
+Subject: kiBon - Lastenausgleich Tagesschule - Compensation des charges pour les écoles à journée continue
+Content-Type: text/html;charset=utf-8
+
+<html>
+<head>
+    <style type="text/css">
+        body {
+            font-family: "Open Sans", Arial, Helvetica, sans-serif;
+        }
+      .kursInfoHeader {background-color: #bce1ff; font-weight: bold;}
+      .signature { font-size: 90%;}
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>kiBon - Lastenausgleich Tagesschule - Compensation des charges pour les écoles à journée continue</title>
+
+</head>
+
+<body>
+
+<div>
+	<p>
+		Guten Tag
+	</p>
+	<p>
+		Wir möchten Sie darüber informieren, dass der Kanton Ihr Formular zum Lastenausgleich Tagesschulen zur erneuten Bearbeitung zurückgegeben hat.
+		Sie können es <a href="https://dv.kibon.example.com/lastenausgleich-ts/<ID-1>/angaben-gemeinde">hier</a> ansehen.
+	</p>
+	<p>
+		Freundliche Grüsse<br/>
+		kiBon-Team
+	</p>
+	<p>
+		Dies ist eine automatisch versendete E-Mail. Bitte antworten Sie nicht auf diese Nachricht.
+	</p>
+</div>
+
+<div>
+	<p>
+		Bonjour,
+	</p>
+	<p>
+		Nous vous informons que le canton vous a renvoyé votre formulaire pour la compensation des charges pour les écoles à journée continue pour le traiter à nouveau.
+		Vous pouvez le consulter <a href="https://dv.kibon.example.com/lastenausgleich-ts/<ID-1>/angaben-gemeinde">ici</a>.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>

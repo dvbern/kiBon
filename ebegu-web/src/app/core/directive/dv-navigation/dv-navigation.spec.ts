@@ -21,12 +21,12 @@ import angular, {
     ITimeoutService
 } from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {FinanzielleSituationLuzernService} from '../../../../gesuch/component/finanzielleSituation/luzern/finanzielle-situation-luzern.service';
-import {FinanzielleSituationRS} from '../../../../gesuch/service/finanzielleSituationRS.rest';
-import {FinanzielleSituationSubStepManagerBernAsiv} from '../../../../gesuch/service/finanzielleSituationSubStepManagerBernAsiv';
-import {FinanzielleSituationSubStepManagerLuzern} from '../../../../gesuch/service/finanzielleSituationSubStepManagerLuzern';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
-import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
+import {FinanzielleSituationLuzernService} from '../../../../legacy-gesuch/component/finanzielleSituation/luzern/finanzielle-situation-luzern.service';
+import {FinanzielleSituationRS} from '../../../../legacy-gesuch/service/finanzielleSituationRS.rest';
+import {FinanzielleSituationSubStepManagerBernAsiv} from '../../../../legacy-gesuch/service/finanzielleSituationSubStepManagerBernAsiv';
+import {FinanzielleSituationSubStepManagerLuzern} from '../../../../legacy-gesuch/service/finanzielleSituationSubStepManagerLuzern';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
+import {WizardStepManager} from '../../../../legacy-gesuch/service/wizardStepManager';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
 import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';

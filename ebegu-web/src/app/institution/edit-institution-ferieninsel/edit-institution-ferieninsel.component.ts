@@ -25,7 +25,7 @@ import {
     inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSDateRange} from '../../../models/entity/TSDateRange';
 import {TSEinstellungenFerieninsel} from '../../../models/entity/TSEinstellungenFerieninsel';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';

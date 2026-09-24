@@ -54,17 +54,14 @@
             "@app/zahlung/zahlungslauf-erstellen": [
                 "src/app/zahlung/zahlungslauf-erstellen/index.ts"
             ],
-            "@gesuch/kind/kind-terminiert": [
-                "src/gesuch/kind/kind-gueltigkeit-terminiert/index.ts"
+            "@legacy-gesuch/kind/kind-terminiert": [
+                "src/legacy-gesuch/kind/kind-gueltigkeit-terminiert/index.ts"
             ],
-            "@gesuch/mutation/dialog": [
-                "src/gesuch/mutation/mutation-dialog/index.ts"
+            "@legacy-gesuch/mutation/dialog": [
+                "src/legacy-gesuch/mutation/mutation-dialog/index.ts"
             ],
-            "@gesuch/page-layout": ["src/gesuch/page-layout/index.ts"],
-            "@gesuch/heading": ["src/gesuch/heading/index.ts"],
-            "@gesuch/dokumente": ["src/gesuch/dokumente/index.ts"],
-            "@hybrid/gesuch/erwerbspensum": [
-                "src/hybrid/gesuch/erwerbspensum/index.ts"
+            "@legacy-gesuch/dokumente": [
+                "src/legacy-gesuch/dokumente/index.ts"
             ],
             "@hybrid/gesuch/betreuung": [
                 "src/hybrid/gesuch/betreuung/index.ts"
@@ -87,7 +84,8 @@
             ],
             "@utils/hybrid-form-bridge": [
                 "src/utils/hybrid-form-bridge/index.ts"
-            ]
+            ],
+            "@gesuch/erwerbspensum": ["src/gesuch/erwerbspensum/index.ts"]
         }
     },
     "angularCompilerOptions": {

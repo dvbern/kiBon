@@ -23,9 +23,9 @@ import angular, {
     IScope
 } from 'angular';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GesuchModelManager} from '../../../gesuch/service/gesuchModelManager';
-import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
-import {WizardStepManager} from '../../../gesuch/service/wizardStepManager';
+import {GesuchModelManager} from '../../../legacy-gesuch/service/gesuchModelManager';
+import {GesuchRS} from '../../../legacy-gesuch/service/gesuchRS.rest';
+import {WizardStepManager} from '../../../legacy-gesuch/service/wizardStepManager';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';

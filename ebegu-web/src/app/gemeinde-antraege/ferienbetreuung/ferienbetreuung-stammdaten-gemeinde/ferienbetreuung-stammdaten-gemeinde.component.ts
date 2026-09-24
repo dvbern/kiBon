@@ -41,7 +41,7 @@ import moment from 'moment';
 import {Moment} from 'moment';
 import {combineLatest, Observable, Subscription} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSAdresse} from '../../../../models/entity/TSAdresse';
 import {FerienbetreuungAngabenStatus} from '../../../../models/enums/FerienbetreuungAngabenStatus';
 import {TSFerienbetreuungFormularStatus} from '../../../../models/enums/TSFerienbetreuungFormularStatus';

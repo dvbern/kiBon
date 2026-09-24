@@ -28,7 +28,7 @@ import {StateService} from '@uirouter/core';
 import {firstValueFrom, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 import {ApplicationPropertyRsService} from '../../../utils/application-property-rs/application-property-rs.service';
 import {EbeguUtil} from '../../../utils/EbeguUtil';

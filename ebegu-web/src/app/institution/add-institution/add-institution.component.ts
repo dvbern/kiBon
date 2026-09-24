@@ -31,7 +31,7 @@ import {StateService, Transition} from '@uirouter/core';
 import moment from 'moment';
 import {take} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 import {TSInstitution} from '../../../models/entity/TSInstitution';
 import {TSMandant} from '../../../models/entity/TSMandant';

@@ -16,9 +16,9 @@
 import {StateService} from '@uirouter/core';
 import {copy, IComponentOptions, IController, IPromise} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
-import {GesuchRS} from '../../../../gesuch/service/gesuchRS.rest';
-import {SearchRS} from '../../../../gesuch/service/searchRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
+import {GesuchRS} from '../../../../legacy-gesuch/service/gesuchRS.rest';
+import {SearchRS} from '../../../../legacy-gesuch/service/searchRS.rest';
 import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
 import {
     IN_BEARBEITUNG_BASE_NAME,

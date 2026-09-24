@@ -335,7 +335,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		return betreuungService.saveAnmeldungFerieninsel(anmeldungFerieninsel);
 	}
 
-	private void setVorgaengerAnmeldungTagesschuleAufUebernommen(
+	public void setVorgaengerAnmeldungTagesschuleAufUebernommen(
 		@Nonnull AnmeldungTagesschule anmeldung
 	) {
 		if (!anmeldung.getBetreuungsstatus().isIgnoriert()) {

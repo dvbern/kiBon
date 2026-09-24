@@ -1,5 +1,5 @@
 import {Injectable, inject} from '@angular/core';
-import {WizardStepManager} from '../../gesuch/service/wizardStepManager';
+import {WizardStepManager} from '../../legacy-gesuch/service/wizardStepManager';
 import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
 import {TSWizardStepStatus} from '../../models/enums/TSWizardStepStatus';
 

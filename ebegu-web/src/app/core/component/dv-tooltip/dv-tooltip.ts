@@ -16,11 +16,11 @@
  */
 
 import {element, IComponentOptions} from 'angular';
-import {ShowTooltipController} from '../../../../gesuch/dialog/ShowTooltipController';
+import {ShowTooltipController} from '../../../../legacy-gesuch/dialog/ShowTooltipController';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
 import {IDVFocusableController} from '../IDVFocusableController';
 
-const showTooltipTemplate = require('../../../../gesuch/dialog/showTooltipTemplate.html');
+const showTooltipTemplate = require('../../../../legacy-gesuch/dialog/showTooltipTemplate.html');
 
 export class DvTooltipComponentConfig implements IComponentOptions {
     public transclude = false;

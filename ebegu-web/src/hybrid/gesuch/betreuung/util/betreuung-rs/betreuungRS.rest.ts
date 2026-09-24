@@ -14,7 +14,7 @@
  */
 
 import {IHttpService, ILogService, IPromise} from 'angular';
-import {WizardStepManager} from '../../../../../gesuch/service/wizardStepManager';
+import {WizardStepManager} from '../../../../../legacy-gesuch/service/wizardStepManager';
 import {TSAnmeldungDTO} from '../../../../../models/dto/TSAnmeldungDTO';
 import {TSBetreuung} from '../../../../../models/TSBetreuung';
 import {TSBetreuungspensumAbweichung} from '../../../../../models/TSBetreuungspensumAbweichung';

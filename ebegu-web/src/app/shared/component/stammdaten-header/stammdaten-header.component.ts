@@ -29,7 +29,7 @@ import {NgForm} from '@angular/forms';
 import {StateService} from '@uirouter/core';
 import {Observable, of} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSRole} from '../../../../models/enums/TSRole';
 
 @Component({

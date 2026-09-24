@@ -15,7 +15,7 @@
 
 import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {IController, IDirective, IDirectiveFactory} from 'angular';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
 import {TSGesuch} from '../../../../models/TSGesuch';

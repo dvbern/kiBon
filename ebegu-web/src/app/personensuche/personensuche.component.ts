@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Observable} from 'rxjs';
-import {GesuchModelManager} from '../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../legacy-gesuch/service/gesuchModelManager';
 import {TSEWKPerson} from '../../models/TSEWKPerson';
 import {ErrorService} from '../core/errors/service/ErrorService';
 import {EwkRS} from '../core/service/ewkRS.rest';

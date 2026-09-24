@@ -23,7 +23,7 @@ import {
     isArray
 } from 'angular';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
-import {GesuchModelManager} from '../../../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../../../legacy-gesuch/service/gesuchModelManager';
 import {TSQuickSearchResult} from '../../../../../models/dto/TSQuickSearchResult';
 import {TSSearchResultEntry} from '../../../../../models/dto/TSSearchResultEntry';
 import {

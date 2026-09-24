@@ -18,7 +18,7 @@ import {IComponentOptions, IController, IFilterService} from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
 import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
 import {TSInstitution} from '../../../../models/entity/TSInstitution';

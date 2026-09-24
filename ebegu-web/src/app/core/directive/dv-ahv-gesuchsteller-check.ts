@@ -19,7 +19,7 @@ import {
     IDirectiveLinkFn,
     IScope
 } from 'angular';
-import {GesuchModelManager} from '../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../legacy-gesuch/service/gesuchModelManager';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 
 export class DvAhvGesuchstellerCheck {

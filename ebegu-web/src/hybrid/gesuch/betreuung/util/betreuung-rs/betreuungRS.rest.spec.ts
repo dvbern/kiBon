@@ -15,7 +15,7 @@
 
 import angular, {IHttpBackendService, IQService} from 'angular';
 import {CORE_JS_MODULE} from '../../../../../app/core/core.angularjs.module';
-import {WizardStepManager} from '../../../../../gesuch/service/wizardStepManager';
+import {WizardStepManager} from '../../../../../legacy-gesuch/service/wizardStepManager';
 import {ngServicesMock} from '../../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../../hybridTools/translationsMock';
 import {TSBetreuungsstatus} from '../../../../../models/enums/betreuung/TSBetreuungsstatus';

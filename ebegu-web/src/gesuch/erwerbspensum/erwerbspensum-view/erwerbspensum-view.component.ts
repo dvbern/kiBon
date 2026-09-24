@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, model} from '@angular/core';
-import {GesuchPageHeadingComponent} from '@gesuch/heading';
-import {GesuchPageLayoutComponent} from '@gesuch/page-layout';
 import {TranslateModule} from '@ngx-translate/core';
-import {SharedModule} from '../../../../app/shared/shared.module';
+import {SharedModule} from '../../../app/shared/shared.module';
+import {GesuchPageHeadingComponent} from '../../shared/heading';
+import {GesuchPageLayoutComponent} from '../../shared/page-layout';
 
 @Component({
     selector: 'lib-gesuch-erwerbspensum-view',

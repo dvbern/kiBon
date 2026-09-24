@@ -412,10 +412,10 @@ class MailTemplateConfigurationSnapshotTest {
 		}
 
 		@SnapshotName("InfoGesuchVerfuegtVerantwortlicherTS")
-		@GermanAndFrenchTest
+		@GermanAndFrenchWithCombinationTest
 		void infoGesuchVerfuegtVerantwortlicherTS_shouldMatchSnapshot(
 			MandantIdentifier identifier,
-			Sprache sprache
+			List<Sprache> sprache
 		) {
 			MailTemplateFixture fixture = new MailTemplateFixture(identifier);
 
@@ -423,7 +423,7 @@ class MailTemplateConfigurationSnapshotTest {
 				.getInfoGesuchVerfuegtVerantwortlicherTS(
 					fixture.getGesuch(),
 					EMPFAENGER_MAIL,
-					List.of(sprache),
+					sprache,
 					fixture.createSachbearbeiterGemeinde()
 				);
 
@@ -655,17 +655,17 @@ class MailTemplateConfigurationSnapshotTest {
 		private Expect expect;
 
 		@SnapshotName("InfoMitteilungErhalten")
-		@GermanAndFrenchTest
+		@GermanAndFrenchWithCombinationTest
 		void infoMitteilungErhalten_shouldMatchSnapshot(
 			MandantIdentifier identifier,
-			Sprache sprache
+			List<Sprache> sprache
 		) {
 			MailTemplateFixture fixture = new MailTemplateFixture(identifier);
 
 			String mail = mailTemplateConfiguration.getInfoMitteilungErhalten(
 				fixture.createMitteilung(),
 				EMPFAENGER_MAIL,
-				List.of(sprache)
+				sprache
 			);
 
 			MailTemplateSnapshotHelper.matchSnapshot(
@@ -736,10 +736,10 @@ class MailTemplateConfigurationSnapshotTest {
 		private Expect expect;
 
 		@SnapshotName("InfoGemeindeAngebotAktiviert")
-		@GermanAndFrenchTest
+		@GermanAndFrenchWithCombinationTest
 		void infoGemeindeAngebotAktiviert_shouldMatchSnapshot(
 			MandantIdentifier identifier,
-			Sprache sprache
+			List<Sprache> sprache
 		) {
 			MailTemplateFixture fixture = new MailTemplateFixture(identifier);
 
@@ -748,7 +748,7 @@ class MailTemplateConfigurationSnapshotTest {
 					fixture.getGemeinde(),
 					EMPFAENGER_MAIL,
 					GemeindeAngebotTyp.TAGESSCHULE,
-					List.of(sprache)
+					sprache
 				);
 
 			MailTemplateSnapshotHelper.matchSnapshot(
@@ -760,17 +760,17 @@ class MailTemplateConfigurationSnapshotTest {
 		}
 
 		@SnapshotName("InfoGemeindeLastenausgleichDurch")
-		@GermanAndFrenchTest
+		@GermanAndFrenchWithCombinationTest
 		void infoGemeindeLastenausgleichDurch_shouldMatchSnapshot(
 			MandantIdentifier identifier,
-			Sprache sprache
+			List<Sprache> sprache
 		) {
 			MailTemplateFixture fixture = new MailTemplateFixture(identifier);
 
 			String mail =
 				mailTemplateConfiguration.getInfoGemeindeLastenausgleichDurch(
 					fixture.createLastenausgleich(),
-					List.of(sprache),
+					sprache,
 					EMPFAENGER_MAIL
 				);
 
@@ -783,17 +783,17 @@ class MailTemplateConfigurationSnapshotTest {
 		}
 
 		@SnapshotName("InfoGemeindeLastenausgleichZurueckAnGemeinde")
-		@GermanAndFrenchTest
+		@GermanAndFrenchWithCombinationTest
 		void infoLATSZurueckAnGemeinde_shouldMatchSnapshot(
 			MandantIdentifier identifier,
-			Sprache sprache
+			List<Sprache> sprache
 		) {
 			MailTemplateFixture fixture = new MailTemplateFixture(identifier);
 
 			String mail = mailTemplateConfiguration
 				.getInfoGemeindeLastenausgleichTagesschuleZurueckAnGemeinde(
 					fixture.createLatsContainer(),
-					List.of(sprache),
+					sprache,
 					EMPFAENGER_MAIL
 				);
 
@@ -1104,6 +1104,51 @@ class MailTemplateConfigurationSnapshotTest {
 	/**
 	 * <p>
 	 * Annotation representing a parameterized test case for scenarios involving
+	 * both German and French languages. Test methods annotated with this will
+	 * be executed for a combination of Mandant identifiers and languages,
+	 * German and French and German + French for the billingual Gemeinde.
+	 * </p>
+	 * <p>
+	 * Usage Requirements:
+	 * <ul>
+	 * <li>Use it to annotate test methods that need to be executed for both German and French languages.</li>
+	 * <li>The annotated method must accept parameters matching the structure </li>
+	 * provided by the `germanAndFrenchAndBoth()` method.
+	 * </ul>
+	 * </p>
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@ParameterizedTest
+	@MethodSource(SELF + "#germanAndFrenchWithCombination")
+	@interface GermanAndFrenchWithCombinationTest {
+	}
+
+	/**
+	 * Every Mandant in German, plus the Mandanten of {@link #MANDANTEN_WITH_FRENCH} in French and in French and German.
+	 */
+	static Stream<Arguments> germanAndFrenchWithCombination() {
+		return Stream.concat(
+			germanAsList(),
+			MANDANTEN_WITH_FRENCH.stream()
+				.flatMap(
+					mandant -> Stream.of(
+						Arguments.of(
+							mandant,
+							List.of(Sprache.FRANZOESISCH)
+						),
+						Arguments.of(
+							mandant,
+							List.of(Sprache.DEUTSCH, Sprache.FRANZOESISCH)
+						)
+					)
+				)
+		);
+	}
+
+	/**
+	 * <p>
+	 * Annotation representing a parameterized test case for scenarios involving
 	 * only the German language. Test methods annotated with this will
 	 * be executed for a combination of Mandant identifiers and German.
 	 * </p>
@@ -1127,6 +1172,12 @@ class MailTemplateConfigurationSnapshotTest {
 	static Stream<Arguments> german() {
 		return Arrays.stream(MandantIdentifier.values())
 			.map(mandant -> Arguments.of(mandant, Sprache.DEUTSCH));
+	}
+
+	/** Every Mandant in German as list. */
+	static Stream<Arguments> germanAsList() {
+		return Arrays.stream(MandantIdentifier.values())
+			.map(mandant -> Arguments.of(mandant, List.of(Sprache.DEUTSCH)));
 	}
 
 	/**
@@ -1195,8 +1246,32 @@ class MailTemplateConfigurationSnapshotTest {
 		}
 
 		/**
-		 * Overload of {@link #matchSnapshot(Expect, MandantIdentifier, Sprache, String, Map)} where
+		 * Overload of {@link #matchSnapshot(Expect, MandantIdentifier, sprachen, String, Map)} where
 		 * the map of additional replacements is empty.
+		 *
+		 * @param expect the expectation handler used to define and verify snapshot scenarios
+		 * @param identifier the identifier for the relevant Mandant (tenant) used to determine scenario context
+		 * @param sprachen the language in which the email is generated, represented as a Sprache enum
+		 * @param generatedMail the generated email content to be validated and compared to its snapshot
+		 */
+		static void matchSnapshot(
+			@Nonnull Expect expect,
+			@Nonnull MandantIdentifier identifier,
+			@Nonnull List<Sprache> sprachen,
+			@Nonnull String generatedMail
+		) {
+			matchSnapshot(
+				expect,
+				identifier,
+				sprachen,
+				generatedMail,
+				Map.of()
+			);
+		}
+
+		/**
+		 * Overload of {@link #matchSnapshot(Expect, MandantIdentifier, Sprache, String, Map)} where
+		 * the map of additional replacements is empty and the Sprache is not a list.
 		 *
 		 * @param expect the expectation handler used to define and verify snapshot scenarios
 		 * @param identifier the identifier for the relevant Mandant (tenant) used to determine scenario context
@@ -1212,9 +1287,34 @@ class MailTemplateConfigurationSnapshotTest {
 			matchSnapshot(
 				expect,
 				identifier,
-				sprache,
+				List.of(sprache),
 				generatedMail,
 				Map.of()
+			);
+		}
+
+		/**
+		 * Overload of {@link #matchSnapshot(Expect, MandantIdentifier, Sprache, String, Map)} where
+		 * the map Sprache ist not a list.
+		 *
+		 * @param expect the expectation handler used to define and verify snapshot scenarios
+		 * @param identifier the identifier for the relevant Mandant (tenant) used to determine scenario context
+		 * @param sprache the language in which the email is generated, represented as a Sprache enum
+		 * @param generatedMail the generated email content to be validated and compared to its snapshot
+		 */
+		static void matchSnapshot(
+			@Nonnull Expect expect,
+			@Nonnull MandantIdentifier identifier,
+			@Nonnull Sprache sprache,
+			@Nonnull String generatedMail,
+			@Nonnull Map<String, String> additionalReplacements
+		) {
+			matchSnapshot(
+				expect,
+				identifier,
+				List.of(sprache),
+				generatedMail,
+				additionalReplacements
 			);
 		}
 
@@ -1234,7 +1334,7 @@ class MailTemplateConfigurationSnapshotTest {
 		static void matchSnapshot(
 			@Nonnull Expect expect,
 			@Nonnull MandantIdentifier identifier,
-			@Nonnull Sprache sprache,
+			@Nonnull List<Sprache> sprachen,
 			@Nonnull String generatedMail,
 			@Nonnull Map<String, String> additionalReplacements
 		) {
@@ -1248,14 +1348,19 @@ class MailTemplateConfigurationSnapshotTest {
 					"Content-Type:"
 				)
 			);
+			String spracheName = sprachen.get(0).name();
+			if (sprachen.size() > 1) {
+				spracheName = spracheName + sprachen.get(1).name();
+			}
 
-			expect.scenario(identifier.name() + '_' + sprache.name())
+			expect.scenario(identifier.name() + '_' + spracheName)
 				.toMatchSnapshot(
 					normalize(
 						generatedMail,
-						new MandantLocaleVisitor(sprache.getLocale()).process(
-							identifier
-						),
+						new MandantLocaleVisitor(sprachen.get(0).getLocale())
+							.process(
+								identifier
+							),
 						additionalReplacements
 					)
 				);

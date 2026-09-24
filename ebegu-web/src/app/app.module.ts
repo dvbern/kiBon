@@ -30,7 +30,7 @@ import {
 } from '@ngx-translate/core';
 import {NgAdminModule} from '../admin/ng-admin.module';
 import {NgAuthenticationModule} from '../authentication/ng-authentication.module';
-import {NgGesuchModule} from '../gesuch/ng-gesuch.module';
+import {NgGesuchModule} from '../legacy-gesuch/ng-gesuch.module';
 import {TSBrowserLanguage} from '../models/enums/TSBrowserLanguage';
 import {AppRoutingModule} from './app-routing.module';
 import {APP_JS_MODULE} from './app.angularjs.module';

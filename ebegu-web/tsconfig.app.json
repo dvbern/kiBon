@@ -10,7 +10,7 @@
         "test.ts",
         "**/*.spec.ts",
         "src/hybridTools/*.ts",
-        "src/gesuch/component/finanzielleSituation/solothurn/SolothurnFinSitTestHelpers.ts",
+        "src/legacy-gesuch/component/finanzielleSituation/solothurn/SolothurnFinSitTestHelpers.ts",
         "src/environments/environment.prod.ts",
         "src/environments/environment.test.ts",
         "src/test.ts",

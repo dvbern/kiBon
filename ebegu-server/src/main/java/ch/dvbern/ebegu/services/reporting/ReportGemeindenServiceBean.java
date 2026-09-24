@@ -112,7 +112,8 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 
 			List<GemeindenDataRow> reportData = getReportDataGemeinden(
 				aktiveGemeinden,
-				locale
+				locale,
+				mandant
 			);
 
 			ExcelMergerDTO excelMergerDTO = gemeindenExcelConverter
@@ -164,7 +165,8 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 
 	private List<GemeindenDataRow> getReportDataGemeinden(
 		@Nonnull Collection<Gemeinde> gemeinden,
-		@Nonnull Locale locale
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
 	) {
 		Collection<Gesuchsperiode> allActiveGesuchsperioden =
 			gesuchsperiodeService.getAllActiveGesuchsperioden();
@@ -172,7 +174,7 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 		Map<String, GemeindeKennzahlen> gemeindeAntragGesuchsperiodeCache =
 			new HashMap<>();
 		List<GemeindeKennzahlen> gemeindeAntrags = gemeindeKennzahlenService
-			.getGemeindeKennzahlen(null, null, null, null);
+			.getGemeindeKennzahlen(null, null, null, null, mandant);
 		gemeindeAntrags.forEach(
 			gemeindeAntrag -> gemeindeAntragGesuchsperiodeCache.put(
 				gemeindeAntrag.getGesuchsperiode().getId()

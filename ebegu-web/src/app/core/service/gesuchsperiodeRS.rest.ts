@@ -21,8 +21,8 @@ import {
     IQService,
     copy
 } from 'angular';
-import {DossierRS} from '../../../gesuch/service/dossierRS.rest';
-import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
+import {DossierRS} from '../../../legacy-gesuch/service/dossierRS.rest';
+import {GlobalCacheService} from '../../../legacy-gesuch/service/globalCacheService';
 import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';

@@ -18,19 +18,19 @@
 import {Provider} from '@angular/core';
 import {DatabaseMigrationRS} from '../../admin/service/databaseMigrationRS.rest';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
-import {BerechnungsManager} from '../../gesuch/service/berechnungsManager';
-import {DossierRS} from '../../gesuch/service/dossierRS.rest';
-import {EinkommensverschlechterungContainerRS} from '../../gesuch/service/einkommensverschlechterungContainerRS.rest';
-import {EinkommensverschlechterungInfoRS} from '../../gesuch/service/einkommensverschlechterungInfoRS.rest';
-import {FallRS} from '../../gesuch/service/fallRS.rest';
-import {FinanzielleSituationRS} from '../../gesuch/service/finanzielleSituationRS.rest';
-import {FinanzielleSituationSubStepManager} from '../../gesuch/service/finanzielleSituationSubStepManager';
-import {GemeindeRS} from '../../gesuch/service/gemeindeRS.rest';
-import {GesuchModelManager} from '../../gesuch/service/gesuchModelManager';
-import {GesuchRS} from '../../gesuch/service/gesuchRS.rest';
-import {GlobalCacheService} from '../../gesuch/service/globalCacheService';
-import {SupportRS} from '../../gesuch/service/supportRS.rest';
-import {WizardStepManager} from '../../gesuch/service/wizardStepManager';
+import {BerechnungsManager} from '../../legacy-gesuch/service/berechnungsManager';
+import {DossierRS} from '../../legacy-gesuch/service/dossierRS.rest';
+import {EinkommensverschlechterungContainerRS} from '../../legacy-gesuch/service/einkommensverschlechterungContainerRS.rest';
+import {EinkommensverschlechterungInfoRS} from '../../legacy-gesuch/service/einkommensverschlechterungInfoRS.rest';
+import {FallRS} from '../../legacy-gesuch/service/fallRS.rest';
+import {FinanzielleSituationRS} from '../../legacy-gesuch/service/finanzielleSituationRS.rest';
+import {FinanzielleSituationSubStepManager} from '../../legacy-gesuch/service/finanzielleSituationSubStepManager';
+import {GemeindeRS} from '../../legacy-gesuch/service/gemeindeRS.rest';
+import {GesuchModelManager} from '../../legacy-gesuch/service/gesuchModelManager';
+import {GesuchRS} from '../../legacy-gesuch/service/gesuchRS.rest';
+import {GlobalCacheService} from '../../legacy-gesuch/service/globalCacheService';
+import {SupportRS} from '../../legacy-gesuch/service/supportRS.rest';
+import {WizardStepManager} from '../../legacy-gesuch/service/wizardStepManager';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {ErrorService} from './errors/service/ErrorService';
 import {AntragStatusHistoryRS} from './service/antragStatusHistoryRS.rest';
@@ -45,7 +45,7 @@ import {ReportRS} from './service/reportRS.rest';
 import {TraegerschaftRS} from './service/traegerschaftRS.rest';
 import {UploadRS} from './service/uploadRS.rest';
 import IInjectorService = angular.auto.IInjectorService;
-import {DokumenteRS} from '../../gesuch/service/dokumenteRS.rest';
+import {DokumenteRS} from '../../legacy-gesuch/service/dokumenteRS.rest';
 
 /* eslint-disable */
 

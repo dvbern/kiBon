@@ -47,8 +47,8 @@ import {
 } from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {SearchRS} from '../../../gesuch/service/searchRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
+import {SearchRS} from '../../../legacy-gesuch/service/searchRS.rest';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSInstitution} from '../../../models/entity/TSInstitution';

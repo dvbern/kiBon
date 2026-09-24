@@ -2,7 +2,7 @@ import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
 import {Events, on, withEventHandlers, withReducer} from '@ngrx/signals/events';
 import {TSGesuch} from '../../../models/TSGesuch';
 import {gesuchEvents} from './gesuch-events';
-import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
+import {GesuchRS} from '../../../legacy-gesuch/service/gesuchRS.rest';
 import {inject} from '@angular/core';
 import {from, switchMap} from 'rxjs';
 import {mapResponse} from '@ngrx/operators';

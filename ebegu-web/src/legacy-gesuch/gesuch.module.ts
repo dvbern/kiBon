@@ -16,10 +16,10 @@
  */
 
 import {downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
-import {DokumenteUebernehmenButtonComponent} from '@gesuch/dokumente';
-import {KindGueltigkeitTerminiertAngularjsWrapperComponent} from '@gesuch/kind/kind-terminiert';
 import {AnmeldungRestService} from '@hybrid/gesuch/betreuung';
-import {ErwerbspensumViewComponent} from '@hybrid/gesuch/erwerbspensum';
+import {DokumenteUebernehmenButtonComponent} from '@legacy-gesuch/dokumente';
+import {KindGueltigkeitTerminiertAngularjsWrapperComponent} from '@legacy-gesuch/kind/kind-terminiert';
+import {ErwerbspensumViewComponent} from '../gesuch/erwerbspensum';
 import {TransitionService} from '@uirouter/core';
 import * as angular from 'angular';
 import {EinstellungRS} from '../admin/service/einstellungRS.rest';

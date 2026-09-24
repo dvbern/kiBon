@@ -29,7 +29,7 @@ import {StateService} from '@uirouter/core';
 import {Moment} from 'moment';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSBenutzerStatus} from '../../../models/enums/TSBenutzerStatus';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSExternalClientAssignment} from '../../../models/TSExternalClientAssignment';

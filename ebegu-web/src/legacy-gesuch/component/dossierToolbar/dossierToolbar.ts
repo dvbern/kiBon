@@ -69,7 +69,7 @@ import {GemeindeKontaktdatenController} from '../../dialog/GemeindeKontaktdatenC
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
 import {firstValueFrom} from 'rxjs';
 
-const showKontaktTemplate = require('../../../gesuch/dialog/showKontaktTemplate.html');
+const showKontaktTemplate = require('../../dialog/showKontaktTemplate.html');
 const removeDialogTempl = require('../../dialog/removeDialogTemplate.html');
 
 // TODO hefa multiple components in 1 file!?

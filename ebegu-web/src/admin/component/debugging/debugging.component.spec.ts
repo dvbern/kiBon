@@ -20,7 +20,7 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {UIRouterModule} from '@uirouter/angular';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
 import {SharedModule} from '../../../app/shared/shared.module';
-import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
+import {GesuchRS} from '../../../legacy-gesuch/service/gesuchRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
 
 import {DebuggingComponent} from './debugging.component';

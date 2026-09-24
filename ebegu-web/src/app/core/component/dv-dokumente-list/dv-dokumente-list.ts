@@ -21,11 +21,11 @@ import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {copy, IComponentOptions, IController, ILogService} from 'angular';
 import {Subscription} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {FinanzielleSituationAppenzellService} from '../../../../gesuch/component/finanzielleSituation/appenzell/finanzielle-situation-appenzell.service';
-import {OkHtmlDialogController} from '../../../../gesuch/dialog/OkHtmlDialogController';
-import {RemoveDialogController} from '../../../../gesuch/dialog/RemoveDialogController';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
-import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
+import {FinanzielleSituationAppenzellService} from '../../../../legacy-gesuch/component/finanzielleSituation/appenzell/finanzielle-situation-appenzell.service';
+import {OkHtmlDialogController} from '../../../../legacy-gesuch/dialog/OkHtmlDialogController';
+import {RemoveDialogController} from '../../../../legacy-gesuch/dialog/RemoveDialogController';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
+import {WizardStepManager} from '../../../../legacy-gesuch/service/wizardStepManager';
 import {TSDokumentGrundPersonType} from '../../../../models/enums/TSDokumentGrundPersonType';
 import {TSDokumentTyp} from '../../../../models/enums/TSDokumentTyp';
 import {KiBonMandant, MANDANTS} from '@models/mandant';
@@ -45,10 +45,10 @@ import {ErrorService} from '../../errors/service/ErrorService';
 import {DownloadRS} from '../../service/downloadRS.rest';
 import {UploadRS} from '../../service/uploadRS.rest';
 import ITranslateService = angular.translate.ITranslateService;
-import {DokumenteUtil} from '../../../../gesuch/component/DokumenteView/DokumenteUtil';
+import {DokumenteUtil} from '../../../../legacy-gesuch/component/DokumenteView/DokumenteUtil';
 
-const removeDialogTemplate = require('../../../../gesuch/dialog/removeDialogTemplate.html');
-const okHtmlDialogTempl = require('../../../../gesuch/dialog/okHtmlDialogTemplate.html');
+const removeDialogTemplate = require('../../../../legacy-gesuch/dialog/removeDialogTemplate.html');
+const okHtmlDialogTempl = require('../../../../legacy-gesuch/dialog/okHtmlDialogTemplate.html');
 
 export class DVDokumenteListConfig implements IComponentOptions {
     public transclude = false;

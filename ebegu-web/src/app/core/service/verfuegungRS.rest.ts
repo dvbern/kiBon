@@ -14,7 +14,7 @@
  */
 
 import {IHttpService, ILogService, IPromise} from 'angular';
-import {WizardStepManager} from '../../../gesuch/service/wizardStepManager';
+import {WizardStepManager} from '../../../legacy-gesuch/service/wizardStepManager';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {TSVerfuegung} from '../../../models/TSVerfuegung';

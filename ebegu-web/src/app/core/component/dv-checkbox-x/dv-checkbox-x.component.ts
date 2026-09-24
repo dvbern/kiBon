@@ -24,7 +24,7 @@ import {
     Output,
     inject
 } from '@angular/core';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';

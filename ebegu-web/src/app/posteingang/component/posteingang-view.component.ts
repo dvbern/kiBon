@@ -39,7 +39,7 @@ import {StateService} from '@uirouter/core';
 import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {from, Subject} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSPagination} from '../../../models/dto/TSPagination';
 import {DVErrorMessageCallback} from '../../../models/DVErrorMessageCallback';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';

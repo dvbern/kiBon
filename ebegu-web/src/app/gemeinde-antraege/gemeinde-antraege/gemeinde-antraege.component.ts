@@ -48,7 +48,7 @@ import {
     tap
 } from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSPagination} from '../../../models/dto/TSPagination';
 import {TSPaginationResultDTO} from '../../../models/dto/TSPaginationResultDTO';
 import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';

@@ -37,7 +37,7 @@ import moment from 'moment';
 import {of, Subject, timer} from 'rxjs';
 import {switchMap, take} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSPaginationResultDTO} from '../../../models/dto/TSPaginationResultDTO';
 import {TSPublicAppConfig} from '../../../models/einstellung/TSPublicAppConfig';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';

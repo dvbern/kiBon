@@ -951,13 +951,22 @@ public class GesuchServiceBean extends AbstractBaseService implements
 					AnmeldungMutationZustand.AKTUELLE_ANMELDUNG
 				);
 				vorgaenger.setGueltig(true); // Die alte Anmeldung ist wieder die gueltige
-				if (vorgaenger.getBetreuungsstatus()
-					== Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST
+				if ((vorgaenger.getBetreuungsstatus()
+					== Betreuungsstatus.SCHULAMT_MODULE_AKZEPTIERT
+					|| vorgaenger.getBetreuungsstatus()
+						== Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST)
 					&& vorgaenger.getBetreuungsangebotTyp()
-						.isTagesschule()) {
-					// Sonderfall: Wenn die Anmeldung auf dem Vorgänger im Status AUSGELOEST war, wurde beim erstellen
-					// der Mutation eine Verfügung gespeichert. Diese muss nun wieder gelöscht werden
-					vorgaenger.setVerfuegung(null);
+						.isTagesschule()
+				) {
+					// gerade sind alle Tageschuleanmeldungen immer automatisch Verfuegt, sobald einer Mutatio eroeffnet wird
+					// egal ob dies akzeptiert waren oder nicht. es muss so sein, wegen die Frist regeln.
+					vorgaenger.setBetreuungsstatus(
+						Betreuungsstatus.SCHULAMT_ANMELDUNG_UEBERNOMMEN
+					);
+					this.verfuegungService
+						.setVorgaengerAnmeldungTagesschuleAufUebernommen(
+							(AnmeldungTagesschule) vorgaenger
+						);
 				}
 				persistence.merge(vorgaenger);
 			});

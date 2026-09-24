@@ -16,7 +16,7 @@
 import {upgradeModule} from '@uirouter/angular-hybrid';
 import {Ng1StateDeclaration, StateProvider} from '@uirouter/angularjs';
 import * as angular from 'angular';
-import {GESUCH_JS_MODULE} from '../gesuch/gesuch.module';
+import {GESUCH_JS_MODULE} from '../legacy-gesuch/gesuch.module';
 import {ALLE_VERFUEGUNGEN_JS_MODULE} from './alleVerfuegungen/alleVerfuegungen.module';
 import {APP_ANGULARJS_COMPONENT} from './app.angularjs';
 import {CORE_JS_MODULE} from './core/core.angularjs.module';

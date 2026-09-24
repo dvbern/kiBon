@@ -154,12 +154,12 @@
     },
     "schematics": {
         "@schematics/angular:component": {
-            "prefix": "dv",
+            "prefix": "kib",
             "style": "scss",
             "changeDetection": "OnPush"
         },
         "@schematics/angular:directive": {
-            "prefix": "dv"
+            "prefix": "kib"
         }
     },
     "cli": {

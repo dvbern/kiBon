@@ -17,9 +17,9 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {NewDossierToolbarDirective} from '../../gesuch/component/dossierToolbar/newDossierToolbar.directive';
-import {NewDossierToolbarGesuchstellerDirective} from '../../gesuch/component/dossierToolbar/newDossierToolbarGesuchsteller.directive';
-import {FallToolbarModule} from '../../gesuch/component/fallToolbar/fall-toolbar.module';
+import {NewDossierToolbarDirective} from '../../legacy-gesuch/component/dossierToolbar/newDossierToolbar.directive';
+import {NewDossierToolbarGesuchstellerDirective} from '../../legacy-gesuch/component/dossierToolbar/newDossierToolbarGesuchsteller.directive';
+import {FallToolbarModule} from '../../legacy-gesuch/component/fallToolbar/fall-toolbar.module';
 import {SharedModule} from '../shared/shared.module';
 import {VerlaufRoutingModule} from './verlauf-routing/verlauf-routing.module';
 import {VerlaufComponent} from './verlauf.component';

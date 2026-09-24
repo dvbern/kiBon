@@ -25,8 +25,8 @@ import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {AuthLifeCycleService} from '../../../authentication/service/authLifeCycle.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {FreigabeController} from '../../../gesuch/freigabe/dialog/FreigabeController';
-import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
+import {FreigabeController} from '../../../legacy-gesuch/freigabe/dialog/FreigabeController';
+import {GesuchRS} from '../../../legacy-gesuch/service/gesuchRS.rest';
 import {TSAuthEvent} from '../../../models/enums/TSAuthEvent';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
@@ -35,7 +35,7 @@ import {LogFactory} from '@utils/log';
 import {DvDialog} from './dv-dialog/dv-dialog';
 import ITranslateService = angular.translate.ITranslateService;
 
-const FREIGEBEN_DIALOG_TEMPLATE = require('../../../gesuch/freigabe/dialog/freigabe.html');
+const FREIGEBEN_DIALOG_TEMPLATE = require('../../../legacy-gesuch/freigabe/dialog/freigabe.html');
 const LOG = LogFactory.createLog('DVBarcodeListener');
 
 export class DVBarcodeListener implements IDirective {

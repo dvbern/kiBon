@@ -179,4 +179,13 @@ public interface VerfuegungService {
 	public Optional<Verfuegung> findVorgaengerVerfuegung(
 		AbstractPlatz abstractPlatz
 	);
+
+	/**
+	 * Set all Vorgängere Tagesschule Anmeldungen zu Übergenommen
+	 *
+	 * @param anmeldung
+	 */
+	void setVorgaengerAnmeldungTagesschuleAufUebernommen(
+		@Nonnull AnmeldungTagesschule anmeldung
+	);
 }

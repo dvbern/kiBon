@@ -35,7 +35,7 @@ import {InstitutionRS} from '../../../../app/core/service/institutionRS.rest';
 import {SozialdienstRS} from '../../../../app/core/service/SozialdienstRS.rest';
 import {TraegerschaftRS} from '../../../../app/core/service/traegerschaftRS.rest';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSBenutzerTableFilterDTO} from '../../../../models/dto/TSBenutzerTableFilterDTO';
 import {TSPagination} from '../../../../models/dto/TSPagination';
 import {TSGemeinde} from '../../../../models/entity/TSGemeinde';

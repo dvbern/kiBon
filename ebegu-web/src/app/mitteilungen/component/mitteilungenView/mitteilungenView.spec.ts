@@ -18,9 +18,9 @@
 import {BetreuungRS} from '@hybrid/gesuch/betreuung';
 import * as angular from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {DossierRS} from '../../../../gesuch/service/dossierRS.rest';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
-import {GesuchRS} from '../../../../gesuch/service/gesuchRS.rest';
+import {DossierRS} from '../../../../legacy-gesuch/service/dossierRS.rest';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
+import {GesuchRS} from '../../../../legacy-gesuch/service/gesuchRS.rest';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
 import {TSGemeinde} from '../../../../models/entity/TSGemeinde';

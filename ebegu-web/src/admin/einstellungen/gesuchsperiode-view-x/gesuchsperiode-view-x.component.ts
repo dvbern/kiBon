@@ -18,7 +18,7 @@ import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
+import {GlobalCacheService} from '../../../legacy-gesuch/service/globalCacheService';
 import {TSDateRange} from '../../../models/entity/TSDateRange';
 import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';

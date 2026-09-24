@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.gemeindeantrag.GemeindeAntrag;
 import ch.dvbern.ebegu.enums.gemeindeantrag.GemeindeAntragTyp;
 
@@ -66,7 +67,8 @@ public interface GemeindeAntragService {
 		@Nullable String status,
 		@Nullable String timestampMutiert,
 		@Nullable String firstEinreichedatum,
-		@Nullable String usernameVerantwortlicher
+		@Nullable String usernameVerantwortlicher,
+		@Nonnull Mandant mandant
 	);
 
 	@Nonnull

@@ -44,8 +44,8 @@ import {
     takeUntil
 } from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {INewFallStateParams} from '../../../../gesuch/gesuch.route';
-import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {INewFallStateParams} from '../../../../legacy-gesuch/gesuch.route';
+import {GemeindeRS} from '../../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSGemeinde} from '../../../../models/entity/TSGemeinde';
 import {TSCreationAction} from '../../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';

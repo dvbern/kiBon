@@ -110,7 +110,8 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 			.filter(
 				gemeinde -> !antragAlreadyExisting(
 					gemeinde,
-					gesuchsperiode
+					gesuchsperiode,
+					gesuchsperiode.getMandant()
 				)
 			)
 			.map(gemeinde -> {
@@ -128,13 +129,15 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 
 	private boolean antragAlreadyExisting(
 		Gemeinde gemeinde,
-		Gesuchsperiode gesuchsperiode
+		Gesuchsperiode gesuchsperiode,
+		Mandant mandant
 	) {
 		boolean hasAntrag = !getGemeindeKennzahlen(
 			gemeinde.getName(),
 			gesuchsperiode.getGesuchsperiodeString(),
 			null,
-			null
+			null,
+			mandant
 		).isEmpty();
 		if (hasAntrag) {
 			LOG.info(
@@ -179,7 +182,8 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 				gemeinde.getName(),
 				gesuchsperiode.getGesuchsperiodeString(),
 				null,
-				null
+				null,
+				gesuchsperiode.getMandant()
 			);
 		if (antragList.size() > 1) {
 			throw new EbeguRuntimeException(
@@ -322,13 +326,9 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 		@Nullable String gemeinde,
 		@Nullable String gesuchsperiode,
 		@Nullable String status,
-		@Nullable String timestampMutiert
+		@Nullable String timestampMutiert,
+		@Nonnull Mandant mandant
 	) {
-
-		Mandant mandant = principal.getMandant();
-		Set<Gemeinde> gemeinden = principal.getBenutzer()
-			.extractGemeindenForUser();
-
 		Set<Predicate> predicates = new HashSet<>();
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		CriteriaQuery<GemeindeKennzahlen> query = cb.createQuery(
@@ -348,6 +348,8 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 			UserRole.ADMIN_MANDANT,
 			UserRole.SACHBEARBEITER_MANDANT
 		)) {
+			Set<Gemeinde> gemeinden = principal.getBenutzer()
+				.extractGemeindenForUser();
 			Predicate gemeindeIn =
 				root.get(GemeindeKennzahlen_.gemeinde).in(gemeinden);
 			predicates.add(gemeindeIn);
@@ -445,7 +447,8 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 			null,
 			gesuchsperiode.getGesuchsperiodeString(),
 			null,
-			null
+			null,
+			gesuchsperiode.getMandant()
 		)
 			.forEach(this::deleteGemeindeKennzahlenIfNotAbgeschlossen);
 	}
@@ -467,19 +470,19 @@ public class GemeindeKennzahlenService extends AbstractBaseService {
 	public List<GemeindeKennzahlen> createGemeindeKennzahlenInCurrentGPForActiveBGGemeinden(
 		@Nonnull Mandant mandant
 	) {
-		Optional<Gesuchsperiode> gesuchsperiodeAtYearStart =
+		Optional<Gesuchsperiode> gpToday =
 			gesuchsperiodeService.getGesuchsperiodeAm(
 				LocalDate.now(),
 				mandant
 			);
-		if (gesuchsperiodeAtYearStart.isEmpty()) {
+		if (gpToday.isEmpty()) {
 			LOG.info(
-				"Batchjob sendGemeindeKennzahlenFirstReminder nicht durchgefuehrt, keine Gesuchsperiode am Jahrstart vorhanden"
+				"createGemeindeKennzahlenInCurrentGPForActiveBGGemeinden nicht durchgeführt, keine Gesuchsperiode für heute vorhanden"
 			);
 			return null;
 
 		}
-		Gesuchsperiode gesuchsperiode = gesuchsperiodeAtYearStart.get();
+		Gesuchsperiode gesuchsperiode = gpToday.get();
 		var activeGemeinden =
 			this.gemeindeService.getAktiveGemeindenGueltigAm(
 				gesuchsperiode.getGueltigkeit().getGueltigAb(),

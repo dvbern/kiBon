@@ -19,7 +19,7 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {Transition} from '@uirouter/core';
 import {of} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';

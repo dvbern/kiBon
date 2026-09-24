@@ -31,7 +31,7 @@ import {Transition} from '@uirouter/core';
 import {StateDeclaration} from '@uirouter/core/lib/state/interface';
 import {Moment} from 'moment';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';

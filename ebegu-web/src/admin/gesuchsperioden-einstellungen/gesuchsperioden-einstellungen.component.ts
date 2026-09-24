@@ -22,7 +22,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
 import {GesuchsperiodeRS} from '../../app/core/service/gesuchsperiodeRS.rest';
-import {GlobalCacheService} from '../../gesuch/service/globalCacheService';
+import {GlobalCacheService} from '../../legacy-gesuch/service/globalCacheService';
 import {TSEinstellungKey} from '../einstellungen/TSEinstellungKey';
 import {DokumenteZuUebernehmenEinstellungGroupComponent} from './dokumente-zu-uebernehmen-einstellung-group/dokumente-zu-uebernehmen-einstellung-group.component';
 

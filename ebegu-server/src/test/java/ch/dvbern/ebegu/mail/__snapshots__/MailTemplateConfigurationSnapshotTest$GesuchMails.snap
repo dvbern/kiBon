@@ -1476,6 +1476,72 @@ Content-Type: text/html;charset=utf-8
 ]
 
 
+InfoGesuchVerfuegtVerantwortlicherTS[BERN_DEUTSCHFRANZOESISCH]=[
+From: kibon@dvbern.ch
+To: Sandra Muster <empfaenger@dvbern.ch>
+Subject: 000042, 2017/2018, kiBon - Betreuungsgutschein wurde verfügt / Décision de bon de garde rendue
+Content-Type: text/html;charset=utf-8
+
+<html>
+<head>
+    <style type="text/css">
+        body {
+            font-family: "Open Sans", Arial, Helvetica, sans-serif;
+        }
+      .kursInfoHeader {background-color: #bce1ff; font-weight: bold;}
+      .signature { font-size: 90%;}
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>kiBon - Betreuungsgutschein wurde verfügt / Décision de bon de garde rendue</title>
+
+</head>
+
+<body>
+
+    <div>
+        <p>
+            Guten Tag
+        </p>
+        <p>
+            Der Antrag mit der Fallnummer <a href="https://be.kibon.example.com/gesuch/verfuegen/<ID-1>">42</a> wurde verfügt. Es können nun auch die
+            Tagesschulanmeldungen abgeschlossen werden.
+        </p>
+        <p>
+            Freundliche Grüsse<br/>
+            kiBon-Team
+        </p>
+        <p>
+            Dies ist eine automatisch versendete E-Mail. Bitte antworten Sie nicht auf diese Nachricht.
+        </p>
+    </div>
+
+    <hr>
+
+    <div>
+        <p>
+            Bonjour,
+        </p>
+        <p>
+            Une décision a été rendue pour la demande portant le numéro de dossier <a href="https://be.kibon.example.com/gesuch/verfuegen/<ID-1>">42</a>. Les inscriptions aux écoles à journée continue peuvent désormais également être terminées.
+        </p>
+        <p>
+            Avec nos salutations les meilleures,<br/>
+            kiBon-Team
+        </p>
+        <p>
+            Merci de ne pas répondre à ce message automatique.
+        </p>
+    </div>
+
+</body>
+
+</html>
+
+]
+
+
 InfoGesuchVerfuegtVerantwortlicherTS[BERN_DEUTSCH]=[
 From: kibon@dvbern.ch
 To: Sandra Muster <empfaenger@dvbern.ch>
@@ -1554,6 +1620,72 @@ Content-Type: text/html;charset=utf-8
         </p>
         <p>
             Une décision a été rendue pour la demande portant le numéro de dossier <a href="https://be.kibon.example.com/gesuch/verfuegen/<ID-1>">42</a>. Les inscriptions aux écoles à journée continue peuvent désormais également être terminées.
+        </p>
+        <p>
+            Avec nos salutations les meilleures,<br/>
+            kiBon-Team
+        </p>
+        <p>
+            Merci de ne pas répondre à ce message automatique.
+        </p>
+    </div>
+
+</body>
+
+</html>
+
+]
+
+
+InfoGesuchVerfuegtVerantwortlicherTS[DVB_DEUTSCHFRANZOESISCH]=[
+From: kibon@dvbern.ch
+To: Sandra Muster <empfaenger@dvbern.ch>
+Subject: 000042, 2017/2018, kiBon - Betreuungsgutschein wurde verfügt / Décision de bon de garde rendue
+Content-Type: text/html;charset=utf-8
+
+<html>
+<head>
+    <style type="text/css">
+        body {
+            font-family: "Open Sans", Arial, Helvetica, sans-serif;
+        }
+      .kursInfoHeader {background-color: #bce1ff; font-weight: bold;}
+      .signature { font-size: 90%;}
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>kiBon - Betreuungsgutschein wurde verfügt / Décision de bon de garde rendue</title>
+
+</head>
+
+<body>
+
+    <div>
+        <p>
+            Guten Tag
+        </p>
+        <p>
+            Der Antrag mit der Fallnummer <a href="https://dv.kibon.example.com/gesuch/verfuegen/<ID-1>">42</a> wurde verfügt. Es können nun auch die
+            Tagesschulanmeldungen abgeschlossen werden.
+        </p>
+        <p>
+            Freundliche Grüsse<br/>
+            kiBon-Team
+        </p>
+        <p>
+            Dies ist eine automatisch versendete E-Mail. Bitte antworten Sie nicht auf diese Nachricht.
+        </p>
+    </div>
+
+    <hr>
+
+    <div>
+        <p>
+            Bonjour,
+        </p>
+        <p>
+            Une décision a été rendue pour la demande portant le numéro de dossier <a href="https://dv.kibon.example.com/gesuch/verfuegen/<ID-1>">42</a>. Les inscriptions aux écoles à journée continue peuvent désormais également être terminées.
         </p>
         <p>
             Avec nos salutations les meilleures,<br/>

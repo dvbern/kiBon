@@ -16,7 +16,7 @@
 import {IComponentOptions, IController} from 'angular';
 import moment from 'moment';
 import {Moment} from 'moment';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
+import {GesuchModelManager} from '../../../../legacy-gesuch/service/gesuchModelManager';
 import {TSAbstractMutableEntity} from '../../../../models/entity/TSAbstractMutableEntity';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';

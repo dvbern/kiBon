@@ -79,7 +79,7 @@ import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;
 
 const removeDialogTemplate = require('../../dialog/removeDialogTemplate.html');
-const okHtmlDialogTempl = require('../../../gesuch/dialog/okDialogLongTextTemplate.html');
+const okHtmlDialogTempl = require('../../dialog/okDialogLongTextTemplate.html');
 
 export class BetreuungTagesschuleViewComponentConfig
     implements IComponentOptions

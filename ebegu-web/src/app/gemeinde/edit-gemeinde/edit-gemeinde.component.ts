@@ -35,7 +35,7 @@ import {Moment} from 'moment';
 import {firstValueFrom, from, Observable} from 'rxjs';
 import {LogFactory} from '@utils/log';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
+import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {TSAdresse} from '../../../models/entity/TSAdresse';
 import {TSGemeinde} from '../../../models/entity/TSGemeinde';
 import {TSTextRessource} from '../../../models/entity/TSTextRessource';
