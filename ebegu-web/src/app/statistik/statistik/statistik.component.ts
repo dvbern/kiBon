@@ -91,6 +91,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
     public readonly TSRole = TSRole;
     public readonly TSRoleUtil = TSRoleUtil;
     public readonly demoFeature = TSDemoFeature.ZAHLUNGEN_STATISTIK;
+    public readonly PERIODE_KEINE = 'KEINE';
 
     private polling: NodeJS.Timeout;
     public statistikParameter: TSStatistikParameter;
@@ -521,7 +522,9 @@ export class StatistikComponent implements OnInit, OnDestroy {
                             : this.statistikParameter.bis.format(
                                   this.DATE_PARAM_FORMAT
                               ),
-                        this.statistikParameter.gesuchsperiode,
+                        this.isPeriodeKeineSelected()
+                            ? ''
+                            : this.statistikParameter.gesuchsperiode,
                         this.statistikParameter.gemeinde,
                         this.statistikParameter.institution
                     )
@@ -1035,5 +1038,51 @@ export class StatistikComponent implements OnInit, OnDestroy {
             (EbeguUtil.isNullOrUndefined(this.statistikParameter.institution) ||
                 this.statistikParameter.institution === ('ALLE' as any))
         );
+    }
+
+    public isPeriodeKeineSelected(): boolean {
+        return this.statistikParameter.gesuchsperiode === this.PERIODE_KEINE;
+    }
+
+    public isZeitspanneMoreThanOneJahr(): boolean {
+        if (!this.isPeriodeKeineSelected()) {
+            return false;
+        }
+        const von = this.statistikParameter.von;
+        const bis = this.statistikParameter.bis;
+        if (
+            EbeguUtil.isNullOrUndefined(von) ||
+            EbeguUtil.isNullOrUndefined(bis)
+        ) {
+            return false;
+        }
+        return von.clone().add(1, 'year').isBefore(bis);
+    }
+
+    public getSelectedPeriode(): TSGesuchsperiode | undefined {
+        if (this.isPeriodeKeineSelected()) {
+            return undefined;
+        }
+        return this.gesuchsperioden?.find(
+            gp => gp.id === this.statistikParameter.gesuchsperiode
+        );
+    }
+
+    public isVonBisOutsidePeriode(): boolean {
+        const periode = this.getSelectedPeriode();
+        if (!periode) {
+            return false;
+        }
+        const gueltigAb = periode.gueltigkeit.gueltigAb;
+        const gueltigBis = periode.gueltigkeit.gueltigBis;
+        const von = this.statistikParameter.von;
+        const bis = this.statistikParameter.bis;
+        const vonOutside =
+            !EbeguUtil.isNullOrUndefined(von) &&
+            (von.isBefore(gueltigAb) || von.isAfter(gueltigBis));
+        const bisOutside =
+            !EbeguUtil.isNullOrUndefined(bis) &&
+            (bis.isBefore(gueltigAb) || bis.isAfter(gueltigBis));
+        return vonOutside || bisOutside;
     }
 }

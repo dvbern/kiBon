@@ -2278,7 +2278,9 @@
                                                     [(date)]="
                                                         statistikParameter.von
                                                     "
-                                                    [required]="false"
+                                                    [required]="
+                                                        isPeriodeKeineSelected()
+                                                    "
                                                 >
                                                 </dv-date-picker-x>
                                             </div>
@@ -2293,9 +2295,37 @@
                                                     [(date)]="
                                                         statistikParameter.bis
                                                     "
-                                                    [required]="false"
+                                                    [required]="
+                                                        isPeriodeKeineSelected()
+                                                    "
                                                 >
                                                 </dv-date-picker-x>
+                                                @if (
+                                                    isZeitspanneMoreThanOneJahr()
+                                                ) {
+                                                    <dv-error-messages
+                                                        [errorObject]="{
+                                                            zeitspanne: true
+                                                        }"
+                                                        [errorMessageOverrides]="{
+                                                            zeitspanne:
+                                                                'ERROR_ZEITSPANNE_MAX_1_JAHR'
+                                                        }"
+                                                        class="error"
+                                                    ></dv-error-messages>
+                                                }
+                                                @if (isVonBisOutsidePeriode()) {
+                                                    <dv-error-messages
+                                                        [errorObject]="{
+                                                            ausserhalbPeriode: true
+                                                        }"
+                                                        [errorMessageOverrides]="{
+                                                            ausserhalbPeriode:
+                                                                'ERROR_VON_BIS_AUSSERHALB_PERIODE'
+                                                        }"
+                                                        class="error"
+                                                    ></dv-error-messages>
+                                                }
                                             </div>
                                             <div class="col-xs-3">
                                                 <div class="form-group">
@@ -2316,6 +2346,16 @@
                                                             required
                                                             class="form-control"
                                                         >
+                                                            <mat-option
+                                                                [value]="
+                                                                    PERIODE_KEINE
+                                                                "
+                                                            >
+                                                                {{
+                                                                    'KEINE'
+                                                                        | translate
+                                                                }}
+                                                            </mat-option>
                                                             @for (
                                                                 gesuchsperiode of gesuchsperioden;
                                                                 track gesuchsperiode
@@ -2487,7 +2527,9 @@
                                                         width: 13rem;
                                                     "
                                                     [buttonDisabled]="
-                                                        bgZahlungenStatistikGemeindeAndInstitutionAlleSelected()
+                                                        bgZahlungenStatistikGemeindeAndInstitutionAlleSelected() ||
+                                                        isZeitspanneMoreThanOneJahr() ||
+                                                        isVonBisOutsidePeriode()
                                                     "
                                                 >
                                                     <span

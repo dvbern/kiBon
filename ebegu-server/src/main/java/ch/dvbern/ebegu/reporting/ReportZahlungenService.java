@@ -33,7 +33,7 @@ public interface ReportZahlungenService {
 	UploadFileInfo generateExcelReportZahlungen(
 		@Nonnull ReportVorlage workJobType,
 		@Nonnull Locale locale,
-		@Nonnull String gesuchsperiodeId,
+		@Nullable String gesuchsperiodeId,
 		@Nullable String gemeindeId,
 		@Nullable String institutionId,
 		@Nullable String von,
