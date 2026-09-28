@@ -35,6 +35,7 @@ START TRANSACTION;
 SET @mandant_id_schwyz = UNHEX(REPLACE('08687de9-b3d0-11ee-829a-0242ac160002', '-', ''));
 call select_gesuchsperiode('2024-08-01', @mandant_id_schwyz, @gesuchsperiode_24_25_id);
 call select_gesuchsperiode('2025-08-01', @mandant_id_schwyz, @gesuchsperiode_25_26_id);
+call select_gesuchsperiode('2026-08-01', @mandant_id_schwyz, @gesuchsperiode_26_27_id);
 
 SET @testgemeinde_schwyz_id = UNHEX(REPLACE('de7c81c0-b3d5-11ee-829a-0242ac160002', '-', ''));
 SET @traegerschaft_schwyz_id = UNHEX(REPLACE('ef7ef939-b3e7-11ee-829a-0242ac160002', '-', ''));
@@ -48,20 +49,35 @@ SET @system_user = UNHEX(REPLACE('33333333-3333-3333-3333-333333333333', '-', ''
 UPDATE application_property SET value = 'true' WHERE name = 'DUMMY_LOGIN_ENABLED' AND mandant_id = @mandant_id_schwyz;
 UPDATE application_property SET value = 'yellow' WHERE name = 'BACKGROUND_COLOR' AND mandant_id = @mandant_id_schwyz;
 UPDATE application_property SET value = 'false' WHERE name = 'ZUSATZINFORMATIONEN_INSTITUTION' AND mandant_id = @mandant_id_schwyz;
-UPDATE application_property SET value = 'false' WHERE name = 'SCHNITTSTELLE_EVENTS_AKTIVIERT' AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = 'true' WHERE name = 'SCHNITTSTELLE_EVENTS_AKTIVIERT' AND mandant_id = @mandant_id_schwyz;
 UPDATE application_property SET value = 'true' WHERE name = 'ANGEBOT_MITTAGSTISCH_ENABLED' AND mandant_id = @mandant_id_schwyz;
 UPDATE application_property SET value = 'true' WHERE name = 'AUSZAHLUNGEN_AN_ELTERN' AND mandant_id = @mandant_id_schwyz;
 UPDATE application_property SET value = 'false' WHERE name = 'ANGEBOT_TS_ENABLED' AND mandant_id = @mandant_id_schwyz;
 UPDATE application_property SET value = 'false' WHERE name = 'ABWEICHUNGEN_ENABLED' AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = 'BEMERKUNGEN_FALLUEBERGREIFEND,KIND_TERMINIEREN,KAFKA_STATISTIK' WHERE name = 'ACTIVATED_DEMO_FEATURES'                                AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = '0'      WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_ANTEIL_ZWEITPRUEFUNG_DE'  AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = '0'      WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_ANTEIL_ZWEITPRUEFUNG_FR'  AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = '100000' WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_AUTO_ZWEITPRUEFUNG_DE'    AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = '50000'  WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_AUTO_ZWEITPRUEFUNG_FR'    AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = 'true'   WHERE name = 'MAIL_VERSAND_ALLER_MAILS_AUCH_AN_GS_2'                 AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = 'true'   WHERE name = 'QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER'         AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = 'true'   WHERE name = 'QUARKUS_STATISTIK_LASTENAUSGLEICH_BG'                  AND mandant_id = @mandant_id_schwyz;
+UPDATE application_property SET value = 'true'   WHERE name = 'QUARKUS_STATISTIK_MITARBEITENDE'                       AND mandant_id = @mandant_id_schwyz;
 
 # Gesuchsperiode
 UPDATE gesuchsperiode SET status = 'AKTIV' WHERE id = @gesuchsperiode_24_25_id;
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_25_26_id, now(), now(), 'ebegu:Kanton Schwyz', 'ebegu:Kanton Schwyz', 0, null, '2025-08-01', '2026-07-31', '2025-01-01', 'AKTIV', @mandant_id_schwyz);
+call CreateGesuchsperiode(@gesuchsperiode_25_26_id, '2025-08-01', '2026-07-31', '2025-01-01', 'AKTIV', @mandant_id_schwyz, 'ebegu:Kanton Schwyz');
+call CreateGesuchsperiode(@gesuchsperiode_26_27_id, '2026-08-01', '2027-07-31', '2026-01-01', 'AKTIV', @mandant_id_schwyz, 'ebegu:Kanton Schwyz');
+
+# Alte Perioden inaktivieren (alles vor 2025-08-01)
+UPDATE gesuchsperiode SET status = 'INAKTIV' WHERE mandant_id = @mandant_id_schwyz AND gueltig_ab < '2025-08-01' AND status != 'INAKTIV';
 
 
 # Benutzer System erstellen
-INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, nachname, username, vorname, mandant_id, externaluuid, status) VALUES (@system_user, '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, null, 'hallo@dvbern.ch', 'System', 'system_sz', '', @mandant_id_schwyz, null, 'AKTIV');
-INSERT IGNORE INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id) VALUES (UNHEX(REPLACE('2a7b78ed-4af0-11e9-9a3a-afd41a03c0bb', '-', '')), '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, null, '2017-01-01', '9999-12-31', 'SUPER_ADMIN', @system_user, null, null);
+call CreateSystemUser(
+	@system_user,
+	UNHEX(REPLACE('2a7b78ed-4af0-11e9-9a3a-afd41a03c0bb', '-', '')),
+	'system_sz', @mandant_id_schwyz);
 
 # Test Gemeinden Schwyz erstellen, inkl. Adressen und Gemeindestammdaten. Sequenz anpassen
 INSERT IGNORE INTO gemeinde (
@@ -96,8 +112,7 @@ VALUES (UNHEX(REPLACE('f5c2c6b3-b3e6-11ee-829a-0242ac160002', '-', '')), NOW(), 
 
 
 # Test-Institutionen erstellen
-INSERT IGNORE INTO traegerschaft (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, active, email, mandant_id)
-	VALUES (@traegerschaft_schwyz_id, NOW(), NOW(), 'flyway:Kanton Schwyz', 'flyway:Kanton Schwyz', 0, 'Kitas & Tagis Kanton Schwyz', true, 'kitastagis-sz@mailbucket.dvbern.ch', @mandant_id_schwyz);
+call CreateTraegerschaft(@traegerschaft_schwyz_id, 'Kitas & Tagis Kanton Schwyz', @mandant_id_schwyz, 'kitastagis-sz@mailbucket.dvbern.ch', true);
 
 # Kita und Tagesfamilien
 INSERT IGNORE INTO institution (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, name, mandant_id, traegerschaft_id, status, event_published)
@@ -244,8 +259,7 @@ UPDATE einstellung set value = 'true' WHERE einstellung_key = 'ZEMIS_DISABLED' A
 
 
 # Set Einstellungen Periode 25/26 (Kopieren aus Periode 24/25 und Änderungen updaten)
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Kanton Schwyz', 'ebegu:Kanton Schwyz', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_25_26_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_24_25_id;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_24_25_id, @gesuchsperiode_25_26_id, NULL, NULL, 'ebegu:Kanton Schwyz');
 UPDATE einstellung set value = 'true' WHERE einstellung_key = 'ABWEICHUNGEN_ENABLED' AND gesuchsperiode_id = @gesuchsperiode_25_26_id AND gemeinde_id is null;
 UPDATE einstellung set value = '2025-08-01' WHERE einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' AND gesuchsperiode_id = @gesuchsperiode_25_26_id AND gemeinde_id is null;
 UPDATE einstellung set value = '2025-08-01' WHERE einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' AND gesuchsperiode_id = @gesuchsperiode_25_26_id AND gemeinde_id is null;
@@ -285,5 +299,51 @@ UPDATE einstellung set value = 'SCHWYZ_ERWEITERT' WHERE einstellung_key = 'FINAN
 UPDATE einstellung set value = 'true' WHERE einstellung_key = 'VERFUEGUNG_EINGESCHRIEBEN_VERSENDEN_AKTIVIERT' AND gesuchsperiode_id = @gesuchsperiode_25_26_id AND gemeinde_id is null;
 UPDATE einstellung set value = '0' WHERE einstellung_key = 'ZUSCHLAG_BEHINDERUNG_PRO_STD' AND gesuchsperiode_id = @gesuchsperiode_25_26_id AND gemeinde_id is null;
 UPDATE einstellung set value = '0' WHERE einstellung_key = 'ZUSCHLAG_BEHINDERUNG_PRO_TG' AND gesuchsperiode_id = @gesuchsperiode_25_26_id AND gemeinde_id is null;
+
+# Set Einstellungen Periode 26/27 (Kopieren aus Periode 25/26 und Datum-Bumps)
+call CopyEinstellungenFromPeriod(@gesuchsperiode_25_26_id, @gesuchsperiode_26_27_id, NULL, NULL, 'ebegu:Kanton Schwyz');
+UPDATE einstellung set value = '2026-08-01' WHERE einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' AND gesuchsperiode_id = @gesuchsperiode_26_27_id AND gemeinde_id is null;
+UPDATE einstellung set value = '2026-08-01' WHERE einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' AND gesuchsperiode_id = @gesuchsperiode_26_27_id AND gemeinde_id is null;
+UPDATE einstellung set value = '2026-08-01' WHERE einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' AND gesuchsperiode_id = @gesuchsperiode_26_27_id AND gemeinde_id is null;
+
+# UAT-Werte SZ 26/27
+UPDATE einstellung SET value = '51000'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN'                              AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '6.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT'                    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '70000'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN'                              AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '3.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT'                    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT'                    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED'                                                     AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_FUER_SOZIALHILFEBEZUEGER_ENABLED'                            AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT'                            AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '20'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MIN_ERWERBSPENSUM_EINGESCHULT'                                                        AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '20'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MIN_ERWERBSPENSUM_NICHT_EINGESCHULT'                                                  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_AKTIVIERT'                                      AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_KITA'                                    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO'                                     AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO_AB_PRIMARSCHULE'                     AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_MAX_MASSGEBENDEN_EINKOMMEN_FUER_BERECHNUNG'      AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_SCHNITTSTELLE_KITAX_ENABLED'                                                          AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_TAGESSCHULE_TAGIS_ENABLED'                                                            AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG'                                       AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_ENABLED'                                    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_MAXPROZENT'                                 AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA'                                                AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO'                                                 AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED'                                                    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '18'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD'                                           AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_KITA'                                                  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_TFO'                                                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'VORSCHULALTER' WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_KITA'                                  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'VORSCHULALTER' WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_TFO'                                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED'                                                      AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_LINEAR_KITA_MAX'                                              AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_LINEAR_TFO_MAX'                                               AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '153215'        WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_MAX_MASSGEBENDES_EINKOMMEN'                                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '47193'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_MIN_MASSGEBENDES_EINKOMMEN'                                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'PAUSCHAL'      WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_TYP'                                                          AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND,NACHWEIS_ERWERBSPENSUM,NACHWEIS_AUSBILDUNG,NACHWEIS_RAV,BESTAETIGUNG_ARZT,NACHWEIS_SELBSTAENDIGKEIT,NACHWEIS_FREIWILLIGENARBEIT,NACHWEIS_INTEGRATION_BESCHAEFTIGUNSPROGRAMM,NACHWEIS_TRENNUNG,NACHWEIS_GETEILTE_OBHUT,NACHWEIS_UNTERHALTSVEREINBARUNG,STEUERVERANLAGUNG,JAHRESLOHNAUSWEISE,NACHWEIS_FAMILIENZULAGEN,NACHWEIS_ERSATZEINKOMMEN,NACHWEIS_ERHALTENE_ALIMENTE,NACHWEIS_GELEISTETE_ALIMENTE,STEUERERKLAERUNG,NACHWEIS_VERMOEGEN,NACHWEIS_SCHULDEN,ERFOLGSRECHNUNGEN_JAHR,ERFOLGSRECHNUNGEN_JAHR_MINUS1,ERFOLGSRECHNUNGEN_JAHR_MINUS2,NACHWEIS_ABGERECHNETE_QUELLENSTEUERN,NACHWEIS_NETTOLOHN,NACHWEIS_EINKAEUFE_VORSORGE,NACHWEIS_ABZUEGE_LIEGENSCHAFT,NACHWEIS_HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG,NACHWEIS_BRUTTOLOHN,NACHWEIS_SOZIALHILFE,NACHWEIS_BRUTTOVERMOEGENERTRAEGE,NACHWEIS_GEWINNUNGSKOSTEN,NACHWEIS_SCHULDZINSEN,NACHWEIS_NETTOERTRAEGE_ERBENGEMEINSCHAFTEN,NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR,NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR_MINUS1,NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR_MINUS2,NACHWEIS_LOHNAUSWEIS_1,NACHWEIS_LOHNAUSWEIS_2,NACHWEIS_LOHNAUSWEIS_3,NACHWEIS_EINKOMMEN_VERFAHREN,FACHSTELLENBESTAETIGUNG' WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'DOKUMENT_ZU_UEBERNEHMEN_TYPS'                  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'AKTIVIERT_AUSZAHLUNG_INSTITUTION' WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT' 								AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '2023-09-15'                       WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'LATS_STICHTAG'                                 								AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'                                WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'MINIMALDAUER_KONKUBINAT'                       								AND gemeinde_id IS NULL;
 
 COMMIT;

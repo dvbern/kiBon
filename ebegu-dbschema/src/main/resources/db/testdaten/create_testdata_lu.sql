@@ -93,14 +93,20 @@ UPDATE application_property SET value = 'true' WHERE name = 'ERLAUBEN_INSTITUTIO
 
 # Gesuchsperiode
 UPDATE gesuchsperiode SET status = 'AKTIV' WHERE id = @gesuchsperiode_22_23_lu_id;
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_23_24_lu_id, now(), now(), 'ebegu:Stadt Luzern', 'ebegu:Stadt Luzern', 0, null, '2023-08-01', '2024-07-31', '2023-12-08', 'AKTIV', @mandant_id_luzern);
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_24_25_lu_id, now(), now(), 'ebegu:Stadt Luzern', 'ebegu:Stadt Luzern', 0, null, '2024-08-01', '2025-07-31', '2024-01-01', 'AKTIV', @mandant_id_luzern);
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_25_26_lu_id, now(), now(), 'ebegu:Stadt Luzern', 'ebegu:Stadt Luzern', 0, null, '2025-08-01', '2026-07-31', '2025-01-01', 'AKTIV', @mandant_id_luzern);
-UPDATE gesuchsperiode SET status = 'INAKTIV' WHERE id = @gesuchsperiode_22_23_lu_id;
+call CreateGesuchsperiode(@gesuchsperiode_23_24_lu_id, '2023-08-01', '2024-07-31', '2023-12-08', 'AKTIV', @mandant_id_luzern, 'ebegu:Stadt Luzern');
+call CreateGesuchsperiode(@gesuchsperiode_24_25_lu_id, '2024-08-01', '2025-07-31', '2024-01-01', 'AKTIV', @mandant_id_luzern, 'ebegu:Stadt Luzern');
+call CreateGesuchsperiode(@gesuchsperiode_25_26_lu_id, '2025-08-01', '2026-07-31', '2025-01-01', 'AKTIV', @mandant_id_luzern, 'ebegu:Stadt Luzern');
+
+
+# Alte Perioden inaktivieren (alles vor 2025-08-01). Keine neue 26/27-Periode für LU.
+UPDATE gesuchsperiode SET status = 'INAKTIV' WHERE mandant_id = @mandant_id_luzern AND gueltig_ab < '2025-08-01' AND status != 'INAKTIV';
+
 
 # Benutzer System erstellen
-INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, nachname, username, vorname, mandant_id, externaluuid, status) VALUES (@system_user, '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, null, 'hallo@dvbern.ch', 'System', 'system_lu', '', @mandant_id_luzern, null, 'AKTIV');
-INSERT IGNORE INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id) VALUES (UNHEX(REPLACE('ebdbc4d5-cf80-11ee-8608-0242ac160002', '-', '')), '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, null, '2017-01-01', '9999-12-31', 'SUPER_ADMIN', @system_user, null, null);
+call CreateSystemUser(
+	@system_user,
+	UNHEX(REPLACE('ebdbc4d5-cf80-11ee-8608-0242ac160002', '-', '')),
+	'system_lu', @mandant_id_luzern);
 
 # Gemeinden Testgemeinde Luzern erstellen, inkl. Adressen und Gemeindestammdaten. Sequenz anpassen
 INSERT IGNORE INTO gemeinde (
@@ -318,23 +324,19 @@ INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_e
 SELECT UUID(), now(), now(), 'ebegu:Stadt Luzern', 'ebegu:Stadt Luzern', 0, 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED', 'false', @luzern_test_gemeinde_id, @gesuchsperiode_22_23_lu_id, @mandant_id_luzern, null;
 
 # Einstellungen Periode 23/24 (Kopieren aus 22/23 und alle Änderungen updaten)
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Stadt Luzern', 'ebegu:Stadt Luzern', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_23_24_lu_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_22_23_lu_id;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_22_23_lu_id, @gesuchsperiode_23_24_lu_id, NULL, NULL, 'ebegu:Stadt Luzern');
 
 # Einstellungen Periode 24/25 (Kopieren aus 23/24 und alle Änderungen updaten)
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Stadt Luzern', 'ebegu:Stadt Luzern', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_24_25_lu_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_23_24_lu_id;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_23_24_lu_id, @gesuchsperiode_24_25_lu_id, NULL, NULL, 'ebegu:Stadt Luzern');
 
 # Gesuchsperiode 24/25 Einstellungen
 UPDATE einstellung set value = 'PAUSCHALE' WHERE einstellung_key = 'EINGEWOEHNUNG_TYP' AND gesuchsperiode_id = @gesuchsperiode_24_25_lu_id and gemeinde_id is null;
 
 # Gesuchsperiode 25/26 Einstellungen
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Stadt Luzern', 'ebegu:Stadt Luzern', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_25_26_lu_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_24_25_lu_id;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_24_25_lu_id, @gesuchsperiode_25_26_lu_id, NULL, NULL, 'ebegu:Stadt Luzern');
 
 # Test-Institutionen erstellen
-INSERT IGNORE INTO traegerschaft (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, active, mandant_id)
-	VALUES (UNHEX(REPLACE('31bf2433-30a3-11ec-a86f-b89a2ae4a038', '-', '')), '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, 'Kitas & Tagis Stadt Luzern', true,  @mandant_id_luzern);
+call CreateTraegerschaft(UNHEX(REPLACE('31bf2433-30a3-11ec-a86f-b89a2ae4a038', '-', '')), 'Kitas & Tagis Stadt Luzern', @mandant_id_luzern, NULL, true);
 
 # Kita und Tagesfamilien
 INSERT IGNORE INTO institution (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, name, mandant_id, traegerschaft_id, status, event_published)
@@ -436,26 +438,11 @@ VALUES (UNHEX(REPLACE('6d6afdb2-3261-11ec-a17e-b89a2ae4a038', '-', '')), '2016-0
 		UNHEX(REPLACE('f482ce4b-30a4-11ec-a86f-b89a2ae4a038', '-', '')), 'bruennen-lu@mailbucket.dvbern.ch', NULL, NULL);
 
 -- Sozialdienst
-INSERT IGNORE INTO sozialdienst (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version,
-								 vorgaenger_id, name, status, mandant_id)
-VALUES (UNHEX(REPLACE('7049ec48-30ab-11ec-a86f-b89a2ae4a038', '-', '')), '2021-02-15 09:48:18', '2021-02-15 10:11:35',
-		'flyway', 'flyway', 0, NULL, 'LuzernerSozialdienst', 'AKTIV',
-		 @mandant_id_luzern);
-
-INSERT IGNORE INTO adresse (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version,
-							vorgaenger_id, gueltig_ab, gueltig_bis, gemeinde, hausnummer, land, organisation, ort, plz,
-							strasse, zusatzzeile)
-VALUES (UNHEX(REPLACE('a0b91196-30ab-11ec-a86f-b89a2ae4a038', '-', '')), '2021-02-15 09:48:18', '2021-02-15 10:11:35',
-		'flyway', 'flyway', 1, NULL, '1000-01-01', '9999-12-31', NULL, '2', 'CH', 'Luzern Sozialdienst', 'Luzern', '6000',
-		'Sozialdienst Strasse', NULL);
-
-INSERT IGNORE INTO sozialdienst_stammdaten (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert,
-											version, vorgaenger_id, mail, telefon, webseite, adresse_id,
-											sozialdienst_id)
-VALUES (UNHEX(REPLACE(UUID(), '-', '')), '2021-02-15 09:48:18', '2021-02-15 09:48:18',
-		'flyway', 'flyway', 0, NULL, 'test-lu@mailbucket.dvbern.ch', '078 898 98 98', 'www.test.dvbern.ch',
-		UNHEX(REPLACE('a0b91196-30ab-11ec-a86f-b89a2ae4a038', '-', '')),
-		UNHEX(REPLACE('7049ec48-30ab-11ec-a86f-b89a2ae4a038', '-', '')));
+call CreateSozialdienst(
+	UNHEX(REPLACE('7049ec48-30ab-11ec-a86f-b89a2ae4a038', '-', '')),
+	'LuzernerSozialdienst', @mandant_id_luzern, 'Luzern', '6000',
+	'test-lu@mailbucket.dvbern.ch', 'www.test.dvbern.ch',
+	'Sozialdienst Strasse', NULL);
 
 UPDATE mandant SET mandant.activated=true where id = @mandant_id_luzern;
 

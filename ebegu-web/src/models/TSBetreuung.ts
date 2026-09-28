@@ -287,6 +287,10 @@ export class TSBetreuung extends TSAbstractMutableEntity {
         return this.isAngebotKITA() || this.isAngebotTagesfamilien();
     }
 
+    public isAngebotMittagstisch(): boolean {
+        return this.isAngebot(TSBetreuungsangebotTyp.MITTAGSTISCH);
+    }
+
     public isAngebotSchulamt(): boolean {
         return this.isAngebotFerieninsel() || this.isAngebotTagesschule();
     }

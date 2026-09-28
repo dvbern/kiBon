@@ -37,6 +37,7 @@ call select_gesuchsperiode('2022-08-01', @mandant_id_solothurn, @gesuchsperiode_
 call select_gesuchsperiode('2023-08-01', @mandant_id_solothurn, @gesuchsperiode_23_24_id);
 call select_gesuchsperiode('2024-08-01', @mandant_id_solothurn, @gesuchsperiode_24_25_id);
 call select_gesuchsperiode('2025-08-01', @mandant_id_solothurn, @gesuchsperiode_25_26_id);
+call select_gesuchsperiode('2026-08-01', @mandant_id_solothurn, @gesuchsperiode_26_27_id);
 SET @testgemeinde_solothurn_id = UNHEX(REPLACE('47c4b3a8-5379-11ec-98e8-f4390979fa3e', '-', ''));
 SET @testgemeinde_grenchen_id = UNHEX(REPLACE('47c4b3a8-5371-11ec-98e8-f4390979fa3e', '-', ''));
 SET @traegerschaft_solothurn_id = UNHEX(REPLACE('5c537fd1-537b-11ec-98e8-f4390979fa3e', '-', ''));
@@ -53,18 +54,17 @@ UPDATE application_property SET value = 'false' WHERE name = 'FRENCH_ENABLED' an
 UPDATE application_property SET value = 'false' WHERE name = 'GERES_ENABLED_FOR_MANDANT' and mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = '2022-03-29' WHERE name = 'SCHNITTSTELLE_STEUERSYSTEME_AKTIV_AB' and mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'ZUSATZINFORMATIONEN_INSTITUTION' AND mandant_id = @mandant_id_solothurn;
-UPDATE application_property SET value = 'VERAENDERUNG_BEI_MUTATION' WHERE name = 'ACTIVATED_DEMO_FEATURES' AND mandant_id = @mandant_id_solothurn;
+UPDATE application_property SET value = 'BEMERKUNGEN_FALLUEBERGREIFEND,KIND_TERMINIEREN,KAFKA_STATISTIK' WHERE name = 'ACTIVATED_DEMO_FEATURES' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'true' WHERE name = 'ERLAUBEN_INSTITUTIONEN_ZU_WAEHLEN' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'ANGEBOT_TS_ENABLED' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'ANGEBOT_FI_ENABLED' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'ANGEBOT_MITTAGSTISCH_ENABLED' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'true' WHERE name = 'ANGEBOT_TFO_ENABLED' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'INFOMA_ZAHLUNGEN' AND mandant_id = @mandant_id_solothurn;
-UPDATE application_property SET value = 'true' WHERE name = 'SCHNITTSTELLE_EVENTS_AKTIVIERT' AND mandant_id = @mandant_id_solothurn;
+UPDATE application_property SET value = 'false' WHERE name = 'SCHNITTSTELLE_EVENTS_AKTIVIERT' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'CHECKBOX_AUSZAHLEN_IN_ZUKUNFT' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'true' WHERE name = 'STADT_BERN_ASIV_CONFIGURED' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'EVALUATOR_DEBUG_ENABLED' AND mandant_id = @mandant_id_solothurn;
-UPDATE application_property SET value = 'yellow' WHERE name = 'BACKGROUND_COLOR' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = '60' WHERE name = 'ANZAHL_TAGE_BIS_LOESCHUNG_NACH_WARNUNG_FREIGABE' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = '90' WHERE name = 'ANZAHL_TAGE_BIS_LOESCHUNG_NACH_WARNUNG_QUITTUNG' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'logo-kibon-solothurn.svg' WHERE name = 'LOGO_FILE_NAME' AND mandant_id = @mandant_id_solothurn;
@@ -73,7 +73,7 @@ UPDATE application_property SET value = '90' WHERE name = 'ANZAHL_TAGE_BIS_WARNU
 UPDATE application_property SET value = '15' WHERE name = 'ANZAHL_TAGE_BIS_WARNUNG_QUITTUNG' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = '#D50025' WHERE name = 'PRIMARY_COLOR' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = '#BF0425' WHERE name = 'PRIMARY_COLOR_DARK' AND mandant_id = @mandant_id_solothurn;
-UPDATE application_property SET value = 'application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, image/jpeg, image/png, application/msword, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.oasis.opendocument.text, image/tiff, text/plain, application/vnd.oasis.opendocument.spreadsheet, text/csv,  application/rtf' WHERE name = 'UPLOAD_FILETYPES_WHITELIST' AND mandant_id = @mandant_id_solothurn;
+UPDATE application_property SET value = 'application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, image/jpeg, image/png, application/msword, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.oasis.opendocument.text, image/tiff, text/plain, application/vnd.oasis.opendocument.spreadsheet, text/csv,  application/rtf,application/vnd.ms-outlook,application/zip,application/x-zip-compressed' WHERE name = 'UPLOAD_FILETYPES_WHITELIST' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = '#F0C3CB' WHERE name = 'PRIMARY_COLOR_LIGHT' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'FERIENBETREUUNG_AKTIV' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_AKTIV' AND mandant_id = @mandant_id_solothurn;
@@ -85,18 +85,28 @@ UPDATE application_property SET value = 'false' WHERE name = 'GEMEINDE_KENNZAHLE
 UPDATE application_property SET value = 'false' WHERE name = 'LASTENAUSGLEICH_AKTIV' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'false' WHERE name = 'AUSZAHLUNGEN_AN_ELTERN' AND mandant_id = @mandant_id_solothurn;
 UPDATE application_property SET value = 'true' WHERE name = 'ABWEICHUNGEN_ENABLED' AND mandant_id = @mandant_id_solothurn;
+UPDATE application_property SET value = 'true' WHERE name = 'QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER' AND mandant_id = @mandant_id_solothurn;
+UPDATE application_property SET value = 'true' WHERE name = 'QUARKUS_STATISTIK_LASTENAUSGLEICH_BG'          AND mandant_id = @mandant_id_solothurn;
+UPDATE application_property SET value = 'true' WHERE name = 'QUARKUS_STATISTIK_MITARBEITENDE'               AND mandant_id = @mandant_id_solothurn;
 
 # Gesuchsperiode
 # noinspection SqlWithoutWhere
 UPDATE gesuchsperiode SET status = 'AKTIV' WHERE id = @gesuchsperiode_22_23_id;
-UPDATE gesuchsperiode SET status = 'INAKTIV' WHERE id = @gesuchsperiode_22_23_id;
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_23_24_id, now(), now(), 'ebegu:Kanton Solothurn', 'ebegu:Kanton Solothurn', 3, null, '2023-08-01', '2024-07-31', '2023-12-08', 'AKTIV', @mandant_id_solothurn);
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_24_25_id, now(), now(), 'ebegu:Kanton Solothurn', 'ebegu:Kanton Solothurn', 3, null, '2024-08-01', '2025-07-31', '2024-01-01', 'AKTIV', @mandant_id_solothurn);
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_25_26_id, now(), now(), 'ebegu:Kanton Solothurn', 'ebegu:Kanton Solothurn', 3, null, '2025-08-01', '2026-07-31', '2025-01-01', 'AKTIV', @mandant_id_solothurn);
+call CreateGesuchsperiode(@gesuchsperiode_23_24_id, '2023-08-01', '2024-07-31', '2023-12-08', 'AKTIV', @mandant_id_solothurn, 'ebegu:Kanton Solothurn');
+call CreateGesuchsperiode(@gesuchsperiode_24_25_id, '2024-08-01', '2025-07-31', '2024-01-01', 'AKTIV', @mandant_id_solothurn, 'ebegu:Kanton Solothurn');
+call CreateGesuchsperiode(@gesuchsperiode_25_26_id, '2025-08-01', '2026-07-31', '2025-01-01', 'AKTIV', @mandant_id_solothurn, 'ebegu:Kanton Solothurn');
+call CreateGesuchsperiode(@gesuchsperiode_26_27_id, '2026-08-01', '2027-07-31', '2026-01-01', 'AKTIV', @mandant_id_solothurn, 'ebegu:Kanton Solothurn');
+
+
+# Alte Perioden inaktivieren (alles vor 2025-08-01)
+UPDATE gesuchsperiode SET status = 'INAKTIV' WHERE mandant_id = @mandant_id_solothurn AND gueltig_ab < '2025-08-01' AND status != 'INAKTIV';
+
 
 # Benutzer System erstellen
-INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, nachname, username, vorname, mandant_id, externaluuid, status) VALUES (@system_user, '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, null, 'hallo@dvbern.ch', 'System', 'system_so', '', @mandant_id_solothurn, null, 'AKTIV');
-INSERT IGNORE INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id) VALUES (UNHEX(REPLACE('2a7b78ed-4af0-11e9-9b2c-afd41a03c0bb', '-', '')), '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, null, '2017-01-01', '9999-12-31', 'SUPER_ADMIN', @system_user, null, null);
+call CreateSystemUser(
+	@system_user,
+	UNHEX(REPLACE('2a7b78ed-4af0-11e9-9b2c-afd41a03c0bb', '-', '')),
+	'system_so', @mandant_id_solothurn);
 
 # Test Gemeinden Solothurn und Grenchen erstellen, inkl. Adressen und Gemeindestammdaten. Sequenz anpassen
 INSERT IGNORE INTO gemeinde (
@@ -362,20 +372,58 @@ INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_e
 INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung) SELECT UUID(), now(), now(), 'ebegu:Kanton Solothurn', 'ebegu:Kanton Solothurn', 0, 'ZUSCHLAG_BEHINDERUNG_PRO_TG', '60', @testgemeinde_grenchen_id, @gesuchsperiode_22_23_id, @mandant_id_solothurn, null;
 
 # Gesuchsperiode 23/24 Einstellungen
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Kanton Solothurn', 'ebegu:Kanton Solothurn', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_23_24_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_22_23_id;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_22_23_id, @gesuchsperiode_23_24_id, NULL, NULL, 'ebegu:Kanton Solothurn');
 
 # Gesuchsperiode 24/25 Einstellungen
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Kanton Solothurn', 'ebegu:Kanton Solothurn', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_24_25_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_23_24_id;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_23_24_id, @gesuchsperiode_24_25_id, NULL, NULL, 'ebegu:Kanton Solothurn');
 
 # Gesuchsperiode 25/26 Einstellungen
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Kanton Solothurn', 'ebegu:Kanton Solothurn', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_25_26_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_24_25_id;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_24_25_id, @gesuchsperiode_25_26_id, NULL, NULL, 'ebegu:Kanton Solothurn');
+
+# Gesuchsperiode 26/27 Einstellungen
+call CopyEinstellungenFromPeriod(@gesuchsperiode_25_26_id, @gesuchsperiode_26_27_id, NULL, NULL, 'ebegu:Kanton Solothurn');
+
+# UAT-Werte SO 26/27
+UPDATE einstellung SET value = '51000'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN'                             AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '6.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT'                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '70000'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN'                             AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '3.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT'                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT'                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED'                                                     AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_FUER_SOZIALHILFEBEZUEGER_ENABLED'                            AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT'                            AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '40'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MIN_ERWERBSPENSUM_EINGESCHULT'                                                        AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '20'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_MIN_ERWERBSPENSUM_NICHT_EINGESCHULT'                                                  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_AKTIVIERT'                                      AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_KITA'                                    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO'                                     AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO_AB_PRIMARSCHULE'                     AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_MAX_MASSGEBENDEN_EINKOMMEN_FUER_BERECHNUNG'     AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_SCHNITTSTELLE_KITAX_ENABLED'                                                          AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_TAGESSCHULE_TAGIS_ENABLED'                                                            AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG'                                       AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_ENABLED'                                    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_MAXPROZENT'                                 AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA'                                                AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO'                                                 AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED'                                                    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '18'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD'                                           AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_KITA'                                                  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_TFO'                                                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'VORSCHULALTER' WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_KITA'                                  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'VORSCHULALTER' WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_TFO'                                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED'                                                      AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_LINEAR_KITA_MAX'                                              AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_LINEAR_TFO_MAX'                                               AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '160000'        WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_MAX_MASSGEBENDES_EINKOMMEN'                                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '40000'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_MIN_MASSGEBENDES_EINKOMMEN'                                   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'PAUSCHAL'      WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_TYP'                                                          AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'BESTAETIGUNG_KITA_PLUS,BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND' WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'DOKUMENT_ZU_UEBERNEHMEN_TYPS'       AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '2025-09-15'    WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'LATS_STICHTAG'                    																AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '40'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27_id AND einstellung_key = 'PARAM_MAX_TAGE_ABWESENHEIT'      																AND gemeinde_id IS NULL;
 
 # Test-Institutionen erstellen
-INSERT IGNORE INTO traegerschaft (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, active, mandant_id)
-	VALUES (@traegerschaft_solothurn_id, '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, 'Kitas & Tagis Stadt Solothurn', true, @mandant_id_solothurn);
+call CreateTraegerschaft(@traegerschaft_solothurn_id, 'Kitas & Tagis Stadt Solothurn', @mandant_id_solothurn, NULL, true);
 
 # Kita und Tagesfamilien
 INSERT IGNORE INTO institution (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, name, mandant_id, traegerschaft_id, status, event_published)
@@ -477,26 +525,11 @@ VALUES (UNHEX(REPLACE('6aa08c20-537f-11ec-98e8-f4390979fa3e', '-', '')), '2016-0
 		UNHEX(REPLACE('3f194c4f-537f-11ec-98e8-f4390979fa3e', '-', '')), 'bruennen-so@mailbucket.dvbern.ch', NULL, NULL);
 
 -- Sozialdienst
-INSERT IGNORE INTO sozialdienst (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version,
-								 vorgaenger_id, name, status, mandant_id)
-VALUES (UNHEX(REPLACE('1b1b4208-5394-11ec-98e8-f4390979fa3e', '-', '')), '2021-02-15 09:48:18', '2021-02-15 10:11:35',
-		'flyway', 'flyway', 0, NULL, 'Solothurner Sozialdienst', 'AKTIV',
-		@mandant_id_solothurn);
-
-INSERT IGNORE INTO adresse (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version,
-							vorgaenger_id, gueltig_ab, gueltig_bis, gemeinde, hausnummer, land, organisation, ort, plz,
-							strasse, zusatzzeile)
-VALUES (UNHEX(REPLACE('a0b91196-30ab-11ec-a86f-b89a2ae4a038', '-', '')), '2021-02-15 09:48:18', '2021-02-15 10:11:35',
-		'flyway', 'flyway', 1, NULL, '1000-01-01', '9999-12-31', NULL, '2', 'CH', 'Solothurn Sozialdienst', 'Solothurn', '4500',
-		'Sozialdienst Strasse', NULL);
-
-INSERT IGNORE INTO sozialdienst_stammdaten (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert,
-											version, vorgaenger_id, mail, telefon, webseite, adresse_id,
-											sozialdienst_id)
-VALUES (UNHEX(REPLACE(UUID(), '-', '')), '2021-02-15 09:48:18', '2021-02-15 09:48:18',
-		'flyway', 'flyway', 0, NULL, 'sozialdienst-so@mailbucket.dvbern.ch', '078 898 98 98', 'http://sodialdienst-so.dvbern.ch',
-		UNHEX(REPLACE('a0b91196-30ab-11ec-a86f-b89a2ae4a038', '-', '')),
-		UNHEX(REPLACE('1b1b4208-5394-11ec-98e8-f4390979fa3e', '-', '')));
+call CreateSozialdienst(
+	UNHEX(REPLACE('1b1b4208-5394-11ec-98e8-f4390979fa3e', '-', '')),
+	'Solothurner Sozialdienst', @mandant_id_solothurn, 'Solothurn', '4500',
+	'sozialdienst-so@mailbucket.dvbern.ch', 'http://sodialdienst-so.dvbern.ch',
+	'Sozialdienst Strasse', NULL);
 
 -- Einstellungen
 UPDATE einstellung SET VALUE='true' WHERE einstellung_key='GEMEINDESPEZIFISCHE_BG_KONFIGURATIONEN' and einstellung.mandant_id = @mandant_id_solothurn;

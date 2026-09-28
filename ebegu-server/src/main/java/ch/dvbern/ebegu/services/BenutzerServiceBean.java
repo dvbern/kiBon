@@ -630,6 +630,7 @@ public class BenutzerServiceBean extends AbstractBaseService implements
 
 		query.select(root);
 
+		predicates.add(cb.equal(root.get(Benutzer_.status), AKTIV));
 		predicates.add(
 			getBerechtigungGueltigPredicate(cb, joinBerechtigungen)
 		);

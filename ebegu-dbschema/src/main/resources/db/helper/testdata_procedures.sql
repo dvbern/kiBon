@@ -274,12 +274,17 @@ BEGIN
 	INSERT IGNORE INTO modul_tagesschule (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, wochentag, modul_tagesschule_group_id) VALUES (UNHEX(REPLACE(UUID(), '-', '')), now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, 'FRIDAY', v_tagesschule_modul_group_Nachmittag_id);
 END $$
 
+
 CREATE OR REPLACE PROCEDURE CreateSozialdienst(
 	IN p_sozialdienst_id BINARY(16),
 	IN p_name            VARCHAR(255),
 	IN p_mandant_id      BINARY(16),
 	IN p_ort             VARCHAR(255),
-	IN p_plz             VARCHAR(255)
+	IN p_plz             VARCHAR(255),
+	IN p_mail            VARCHAR(255),
+	IN p_webseite        VARCHAR(255),
+	IN p_strasse         VARCHAR(255),
+	IN p_hausnummer      VARCHAR(255)
 )
 BEGIN
 	DECLARE adresse_id BINARY(16);
@@ -295,18 +300,98 @@ BEGIN
 								vorgaenger_id, gueltig_ab, gueltig_bis, gemeinde, hausnummer, land, organisation, ort, plz,
 								strasse, zusatzzeile)
 	VALUES (adresse_id, NOW(), NOW(), 'system', 'system', 0, NULL, '1000-01-01', '9999-12-31',
-			NULL, '2', 'CH', p_name, p_ort, p_plz, 'Sozialdienststrasse', NULL);
+			NULL, COALESCE(p_hausnummer, '2'), 'CH', p_name, p_ort, p_plz,
+			COALESCE(p_strasse, 'Sozialdienststrasse'), NULL);
 
 	-- Insert into sozialdienst_stammdaten
 	INSERT IGNORE INTO sozialdienst_stammdaten (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert,
 												version, vorgaenger_id, mail, telefon, webseite, adresse_id, sozialdienst_id)
 	VALUES (UNHEX(REPLACE(UUID(), '-', '')), NOW(), NOW(), 'system', 'system', 0, NULL,
-			CONCAT('sozialdienst-', LOWER(p_name), '@mailbucket.dvbern.ch'), '078 898 98 98',
-			CONCAT('www.sozialdienst-', LOWER(p_name), '.ch'),
+			COALESCE(p_mail, CONCAT('sozialdienst-', LOWER(p_name), '@mailbucket.dvbern.ch')),
+			'078 898 98 98',
+			COALESCE(p_webseite, CONCAT('www.sozialdienst-', LOWER(p_name), '.ch')),
 			adresse_id, p_sozialdienst_id);
 
 END
 
+$$
+
+CREATE OR REPLACE PROCEDURE CreateGesuchsperiode(
+	IN p_id            BINARY(16),
+	IN p_gueltig_ab    DATE,
+	IN p_gueltig_bis   DATE,
+	IN p_datum_aktiv   DATE,
+	IN p_status        VARCHAR(32),
+	IN p_mandant_id    BINARY(16),
+	IN p_user          VARCHAR(255)
+)
+BEGIN
+	INSERT IGNORE INTO gesuchsperiode
+	(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id,
+	 gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id)
+	VALUES (p_id, NOW(), NOW(), p_user, p_user, 0, NULL,
+			p_gueltig_ab, p_gueltig_bis, p_datum_aktiv, p_status, p_mandant_id);
+END
+$$
+
+CREATE OR REPLACE PROCEDURE CreateSystemUser(
+	IN p_benutzer_id      BINARY(16),
+	IN p_berechtigung_id  BINARY(16),
+	IN p_username         VARCHAR(255),
+	IN p_mandant_id       BINARY(16)
+)
+BEGIN
+	INSERT IGNORE INTO benutzer
+	(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id,
+	 email, nachname, username, vorname, mandant_id, externaluuid, status)
+	VALUES (p_benutzer_id, NOW(), NOW(), 'flyway', 'flyway', 0, NULL,
+			'hallo@dvbern.ch', 'System', p_username, '', p_mandant_id, NULL, 'AKTIV');
+
+	INSERT IGNORE INTO berechtigung
+	(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id,
+	 gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id)
+	VALUES (p_berechtigung_id, NOW(), NOW(), 'flyway', 'flyway', 0, NULL,
+			'2017-01-01', '9999-12-31', 'SUPER_ADMIN', p_benutzer_id, NULL, NULL);
+END
+$$
+
+CREATE OR REPLACE PROCEDURE CreateTraegerschaft(
+	IN p_id         BINARY(16),
+	IN p_name       VARCHAR(255),
+	IN p_mandant_id BINARY(16),
+	IN p_email      VARCHAR(255),
+	IN p_active     BOOLEAN
+)
+BEGIN
+	INSERT IGNORE INTO traegerschaft
+	(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, active, email, mandant_id)
+	VALUES (p_id, NOW(), NOW(), 'flyway', 'flyway', 0, p_name, p_active, p_email, p_mandant_id);
+END
+$$
+
+-- p_filter_gemeinde_id: NULL copies every row of the source period
+-- non-NULL only copies rows whose gemeinde_id matches (kanton related rows are excluded in that case)
+-- p_override_gemeinde_id: NULL keeps each source row's gemeinde_id
+-- non-NULL rewrites gemeinde_id to this value in the target rows (used for gemeinde-to-gemeinde clones)
+CREATE OR REPLACE PROCEDURE CopyEinstellungenFromPeriod(
+	IN p_source_periode       BINARY(16),
+	IN p_target_periode       BINARY(16),
+	IN p_filter_gemeinde_id   BINARY(16),
+	IN p_override_gemeinde_id BINARY(16),
+	IN p_user                 VARCHAR(255)
+)
+BEGIN
+	INSERT IGNORE INTO einstellung
+	(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version,
+	 einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
+	SELECT UUID(), NOW(), NOW(), p_user, p_user, 0,
+		   einstellung_key, value,
+		   COALESCE(p_override_gemeinde_id, gemeinde_id),
+		   p_target_periode, mandant_id, erklaerung
+	FROM einstellung
+	WHERE gesuchsperiode_id = p_source_periode
+	  AND (p_filter_gemeinde_id IS NULL OR gemeinde_id = p_filter_gemeinde_id);
+END
 $$
 
 DELIMITER ;

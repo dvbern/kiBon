@@ -77,15 +77,13 @@ SET @adresse_tfo_id = UNHEX(REPLACE(UUID(), '-', ''));
 SET @auszahlungsdaten_tfo_id = UNHEX(REPLACE(UUID(), '-', ''));
 SET @stammdaten_bg_tfo_id = UNHEX(REPLACE(UUID(), '-', ''));
 
-SET @sozialdienst_adresse_id = UNHEX(REPLACE(UUID(), '-', ''));
-
 SET @system_user = UNHEX(REPLACE(UUID(), '-', ''));
 
 # Benutzer System erstellen
-INSERT INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, nachname, username, vorname, mandant_id, externaluuid, status)
-VALUES (@system_user, now(), now(), 'flyway', 'flyway', 0, null, 'hallo@dvbern.ch', 'System', 'system', '', @mandant_id, null, 'AKTIV');
-INSERT INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id)
-VALUES (UNHEX(REPLACE(UUID(), '-', '')), now(), now(), 'flyway', 'flyway', 0, null, '2017-01-01', '9999-12-31', 'SUPER_ADMIN', @system_user, null, null);
+call CreateSystemUser(
+	@system_user,
+	UNHEX(REPLACE(UUID(), '-', '')),
+	'system', @mandant_id);
 
 # Test Gemeinden erstellen, inkl. Adressen und Gemeindestammdaten. Sequenz anpassen
 INSERT INTO gemeinde (
@@ -157,12 +155,11 @@ VALUES (UNHEX(REPLACE(UUID(), '-', '')), NOW(), NOW(), 'flyway', 'flyway', 0,
 
 
 # Test-Institutionen erstellen
-INSERT INTO traegerschaft (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, active, email, mandant_id)
-	VALUES (@traegerschaft_id, NOW(), NOW(), 'flyway', 'flyway', 0,
-	        concat('Kitas & Tagis ', @mandant_name),
-	        true,
-	        concat('kitastagis-', @url_code, '@mailbucket.dvbern.ch'),
-	        @mandant_id);
+call CreateTraegerschaft(@traegerschaft_id,
+	concat('Kitas & Tagis ', @mandant_name),
+	@mandant_id,
+	concat('kitastagis-', @url_code, '@mailbucket.dvbern.ch'),
+	true);
 
 # Kita und Tagesfamilien
 INSERT INTO institution (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, name, mandant_id, traegerschaft_id, status, event_published)
@@ -288,37 +285,22 @@ VALUES (@bruennen_stammdaten_id, NOW(), NOW(),
 
 -- Sozialdienst
 SET @sozialdienst_name = concat(@mandant_name, ' Sozialdienst');
-INSERT INTO sozialdienst (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version,
-                                 vorgaenger_id, name, status, mandant_id)
-VALUES (@sozialdienst_id, now(), now(),
-        'flyway', 'flyway', 0, NULL,
-        @sozialdienst_name,
-        'AKTIV',
-        @mandant_id);
-
-INSERT IGNORE INTO adresse (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version,
-                            vorgaenger_id, gueltig_ab, gueltig_bis, gemeinde, hausnummer, land, organisation, ort, plz,
-                            strasse, zusatzzeile)
-VALUES (@sozialdienst_adresse_id, now(), now(),
-        'flyway', 'flyway', 1, NULL,
-        '1000-01-01', '9999-12-31', NULL,
-        '2', 'CH', @sozialdienst_name, @testgemeinde_name, '6000',
-        'Sozialdienst Strasse', NULL);
-
-INSERT IGNORE INTO sozialdienst_stammdaten (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert,
-                                            version, vorgaenger_id, mail, telefon, webseite, adresse_id,
-                                            sozialdienst_id)
-VALUES (UNHEX(REPLACE(UUID(), '-', '')), now(), now(),
-        'flyway', 'flyway', 0, NULL,
-        concat('test-sozialdienst-', @url_code, '@mailbucket.dvbern.ch'),
-        '078 898 98 98', 'www.test.dvbern.ch',
-        @sozialdienst_adresse_id,
-        @sozialdienst_id);
+call CreateSozialdienst(
+	@sozialdienst_id,
+	@sozialdienst_name, @mandant_id, @testgemeinde_name, '6000',
+	concat('test-sozialdienst-', @url_code, '@mailbucket.dvbern.ch'),
+	'www.test.dvbern.ch',
+	'Sozialdienst Strasse', NULL);
 
 
 # APPLICATION PROPERTIES
 UPDATE application_property SET value = 'true' WHERE name = 'DUMMY_LOGIN_ENABLED' AND mandant_id = @mandant_id;
 UPDATE application_property SET value = 'yellow' WHERE name = 'BACKGROUND_COLOR' AND mandant_id = @mandant_id;
+UPDATE application_property SET value = '0'      WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_ANTEIL_ZWEITPRUEFUNG_DE' AND mandant_id = @mandant_id;
+UPDATE application_property SET value = '0'      WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_ANTEIL_ZWEITPRUEFUNG_FR' AND mandant_id = @mandant_id;
+UPDATE application_property SET value = '100000' WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_AUTO_ZWEITPRUEFUNG_DE'   AND mandant_id = @mandant_id;
+UPDATE application_property SET value = '50000'  WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_AUTO_ZWEITPRUEFUNG_FR'   AND mandant_id = @mandant_id;
+UPDATE application_property SET value = 'true'   WHERE name = 'STADT_BERN_ASIV_CONFIGURED'                           AND mandant_id = @mandant_id;
 
 # Gesuchsperiode
 UPDATE gesuchsperiode SET status = 'AKTIV' WHERE id = @gesuchsperiode_id;

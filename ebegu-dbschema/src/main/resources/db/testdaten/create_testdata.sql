@@ -38,6 +38,7 @@ call select_gesuchsperiode('2022-08-01',@bern_mandant_id, @gesuchsperiode_22_23)
 call select_gesuchsperiode('2023-08-01',@bern_mandant_id, @gesuchsperiode_23_24);
 call select_gesuchsperiode('2024-08-01',@bern_mandant_id, @gesuchsperiode_24_25);
 call select_gesuchsperiode('2025-08-01',@bern_mandant_id, @gesuchsperiode_25_26);
+call select_gesuchsperiode('2026-08-01',@bern_mandant_id, @gesuchsperiode_26_27);
 
 SET @gemeinde_london = UNHEX(REPLACE('80a8e496-b73c-4a4a-a163-a0b2caf76487', '-', ''));
 SET @gemeinde_paris = UNHEX(REPLACE('ea02b313-e7c3-4b26-9ef7-e413f4046db2', '-', ''));
@@ -56,10 +57,10 @@ UPDATE application_property SET value = 'true' WHERE name = 'DUMMY_LOGIN_ENABLED
 UPDATE application_property SET value = 'yellow' WHERE name = 'BACKGROUND_COLOR' AND mandant_id =  @bern_mandant_id;
 UPDATE application_property SET value = 'true' WHERE name = 'FRENCH_ENABLED' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'true' WHERE name = 'GERES_ENABLED_FOR_MANDANT' AND mandant_id = @bern_mandant_id;
-UPDATE application_property SET value = '2020-04-04' WHERE name = 'SCHNITTSTELLE_STEUERSYSTEME_AKTIV_AB' AND mandant_id = @bern_mandant_id;
+UPDATE application_property SET value = '2022-03-29' WHERE name = 'SCHNITTSTELLE_STEUERSYSTEME_AKTIV_AB' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'true' WHERE name = 'ZUSATZINFORMATIONEN_INSTITUTION' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'true' WHERE name = 'STADT_BERN_ASIV_CONFIGURED' AND mandant_id = @bern_mandant_id;
-UPDATE application_property SET value = 'ALLE_MUTATIONSMELDUNGEN_VERFUEGEN, KIBON_2754, GESUCH_BEENDEN_FAMSIT, ZAHLUNGEN_STATISTIK, BEMERKUNGEN_FALLUEBERGREIFEND, MEHRERE_FACHSTELLENBESTAETIGUNGEN, FACHSTELLEN_UEBERGANGSLOESUNG, INSTITUTIONSSCHLIESSUNG_MUTATIONSMELDUNG' WHERE name = 'ACTIVATED_DEMO_FEATURES' AND mandant_id = @bern_mandant_id;
+UPDATE application_property SET value = 'ALLE_MUTATIONSMELDUNGEN_VERFUEGEN,KIBON_2754,ZAHLUNGEN_STATISTIK,BEMERKUNGEN_FALLUEBERGREIFEND,MEHRERE_FACHSTELLEN,FACHSTELLEN_UEBERGANGSLOESUNG,KIND_TERMINIEREN,KAFKA_STATISTIK,INSTITUTIONSSCHLIESSUNG_MUTATIONSMELDUNG' WHERE name = 'ACTIVATED_DEMO_FEATURES' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'false' WHERE name = 'INSTITUTIONEN_DURCH_GEMEINDEN_EINLADEN' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'false' WHERE name = 'ERLAUBEN_INSTITUTIONEN_ZU_WAEHLEN' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'true' WHERE name = 'ANGEBOT_TS_ENABLED' AND mandant_id = @bern_mandant_id;
@@ -77,7 +78,7 @@ UPDATE application_property SET value = '60' WHERE name = 'ANZAHL_TAGE_BIS_WARNU
 UPDATE application_property SET value = '15' WHERE name = 'ANZAHL_TAGE_BIS_WARNUNG_QUITTUNG' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = '#D50025' WHERE name = 'PRIMARY_COLOR' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = '#BF0425' WHERE name = 'PRIMARY_COLOR_DARK' AND mandant_id = @bern_mandant_id;
-UPDATE application_property SET value = 'application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, image/jpeg, image/png, application/msword, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.oasis.opendocument.text, image/tiff, text/plain, application/vnd.oasis.opendocument.spreadsheet, text/csv,  application/rtf' WHERE name = 'UPLOAD_FILETYPES_WHITELIST' AND mandant_id = @bern_mandant_id;
+UPDATE application_property SET value = 'application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, image/jpeg, image/png, application/msword, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.oasis.opendocument.text, image/tiff, text/plain, application/vnd.oasis.opendocument.spreadsheet, text/csv,  application/rtf,application/vnd.ms-outlook,application/zip,application/x-zip-compressed' WHERE name = 'UPLOAD_FILETYPES_WHITELIST' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = '#F0C3CB' WHERE name = 'PRIMARY_COLOR_LIGHT' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'false' WHERE name = 'INFOMA_ZAHLUNGEN' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'true' WHERE name = 'SCHNITTSTELLE_EVENTS_AKTIVIERT' AND mandant_id = @bern_mandant_id;
@@ -90,28 +91,34 @@ UPDATE application_property SET value = '50000' WHERE name = 'LASTENAUSGLEICH_TA
 UPDATE application_property SET value = 'true' WHERE name = 'GEMEINDE_KENNZAHLEN_AKTIV' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'true' WHERE name = 'LASTENAUSGLEICH_AKTIV' AND mandant_id = @bern_mandant_id;
 UPDATE application_property SET value = 'false' WHERE name = 'AUSZAHLUNGEN_AN_ELTERN' AND mandant_id = @bern_mandant_id;
+UPDATE application_property SET value = 'true' WHERE name = 'QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER' AND mandant_id = @bern_mandant_id;
+UPDATE application_property SET value = 'true' WHERE name = 'QUARKUS_STATISTIK_LASTENAUSGLEICH_BG'          AND mandant_id = @bern_mandant_id;
+UPDATE application_property SET value = 'true' WHERE name = 'QUARKUS_STATISTIK_MITARBEITENDE'               AND mandant_id = @bern_mandant_id;
 
 
 # Gesuchsperiode
-UPDATE gesuchsperiode SET status = 'INAKTIV' WHERE ID = @gesuchsperiode_19_20;
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_22_23, now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, null, '2022-08-01', '2023-07-31', '2023-12-07', 'AKTIV', @bern_mandant_id);
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status,mandant_id) VALUES (@gesuchsperiode_23_24, now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, null, '2023-08-01', '2024-07-31', '2023-12-08', 'AKTIV', @bern_mandant_id);
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_24_25, now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, null, '2024-08-01', '2025-07-31', '2024-01-01', 'AKTIV', @bern_mandant_id);
-INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_25_26, now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, null, '2025-08-01', '2026-07-31', '2025-01-01', 'AKTIV', @bern_mandant_id);
+call CreateGesuchsperiode(@gesuchsperiode_22_23, '2022-08-01', '2023-07-31', '2023-12-07', 'AKTIV', @bern_mandant_id, 'ebegu:Kanton Bern');
+call CreateGesuchsperiode(@gesuchsperiode_23_24, '2023-08-01', '2024-07-31', '2023-12-08', 'AKTIV', @bern_mandant_id, 'ebegu:Kanton Bern');
+call CreateGesuchsperiode(@gesuchsperiode_24_25, '2024-08-01', '2025-07-31', '2024-01-01', 'AKTIV', @bern_mandant_id, 'ebegu:Kanton Bern');
+call CreateGesuchsperiode(@gesuchsperiode_25_26, '2025-08-01', '2026-07-31', '2025-01-01', 'AKTIV', @bern_mandant_id, 'ebegu:Kanton Bern');
+call CreateGesuchsperiode(@gesuchsperiode_26_27, '2026-08-01', '2027-07-31', '2026-01-01', 'AKTIV', @bern_mandant_id, 'ebegu:Kanton Bern');
 
-UPDATE gesuchsperiode SET status = 'INAKTIV' WHERE id = @gesuchsperiode_22_23;
+# Alte Perioden inaktiv setzen
+UPDATE gesuchsperiode SET status = 'INAKTIV' WHERE mandant_id = @bern_mandant_id AND gueltig_ab < '2025-08-01' AND status != 'INAKTIV';
+
 
 # Benutzer System erstellen
-INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, nachname, username, vorname, mandant_id, externaluuid, status) VALUES (UNHEX(REPLACE('22222222-2222-2222-2222-222222222222', '-', '')), now(), now(), 'flyway', 'flyway', 0, null, 'hallo@dvbern.ch', 'System', 'system', '', @bern_mandant_id, null, 'AKTIV');
-INSERT IGNORE INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id) VALUES (UNHEX(REPLACE('2a7b78ec-4af0-11e9-9a3a-afd41a03c0bb', '-', '')), now(), now(),'flyway', 'flyway', 0, null, '2017-01-01', '9999-12-31', 'SUPER_ADMIN', UNHEX(REPLACE('22222222-2222-2222-2222-222222222222', '-', '')), null, null);
+call CreateSystemUser(
+	UNHEX(REPLACE('22222222-2222-2222-2222-222222222222', '-', '')),
+	UNHEX(REPLACE('2a7b78ec-4af0-11e9-9a3a-afd41a03c0bb', '-', '')),
+	'system', @bern_mandant_id);
 
 # Gemeinden Bern und Ostermundigen erstellen, inkl. Adressen und Gemeindestammdaten. Sequenz anpassen
 call CreateGemeinde(@gemeinde_london, 'London', @bern_mandant_id, 99999, true, false, false, 'London', '3072', 'Siessplatzweg', 'london@mailbucket.dvbern.ch', 'www.ostermundigen.ch', UNHEX(REPLACE('22222222-2222-2222-2222-222222222222', '-', '')));
 call CreateGemeinde(@gemeinde_paris, 'Paris', @bern_mandant_id, 99998, true, false, false, 'Paris', '3008', 'Effingerstrasse', 'paris@mailbucket.dvbern.ch', 'www.bern.ch', UNHEX(REPLACE('22222222-2222-2222-2222-222222222222', '-', '')));
 
 # Einstellungen 22/23
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_22_23, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_19_20;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_19_20, @gesuchsperiode_22_23, NULL, NULL, 'ebegu:Kanton Bern');
 
 # Einstellungen
 UPDATE einstellung set value = 'ABHAENGING' where gesuchsperiode_id = @gesuchsperiode_22_23 and einstellung_key = 'ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM' and gemeinde_id is null;
@@ -198,7 +205,7 @@ UPDATE einstellung set value = '8.50' where gesuchsperiode_id = @gesuchsperiode_
 UPDATE einstellung set value = '100' where gesuchsperiode_id = @gesuchsperiode_22_23 and einstellung_key = 'MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_TG' and gemeinde_id is null;
 UPDATE einstellung set value = '2' where gesuchsperiode_id = @gesuchsperiode_22_23 and einstellung_key = 'MINIMALDAUER_KONKUBINAT' and gemeinde_id is null;
 UPDATE einstellung set value = '40' where gesuchsperiode_id = @gesuchsperiode_22_23 and einstellung_key = 'MIN_ERWERBSPENSUM_EINGESCHULT' and gemeinde_id is null;
-UPDATE einstellung set value = '20' where gesuchsperiode_id = @gesuchsperiode_22_23 and einstellung_key = 'MIN_ERWERBSPENSUM_EINGESCHULT' and gemeinde_id is null;
+UPDATE einstellung set value = '20' where gesuchsperiode_id = @gesuchsperiode_22_23 and einstellung_key = 'MIN_ERWERBSPENSUM_NICHT_EINGESCHULT' and gemeinde_id is null;
 UPDATE einstellung set value = '43000' where gesuchsperiode_id = @gesuchsperiode_22_23 and einstellung_key = 'MIN_MASSGEBENDES_EINKOMMEN' and gemeinde_id is null;
 UPDATE einstellung set value = '0.79' where gesuchsperiode_id = @gesuchsperiode_22_23 and einstellung_key = 'MIN_TARIF' and gemeinde_id is null;
 UPDATE einstellung set value = '0.70' where gesuchsperiode_id = @gesuchsperiode_22_23 and einstellung_key = 'MIN_VERGUENSTIGUNG_PRO_STD' and gemeinde_id is null;
@@ -289,8 +296,7 @@ INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_e
 SELECT UUID(), now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED', 'true', @gemeinde_paris, @gesuchsperiode_22_23, @bern_mandant_id, null;
 
 # Gemeinde London (alle Einstellungen von Paris kopieren und dann für London updaten)
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, einstellung_key, value, @gemeinde_london, @gesuchsperiode_22_23, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_22_23 and gemeinde_id = @gemeinde_paris;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_22_23, @gesuchsperiode_22_23, @gemeinde_paris, @gemeinde_london, 'ebegu:Kanton Bern');
 UPDATE einstellung set value = '2022-08-01' where gesuchsperiode_id = @gesuchsperiode_22_23 and gemeinde_id = @gemeinde_london and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB';
 UPDATE einstellung set value = 'false' where gesuchsperiode_id = @gesuchsperiode_22_23 and gemeinde_id = @gemeinde_london and einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED';
 UPDATE einstellung set value = '40' where gesuchsperiode_id = @gesuchsperiode_22_23 and gemeinde_id = @gemeinde_london and einstellung_key = 'GEMEINDE_MIN_ERWERBSPENSUM_EINGESCHULT';
@@ -309,8 +315,7 @@ UPDATE einstellung set value = 'VORSCHULALTER' where gesuchsperiode_id = @gesuch
 UPDATE einstellung set value = 'false' where gesuchsperiode_id = @gesuchsperiode_22_23 and gemeinde_id = @gemeinde_london and einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED';
 
 # Einstellungen Periode 23/24 (Kopieren aus 22/23 und alle Änderungen updaten)
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_23_24, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_22_23;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_22_23, @gesuchsperiode_23_24, NULL, NULL, 'ebegu:Kanton Bern');
 UPDATE einstellung set value = '2023-08-01' where gesuchsperiode_id = @gesuchsperiode_23_24 and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' and gemeinde_id is null;
 UPDATE einstellung set value = '2023-08-01' where gesuchsperiode_id = @gesuchsperiode_23_24 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' and gemeinde_id is null;
 UPDATE einstellung set value = '2023-08-01' where gesuchsperiode_id = @gesuchsperiode_23_24 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' and gemeinde_id is null;
@@ -333,8 +338,7 @@ UPDATE einstellung set value = '2023-08-01' where gesuchsperiode_id = @gesuchspe
 UPDATE einstellung set value = '2023-08-01' where gesuchsperiode_id = @gesuchsperiode_23_24 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' and gemeinde_id = @gemeinde_london;
 
 # Einstellungen Periode 24/25 (Kopieren aus 23/24 und alle Änderungen updaten)
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_24_25, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_23_24;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_23_24, @gesuchsperiode_24_25, NULL, NULL, 'ebegu:Kanton Bern');
 UPDATE einstellung set value = '2024-08-01' where gesuchsperiode_id = @gesuchsperiode_24_25 and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' and gemeinde_id is null;
 UPDATE einstellung set value = '2024-08-01' where gesuchsperiode_id = @gesuchsperiode_24_25 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' and gemeinde_id is null;
 UPDATE einstellung set value = '2024-08-01' where gesuchsperiode_id = @gesuchsperiode_24_25 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' and gemeinde_id is null;
@@ -351,8 +355,7 @@ UPDATE einstellung set value = '2024-08-01' where gesuchsperiode_id = @gesuchspe
 UPDATE einstellung set value = '2024-08-01' where gesuchsperiode_id = @gesuchsperiode_24_25 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' and gemeinde_id = @gemeinde_london;
 
 # Einstellungen Periode 25/26 (Kopieren aus 24/25 und alle Änderungen updaten)
-INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), now(), now(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_25_26, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_24_25;
+call CopyEinstellungenFromPeriod(@gesuchsperiode_24_25, @gesuchsperiode_25_26, NULL, NULL, 'ebegu:Kanton Bern');
 
 UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_paris;
 UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_paris;
@@ -362,8 +365,103 @@ UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchspe
 UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_london;
 UPDATE einstellung set value = '2025-08-01' where gesuchsperiode_id = @gesuchsperiode_25_26 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' AND gemeinde_id  = @gemeinde_london;
 
+# Einstellungen Periode 26/27 (Kopieren aus 25/26 und Test-Gemeinde Datum-Bumps)
+call CopyEinstellungenFromPeriod(@gesuchsperiode_25_26, @gesuchsperiode_26_27, NULL, NULL, 'ebegu:Kanton Bern');
+
+# UAT-Werte 26/27  (Copy propagiert alte 22/23-/23/24-Werte)
+UPDATE einstellung SET value = '2026-08-01'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '2026-08-01'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '2026-08-01'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG'      AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '18'                  WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'DAUER_BABYTARIF'                          AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'DEFAULT_NEW'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'BETREUUNG_COMPARATOR'                     AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'BERN_FACHSTELLE_NAME' WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'FACHSTELLEN_TYP'                          AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '170000'              WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_MASSGEBENDES_EINKOMMEN'               AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '8.9'                 WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_STD'  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '78.8'                WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_TG'   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '8.9'                 WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_VERGUENSTIGUNG_PRIMAR_PRO_STD'        AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '8.9'                 WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_STD' AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '105'                 WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_TG'  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '13.4'                WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_STD' AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '157.5'               WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_TG'  AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '13.14'               WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG'    AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '6.57'                WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MAX_TARIF_OHNE_PAEDAGOGISCHER_BETREUUNG'   AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '49000'               WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MIN_MASSGEBENDES_EINKOMMEN'               AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '0.84'                WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MIN_TARIF'                                AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '40'                  WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'MIN_ERWERBSPENSUM_EINGESCHULT'            AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '5.61'                WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'LATS_LOHNNORMKOSTEN_LESS_THAN_50'         AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '11.22'               WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'LATS_LOHNNORMKOSTEN'                      AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '2026-09-15'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'LATS_STICHTAG'                            AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'BERN_FKJV_FRISTEN'   WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'FINANZIELLE_SITUATION_TYP'                AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '4.45'                WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'ZUSCHLAG_BEHINDERUNG_PRO_STD'             AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = '52.5'                WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'ZUSCHLAG_BEHINDERUNG_PRO_TG'              AND gemeinde_id IS NULL;
+UPDATE einstellung SET value = 'BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND,NACHWEIS_ERWERBSPENSUM,NACHWEIS_SELBSTAENDIGKEIT,NACHWEIS_GETEILTE_OBHUT,NACHWEIS_UNTERHALTSVEREINBARUNG,STEUERVERANLAGUNG,ERFOLGSRECHNUNGEN_JAHR,ERFOLGSRECHNUNGEN_JAHR_MINUS1,ERFOLGSRECHNUNGEN_JAHR_MINUS2,NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR,NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR_MINUS1,NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR_MINUS2' WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'DOKUMENT_ZU_UEBERNEHMEN_TYPS' AND gemeinde_id IS NULL;
+UPDATE einstellung set value = '2026-08-01' where gesuchsperiode_id = @gesuchsperiode_26_27 and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_paris;
+UPDATE einstellung set value = '2026-08-01' where gesuchsperiode_id = @gesuchsperiode_26_27 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_paris;
+UPDATE einstellung set value = '2026-08-01' where gesuchsperiode_id = @gesuchsperiode_26_27 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG'      AND gemeinde_id = @gemeinde_paris;
+UPDATE einstellung set value = '2026-08-01' where gesuchsperiode_id = @gesuchsperiode_26_27 and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung set value = '2026-08-01' where gesuchsperiode_id = @gesuchsperiode_26_27 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung set value = '2026-08-01' where gesuchsperiode_id = @gesuchsperiode_26_27 and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG'      AND gemeinde_id = @gemeinde_london;
+
+# Paris (Stadt Bern) — 26/27-Deltas gegenüber 25/26 von UAT
+# Bestehende Paris-Overrides (aus Copy) mit neuen Werten aktualisieren:
+UPDATE einstellung SET value = '20'   WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA' AND gemeinde_id = @gemeinde_paris;
+UPDATE einstellung SET value = '1.82' WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO'  AND gemeinde_id = @gemeinde_paris;
+UPDATE einstellung SET value = '0'    WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_KITA'   AND gemeinde_id = @gemeinde_paris;
+UPDATE einstellung SET value = '0'    WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_TFO'    AND gemeinde_id = @gemeinde_paris;
+
+# Neue Paris-Overrides für 26/27 (Delta gegenüber UAT)
+INSERT IGNORE INTO einstellung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
+SELECT UUID(), NOW(), NOW(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_LINEAR_KITA_MAX',            '31',     @gemeinde_paris, @gesuchsperiode_26_27, @bern_mandant_id, NULL;
+INSERT IGNORE INTO einstellung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
+SELECT UUID(), NOW(), NOW(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_LINEAR_TFO_MAX',             '2.82',   @gemeinde_paris, @gesuchsperiode_26_27, @bern_mandant_id, NULL;
+INSERT IGNORE INTO einstellung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
+SELECT UUID(), NOW(), NOW(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_MAX_MASSGEBENDES_EINKOMMEN', '140000', @gemeinde_paris, @gesuchsperiode_26_27, @bern_mandant_id, NULL;
+INSERT IGNORE INTO einstellung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
+SELECT UUID(), NOW(), NOW(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_TYP',                         'LINEAR', @gemeinde_paris, @gesuchsperiode_26_27, @bern_mandant_id, NULL;
+
+# UAT-Werte 26/27 für London (Kanton Bern)
+UPDATE einstellung SET value = '51000'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN'                             AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '6.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT'                   AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '70000'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN'                             AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '3.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT'                   AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT'                   AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED'                                                     AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_FUER_SOZIALHILFEBEZUEGER_ENABLED'                            AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT'                            AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '40'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MIN_ERWERBSPENSUM_EINGESCHULT'                                                        AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '20'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_MIN_ERWERBSPENSUM_NICHT_EINGESCHULT'                                                  AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_AKTIVIERT'                                      AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_KITA'                                    AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO'                                     AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO_AB_PRIMARSCHULE'                     AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_MAX_MASSGEBENDEN_EINKOMMEN_FUER_BERECHNUNG'     AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_SCHNITTSTELLE_KITAX_ENABLED'                                                          AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_TAGESSCHULE_TAGIS_ENABLED'                                                            AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG'                                       AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_ENABLED'                                    AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_MAXPROZENT'                                 AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA'                                                AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO'                                                 AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED'                                                    AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '12'            WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD'                                           AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_KITA'                                                  AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0.00'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_TFO'                                                   AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'VORSCHULALTER' WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_KITA'                                  AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'VORSCHULALTER' WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_TFO'                                   AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'false'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED'                                                      AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_LINEAR_KITA_MAX'                                              AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_LINEAR_TFO_MAX'                                               AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '160000'        WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_MAX_MASSGEBENDES_EINKOMMEN'                                   AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = '43000'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_MIN_MASSGEBENDES_EINKOMMEN'                                   AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'PAUSCHAL'      WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_TYP'                                                          AND gemeinde_id = @gemeinde_london;
+
+# London: KONTINGENTIERUNG_ENABLED soll für 26/27 aktiv sein (UAT-Delta, London hat bisher keinen Gemeinde-Override)
+INSERT IGNORE INTO einstellung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
+SELECT UUID(), NOW(), NOW(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, 'GEMEINDE_KONTINGENTIERUNG_ENABLED', 'true', @gemeinde_london, @gesuchsperiode_26_27, @bern_mandant_id, NULL;
+UPDATE einstellung SET value = 'true'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_KONTINGENTIERUNG_ENABLED'                                                                AND gemeinde_id = @gemeinde_london;
+
 # Test-Institutionen erstellen
-INSERT IGNORE INTO traegerschaft (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, active) VALUES (UNHEX(REPLACE('f9ddee82-81a1-4cda-b273-fb24e9299308', '-', '')), '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, 'Kitas & Tagis Stadt Bern', true);
+call CreateTraegerschaft(UNHEX(REPLACE('f9ddee82-81a1-4cda-b273-fb24e9299308', '-', '')), 'Kitas & Tagis Stadt Bern', @bern_mandant_id, NULL, true);
 
 # Kita und Tagesfamilien
 INSERT IGNORE INTO institution (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, name, mandant_id, traegerschaft_id, status, event_published) VALUES (UNHEX(REPLACE('1b6f476f-e0f5-4380-9ef6-836d688853a3', '-', '')), now(), now(), 'flyway', 'flyway', 0, null, 'Brünnen', UNHEX(REPLACE('e3736eb8-6eef-40ef-9e52-96ab48d8f220', '-', '')), UNHEX(REPLACE('f9ddee82-81a1-4cda-b273-fb24e9299308', '-', '')), 'AKTIV', false);
@@ -408,6 +506,7 @@ call CreateTagesschuleModule(@gesuchsperiode_22_23, @gemeinde_paris_institution_
 call CreateTagesschuleModule(@gesuchsperiode_23_24, @gemeinde_paris_institution_stammdaten_tagesschule, 'F8vXs39fkEuXdvi3kjLv5DZn5m4fcVpm27tw', 'Hxttr08V9uANnNSmNnqVXZwcXjg8qWdoSnoK');
 call CreateTagesschuleModule(@gesuchsperiode_24_25, @gemeinde_paris_institution_stammdaten_tagesschule, 'C8vXs39fkEuXdvi3kjLv5DZn5m4fcVpm36ww', 'Ereer08V9uANnNSmNnqVXZwcXjg8qWdoKnos');
 call CreateTagesschuleModule(@gesuchsperiode_25_26, @gemeinde_paris_institution_stammdaten_tagesschule, 'U6jLr48opLaMdvi3kjLv5DZn5m4fcGrq55bt', 'Spaen41C5uANnNSmNnqVXZwcXjg7ugdhLrtx');
+call CreateTagesschuleModule(@gesuchsperiode_26_27, @gemeinde_paris_institution_stammdaten_tagesschule, 'W2kR7q3xL9pMdvi3kjLv5DZn5m4fcHst66cu', 'Trqbn52D6vBOoOTnOorWYaxdYkh8vheiMsuy');
 
 
 -- Tagesschule Gemeinde London
@@ -419,6 +518,7 @@ call CreateTagesschuleModule(@gesuchsperiode_22_23, @gemeinde_london_institution
 call CreateTagesschuleModule(@gesuchsperiode_23_24, @gemeinde_london_institution_stammdaten_tagesschule, '9ciaga64xwjq9dbhn4s42oegq7he7y40dk91', 'qdmblj767bcrdxspmxm1kuqobt7v5d5jmvbk');
 call CreateTagesschuleModule(@gesuchsperiode_24_25, @gemeinde_london_institution_stammdaten_tagesschule, 'r1m0fq9rk3fsi8uudb3chf4d86qek84im2gi', 'qts3o3mpbyv4fbosunqxsjdzsbs6pv0gh71s');
 call CreateTagesschuleModule(@gesuchsperiode_25_26, @gemeinde_london_institution_stammdaten_tagesschule, 'p5c0fq9rk3fsi8uudb3chf4d86qep54mv8ha', 'brp2mpbyv4fbosunqxsjdzsbs6pv3ue64bfs');
+call CreateTagesschuleModule(@gesuchsperiode_26_27, @gemeinde_london_institution_stammdaten_tagesschule, 'q6d1gr0sl4gtj9vvec4dig5e97rfq65nw9ib', 'csq3nqczw5gcptvorqykbxwatp8qw4vf75cx');
 
 UPDATE external_client SET `institution_type` = 'EXCHANGE_SERVICE_INSTITUTION' WHERE external_client.`client_name` = 'kitAdmin';
 
@@ -442,8 +542,11 @@ INSERT IGNORE INTO gemeinde_stammdaten_gesuchsperiode_ferieninsel (id, timestamp
 (UNHEX(REPLACE('9989a3f8-6903-11ea-bbf8-f4390979fa3e', '-', '')), now(), now(), 'flyway', 'flyway', 0, null, '2019-04-01', 'FRUEHLINGSFERIEN', UNHEX(REPLACE('cd28e254-6904-11ea-bbf8-f4390979fa3e', '-', '')));
 
 -- Sozialdienst
-INSERT IGNORE INTO sozialdienst (id,timestamp_erstellt,timestamp_mutiert,user_erstellt,user_mutiert,version,vorgaenger_id,name,status,mandant_id) VALUES (UNHEX(REPLACE('f44a68f2-dda2-4bf2-936a-68e20264b620', '-', '')),now(), now(),'flyway','flyway',0,null,'BernerSozialdienst','AKTIV', @bern_mandant_id);
-INSERT IGNORE INTO adresse (id,timestamp_erstellt,timestamp_mutiert,user_erstellt,user_mutiert,version,vorgaenger_id,gueltig_ab,gueltig_bis,gemeinde,hausnummer,land,organisation,ort,plz,strasse,zusatzzeile) VALUES (UNHEX(REPLACE('a805a101-4200-473a-accc-bbb423ea1999', '-', '')),now(), now(),'flyway','flyway',0,null,'1000-01-01','9999-12-31',null,'2','CH','Bern Sozialdienst','Paris','3000','Sozialdienst Strasse',null);
-INSERT IGNORE INTO sozialdienst_stammdaten (id,timestamp_erstellt,timestamp_mutiert,user_erstellt,user_mutiert,version,vorgaenger_id,mail,telefon,webseite,adresse_id,sozialdienst_id) VALUES (UNHEX(REPLACE('0f1c6b9e-37de-4c10-8ddc-9514fb840f5f', '-', '')),now(), now(),'flyway','flyway',0,null,'test@mailbucket.dvbern.ch','078 898 98 98','www.test.dvbern.ch',UNHEX(REPLACE('a805a101-4200-473a-accc-bbb423ea1999', '-', '')),UNHEX(REPLACE('f44a68f2-dda2-4bf2-936a-68e20264b620', '-', '')));
+call CreateSozialdienst(
+	UNHEX(REPLACE('f44a68f2-dda2-4bf2-936a-68e20264b620', '-', '')),
+	'BernerSozialdienst', @bern_mandant_id, 'Paris', '3000',
+	'test@mailbucket.dvbern.ch', 'www.test.dvbern.ch',
+	'Sozialdienst Strasse', NULL);
+
 
 COMMIT;

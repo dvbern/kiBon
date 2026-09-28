@@ -85,5 +85,10 @@
     "BETREUUNG_HINT_UNTERMONATLICH": "Für die folgenden Angaben gilt: Falls das von- oder bis-Datum der Betreuung nicht auf einer Monatsgrenze liegt, müssen die Werte trotzdem für einen ganzen Monat erfasst werden.",
     "CONFIRM_GESUCH_STATUS_IGNORIEREN_BG": "Möchten Sie auf die Anpassung des Betreuungsgutscheins verzichten?",
     "KEIN_VERTRAG": "Ich nutze kiBon zum Testen, ob ich einen Anspruch auf Betreuungsgutscheine habe und gebe darum noch keine Institution an.",
+    "VOLLKOSTEN": "Effektive Betreuungskosten",
+    "MIN_ELTERNBEITRAG": "Korrektur­betrag zur Einhaltung des minimalen Elternbeitrags / Kürzung",
+    "VERGUENSTIGUNG_AN_INSTITUTION": "Gemeinde­beitrag an die Institution",
+    "GUTSCHEIN_OHNE_BERUECKSICHTIGUNG_MINIMALBEITRAG": "Betreuungsgutschein",
+    "GUTSCHEIN_OHNE_BERUECKSICHTIGUNG_VOLLKOSTEN": "Gutscheinbetrag gemäss Formel",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

@@ -17,6 +17,7 @@ package ch.dvbern.ebegu.services;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +54,6 @@ import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.GesuchDeletionCause;
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
 import ch.dvbern.ebegu.enums.Sprache;
-import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
@@ -110,10 +110,10 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements
 	private CriteriaQueryHelper criteriaQueryHelper;
 
 	@Inject
-	private GesuchsperiodeEmailService gesuchsperiodeEmailService;
+	private InstitutionService institutionService;
 
 	@Inject
-	private InstitutionService institutionService;
+	private GesuchsperiodeStatuswechselService gesuchsperiodeStatuswechselService;
 
 	@Nonnull
 	@Override
@@ -143,7 +143,10 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements
 		}
 		// Überprüfen, ob der Statusübergang zulässig ist
 		if (gesuchsperiode.getStatus() != statusBisher) {
-			handleStatusUebergang(gesuchsperiode, statusBisher);
+			gesuchsperiodeStatuswechselService.handleStatusChange(
+				gesuchsperiode,
+				statusBisher
+			);
 		}
 		if (gesuchsperiode.isNew()) {
 			gesuchsperiode = saveGesuchsperiode(gesuchsperiode);
@@ -228,54 +231,17 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements
 		);
 	}
 
-	private void handleStatusUebergang(
-		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull GesuchsperiodeStatus statusBisher
+	@Nonnull
+	@Override
+	public Optional<LocalDate> findEarliestOtherAktivGesuchsperiodeStart(
+		@Nonnull Mandant mandant,
+		@Nonnull String excludeGesuchsperiodeId
 	) {
-		// Alle Statusuebergaenge werden geloggt
-		logStatusChange(gesuchsperiode, statusBisher);
-		// Superadmin darf alles
-		if (!principalBean.isCallerInRole(UserRole.SUPER_ADMIN)
-			&& !isStatusUebergangValid(
-				statusBisher,
-				gesuchsperiode.getStatus()
-			)) {
-			throw new EbeguRuntimeException(
-				"saveGesuchsperiode",
-				ErrorCodeEnum.ERROR_GESUCHSPERIODE_INVALID_STATUSUEBERGANG,
-				statusBisher,
-				gesuchsperiode.getStatus()
-			);
-		}
-		// Falls es ein Statuswechsel war, und der neue Status ist AKTIV -> Mail an alle Gesuchsteller schicken
-		// Nur, wenn die Gesuchsperiode noch nie auf aktiv geschaltet war.
-		if (GesuchsperiodeStatus.AKTIV == gesuchsperiode.getStatus()
-			&& gesuchsperiode.getDatumAktiviert() == null) {
-			Optional<Gesuchsperiode> lastGesuchsperiodeOptional =
-				getGesuchsperiodeAm(
-					gesuchsperiode.getGueltigkeit()
-						.getGueltigAb()
-						.minusDays(1),
-					gesuchsperiode.getMandant()
-				);
-			if (lastGesuchsperiodeOptional.isPresent()) {
-				gesuchsperiodeEmailService
-					.getAndSaveGesuchsperiodeEmailCandidates(
-						lastGesuchsperiodeOptional.get(),
-						gesuchsperiode
-					);
-				gesuchsperiode.setDatumAktiviert(LocalDate.now());
-			}
-		}
-		// Prüfen, dass ALLE Gesuche dieser Periode im Status "Verfügt" oder "Schulamt" sind. Sind noch
-		// Gesuce in Bearbeitung, oder in Beschwerde etc. darf nicht geschlossen werden!
-		if (GesuchsperiodeStatus.GESCHLOSSEN == gesuchsperiode.getStatus()
-			&& !gesuchService.canGesuchsperiodeBeClosed(gesuchsperiode)) {
-			throw new EbeguRuntimeException(
-				"saveGesuchsperiode",
-				ErrorCodeEnum.ERROR_GESUCHSPERIODE_CANNOT_BE_CLOSED
-			);
-		}
+		return getAllGesuchsperioden(mandant).stream()
+			.filter(gp -> gp.getStatus() == GesuchsperiodeStatus.AKTIV)
+			.filter(gp -> !gp.getId().equals(excludeGesuchsperiodeId))
+			.map(gp -> gp.getGueltigkeit().getGueltigAb())
+			.min(Comparator.naturalOrder());
 	}
 
 	@Nonnull
@@ -973,36 +939,4 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements
 		);
 	}
 
-	private boolean isStatusUebergangValid(
-		GesuchsperiodeStatus statusBefore,
-		GesuchsperiodeStatus statusAfter
-	) {
-		if (GesuchsperiodeStatus.ENTWURF == statusBefore) {
-			return GesuchsperiodeStatus.AKTIV == statusAfter;
-		}
-		if (GesuchsperiodeStatus.AKTIV == statusBefore) {
-			return GesuchsperiodeStatus.INAKTIV == statusAfter;
-		}
-		if (GesuchsperiodeStatus.INAKTIV == statusBefore) {
-			return GesuchsperiodeStatus.GESCHLOSSEN == statusAfter;
-		}
-		return false;
-	}
-
-	private void logStatusChange(
-		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull GesuchsperiodeStatus statusBisher
-	) {
-		LOGGER.info("****************************************************");
-		LOGGER.info("Status Gesuchsperiode wurde geändert:");
-		LOGGER.info("Benutzer: {}", principalBean.getBenutzer().getUsername());
-		LOGGER.info(
-			"Gesuchsperiode: {} ({}" + ')',
-			gesuchsperiode.getGesuchsperiodeString(),
-			gesuchsperiode.getId()
-		);
-		LOGGER.info("Neuer Status: {}", gesuchsperiode.getStatus());
-		LOGGER.info("Bisheriger Status: {}", statusBisher);
-		LOGGER.info("****************************************************");
-	}
 }

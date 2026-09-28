@@ -73,6 +73,16 @@ public interface GesuchsperiodeService {
 	Collection<Gesuchsperiode> getAllGesuchsperioden(@Nonnull Mandant mandant);
 
 	/**
+	 * Gibt den frühesten gueltigAb aller noch-AKTIVEN Gesuchsperioden des
+	 * übergebenen Mandanten zurück, ausgenommen derjenigen mit der übergebenen ID.
+	 */
+	@Nonnull
+	Optional<LocalDate> findEarliestOtherAktivGesuchsperiodeStart(
+		@Nonnull Mandant mandant,
+		@Nonnull String excludeGesuchsperiodeId
+	);
+
+	/**
 	 * @param key PK (id) der Gesuchsperiode
 	 * @return Diese und alle zukünftigen Gesuchsperioden
 	 */

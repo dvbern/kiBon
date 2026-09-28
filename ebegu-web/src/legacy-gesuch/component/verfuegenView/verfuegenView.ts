@@ -1022,7 +1022,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
 
     /**
      * Will show an infobox warning instead of verfügen table
-     * for institution and trägerschaft roles.
+     * for institution and trägerschaft roles for TSBetreuungsangebotTyp.KITA
      *
      * These roles are not allowed to see the table when no zeitabschnitt
      * has any payment to the institution. Such a payment can come either from
@@ -1033,6 +1033,8 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
      */
     public shouldShowWarningInstitution(): boolean {
         return (
+            (!!this.getBetreuung()?.isAngebotBetreuungsgutschein() ||
+                !!this.getBetreuung()?.isAngebotMittagstisch()) &&
             !this.hasAnyZeitabschnittAnyAuszahlungAnInstitution() &&
             this.isInstitutionRole()
         );

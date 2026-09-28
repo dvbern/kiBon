@@ -67,6 +67,15 @@ a {
     @include ebeguA();
 }
 
+body a:focus {
+    outline: none;
+}
+
+body a:focus-visible {
+    outline: 2px solid $contrast-darkest;
+    outline-offset: 0;
+}
+
 md-input-container label:not(.md-container-ignore),
 label,
 span.mdc-label {

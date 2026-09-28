@@ -187,7 +187,11 @@ export class AbwesenheitViewController extends AbstractGesuchViewController<
         }
 
         this.errorService.clearAll();
-        if (!this.form.$dirty && !this.removed) {
+        if (
+            !this.form.$dirty &&
+            !this.removed &&
+            !this.hybridFormBridgeService.hasAnyDirtyForm()
+        ) {
             // If there are no changes in form we don't need anything to update on Server and we could return the
             // promise immediately
             // Update wizardStepStatus also if the form is empty and not dirty

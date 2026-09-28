@@ -23,10 +23,16 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import jakarta.ejb.Asynchronous;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import jakarta.inject.Inject;
+import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -36,9 +42,17 @@ import ch.dvbern.ebegu.entities.VersendeteMail_;
 import ch.dvbern.ebegu.mailing.VersendeteMailSearchParams;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.util.datetime.DateTimeUtils;
+import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 public class VersendeteMailsService extends AbstractBaseService {
+
+	private static final Logger LOG = LoggerFactory.getLogger(
+		VersendeteMailsService.class
+	);
+
 	@Inject
 	private Persistence persistence;
 
@@ -177,5 +191,72 @@ public class VersendeteMailsService extends AbstractBaseService {
 		);
 
 		return builder.and(dateRangePredicate, textPredicate);
+	}
+
+	/**
+	 * Deletes all {@link VersendeteMail} rows for the given mandant whose
+	 * zeitpunktVersand is strictly before the cutoff date.
+	 * Returns the number of rows deleted.
+	 */
+	public int deleteVersendeteMailsBefore(
+		@Nonnull LocalDateTime cutoff,
+		@Nonnull MandantIdentifier mandant
+	) {
+		CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		CriteriaDelete<VersendeteMail> delete = cb.createCriteriaDelete(
+			VersendeteMail.class
+		);
+		Root<VersendeteMail> root = delete.from(VersendeteMail.class);
+
+		ParameterExpression<LocalDateTime> cutoffParam = cb.parameter(
+			LocalDateTime.class,
+			"cutoff"
+		);
+		ParameterExpression<MandantIdentifier> mandantParam = cb.parameter(
+			MandantIdentifier.class,
+			"mandant"
+		);
+		Predicate cutoffPred = cb.lessThan(
+			root.get(VersendeteMail_.zeitpunktVersand),
+			cutoffParam
+		);
+		Predicate mandantPred = cb.equal(
+			root.get(VersendeteMail_.mandantIdentifier),
+			mandantParam
+		);
+
+		delete.where(cutoffPred, mandantPred);
+		Query query = persistence.getEntityManager().createQuery(delete);
+		query.setParameter(cutoffParam, cutoff);
+		query.setParameter(mandantParam, mandant);
+		return query.executeUpdate();
+	}
+
+	/**
+	 * Async wrapper around {@link #deleteVersendeteMailsBefore}.
+	 * Runs in a new transaction
+	 */
+	@Asynchronous
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void deleteVersendeteMailsBeforeAsync(
+		@Nonnull LocalDateTime cutoff,
+		@Nonnull MandantIdentifier mandant
+	) {
+		try {
+			int deleted = deleteVersendeteMailsBefore(cutoff, mandant);
+			LOG.info(
+				"Deleted {} VersendeteMail rows for mandant {} before {}",
+				deleted,
+				mandant,
+				cutoff
+			);
+		} catch (RuntimeException rte) {
+			LOG.error(
+				"Failed to delete VersendeteMail rows for mandant {} before {}",
+				mandant,
+				cutoff,
+				rte
+			);
+		}
 	}
 }

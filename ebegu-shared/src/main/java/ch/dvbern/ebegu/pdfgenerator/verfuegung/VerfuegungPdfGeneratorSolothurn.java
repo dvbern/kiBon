@@ -143,6 +143,19 @@ public class VerfuegungPdfGeneratorSolothurn extends
 	}
 
 	@Override
+	@Nonnull
+	protected VerfuegungTableColumn createVollkostenColumn() {
+		return VerfuegungTableColumn.builder()
+			.title(translate(VOLLKOSTEN))
+			.romanNumber("IV")
+			.width(100)
+			.dataExtractor(
+				abschnitt -> PdfUtil.printBigDecimal(abschnitt.getVollkosten())
+			)
+			.build();
+	}
+
+	@Override
 	protected void createDokumentNichtEintretten(
 		@Nonnull Document document,
 		@Nonnull PdfGenerator generator
