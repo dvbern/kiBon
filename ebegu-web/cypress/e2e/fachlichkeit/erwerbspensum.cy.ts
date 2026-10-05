@@ -27,7 +27,8 @@ import {
     SidenavPO,
     TestFaellePO
 } from '@dv-e2e/page-objects';
-import {getUser, TestFall, TestPeriode} from '@dv-e2e/types';
+import {getUser, getYearsBeforePeriodeStart} from '@dv-e2e/helper';
+import {TestFall, TestPeriode} from '@dv-e2e/types';
 import {describe} from 'mocha';
 import {MANDANTS} from '@models/mandant';
 import {TSUnterhaltsvereinbarungAnswer} from '../../../src/models/enums/TSUnterhaltsvereinbarungAnswer';
@@ -36,7 +37,7 @@ import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () => {
     describe('Grundantrag Familiensituation', () => {
         const gesuchstellende = getUser('[5-GS] Heinrich Müller');
-        const periode: TestPeriode = '2024/25';
+        const periode: TestPeriode = TestPeriode[0];
 
         describe('Konkubinat ohne Kind', () => {
             beforeEach(() => {
@@ -61,7 +62,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
                     ).click();
                     AntragFamSitPO.getKonkubinatStart()
                         .clear()
-                        .type('1.1.2023')
+                        .type(getYearsBeforePeriodeStart(TestPeriode[0], 1))
                         .blur();
                     // Spezialfall Konkubinat ohne Kind, Nicht geteilte Obhut ohne Unterhaltsvereinbarung
                     AntragFamSitPO.getGeteilteObhutOption('nein').click();
@@ -87,7 +88,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
                     ).click();
                     AntragFamSitPO.getKonkubinatStart()
                         .clear()
-                        .type('1.1.2023')
+                        .type(getYearsBeforePeriodeStart(TestPeriode[0], 1))
                         .blur();
                     // Spezialfall Konkubinat ohne Kind, Nicht geteilte Obhut ohne Unterhaltsvereinbarung
                     AntragFamSitPO.getGeteilteObhutOption('nein').click();
@@ -113,7 +114,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
                     ).click();
                     AntragFamSitPO.getKonkubinatStart()
                         .clear()
-                        .type('1.1.2023')
+                        .type(getYearsBeforePeriodeStart(TestPeriode[0], 1))
                         .blur();
                     // Spezialfall Konkubinat ohne Kind, Nicht geteilte Obhut ohne Unterhaltsvereinbarung
                     AntragFamSitPO.getGeteilteObhutOption('nein').click();
@@ -139,7 +140,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
                     ).click();
                     AntragFamSitPO.getKonkubinatStart()
                         .clear()
-                        .type('1.1.2023')
+                        .type(getYearsBeforePeriodeStart(TestPeriode[0], 1))
                         .blur();
                     // Spezialfall Konkubinat ohne Kind, Nicht geteilte Obhut ohne Unterhaltsvereinbarung
                     AntragFamSitPO.getGeteilteObhutOption('nein').click();
@@ -165,7 +166,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
                     ).click();
                     AntragFamSitPO.getKonkubinatStart()
                         .clear()
-                        .type('1.1.2023')
+                        .type(getYearsBeforePeriodeStart(TestPeriode[0], 1))
                         .blur();
                     // Spezialfall Konkubinat ohne Kind, Nicht geteilte Obhut ohne Unterhaltsvereinbarung
                     AntragFamSitPO.getGeteilteObhutOption('nein').click();
@@ -192,7 +193,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
                 ).click();
                 AntragFamSitPO.getKonkubinatStart()
                     .clear()
-                    .type('1.10.2022')
+                    .type(getYearsBeforePeriodeStart(TestPeriode[0], 2, 1, 10))
                     .blur();
                 // Spezialfall Konkubinat ohne Kind, Nicht geteilte Obhut ohne Unterhaltsvereinbarung
                 AntragFamSitPO.getGeteilteObhutOption('nein').click();
@@ -218,7 +219,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
                 ).click();
                 AntragFamSitPO.getKonkubinatStart()
                     .clear()
-                    .type('1.10.2020')
+                    .type(getYearsBeforePeriodeStart(TestPeriode[0], 4, 1, 10))
                     .blur();
                 NavigationPO.saveAndGoNext();
 
@@ -437,7 +438,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
             TestFaellePO.createPapierTestfall({
                 testFall: 'testfall-2',
                 betreuungsstatus: 'verfuegt',
-                periode: '2024/25',
+                periode: TestPeriode[0],
                 gemeinde: 'London'
             });
 
@@ -452,10 +453,13 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
             AntragCreationPO.getEingangsdatum()
                 .find('input')
                 .clear()
-                .type('1.1.2020');
+                .type(getYearsBeforePeriodeStart(TestPeriode[0], 4));
             NavigationPO.saveAndGoNext();
 
-            AntragFamSitPO.getAenderunPer().clear().type('1.1.2023').blur();
+            AntragFamSitPO.getAenderunPer()
+                .clear()
+                .type(getYearsBeforePeriodeStart(TestPeriode[0], 1))
+                .blur();
             AntragFamSitPO.getFamiliensituationsStatus(
                 'KONKUBINAT_KEIN_KIND'
             ).click();
@@ -473,7 +477,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
     });
 });
 
-function createOnlineAntrag(periode: '2024/25', testFall: TestFall): void {
+function createOnlineAntrag(periode: TestPeriode, testFall: TestFall): void {
     const superAdmin = getUser('[1-Superadmin] Super User');
     cy.login(superAdmin);
     cy.visit('/#/faelle');

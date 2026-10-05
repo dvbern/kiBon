@@ -29,7 +29,8 @@ import {
     SidenavPO,
     VerfuegenPO
 } from '@dv-e2e/page-objects';
-import {GemeindeTestFall, getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {GemeindeTestFall} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 import {VerfuegungPO} from '../../page-objects/antrag/verfuegung.po';

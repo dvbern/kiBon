@@ -6,14 +6,12 @@ Welcome to DV kiBon frontend Workspace!
 
 - [Getting Started](#getting-started)
 - [Architecture](#architecture)
-- [Adding Code (Features, Data-Access, etc)](#adding-code-features-data-access-etc)
 - [Troubleshooting](#troubleshooting)
 
 <!-- tocstop -->
 
 ## Getting Started
 
-Install global `nx` CLI with `npm i -g nx` as it will make running of some commands easier.
 Install the dependencies with `npm ci`
 
 -> When encountering problems with installing:
@@ -46,15 +44,6 @@ The structure might look like this
         - ...
 
 More details about this structure can be found [here](docs/architecture.md).
-
-## Adding Code (Features, Data-Access, etc)
-
-To ensure that the architecture is being upheld correctly, a multitude of generators and other costumization tools can be used.
-
-Use the tools that are mentioned in the [Workspace](docs/workspace.md) documentation.
-
-See the [familiensituation for new mandant example](docs/example-famsit.md) to see how the generator can be used
-to generate a new feature with new components.
 
 ## Troubleshooting
 

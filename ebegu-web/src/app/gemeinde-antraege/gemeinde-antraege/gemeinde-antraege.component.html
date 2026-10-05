@@ -157,9 +157,9 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-12 pb-12 gemeinde-antraege-form-actions">
+            <div class="row tw-mb-12 tw-pb-12 gemeinde-antraege-form-actions">
                 <div class="col-xs-12 col-sm-12">
-                    <div class="pl-9">
+                    <div class="tw-pl-9">
                         <!-- Create LATS Antraege Button -->
                         @if (
                             !ferienBetreuungSelected() && isMandant() | async
@@ -174,7 +174,7 @@
                                 data-test="gemeindeantraege-antraege-erstellen"
                                 class="gemeindeantraege-antraege"
                             >
-                                <span class="uppercase" translate
+                                <span class="tw-uppercase" translate
                                     >LATS_ANTRAEGE_ERSTELLEN</span
                                 >
                             </div>
@@ -192,7 +192,7 @@
                                 (buttonClick)="createAntrag()"
                                 class="gemeindeantraege-antraege"
                             >
-                                <span class="uppercase" translate
+                                <span class="tw-uppercase" translate
                                     >GEMEINDE_ANTRAEGE_ANTRAG_ERSTELLEN</span
                                 >
                             </div>
@@ -205,11 +205,11 @@
                         ) {
                             <button
                                 type="button"
-                                class="dv-btn cancel-button ml-8"
+                                class="dv-btn cancel-button tw-ml-8"
                                 (click)="deleteAllLatsAntraege()"
                                 data-test="gemeindeantraege-antraege-loeschen"
                             >
-                                <span class="uppercase" translate
+                                <span class="tw-uppercase" translate
                                     >LATS_ANTRAEGE_LOESCHEN</span
                                 >
                             </button>

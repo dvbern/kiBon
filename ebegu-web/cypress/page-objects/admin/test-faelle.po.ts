@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {normalizeUser} from '@dv-e2e/helper';
 import {
     GemeindeTestFall,
-    normalizeUser,
     TestBetreuungsstatus,
     TestFall,
     TestGesuchstellende,

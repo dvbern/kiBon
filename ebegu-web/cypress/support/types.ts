@@ -70,13 +70,6 @@ export type User =
     | '[7-L-Jurist] Julia Adler'
     | '[7-*-Jurist] Julia Lory';
 
-export const getUser = (user: User): User => {
-    return user;
-};
-export const normalizeUser = (user: User) => {
-    return /.*] (.*)/.exec(user)[1].split(' ').join('-');
-};
-
 export type OnlyValidSelectors<T> = T extends string
     ? T extends `${string}${'[data-test='}${string}`
         ? 'Please specify the value given to data-test="", getByData automatically wraps the value in [data-test="..."]'
@@ -85,7 +78,8 @@ export type OnlyValidSelectors<T> = T extends string
 
 export type TestFall = 'testfall-1' | 'testfall-2';
 
-export type TestPeriode = '2022/23' | '2023/24' | '2024/25' | '2025/26';
+export const TestPeriode = ['2025/26', '2026/27'] as const;
+export type TestPeriode = (typeof TestPeriode)[number];
 
 export type TestBetreuungsstatus = 'warten' | 'bestaetigt' | 'verfuegt';
 

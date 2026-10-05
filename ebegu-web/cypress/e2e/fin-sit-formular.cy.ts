@@ -20,7 +20,8 @@ import {
     NavigationPO,
     TestFaellePO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {SidenavPO} from '../page-objects/antrag/sidenav.po';
 
@@ -39,7 +40,7 @@ describe('kiBon - Features auf der FinSit - Page', () => {
             testFall: 'testfall-1',
             gemeinde: 'London',
             betreuungsstatus: 'warten',
-            periode: '2024/25'
+            periode: TestPeriode[0]
         });
         cy.url().then(url => {
             const parts = new URL(url);

@@ -28,7 +28,8 @@ import {
     TestFaellePO,
     VerfuegenPO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getDateInPeriode, getPeriodeYears, getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {PosteingangPO} from '../page-objects/antrag/posteingang.po';
 import {SidenavPO} from '../page-objects/antrag/sidenav.po';
@@ -55,13 +56,15 @@ describe('Kibon - Testet das Feature der automatischen Abarbeitung von Mutations
         TestFaellePO.createOnlineTestfall({
             testFall: 'testfall-1',
             gemeinde: 'Paris',
-            periode: '2022/23',
+            periode: TestPeriode[0],
             betreuungsstatus: 'bestaetigt',
             besitzerin: '[5-GS] Heinrich Müller'
         });
         cy.login('[5-GS] Heinrich Müller');
         cy.visit('/#/dossier/gesuchstellerDashboard');
-        GesuchstellendeDashboardPO.getAntragBearbeitenButton('2022/23').click();
+        GesuchstellendeDashboardPO.getAntragBearbeitenButton(
+            TestPeriode[0]
+        ).click();
         cy.waitForRequest(
             'GET',
             '**/einstellung/key/FINANZIELLE_SITUATION_TYP/gemeinde/**',
@@ -82,7 +85,6 @@ describe('Kibon - Testet das Feature der automatischen Abarbeitung von Mutations
 
         NavigationPO.saveAndGoNext();
         FreigabePO.getFreigebenButton().click();
-        // TODO: extract duplication once KIBON-3208 is merged
         cy.getDownloadUrl(() => {
             cy.waitForRequest('GET', '**/dossier/fall/**', () => {
                 ConfirmDialogPO.getDvLoadingConfirmButton().click();
@@ -117,7 +119,9 @@ describe('Kibon - Testet das Feature der automatischen Abarbeitung von Mutations
             openGesuchInFreigabe();
             SidenavPO.goTo('GESUCH_ERSTELLEN');
             cy.waitForRequest('PUT', '**/gesuche', () => {
-                AntragCreationPO.getAlternativdatum().type('01.07.2022');
+                AntragCreationPO.getAlternativdatum().type(
+                    `01.07.${getPeriodeYears(TestPeriode[0]).anfang}`
+                );
                 NavigationPO.saveAndGoNext();
             });
         }
@@ -257,7 +261,7 @@ describe('Kibon - Testet das Feature der automatischen Abarbeitung von Mutations
                 () => {
                     AntragCreationPO.getEingangsdatum()
                         .find('input')
-                        .type('01.12.2022');
+                        .type(getDateInPeriode(TestPeriode[0], 1, 12));
                     NavigationPO.getSaveAndNextButton()
                         .contains('Erstellen')
                         .click();

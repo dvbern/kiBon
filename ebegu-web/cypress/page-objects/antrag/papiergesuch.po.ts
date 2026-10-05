@@ -16,6 +16,7 @@
  */
 
 import {FixturePapierAntrag} from '@dv-e2e/fixtures';
+import {TestPeriode} from '@dv-e2e/types';
 import {NavigationPO} from './navigation.po';
 
 const createPapierGesuch = (dataset: keyof typeof FixturePapierAntrag) => {
@@ -25,7 +26,7 @@ const createPapierGesuch = (dataset: keyof typeof FixturePapierAntrag) => {
             .find('input')
             .type(data.fallCreationEingangsdatum);
     });
-    cy.getByData('gesuchsperioden.2025/26').find('label').click();
+    cy.getByData(`gesuchsperioden.${TestPeriode[0]}`).find('label').click();
     cy.waitForRequest('POST', '**/gesuche', () => {
         NavigationPO.saveAndGoNext();
     });

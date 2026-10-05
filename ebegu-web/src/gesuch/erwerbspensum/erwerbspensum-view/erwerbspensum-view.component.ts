@@ -3,6 +3,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {SharedModule} from '../../../app/shared/shared.module';
 import {GesuchPageHeadingComponent} from '../../shared/heading';
 import {GesuchPageLayoutComponent} from '../../shared/page-layout';
+import {KibTooltip} from '../../shared/kib-tooltip/kib-tooltip';
 
 @Component({
     selector: 'lib-gesuch-erwerbspensum-view',
@@ -10,7 +11,8 @@ import {GesuchPageLayoutComponent} from '../../shared/page-layout';
         TranslateModule,
         SharedModule,
         GesuchPageHeadingComponent,
-        GesuchPageLayoutComponent
+        GesuchPageLayoutComponent,
+        KibTooltip
     ],
     templateUrl: './erwerbspensum-view.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush

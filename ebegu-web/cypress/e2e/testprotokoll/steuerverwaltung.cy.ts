@@ -26,7 +26,8 @@ import {
     TestFaellePO,
     VerfuegenPO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
@@ -47,7 +48,7 @@ describe('Kibon - Gesuch zu Steuerverwaltung senden', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
             gemeinde: 'London',
-            periode: '2023/24',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt'
         });
 
@@ -131,6 +132,7 @@ describe('Kibon - Gesuch zu Steuerverwaltung senden', () => {
 
         cy.changeLogin(userGemeinde);
         cy.visit('/#/faelle');
+        cy.wait(1000);
         FaelleListePO.getAntrag(fallnummer).should('exist');
 
         cy.visit('/#/pendenzen');

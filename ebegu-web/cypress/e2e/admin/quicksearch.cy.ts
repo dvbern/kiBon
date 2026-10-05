@@ -16,7 +16,7 @@
  *
  */
 
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
 import {MANDANTS} from '@models/mandant';
 import {QuicksearchPO} from '../../page-objects/admin/quicksearch.po';
 

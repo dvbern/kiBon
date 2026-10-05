@@ -26,7 +26,8 @@ import {
     UmzugPO,
     VerfuegenPO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getDateInPeriode, getPeriodeYears, getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 import {VerfuegungPO} from '../../page-objects/antrag/verfuegung.po';
@@ -45,7 +46,7 @@ describe('Kibon - mutationen [Gesuchsteller]', () => {
 
         TestFaellePO.createOnlineTestfall({
             testFall: 'testfall-2',
-            periode: '2023/24',
+            periode: TestPeriode[0],
             gemeinde: 'London',
             besitzerin: '[5-GS] Michael Berger',
             betreuungsstatus: 'verfuegt'
@@ -79,7 +80,9 @@ describe('Kibon - mutationen [Gesuchsteller]', () => {
         UmzugPO.getUmzugHausnummer(0).type('2');
         UmzugPO.getUmzugPlz(0).type('3000');
         UmzugPO.getUmzugOrt(0).type('Bern');
-        UmzugPO.getUmzugGueltigAb(0).find('input').type('01.11.2023');
+        UmzugPO.getUmzugGueltigAb(0)
+            .find('input')
+            .type(getDateInPeriode(TestPeriode[0], 1, 11));
         cy.wait(1500);
         NavigationPO.getSaveAndNextButton().focus();
 
@@ -95,8 +98,12 @@ describe('Kibon - mutationen [Gesuchsteller]', () => {
         SidenavPO.goTo('ABWESENHEIT');
         AbwesenheitPo.getAbwesenheitErfassenButton().click();
         AbwesenheitPo.getKind().select('Tamara Feutz - Weissenstein');
-        AbwesenheitPo.getAbwesenheitAb().find('input').type('01.10.2023');
-        AbwesenheitPo.getAbwesenheitBis().find('input').type('30.11.2023');
+        AbwesenheitPo.getAbwesenheitAb()
+            .find('input')
+            .type(getDateInPeriode(TestPeriode[0], 1, 10));
+        AbwesenheitPo.getAbwesenheitBis()
+            .find('input')
+            .type(getDateInPeriode(TestPeriode[0], 30, 11));
         NavigationPO.getSaveAndNextButton().focus();
 
         cy.intercept(
@@ -176,7 +183,7 @@ describe('Kibon - mutationen [Gesuchsteller]', () => {
         AntragCreationPO.getEingangsdatum()
             .find('input')
             .click()
-            .type('01.05.2023');
+            .type(`01.05.${getPeriodeYears(TestPeriode[0]).anfang}`);
         cy.intercept('GET', '**/gesuche/dossier/**').as('createNewMutation');
         NavigationPO.saveAndGoNext();
         cy.wait('@createNewMutation');

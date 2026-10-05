@@ -26,7 +26,12 @@ import {
     VerfuegenPO,
     VerfuegungPO
 } from '@dv-e2e/page-objects';
-import {GemeindeTestFall, getUser, TestGesuchstellende} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {
+    GemeindeTestFall,
+    TestGesuchstellende,
+    TestPeriode
+} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 
 describe('Mittagstisch Anmeldung', () => {
@@ -49,7 +54,7 @@ describe('Mittagstisch Anmeldung', () => {
             betreuungsstatus: 'warten',
             besitzerin: besitzerin,
             gemeinde,
-            periode: '2024/25'
+            periode: TestPeriode[0]
         });
         SidenavPO.getGesuchsDaten()
             .then(el$ => el$.data('antrags-id'))

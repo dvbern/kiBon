@@ -1,7 +1,14 @@
 // noinspection MagicNumberJS
 
 import {StatistikPO, TestFaellePO} from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {
+    getDateInPeriode,
+    getPeriodeEnd,
+    getPeriodeYears,
+    getUser,
+    toExcelSerialDate
+} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 
 describe('Kibon - generate Statistiken', () => {
@@ -18,7 +25,7 @@ describe('Kibon - generate Statistiken', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
             gemeinde: 'Paris',
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt'
         });
     });
@@ -34,10 +41,12 @@ describe('Kibon - generate Statistiken', () => {
     it('should correctly create the Betreuungsgutscheine: Antragsstellende-Kinder-Betreuung statistik', () => {
         StatistikPO.getGesuchstellendeKinderBetreuungTab().click();
 
-        StatistikPO.getVon().find('input').type('01.07.2025');
-        StatistikPO.getBis().find('input').type('31.07.2025');
+        StatistikPO.getVon()
+            .find('input')
+            .type(getDateInPeriode(TestPeriode[0], 1, 7));
+        StatistikPO.getBis().find('input').type(getPeriodeEnd(TestPeriode[0]));
         StatistikPO.getGesuchsperiode().click();
-        cy.get('mat-option').contains('2024/25').click();
+        cy.get('mat-option').contains(TestPeriode[0]).click();
 
         cy.waitForRequest('GET', '**/admin/batch/statistik/userjobs/**', () => {
             StatistikPO.getGenerierenButton().click();
@@ -214,8 +223,10 @@ function checkValuesOfTwoLastVerfuegteBetreuung(data: any): void {
     expect(data[last][1]).to.eq('Kita');
 
     // Check Gesuchsperiode same as last created Fall
-    expect(data[last - 1][2]).to.eq('2024/2025');
-    expect(data[last][2]).to.eq('2024/2025');
+    const {anfang, ende} = getPeriodeYears(TestPeriode[0]);
+    const gesuchsperiodeLangform = `${anfang}/${ende}`;
+    expect(data[last - 1][2]).to.eq(gesuchsperiodeLangform);
+    expect(data[last][2]).to.eq(gesuchsperiodeLangform);
 
     // Check Eingangsdatum and Verfuegungdatum
     expect(data[last - 1][3]).to.match(/[0-9]+/);
@@ -383,9 +394,10 @@ function checkValuesOfTwoLastVerfuegteBetreuung(data: any): void {
     expect(data[last - 1][46]).to.eq(89842);
     expect(data[last][46]).to.eq(89842);
 
-    // Check Einkommensjahr
-    expect(data[last - 1][47]).to.eq(2023);
-    expect(data[last][47]).to.eq(2023);
+    // Check Einkommensjahr (previous calendar year before periode anfang)
+    const einkommensjahr = Number(getPeriodeYears(TestPeriode[0]).anfang) - 1;
+    expect(data[last - 1][47]).to.eq(einkommensjahr);
+    expect(data[last][47]).to.eq(einkommensjahr);
 
     // Check Einkommensverschlechterung (Einkommensjahr +1)
     expect(data[last - 1][48]).to.empty;
@@ -448,12 +460,14 @@ function checkValuesOfTwoLastVerfuegteBetreuung(data: any): void {
     expect(data[last][63]).to.eq('Vorschulalter');
 
     // Check Von
-    expect(data[last - 1][68]).to.eq(45839);
-    expect(data[last][68]).to.eq(45839);
+    const vonSerial = toExcelSerialDate(getDateInPeriode(TestPeriode[0], 1, 7));
+    expect(data[last - 1][68]).to.eq(vonSerial);
+    expect(data[last][68]).to.eq(vonSerial);
 
     // Check Bis
-    expect(data[last - 1][69]).to.eq(45869);
-    expect(data[last][69]).to.eq(45869);
+    const bisSerial = toExcelSerialDate(getPeriodeEnd(TestPeriode[0]));
+    expect(data[last - 1][69]).to.eq(bisSerial);
+    expect(data[last][69]).to.eq(bisSerial);
 
     // Check Status
     expect(data[last - 1][72]).to.eq('Verfügt');

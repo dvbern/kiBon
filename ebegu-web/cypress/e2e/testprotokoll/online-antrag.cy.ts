@@ -43,7 +43,13 @@ import {
     VerfuegenPO,
     VerfuegungPO
 } from '@dv-e2e/page-objects';
-import {getUser, TestPeriode} from '@dv-e2e/types';
+import {
+    getPeriodeEnd,
+    getPeriodeStart,
+    getPeriodeYears,
+    getUser
+} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
@@ -57,9 +63,8 @@ describe('Kibon - generate Testfälle [Online-Antrag]', () => {
     );
     const userGS = getUser('[5-GS] Emma Gerber');
     const gesuchsPeriode: {ganze: TestPeriode; anfang: string; ende: string} = {
-        ganze: '2023/24',
-        anfang: '2023',
-        ende: '2024'
+        ganze: TestPeriode[0],
+        ...getPeriodeYears(TestPeriode[0])
     };
 
     before(() => {
@@ -383,11 +388,11 @@ describe('Kibon - generate Testfälle [Online-Antrag]', () => {
         AntragBetreuungPO.getBetreuungspensumAb(0)
             .find('input')
             .clear()
-            .type('01.08.2023');
+            .type(getPeriodeStart(TestPeriode[0]));
         AntragBetreuungPO.getBetreuungspensumBis(0)
             .find('input')
             .clear()
-            .type('31.07.2024');
+            .type(getPeriodeEnd(TestPeriode[0]));
         AntragBetreuungPO.getErweiterteBeduerfnisseBestaetigt().click();
         AntragBetreuungPO.platzBestaetigen();
 
@@ -458,7 +463,7 @@ describe('Kibon - generate Testfälle [Online-Antrag]', () => {
         AntragCreationPO.getEingangsdatum()
             .find('input')
             .clear()
-            .type('01.07.2023');
+            .type(`01.07.${getPeriodeYears(TestPeriode[0]).anfang}`);
         cy.waitForRequest('PUT', '**/gesuche', () => {
             clickSave();
         });

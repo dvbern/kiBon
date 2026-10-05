@@ -16,7 +16,8 @@
  */
 
 import {TestFaellePO} from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 
 describe('Kibon - generate Testfälle [Superadmin]', () => {
@@ -33,7 +34,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
             gemeinde: 'London',
-            periode: '2022/23',
+            periode: TestPeriode[0],
             betreuungsstatus: 'warten'
         });
     });

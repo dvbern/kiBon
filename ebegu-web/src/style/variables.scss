@@ -71,14 +71,6 @@ $lblue: #ecf2f4;
 /*Lighter*/
 $llgrey: #e5e5e5;
 
-// variables and default values for them
-// they are set in ColorService by JavaScript
-:root {
-    --primary-color: #{$red};
-    --primary-color-dark: #{$dred};
-    --primary-color-light: #{$lred};
-}
-
 $background-color: $white;
 $background-error-color: #ffe6e6;
 $state-danger-text: red;
@@ -159,3 +151,15 @@ $z-index-kommentar: 101;
 $z-index-toolbar: 104;
 $z-index-dialog: 110;
 $z-index-error: 106;
+
+// tailwind does not have access to scss variables
+// therefor, we have to set them as plain css variables as well
+:root {
+    --primary-color: #{$red};
+    --primary-color-dark: #{$dred};
+    --primary-color-light: #{$lred};
+    --contrast: #{$contrast};
+    --contrast-light: #{$contrast-light};
+    --contrast-darkest: #{$contrast-darkest};
+    --contrast-lightest: #{$contrast-lightest};
+}

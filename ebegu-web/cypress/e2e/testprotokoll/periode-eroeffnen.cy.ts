@@ -20,7 +20,7 @@ import {
     GesuchsperiodeListPO,
     RemoveDialogPO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
 import {KiBonMandant, MANDANTS} from '@models/mandant';
 
 const isPeriodeEroeffnenAllowedOn = (baseUrl: string | null | undefined) => {

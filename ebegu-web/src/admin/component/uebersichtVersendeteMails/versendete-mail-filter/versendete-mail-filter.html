@@ -18,10 +18,10 @@
 <!-- Unfortunately we have to use a lot of !important. kiBon has a lot of legacy styling issues. Fixing these would lead to
 bigger adjustments which would increase the scope of the task which would make it infeasible-->
 <div
-    class="flex justify-center items-end gap-4 margin-bottom-20 flex-grow-2 versendete-mail-filter-material-overrides wrap"
+    class="tw-flex tw-justify-center tw-items-end tw-gap-4 margin-bottom-20 tw-flex-grow-2 versendete-mail-filter-material-overrides tw-wrap"
 >
     <input
-        class="!outline !outline-[2px] min-w-[130px]"
+        class="!tw-outline !tw-outline-[2px] tw-min-w-[130px]"
         matInput
         type="text"
         [(ngModel)]="subjectOrReceiver"
@@ -30,22 +30,22 @@ bigger adjustments which would increase the scope of the task which would make i
     />
 
     <div
-        class="flex flex-col gap-1"
+        class="tw-flex tw-flex-col tw-gap-1"
         role="group"
         aria-labelledby="vonGroupLabel"
     >
         <span
             id="vonGroupLabel"
-            class="!text-lg !font-semibold !uppercase !tracking-wide !text-gray-500"
+            class="!tw-text-lg !tw-font-semibold !tw-uppercase !tw-tracking-wide !tw-text-gray-500"
             translate
             >VON</span
         >
-        <div class="flex gap-2">
-            <mat-form-field floatLabel="always" class="!max-w-[130px]">
+        <div class="tw-flex tw-gap-2">
+            <mat-form-field floatLabel="always" class="!tw-max-w-[130px]">
                 <mat-label><span translate>DATUM</span></mat-label>
                 <input
                     matInput
-                    class="!outline-none !bg-transparent !p-0 !text-[1.6rem]"
+                    class="!tw-outline-none !tw-bg-transparent !tw-p-0 !tw-text-[1.6rem]"
                     [matDatepicker]="datepickerFrom"
                     [ngModel]="startDate"
                     (ngModelChange)="setStartDate($event)"
@@ -58,11 +58,11 @@ bigger adjustments which would increase the scope of the task which would make i
                 />
             </mat-form-field>
 
-            <mat-form-field floatLabel="always" class="!max-w-[130px]">
+            <mat-form-field floatLabel="always" class="!tw-max-w-[130px]">
                 <mat-label><span translate>ZEIT</span></mat-label>
                 <input
                     matInput
-                    class="!outline-none !bg-transparent !p-0 !text-[1.6rem]"
+                    class="!tw-outline-none !tw-bg-transparent !tw-p-0 !tw-text-[1.6rem]"
                     [matTimepicker]="timepickerFrom"
                     [(ngModel)]="startDate"
                     [ngModelOptions]="{updateOn: 'blur'}"
@@ -73,25 +73,25 @@ bigger adjustments which would increase the scope of the task which would make i
         </div>
     </div>
 
-    <mat-icon fontIcon="arrow_right_alt" class="flex-shrink-0"></mat-icon>
+    <mat-icon fontIcon="arrow_right_alt" class="tw-flex-shrink-0"></mat-icon>
 
     <div
-        class="flex flex-col gap-1"
+        class="tw-flex tw-flex-col tw-gap-1"
         role="group"
         aria-labelledby="bisGroupLabel"
     >
         <span
             id="bisGroupLabel"
-            class="!text-lg !font-semibold !uppercase !tracking-wide !text-gray-500"
+            class="!tw-text-lg !tw-font-semibold !tw-uppercase !tw-racking-wide !tw-text-gray-500"
             translate
             >BIS</span
         >
-        <div class="flex gap-2">
-            <mat-form-field floatLabel="always" class="!max-w-[130px]">
+        <div class="tw-flex tw-gap-2">
+            <mat-form-field floatLabel="always" class="!tw-max-w-[130px]">
                 <mat-label><span translate>DATUM</span></mat-label>
                 <input
                     matInput
-                    class="!outline-none !bg-transparent !text-[1.6rem]"
+                    class="!tw-outline-none !tw-bg-transparent !tw-text-[1.6rem]"
                     [matDatepicker]="datepickerTo"
                     [ngModel]="endDate"
                     (ngModelChange)="setEndDate($event)"
@@ -104,11 +104,11 @@ bigger adjustments which would increase the scope of the task which would make i
                 />
             </mat-form-field>
 
-            <mat-form-field floatLabel="always" class="!max-w-[130px]">
+            <mat-form-field floatLabel="always" class="!tw-max-w-[130px]">
                 <mat-label><span translate>ZEIT</span></mat-label>
                 <input
                     matInput
-                    class="!outline-none !bg-transparent !p-0 !text-[1.6rem]"
+                    class="!tw-outline-none !tw-bg-transparent !tw-p-0 !tw-text-[1.6rem]"
                     [matTimepicker]="timepickerTo"
                     [(ngModel)]="endDate"
                     [ngModelOptions]="{updateOn: 'blur'}"

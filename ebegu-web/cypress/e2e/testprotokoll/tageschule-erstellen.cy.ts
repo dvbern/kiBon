@@ -23,7 +23,8 @@ import {
     TagesschuleModulDialogPO,
     TagesschuleModulImportDialogPO
 } from '@dv-e2e/page-objects';
-import {getUser, TestInstitution} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {TestInstitution} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 
 describe('Kibon - generate Tagesschule Institutionen', () => {

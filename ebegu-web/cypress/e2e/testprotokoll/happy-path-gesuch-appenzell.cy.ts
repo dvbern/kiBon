@@ -40,7 +40,8 @@ import {
     VerfuegenPO,
     VerfuegungPO
 } from '@dv-e2e/page-objects';
-import {getUser, TestPeriode, User} from '@dv-e2e/types';
+import {getPeriodeYears, getUser} from '@dv-e2e/helper';
+import {TestPeriode, User} from '@dv-e2e/types';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 import {SidenavPO} from '@dv-e2e/page-objects';
 import {MANDANTS} from '@models/mandant';
@@ -53,9 +54,8 @@ describe('Appenzell - Happy Path Gesuch', () => {
     );
     const userGS = getUser('[5-GS] Emma Gerber');
     const gesuchsPeriode: {ganze: TestPeriode; anfang: string; ende: string} = {
-        ganze: '2025/26',
-        anfang: '2025',
-        ende: '2026'
+        ganze: TestPeriode[0],
+        ...getPeriodeYears(TestPeriode[0])
     };
 
     beforeEach(() => {
@@ -535,7 +535,7 @@ function startVerfuegenAppenzell(userSuperadmin: User, userGemeinde: User) {
     AntragCreationPO.getEingangsdatum()
         .find('input')
         .clear()
-        .type('01.07.2023');
+        .type(`01.07.${getPeriodeYears(TestPeriode[0]).anfang}`);
     cy.waitForRequest('PUT', '**/gesuche', () => {
         clickSave();
     });

@@ -5,7 +5,8 @@ import {
     SidenavPO,
     TestFaellePO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {GemeindeAntraegePO} from '../page-objects/gemeindeantraege';
 import {LastenausgleichTagesschulePo} from '../page-objects/gemeindeantraege/lastenausgleichTagesschule.po';
@@ -61,7 +62,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
         cy.visit('/#/gemeinde-antraege');
         cy.getByData('gemeindeantraege-typ-tabelle').click();
         cy.getByData('LASTENAUSGLEICH_TAGESSCHULEN').click();
-        GemeindeAntraegePO.filterGemeindeAntrageByPeriode('2024/25');
+        GemeindeAntraegePO.filterGemeindeAntrageByPeriode(TestPeriode[0]);
         cy.getByData('angaben-gemeinde-nein').click();
         cy.wait(1500);
         cy.getByData('gemeinde-antraege-antrag-erstellen').click();
@@ -79,7 +80,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
     it('should create Gemeinde antrag', () => {
         cy.login(userSBInstitution);
         cy.visit('/#/gemeinde-antraege');
-        GemeindeAntraegePO.filterGemeindeAntrageByPeriode('2024/25');
+        GemeindeAntraegePO.filterGemeindeAntrageByPeriode(TestPeriode[0]);
         cy.getByData('institutionName,status').click();
         cy.getByData('anzahl-kinder-woche').clear().type('17');
         cy.getByData('anzahl-kinder-basisstufe-woche').clear().type('3');
@@ -111,7 +112,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
     it('should change Tagesschulanmeldung frage', () => {
         cy.login(adminUser);
         cy.visit('/#/gemeinde-antraege');
-        GemeindeAntraegePO.filterGemeindeAntrageByPeriode('2024/25');
+        GemeindeAntraegePO.filterGemeindeAntrageByPeriode(TestPeriode[0]);
         cy.getByData('tagesschulanmeldungen-erfassen')
             .contains('Ja')
             .click({force: true});
@@ -124,7 +125,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
             gemeinde: 'Paris',
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'warten'
         });
         SidenavPO.goTo('BETREUUNG');
@@ -150,7 +151,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
     it('should aus kibon berechnen', () => {
         cy.login(userSBInstitution);
         cy.visit('/#/gemeinde-antraege');
-        GemeindeAntraegePO.filterGemeindeAntrageByPeriode('2024/25');
+        GemeindeAntraegePO.filterGemeindeAntrageByPeriode(TestPeriode[0]);
         cy.getByData('institutionName,status').click();
         cy.getByData('lats-durch-kibon-ausfuellen').click();
         FreigabePO.getConfirmButton().click();
@@ -188,7 +189,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
     it('should check tagesschule formular', () => {
         cy.login(userSBGemeinde);
         cy.visit('/#/gemeinde-antraege');
-        GemeindeAntraegePO.filterGemeindeAntrageByPeriode('2024/25');
+        GemeindeAntraegePO.filterGemeindeAntrageByPeriode(TestPeriode[0]);
         LastenausgleichTagesschulePo.getSideNav('ANGABEN_TAGESSCHULEN');
         cy.getByData('institutionName,status').contains('In Prüfung');
         cy.getByData('institutionName,status').click();
@@ -213,7 +214,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
     it('should fill out gemeinde antrag', () => {
         cy.login(userSBGemeinde);
         cy.visit('/#/gemeinde-antraege');
-        GemeindeAntraegePO.filterGemeindeAntrageByPeriode('2024/25');
+        GemeindeAntraegePO.filterGemeindeAntrageByPeriode(TestPeriode[0]);
         cy.getByData('bedarf-tagesschulangebot-abeklaert')
             .contains('Ja')
             .click({force: true});
@@ -293,7 +294,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
     it('should check antrag', () => {
         cy.login(userSBMandant);
         cy.visit('/#/gemeinde-antraege');
-        GemeindeAntraegePO.filterGemeindeAntrageByPeriode('2024/25');
+        GemeindeAntraegePO.filterGemeindeAntrageByPeriode(TestPeriode[0]);
         GemeindeAntraegePO.checkInstitutionValue(
             '6500',
             'einnahmen-elterngebuehren-ohne-verpflegung',
@@ -310,7 +311,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
     it('should antrag ueberarbeiten und freigeben', () => {
         cy.login(userSBGemeinde);
         cy.visit('/#/gemeinde-antraege');
-        GemeindeAntraegePO.filterGemeindeAntrageByPeriode('2024/25');
+        GemeindeAntraegePO.filterGemeindeAntrageByPeriode(TestPeriode[0]);
         LastenausgleichTagesschulePo.getAngabengemeindeAbschliessen();
         GemeindeAntraegePO.freigabeGemeindeAntragKanton();
     });
@@ -318,7 +319,7 @@ describe('Kibon - Lastenausgleich Tagesschule', () => {
     it('should check LATS as SB Mandant', () => {
         cy.login(userSBMandant);
         cy.visit('/#/gemeinde-antraege');
-        GemeindeAntraegePO.filterGemeindeAntrageByPeriode('2024/25');
+        GemeindeAntraegePO.filterGemeindeAntrageByPeriode(TestPeriode[0]);
         cy.getByData('gemeinde-antrag-angaben-korrigieren').click();
         LastenausgleichTagesschulePo.getAngabengemeindeAbschliessen();
         LastenausgleichTagesschulePo.getSideNav('ANGABEN_TAGESSCHULEN');

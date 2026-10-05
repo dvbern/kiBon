@@ -80,7 +80,11 @@
                 >
             }
             @if (this.videoPlayerLink$ | async; as link) {
-                <video controls class="mt-2 video-player" [src]="link"></video>
+                <video
+                    controls
+                    class="tw-mt-2 video-player"
+                    [src]="link"
+                ></video>
             }
         </div>
     }

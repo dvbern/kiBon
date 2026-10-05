@@ -42,7 +42,8 @@ import {
     VerfuegenPO,
     VerfuegungPO
 } from '@dv-e2e/page-objects';
-import {GemeindeTestFall, getUser, User} from '@dv-e2e/types';
+import {getPeriodeYears, getUser} from '@dv-e2e/helper';
+import {GemeindeTestFall, TestPeriode, User} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 
@@ -174,7 +175,9 @@ function openAntrag(user: User) {
         'include.text',
         'Antrag stellen'
     );
-    GesuchstellendeDashboardPO.getCorrectPeriodeGesuchButton('2025/26').click();
+    GesuchstellendeDashboardPO.getCorrectPeriodeGesuchButton(
+        TestPeriode[0]
+    ).click();
 }
 
 function createKinder(): void {
@@ -379,10 +382,10 @@ function startVerfuegenSolothurn(
         VerfuegungPO.getVerfuegenButton().click();
         ConfirmDialogPO.getDvLoadingConfirmButton().click();
     });
-    VerfuegenPO.getAuszahlungAnInstitutionHeading().should(
-        'have.text',
-        'An Institution geschuldeter Betrag'
-    );
+    VerfuegenPO.getAuszahlungAnInstitutionHeading()
+        // strip U+00AD soft hyphens to insert as word-break
+        .then($el => $el.text().replace(/­/g, ''))
+        .should('equal', 'Gemeindebeitrag an die Institution');
     VerfuegenPO.getAuszahlungAnInstitution(6).should('have.text', '423.15');
     VerfuegungPO.getVerfuegenStatusTitle().should('have.text', 'Verfügt');
     SidenavPO.getGesuchStatus().should('have.text', 'Verfügen');
@@ -618,8 +621,9 @@ function changeEingangsDatum(antragIdAlias: string) {
     openGesuchInFamSit(antragIdAlias);
     cy.wait(1000);
     SidenavPO.goTo('GESUCH_ERSTELLEN');
-    AntragCreationPO.getEingangsdatum().find('input').type('01.07.2023');
-    AntragCreationPO.getAlternativdatum().find('input').type('01.07.2023');
+    const eingangsdatum = `01.07.${getPeriodeYears(TestPeriode[0]).anfang}`;
+    AntragCreationPO.getEingangsdatum().find('input').type(eingangsdatum);
+    AntragCreationPO.getAlternativdatum().find('input').type(eingangsdatum);
 
     AntragCreationPO.getSpeichernUndWeiterButton().click();
 }

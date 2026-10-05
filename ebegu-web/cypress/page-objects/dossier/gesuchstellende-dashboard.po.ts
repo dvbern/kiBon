@@ -29,7 +29,7 @@ const getGesuchStellenButton = () => {
     return cy.getByData('container.antrag-bearbeiten', 'navigation-button');
 };
 
-const getCorrectPeriodeGesuchButton = (periode: string) => {
+const getCorrectPeriodeGesuchButton = (periode: TestPeriode) => {
     return cy.getByData(
         'container.periode.' + periode,
         'container.antrag-bearbeiten',

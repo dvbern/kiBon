@@ -15,7 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {normalizeUser, User} from '@dv-e2e/types';
+import {normalizeUser} from '@dv-e2e/helper';
+import {User} from '@dv-e2e/types';
 
 const getAntragsDaten = () => {
     return cy.getByData('antrags-daten');

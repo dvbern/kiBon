@@ -7,7 +7,8 @@ import {
     PosteingangPO,
     TestFaellePO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 
 describe('Kibon - Test Mitteilungen', () => {
@@ -32,7 +33,7 @@ describe('Kibon - Test Mitteilungen', () => {
             testFall: 'testfall-2',
             besitzerin: '[5-GS] Michael Berger',
             betreuungsstatus: 'verfuegt',
-            periode: '2023/24',
+            periode: TestPeriode[0],
             gemeinde: 'London'
         });
 

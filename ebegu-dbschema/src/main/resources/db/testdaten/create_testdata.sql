@@ -43,7 +43,7 @@ call select_gesuchsperiode('2026-08-01',@bern_mandant_id, @gesuchsperiode_26_27)
 SET @gemeinde_london = UNHEX(REPLACE('80a8e496-b73c-4a4a-a163-a0b2caf76487', '-', ''));
 SET @gemeinde_paris = UNHEX(REPLACE('ea02b313-e7c3-4b26-9ef7-e413f4046db2', '-', ''));
 
-SET @gemeinde_paris_institution = UNHEX(REPLACE(UUID(), '-', ''));
+SET @gemeinde_paris_institution = UNHEX(REPLACE('f44a68f2-dda2-4bf2-936a-68e20264b610', '-', ''));
 SET @gemeinde_paris_institution_stammdaten_tagesschule = UNHEX(REPLACE(UUID(), '-', ''));
 SET @gemeinde_paris_institution_stammdaten = UNHEX(REPLACE(UUID(), '-', ''));
 
@@ -454,11 +454,7 @@ UPDATE einstellung SET value = '0'             WHERE gesuchsperiode_id = @gesuch
 UPDATE einstellung SET value = '160000'        WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_MAX_MASSGEBENDES_EINKOMMEN'                                   AND gemeinde_id = @gemeinde_london;
 UPDATE einstellung SET value = '43000'         WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_MIN_MASSGEBENDES_EINKOMMEN'                                   AND gemeinde_id = @gemeinde_london;
 UPDATE einstellung SET value = 'PAUSCHAL'      WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_TYP'                                                          AND gemeinde_id = @gemeinde_london;
-
-# London: KONTINGENTIERUNG_ENABLED soll für 26/27 aktiv sein (UAT-Delta, London hat bisher keinen Gemeinde-Override)
-INSERT IGNORE INTO einstellung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
-SELECT UUID(), NOW(), NOW(), 'ebegu:Kanton Bern', 'ebegu:Kanton Bern', 0, 'GEMEINDE_KONTINGENTIERUNG_ENABLED', 'true', @gemeinde_london, @gesuchsperiode_26_27, @bern_mandant_id, NULL;
-UPDATE einstellung SET value = 'true'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_KONTINGENTIERUNG_ENABLED'                                                                AND gemeinde_id = @gemeinde_london;
+UPDATE einstellung SET value = 'true'          WHERE gesuchsperiode_id = @gesuchsperiode_26_27 AND einstellung_key = 'GEMEINDE_KONTINGENTIERUNG_ENABLED'															 AND gemeinde_id = @gemeinde_london;
 
 # Test-Institutionen erstellen
 call CreateTraegerschaft(UNHEX(REPLACE('f9ddee82-81a1-4cda-b273-fb24e9299308', '-', '')), 'Kitas & Tagis Stadt Bern', @bern_mandant_id, NULL, true);

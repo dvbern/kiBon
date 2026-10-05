@@ -16,6 +16,8 @@
  */
 
 import {FixtureKind, FixtureKinderFeutz} from '@dv-e2e/fixtures';
+import {getDateInPeriode, getPeriodeYears} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 
 // !! -- PAGE OBJECTS -- !!
 const getPageTitle = () => {
@@ -217,8 +219,10 @@ const fillFachstelle = () => {
     getIntegrationBedarf(0, 'SOZIALE_INTEGRATION').find('label').click();
     getFachstelle(0).select(1);
     getBetreuungspensumIndikation(0).type('40');
-    getIntegrationAb(0).find('input').type('01.01.2024');
-    getIntegrationBis(0).find('input').type('01.01.2025');
+    const ab = `01.01.${getPeriodeYears(TestPeriode[0]).anfang}`;
+    const bis = getDateInPeriode(TestPeriode[0], 1, 1);
+    getIntegrationAb(0).find('input').type(ab);
+    getIntegrationBis(0).find('input').type(bis);
 };
 
 const fillAusserordentlicherAnspruch = () => {
@@ -226,8 +230,10 @@ const fillAusserordentlicherAnspruch = () => {
         'eine ausführliche Begründung'
     );
     getAusserordentlicherAnspruchPensum().type('20');
-    getAusserordentlicherAnspruchAb().find('input').type('01.01.2024');
-    getAusserordentlicherAnspruchBis().find('input').type('01.01.2025');
+    const ab = `01.01.${getPeriodeYears(TestPeriode[0]).anfang}`;
+    const bis = getDateInPeriode(TestPeriode[0], 1, 1);
+    getAusserordentlicherAnspruchAb().find('input').type(ab);
+    getAusserordentlicherAnspruchBis().find('input').type(bis);
 };
 
 export const AntragKindPO = {

@@ -16,7 +16,8 @@
  */
 
 import {TestFaellePO} from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {ZahlungslaufPO} from '../../page-objects/antragverwaltung/zahlungslauf.po';
 
@@ -52,7 +53,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
             gemeinde: testgemeindeLondon,
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt'
         });
 
@@ -104,7 +105,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-1',
             gemeinde: testgemeindeParis,
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'warten'
         });
 
@@ -152,7 +153,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-1',
             gemeinde: testgemeindeSchwyz,
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'warten'
         });
 
@@ -315,7 +316,7 @@ function checkValuesOfZahlungElternSchwyz(data: any): void {
     expect(data[2][1]).to.eq('');
 
     // Check Betrag
-    expect(data[2][4]).to.eq(13968);
+    expect(data[2][4]).to.eq(13920);
 
     // Check IBAN-Nummer
     expect(data[2][5]).to.eq('CH9789144829733648596');

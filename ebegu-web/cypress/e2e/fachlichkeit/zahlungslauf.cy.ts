@@ -16,7 +16,8 @@
  */
 
 import {TestFaellePO} from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {ZahlungslaufPO} from '../../page-objects/antragverwaltung/zahlungslauf.po';
 
@@ -52,7 +53,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
             gemeinde: testgemeindeSchwyz,
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt'
         });
 
@@ -101,7 +102,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
             gemeinde: testgemeindeLuzern,
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt'
         });
 
@@ -153,7 +154,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
             gemeinde: testgemeindeSolothurn,
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt'
         });
 
@@ -207,7 +208,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-1',
             gemeinde: testgemeindeAppenzellAusserrhoden,
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt'
         });
 
@@ -258,7 +259,7 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-1',
             gemeinde: testgemeindeLuzern,
-            periode: '2024/25',
+            periode: TestPeriode[0],
             betreuungsstatus: 'warten'
         });
 

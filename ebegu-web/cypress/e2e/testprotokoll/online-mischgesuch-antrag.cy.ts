@@ -26,7 +26,8 @@ import {
     VerfuegenPO,
     VerfuegungPO
 } from '@dv-e2e/page-objects';
-import {getUser, User} from '@dv-e2e/types';
+import {getPeriodeYears, getUser} from '@dv-e2e/helper';
+import {TestPeriode, User} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {GesuchPO} from '../../page-objects/antrag/gesuch.po';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
@@ -52,7 +53,7 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
         cy.visit('/');
         TestFaellePO.createOnlineTestfall({
             testFall: 'testfall-2',
-            periode: '2024/25',
+            periode: TestPeriode[0],
             gemeinde: 'Paris',
             besitzerin: userGS,
             betreuungsstatus: 'warten'
@@ -93,13 +94,11 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
         cy.wait(2000);
         changeUserAndOpenBetreuung(userGemeindeBGTS, antragIdAlias);
         tsAkzeptieren(0, 1);
-        //TODO Überprüfen, ob einen Email versendet wurde => 1. Bestätigung ohne FinSit
 
         // GEMEINDE
         changeUserAndOpenBetreuung(userGemeindeBGTS, antragIdAlias);
         finSitAkzeptierenUndPruefen();
         VerfuegenPO.verfuegenStarten();
-        //TODO Überprüfen, ob einen Email versendet wurde => 2. Bestätigung mit FinSit
 
         // GESUCHSTELLER
         changeUserAndOpenBetreuung(userGS, antragIdAlias);
@@ -109,7 +108,6 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
         // Gesuch ist verfügt und wir übernehmen nun statt zu akzeptieren
         changeUserAndOpenBetreuung(userTS, antragIdAlias);
         tsUebernehmen(1, 1);
-        //TODO Überprüfen, ob ein weiteres Email versendet wurde (Anmeldung zweites Kind mit Tarif)
 
         // GEMEINDE
         changeUserAndOpenBetreuung(userGemeindeBGTS, antragIdAlias);
@@ -200,7 +198,7 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
         AntragCreationPO.getEingangsdatum()
             .find('input')
             .clear()
-            .type('31.07.2023');
+            .type(`31.07.${getPeriodeYears(TestPeriode[0]).anfang}`);
 
         cy.waitForRequest('PUT', '**/gesuche', () => {
             NavigationPO.saveAndGoNext();

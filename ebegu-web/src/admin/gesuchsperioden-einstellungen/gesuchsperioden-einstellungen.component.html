@@ -28,7 +28,7 @@
                 ></lib-dokumente-zu-uebernehmen-einstellung-group>
             }
 
-            <div class="w-[85%]">
+            <div class="tw-w-[85%]">
                 <input
                     class="filter"
                     matInput
@@ -40,7 +40,7 @@
 
             <mat-table [dataSource]="tableData()">
                 <ng-container matColumnDef="key">
-                    <td class="key w-[60%]" *matCellDef="let item">
+                    <td class="key tw-w-[60%]" *matCellDef="let item">
                         <label>
                             {{ item.key | translate }}
                             <dv-tooltip [text]="item.erklaerung"></dv-tooltip>
@@ -48,7 +48,7 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="value">
-                    <td class="value w-[25%]" *matCellDef="let item">
+                    <td class="value tw-w-[25%]" *matCellDef="let item">
                         <lib-dv-edit-einstellung
                             [einstellung]="{
                                 value: item.value,

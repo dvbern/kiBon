@@ -24,7 +24,8 @@ import {
     MitteilungenPO,
     TestFaellePO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getDateInPeriode, getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 
@@ -39,8 +40,8 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
     const monatlicheKostenFormatted = Number(monatlicheKosten)
         .toLocaleString('de-CH')
         .replace(/\u202F/g, "'");
-    const startdatum = '01.04.2025';
-    const enddatum = '30.06.2025';
+    const startdatum = getDateInPeriode(TestPeriode[0], 1, 4);
+    const enddatum = getDateInPeriode(TestPeriode[0], 30, 6);
     let fallnummer: string;
     const dateRegex = (date: string) => {
         const [day, month, year] = date.split('.');
@@ -57,7 +58,7 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
             testFall: 'testfall-1',
             betreuungsstatus: 'verfuegt',
             gemeinde: 'London',
-            periode: '2024/25'
+            periode: TestPeriode[0]
         });
         FallToolbarPO.getFallnummer().should('not.be.empty');
         FallToolbarPO.getFallnummer().then(value => {

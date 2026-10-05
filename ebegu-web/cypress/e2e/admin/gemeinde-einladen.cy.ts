@@ -20,7 +20,7 @@ import {
     GemeindeListPO,
     MainNavigationPO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
 import {MANDANTS} from '@models/mandant';
 import {EditGemeindePO} from '../../page-objects/admin/edit-gemeinde.po';
 

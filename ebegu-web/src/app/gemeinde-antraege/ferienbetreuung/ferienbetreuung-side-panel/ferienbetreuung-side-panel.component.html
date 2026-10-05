@@ -15,7 +15,7 @@
 ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 <div
-    class="kommentar-view flex flex-col h-full bg-white max-w-[45rem] p-6 w-full"
+    class="kommentar-view tw-flex tw-flex-col tw-h-full tw-bg-white tw-max-w-[45rem] tw-p-6 tw-w-full"
 >
     @if (ferienbetreuungContainer) {
         <form role="form" [formGroup]="form" class="" layout="column">
@@ -38,12 +38,12 @@
             <button
                 uiSref="FERIENBETREUUNG.VERLAUF"
                 type="button"
-                class="dv-btn bg-[#68acfc] hover:bg-[#68acfc] w-full mt-12"
+                class="dv-btn tw-bg-[#68acfc] hover:tw-bg-[#68acfc] tw-w-full tw-mt-12"
             >
                 <span translate>VERLAUF_ANZEIGEN</span>
             </button>
-            <div class="verantwortlicher-view mt-12">
-                <div class="form-group pt-0">
+            <div class="verantwortlicher-view tw-mt-12">
+                <div class="form-group tw-pt-0">
                     <mat-select
                         [(ngModel)]="
                             getFerienbetreuungContainer().verantwortlicher

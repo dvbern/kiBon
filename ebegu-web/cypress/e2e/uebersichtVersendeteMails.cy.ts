@@ -20,7 +20,8 @@ import {
     MainNavigationPO,
     TestFaellePO
 } from '@dv-e2e/page-objects';
-import {getUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/helper';
+import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {UebersichtVersendeteMailsPO} from '../page-objects/admin/uebersichtVersendeteMails.po';
 
@@ -43,7 +44,7 @@ describe('Kibon - generate Tests for uebersichts Versendete Mails calls', () => 
         TestFaellePO.createOnlineTestfall({
             testFall: 'testfall-2',
             gemeinde: 'London',
-            periode: '2023/24',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt',
             besitzerin: '[5-GS] Jean Chambre'
         });
@@ -80,7 +81,7 @@ describe('Kibon - generate Tests for ubersicht Versendete Mails with Superadmin'
         TestFaellePO.createOnlineTestfall({
             testFall: 'testfall-1',
             gemeinde: 'London',
-            periode: '2023/24',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt',
             besitzerin: '[5-GS] Jean Chambre'
         });
@@ -98,7 +99,7 @@ describe('Kibon - generate Tests for ubersicht Versendete Mails with Superadmin'
         TestFaellePO.createOnlineTestfall({
             testFall: 'testfall-1',
             gemeinde: 'London',
-            periode: '2023/24',
+            periode: TestPeriode[0],
             betreuungsstatus: 'verfuegt',
             besitzerin: '[5-GS] Jean Chambre'
         });

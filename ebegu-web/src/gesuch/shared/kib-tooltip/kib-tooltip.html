@@ -1,0 +1,68 @@
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<button
+    type="button"
+    class="tw-group tw-border-0 tw-bg-transparent tw-p-0 tw-text-current hover:tw-text-primary focus:tw-outline focus:tw-outline-2 focus:tw-outline-black"
+    aria-label="{{ 'ADDITIONAL_INFORMATION' | translate }}"
+    (click)="open()"
+>
+    <i
+        class="fa fa-info-circle tw-text-[1.6rem] group-focus:tw-text-red-500"
+        aria-hidden="true"
+    ></i>
+</button>
+
+<ng-template #dialogTemplate>
+    <div
+        class="tw-flex tw-flex-col tw-h-full tw-min-h-0 tw-text-[1.6rem] tw-bg-contrast-light"
+    >
+        <!-- Header -->
+        <header class="tw-flex tw-shrink-0 tw-justify-end tw-text-[1.8rem]">
+            <button
+                type="button"
+                class="tw-p-0 tw-px-[6px] tw-py-[1px]"
+                aria-label="{{ 'INFORMATION_SCHLIESSEN' | translate }}"
+                (click)="close()"
+            >
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </button>
+        </header>
+
+        <!-- Content -->
+        <main
+            class="tw-flex-1 tw-min-h-0 tw-text-[1.4rem] tw-mt-[2.5rem] tw-p-[5rem] tw-overflow-y-auto"
+        >
+            <ng-content></ng-content>
+        </main>
+
+        <!-- Footer -->
+        <footer
+            class="tw-flex tw-w-full tw-flex-row tw-items-stretch tw-shrink-0 tw-justify-center tw-text-base tw-p-8"
+        >
+            <button
+                kibButton
+                class="tw-shrink-0 tw-basis-auto tw-mx-3 tw-m-2"
+                type="button"
+                (click)="close()"
+            >
+                {{ 'ZURUECK_ONLY' | translate }}
+            </button>
+        </footer>
+    </div>
+</ng-template>

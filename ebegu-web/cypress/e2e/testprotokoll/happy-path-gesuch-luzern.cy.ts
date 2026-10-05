@@ -38,7 +38,8 @@ import {
     VerfuegenPO,
     VerfuegungPO
 } from '@dv-e2e/page-objects';
-import {GemeindeTestFall, getUser, User} from '@dv-e2e/types';
+import {getPeriodeYears, getUser} from '@dv-e2e/helper';
+import {GemeindeTestFall, TestPeriode, User} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 
@@ -257,7 +258,9 @@ function openAntrag(user: User) {
         'include.text',
         'Antrag stellen'
     );
-    GesuchstellendeDashboardPO.getCorrectPeriodeGesuchButton('2023/24').click();
+    GesuchstellendeDashboardPO.getCorrectPeriodeGesuchButton(
+        TestPeriode[0]
+    ).click();
 }
 
 function checkEinkommensverschlechterungResults() {
@@ -667,8 +670,9 @@ function changeEingangsDatum(antragIdAlias: string) {
     openGesuchInFamSit(antragIdAlias);
     cy.wait(1000);
     SidenavPO.goTo('GESUCH_ERSTELLEN');
-    AntragCreationPO.getEingangsdatum().find('input').type('01.07.2023');
-    AntragCreationPO.getAlternativdatum().find('input').type('01.07.2023');
+    const eingangsdatum = `01.07.${getPeriodeYears(TestPeriode[0]).anfang}`;
+    AntragCreationPO.getEingangsdatum().find('input').type(eingangsdatum);
+    AntragCreationPO.getAlternativdatum().find('input').type(eingangsdatum);
 
     AntragCreationPO.getSpeichernUndWeiterButton().click();
 }

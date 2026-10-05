@@ -22,7 +22,7 @@
                 <fieldset ngModelGroup="dv-edit-gemeinde-bg">
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="form-group mt-2">
+                            <div class="form-group tw-mt-8">
                                 <mat-checkbox
                                     id="gutscheinSelberAusgestellt_id"
                                     name="gutscheinSelberAusgestellt_id"
@@ -39,7 +39,7 @@
                                 </mat-checkbox>
                             </div>
                             @if (!stammdaten.gutscheinSelberAusgestellt) {
-                                <div class="form-group mt-2">
+                                <div class="form-group tw-mt-8">
                                     <label
                                         class="md-no-float required"
                                         translate
@@ -500,7 +500,7 @@
                                 }
                             </div>
                             <!-- Betreuungsgutscheine anbieten ab -->
-                            <div class="form-group mt-5">
+                            <div class="form-group tw-mt-20">
                                 <h3 translate>BEGU_START</h3>
                                 <p>{{ beguStartStr }}</p>
                             </div>
@@ -534,7 +534,7 @@
                                 ></dv-error-messages>
                             </div>
                             <!--                alternative kontaktadresse-->
-                            <div class="form-group mt-5">
+                            <div class="form-group tw-mt-20">
                                 <div class="form-group">
                                     <mat-checkbox
                                         id="altBGAdresse_id"
@@ -788,7 +788,7 @@
                                     </div>
                                 </div>
                                 <!-- Alternative Beschwerde-Adresse -->
-                                <div class="mt-5">
+                                <div class="tw-mt-20">
                                     <h3
                                         translate
                                         for="keineBeschwerdeAdresse_id"
@@ -2726,7 +2726,7 @@
                                                                                 .konfigMahlzeitenverguenstigungEnabled
                                                                         ) {
                                                                             <div
-                                                                                class="table-responsive mt-2"
+                                                                                class="table-responsive tw-mt-8"
                                                                             >
                                                                                 <table
                                                                                     class="mahlzeitenverguenstigung-table"
@@ -3544,7 +3544,7 @@
             <fieldset>
                 @if (!stammdaten.gutscheinSelberAusgestellt) {
                     <div class="row">
-                        <div class="col-sm-6 mt-2">
+                        <div class="col-sm-6 tw-mt-8">
                             <p>
                                 {{ 'GUTSCHEINAUSGABESTELLE' | translate }}:
                                 {{ stammdaten.gemeindeAusgabestelle.name }}
@@ -3562,7 +3562,7 @@
                             <p>{{ stammdaten.iban }}</p>
                         </div>
                         <!--            Benachrichtigungen bei Verfügungen automatisch per Email senden-->
-                        <div class="mt-5">
+                        <div class="tw-mt-20">
                             @if (stammdaten.benachrichtigungBgEmailAuto) {
                                 <h3>
                                     {{
@@ -3705,7 +3705,7 @@
                             </div>
                         </div>
                         <!-- Betreuungsgutscheine anbieten ab -->
-                        <div class="mt-5">
+                        <div class="tw-mt-20">
                             <div class="form-group">
                                 <h3 translate>BEGU_START</h3>
                                 <p>{{ beguStartStr }}</p>
@@ -3782,7 +3782,7 @@
                         </div>
                         <!-- Beschwerdeadresse -->
                         @if (stammdaten.standardRechtsmittelbelehrung) {
-                            <div class="mt-5">
+                            <div class="tw-mt-20">
                                 @if (
                                     keineBeschwerdeAdresse ||
                                     !stammdaten.beschwerdeAdresse
@@ -3828,7 +3828,7 @@
                                 }
                             </div>
                         } @else {
-                            <div class="form-group mt-5">
+                            <div class="form-group tw-mt-20">
                                 @if (stammdaten.korrespondenzspracheDe) {
                                     <div>
                                         <h3 translate>
@@ -4124,7 +4124,7 @@
                                                                     .konfigZusaetzlicherGutscheinEnabled
                                                             ) {
                                                                 <div
-                                                                    class="mt-2 margin-bottom-20"
+                                                                    class="tw-mt-8 margin-bottom-20"
                                                                 >
                                                                     <strong
                                                                         >{{
@@ -4350,7 +4350,7 @@
                                                                     .konfigZusaetzlicherBabybeitragEnabled
                                                             ) {
                                                                 <div
-                                                                    class="mt-2"
+                                                                    class="tw-mt-8"
                                                                 >
                                                                     <strong
                                                                         >{{
@@ -4436,7 +4436,7 @@
                                                                     .konfigZusaetzlicherAnspruchFreiwilligenarbeitEnabled
                                                             ) {
                                                                 <div
-                                                                    class="mt-2 margin-bottom-20"
+                                                                    class="tw-mt-8 margin-bottom-20"
                                                                 >
                                                                     <strong
                                                                         >{{
@@ -4486,7 +4486,7 @@
                                                                 )
                                                             ) {
                                                                 <div
-                                                                    class="mt-2"
+                                                                    class="tw-mt-8"
                                                                 >
                                                                     <strong
                                                                         >{{
@@ -4683,7 +4683,7 @@
                                                         konfigurationsListe[i]
                                                             .konfigHoheEinkommensklassenAktiviert
                                                     ) {
-                                                        <div class="mt-2">
+                                                        <div class="tw-mt-8">
                                                             <strong
                                                                 >{{
                                                                     'GEMEINDE_HOHE_EINKOMMENSKLASSEN'
