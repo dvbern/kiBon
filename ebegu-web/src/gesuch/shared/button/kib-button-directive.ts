@@ -39,7 +39,7 @@ import {Directive, ElementRef, inject} from '@angular/core';
 @Directive({
     selector: '[kibButton]',
     host: {
-        class: 'tw-h-16 tw-border-0 tw-px-6 tw-text-[1.6rem] tw-font-normal tw-tracking-[0.2rem] tw-text-white tw-uppercase tw-bg-primary-color hover:tw-bg-primary-color-dark tw-rounded-none focus-visible:tw-outline focus-visible:tw-outline-2 tw-outline-contrast-darkest disabled:tw-bg-contrast-default disabled:tw-text-black',
+        class: 'tw:h-16 tw:border-0 tw:px-6 tw:text-[1.6rem] tw:font-normal tw:tracking-[0.2rem] tw:text-white tw:uppercase tw:bg-primary-color tw:hover:bg-primary-color-dark tw:rounded-none tw:focus-visible:outline tw:focus-visible:outline-2 tw:outline-contrast-darkest tw:disabled:bg-contrast-default tw:disabled:text-black',
         '[class.opacity-40]': 'isDisabled',
         '[class.cursor-not-allowed]': 'isDisabled',
         '[class.cursor-pointer]': '!isDisabled'

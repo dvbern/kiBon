@@ -100,6 +100,12 @@ export class DvDatePickerXComponent implements OnInit {
     @Input()
     public gesuchsperiode: TSGesuchsperiode;
 
+    @Input()
+    public referenceDate?: moment.Moment;
+
+    @Input()
+    public maxZeitspanne?: number;
+
     public randId = EbeguUtil.generateRandomName(10);
 
     public emit(): void {

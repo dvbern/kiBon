@@ -208,6 +208,24 @@
                     <span ng-bind="vmgs.getAmountNewMitteilungenGS()"></span>
                 </button>
             </div>
+            <!-- Anleitungsvideo -->
+            <div
+                dv-show-element
+                dv-show-allowed-roles="vmgs.TSRoleUtil.getGesuchstellerJugendamtOtherAmtRoles()"
+                dv-show-expression="vmgs.showAnleitungsvideo()"
+            >
+                <button
+                    ng-click="vmgs.openAnleitungsvideo()"
+                    aria-label="{{ 'TOOLBAR_ANLEITUNGSVIDEO' | translate }}"
+                    data-test="toolbar.anleitungsvideo"
+                >
+                    <i class="ellipsis-icon font-size-2 fa fa-play-circle"></i>
+                    <span
+                        class="uppercase"
+                        data-translate="TOOLBAR_ANLEITUNGSVIDEO"
+                    ></span>
+                </button>
+            </div>
             <!--Kontakt-->
             <div
                 dv-show-element
@@ -335,6 +353,23 @@
         >
             <span data-translate="TOOLBAR_MITTEILUNGEN"></span>
             <span ng-bind="vmgs.getAmountNewMitteilungenGS()"></span>
+        </button>
+    </div>
+    <!-- Anleitungsvideo -->
+    <div
+        dv-show-element
+        dv-show-allowed-roles="vmgs.TSRoleUtil.getGesuchstellerJugendamtRoles()"
+        dv-show-expression="vmgs.showAnleitungsvideo()"
+        class="gesuchsperioden-container"
+    >
+        <button
+            ng-click="vmgs.closeSidenav('dossier-toolbar-mobile');vmgs.openAnleitungsvideo()"
+            aria-label="{{ 'TOOLBAR_ANLEITUNGSVIDEO' | translate }}"
+            class="dv-btn gesuchsperiode-button"
+            data-test="menu.anleitungsvideo"
+        >
+            <i class="fa fa-play-circle" aria-hidden="true"></i>
+            <span data-translate="TOOLBAR_ANLEITUNGSVIDEO"></span>
         </button>
     </div>
     <!--Kontakt-->

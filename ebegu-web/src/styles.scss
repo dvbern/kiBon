@@ -16,10 +16,8 @@
 @use 'style/variables' as *;
 @use 'style/mixins' as *;
 
-@import 'angular-material/angular-material.css';
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import 'font-awesome/css/font-awesome.css';
-@import 'bootstrap/dist/css/bootstrap.min.css';
+// vendor css (angular-material, indigo-pink, font-awesome, bootstrap) is listed in angular.json "styles":
+// a plain css @import here would make @tailwindcss/postcss take over this whole stylesheet and break its url() handling
 
 @import 'style/atoms/mat-menu';
 @import 'style/atoms/button';

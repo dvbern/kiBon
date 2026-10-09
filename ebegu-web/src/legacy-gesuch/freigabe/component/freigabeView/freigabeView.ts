@@ -17,6 +17,7 @@
 
 import {TranslateService} from '@ngx-translate/core';
 import {IComponentOptions, IPromise} from 'angular';
+import {StateService} from '@uirouter/angularjs';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../app/core/directive/dv-dialog/dv-dialog';
 import {DownloadRS} from '../../../../app/core/service/downloadRS.rest';
@@ -69,6 +70,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
         'ApplicationPropertyRsService',
         'AuthServiceRS',
         '$timeout',
+        '$state',
         '$translate',
         'EinstellungRS',
         'FreigabeService'
@@ -90,6 +92,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
         private readonly applicationPropertyRS: ApplicationPropertyRsService,
         private readonly authServiceRS: AuthServiceRS,
         $timeout: ITimeoutService,
+        private readonly $state: StateService,
         private readonly $translate: TranslateService,
         private readonly einstellungService: EinstellungRS,
         private readonly freigabeService: FreigabeService
@@ -158,12 +161,38 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
         }
     }
 
+    /**
+     * This method determines whether to schedule a reload based on the type of betreuung
+     * The schedule is needed because of the nature of this async app.
+     *
+     * @param gesuchID
+     * @param isTagesschule
+     * @private
+     */
+    private scheduleReload(gesuchID: string, isTagesschule: boolean): void {
+        const reloadAction = () => {
+            this.gesuchModelManager.clearGesuch();
+            this.$state.go(
+                this.$state.current.name,
+                {gesuchId: gesuchID},
+                {reload: true}
+            );
+        };
+
+        if (isTagesschule) {
+            this.$timeout(reloadAction, 500);
+        }
+    }
+
     public gesuchFreigeben(): void {
         const gesuchID = this.gesuchModelManager.getGesuch().id;
-        this.gesuchModelManager.antragFreigeben(
-            gesuchID,
-            new TSFreigabe(null, null)
-        );
+        const isTagesschule = this.isThereAnySchulamtAngebot();
+        this.gesuchModelManager
+            .antragFreigeben(gesuchID, new TSFreigabe(null, null))
+            .then(() => {
+                this.berechnungsManager.clear();
+                this.scheduleReload(gesuchID, isTagesschule);
+            });
     }
 
     public freigabeZurueckziehen(): IPromise<void> {

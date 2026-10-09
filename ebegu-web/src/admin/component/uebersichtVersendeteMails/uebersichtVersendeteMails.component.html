@@ -16,7 +16,7 @@
   -->
 
 <div class="admin-modul" flex="auto">
-    <div class="tw-w-8/12 tw-mx-auto tw-px-[1.5rem]">
+    <div class="tw:w-8/12 tw:mx-auto tw:px-[1.5rem]">
         <h1 class="access-for-all-title" translate>AFA_VERSENDETE_MAILS</h1>
         <div class="view-title">
             <h2 translate>VERSENDETE_MAILS_TITLE</h2>
@@ -42,14 +42,14 @@
                     <mat-header-cell
                         *matHeaderCellDef
                         mat-sort-header
-                        class="tw-max-w-[20%]"
+                        class="tw:max-w-[20%]"
                     >
                         {{ 'ZEITPUNKTVERSAND_MAIL' | translate }}
                     </mat-header-cell>
                     <mat-cell
                         *matCellDef="let item"
                         data-test="sentTimeMails"
-                        class="tw-max-w-[20%]"
+                        class="tw:max-w-[20%]"
                     >
                         {{ item.zeitpunktVersand }}
                     </mat-cell>
@@ -60,19 +60,19 @@
                     <mat-header-cell
                         *matHeaderCellDef
                         mat-sort-header
-                        class="tw-max-w-[30%]"
+                        class="tw:max-w-[30%]"
                     >
                         {{ 'EMPFAENGERADRESSE_MAIL' | translate }}
                     </mat-header-cell>
                     <mat-cell
                         *matCellDef="let item"
                         data-test="sentMailsAdress"
-                        class="tw-max-w-[30%]"
+                        class="tw:max-w-[30%]"
                     >
                         <span>{{ item.empfaengerAdresse }}</span>
                         <!-- Hidden Button to open Dialog for screen readers-->
                         <button
-                            class="tw-sr-only"
+                            class="tw:sr-only"
                             [attr.aria-label]="
                                 'Details anzeigen für ' + item.name
                             "
@@ -101,7 +101,7 @@
                 <mat-row
                     *matRowDef="let row; columns: DISPLAYED_COLUMNS"
                     tabindex="0"
-                    class="pointer-cursor focus:tw-bg-gray-100/30"
+                    class="pointer-cursor tw:focus:bg-gray-100/30"
                     (click)="openMail(row)"
                     (keydown.enter)="openMail(row)"
                     (keydown.space)="preventDefaultAndOpenMail($event, row)"

@@ -98,6 +98,7 @@ import {NextPeriodeStrPipe} from './pipe/next-periode-str.pipe';
 import {PreviousPeriodeStrPipe} from './pipe/previous-periode-str.pipe';
 import {UiViewComponent} from './ui-view/ui-view.component';
 import {DateInPeriodeValidatorDirective} from './validators/date-in-periode-validator.directive';
+import {MaxZeitspanneValidatorDirective} from './validators/max-zeitspanne-validator.directive';
 import {QrIbanValidatorDirective} from './validators/qr-iban-validator.directive';
 import {NoFutureDateValidatorDirective} from './validators/no-future-date-validator.directive';
 import {MatCardTitle} from '@angular/material/card';
@@ -121,6 +122,7 @@ import {BicSwiftValidatorDirective} from './validators/bic-swift-validator.direc
         BicSwiftValidatorDirective,
         dvStrictEmailValidatorDirective,
         DateInPeriodeValidatorDirective,
+        MaxZeitspanneValidatorDirective,
         DvNgRemoveDialogComponent,
         ErrorMessagesComponent,
         LoadingButtonDirective

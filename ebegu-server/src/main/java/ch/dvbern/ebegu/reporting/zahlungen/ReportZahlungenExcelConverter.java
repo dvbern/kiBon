@@ -120,7 +120,7 @@ public class ReportZahlungenExcelConverter implements ExcelConverter {
 	@Nonnull
 	public XSSFSheet mergeHeaders(
 		@Nonnull XSSFSheet sheet,
-		@Nullable Gesuchsperiode periode,
+		@Nonnull Gesuchsperiode periode,
 		@Nullable Gemeinde gemeinde,
 		@Nullable Institution institution,
 		@Nullable LocalDate datumVon,
@@ -133,7 +133,7 @@ public class ReportZahlungenExcelConverter implements ExcelConverter {
 		mergeFields.add(MergeFieldZahlungen.periodeParam.getMergeField());
 		excelMergerDTO.addValue(
 			MergeFieldZahlungen.periodeParam,
-			periode != null ? periode.getGesuchsperiodeString() : ""
+			periode.getGesuchsperiodeString()
 		);
 		mergeFields.add(MergeFieldZahlungen.gemeindeParam.getMergeField());
 		excelMergerDTO.addValue(

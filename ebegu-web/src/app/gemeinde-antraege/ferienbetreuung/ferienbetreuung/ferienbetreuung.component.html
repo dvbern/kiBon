@@ -16,8 +16,8 @@
 -->
 
 <div class="ferienbetreuung-container">
-    <div class="tw-flex tw-flex-auto tw-overflow-auto">
-        <div class="tw-bg-white w-[35rem] side-nav">
+    <div class="tw:flex tw:flex-auto tw:overflow-auto">
+        <div class="tw:bg-white w-[35rem] side-nav">
             <dv-wizard-side-nav
                 [id]="ferienbetreuungId"
                 [wizardTyp]="wizardTyp"
@@ -34,13 +34,13 @@
                 >
             </div>
         </div>
-        <div class="tw-flex-1">
+        <div class="tw:flex-1">
             <ui-view></ui-view>
         </div>
 
         @if (showKommentare()) {
             <dv-ferienbetreuung-side-panel
-                class="tw-w-[40rem]"
+                class="tw:w-[40rem]"
             ></dv-ferienbetreuung-side-panel>
         }
     </div>

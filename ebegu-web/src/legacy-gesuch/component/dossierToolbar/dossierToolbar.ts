@@ -47,7 +47,10 @@ import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStat
 import {TSMitteilungEvent} from '../../../models/enums/TSMitteilungEvent';
 import {TSRole} from '../../../models/enums/TSRole';
 import {TSSozialdienstFallStatus} from '../../../models/enums/TSSozialdienstFallStatus';
-import {MANDANTS} from '@models/mandant';
+import {KiBonMandant, MANDANTS} from '@models/mandant';
+import {TSBrowserLanguage} from '../../../models/enums/TSBrowserLanguage';
+import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
+import {VideoPlayerLinkVisitor} from '../../../app/core/constants/VideoPlayerLinkVisitor';
 import {TSSozialdienstStammdaten} from '../../../models/sozialdienst/TSSozialdienstStammdaten';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
 import {TSDossier} from '../../../models/TSDossier';
@@ -127,7 +130,8 @@ export class DossierToolbarController implements IDVFocusableController {
         'SozialdienstRS',
         '$translate',
         'MandantService',
-        'ApplicationPropertyRsService'
+        'ApplicationPropertyRsService',
+        'I18nServiceRSRest'
     ];
 
     public antragList: Array<TSAntragDTO>;
@@ -155,6 +159,7 @@ export class DossierToolbarController implements IDVFocusableController {
     public neuesteGesuchsperiode: TSGesuchsperiode;
     public amountNewMitteilungenGS: number = 0;
     private angebotTS: boolean;
+    private mandant: KiBonMandant;
 
     public constructor(
         private readonly ebeguUtil: EbeguUtil,
@@ -174,13 +179,20 @@ export class DossierToolbarController implements IDVFocusableController {
         private readonly sozialdienstRS: SozialdienstRS,
         private readonly $translate: ITranslateService,
         private readonly mandantService: MandantService,
-        private readonly applicationPropertyRS: ApplicationPropertyRsService
+        private readonly applicationPropertyRS: ApplicationPropertyRsService,
+        private readonly i18nServiceRS: I18nServiceRSRest
     ) {}
 
     public $onInit(): void {
         this.updateAntragDTOList();
         // add watchers
         this.addWatchers(this.$scope);
+        this.mandantService.mandant$.subscribe({
+            next: mandant => {
+                this.mandant = mandant;
+            },
+            error: error => this.$log.error(error)
+        });
         if (EbeguUtil.isEmptyStringNullOrUndefined(this.dossierId)) {
             return;
         }
@@ -897,6 +909,23 @@ export class DossierToolbarController implements IDVFocusableController {
                     }
                 );
             });
+    }
+
+    public showAnleitungsvideo(): boolean {
+        return EbeguUtil.isNotNullOrUndefined(this.getAnleitungsvideoLink());
+    }
+
+    public openAnleitungsvideo(): void {
+        window.open(this.getAnleitungsvideoLink(), '_blank');
+    }
+
+    private getAnleitungsvideoLink(): string | null {
+        if (EbeguUtil.isNullOrUndefined(this.mandant)) {
+            return null;
+        }
+        const isGerman =
+            this.i18nServiceRS.currentLanguage() === TSBrowserLanguage.DE;
+        return new VideoPlayerLinkVisitor(isGerman).process(this.mandant);
     }
 
     private institutionStammdatenToHtml(

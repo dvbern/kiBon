@@ -1,2 +1,16 @@
-@tailwind components;
-@tailwind utilities;
+@layer theme;
+@import 'tailwindcss/theme' layer(theme) prefix(tw);
+/* unlayered on purpose: keeps the v3 css cascade against bootstrap/material/legacy css */
+@import 'tailwindcss/utilities' prefix(tw);
+
+@source '../**/*.{html,ts}';
+
+@theme inline {
+    --color-contrast-default: var(--contrast);
+    --color-contrast-light: var(--contrast-light);
+    --color-contrast-lightest: var(--contrast-lightest);
+    --color-contrast-darkest: var(--contrast-darkest);
+
+    --color-primary-color: var(--primary-color);
+    --color-primary-color-dark: var(--primary-color-dark);
+}

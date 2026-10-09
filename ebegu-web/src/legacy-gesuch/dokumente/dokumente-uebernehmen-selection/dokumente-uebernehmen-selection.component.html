@@ -1,10 +1,10 @@
-<div class="tw-p-8 tw-max-h-[90vh] overflow-y-auto">
+<div class="tw:p-8 tw:max-h-[90vh] overflow-y-auto">
     <lib-gesuch-popup-heading>{{
         'DOKUMENTE_UEBERNEHMEN' | translate
     }}</lib-gesuch-popup-heading>
 
     @if (dokumenteZuUebernehmenRes.isLoading()) {
-        <div class="tw-flex tw-justify-center tw-items-center">
+        <div class="tw:flex tw:justify-center tw:items-center">
             <mat-spinner diameter="40"></mat-spinner>
         </div>
     } @else if (
@@ -16,8 +16,8 @@
         </span>
     } @else {
         <p translate>DOKUMENTE_UEBERNEHMEN_HELPTEXT</p>
-        <p class="tw-mb-4"><b translate>DOKUMENTE_UEBERNEHMEN_WARNUNG</b></p>
-        <mat-divider class="tw-pb-6"></mat-divider>
+        <p class="tw:mb-4"><b translate>DOKUMENTE_UEBERNEHMEN_WARNUNG</b></p>
+        <mat-divider class="tw:pb-6"></mat-divider>
 
         @for (
             grundWithDocuments of groupedDokumenteZuUebernehmenTyps();
@@ -29,13 +29,13 @@
                         | translate
                 }}
             </h2>
-            <div class="tw-grid tw-grid-cols-[2fr_1fr_1fr] tw-mb-8 tw-min-w-0">
+            <div class="tw:grid tw:grid-cols-[2fr_1fr_1fr] tw:mb-8 tw:min-w-0">
                 @for (
                     grundWithDocumentDecisions of grundWithDocuments.grundeWithDocumentDecisions;
                     track grundWithDocumentDecisions
                 ) {
                     <!-- Group title spanning full width -->
-                    <h3 class="tw-col-span-3 tw-mt-4 tw-mb-2 tw-break-words">
+                    <h3 class="tw:col-span-3 tw:mt-4 tw:mb-2 tw:break-words">
                         {{
                             grundWithDocumentDecisions.grund.dokumentGrundTyp +
                                 '_' +
@@ -43,23 +43,23 @@
                                 | translate
                         }}
                     </h3>
-                    <span class="tw-pb-2" translate>DOK_DOKUMENT</span>
-                    <span class="tw-pb-2 tw-mr-4" translate>{{
+                    <span class="tw:pb-2" translate>DOK_DOKUMENT</span>
+                    <span class="tw:pb-2 tw:mr-4" translate>{{
                         'DOKUMENT_GRUND_TYP_TAG_' + grundWithDocuments.grundTyp
                     }}</span>
                     @if (
                         hasPersonenbezogeneGrunde(grundWithDocuments.grundTyp)
                     ) {
-                        <span class="tw-pb-2" translate>DOK_FUER</span>
+                        <span class="tw:pb-2" translate>DOK_FUER</span>
                     } @else {
-                        <span class="tw-pb-2"></span>
+                        <span class="tw:pb-2"></span>
                     }
                     @for (
                         dokumentEntscheid of grundWithDocumentDecisions.dokumente;
                         track dokumentEntscheid
                     ) {
                         <!-- Dokument row -->
-                        <div class="tw-gap-2 tw-pr-6">
+                        <div class="tw:gap-2 tw:pr-6">
                             <mat-checkbox
                                 [(ngModel)]="dokumentEntscheid.erneuern"
                                 ><span
@@ -72,11 +72,11 @@
                             >
                         </div>
 
-                        <span class="tw-flex tw-items-center">
+                        <span class="tw:flex tw:items-center">
                             {{ grundWithDocumentDecisions.grund.tag }}
                         </span>
 
-                        <span class="tw-flex tw-items-center">
+                        <span class="tw:flex tw:items-center">
                             @if (
                                 grundWithDocumentDecisions.grund
                                     .personNumber !== null
@@ -99,9 +99,9 @@
             <mat-divider />
         }
     }
-    <div class="tw-flex tw-justify-center tw-mt-12">
+    <div class="tw:flex tw:justify-center tw:mt-12">
         @if (groupedDokumenteZuUebernehmenTyps()?.length > 0) {
-            <button class="dv-btn tw-mr-2" (click)="erneuern()">
+            <button class="dv-btn tw:mr-2" (click)="erneuern()">
                 {{ 'UEBERNEHMEN' | translate }}
             </button>
         }

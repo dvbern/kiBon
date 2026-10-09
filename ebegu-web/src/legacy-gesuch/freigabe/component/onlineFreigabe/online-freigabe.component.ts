@@ -22,6 +22,7 @@ import {
     signal,
     inject
 } from '@angular/core';
+import {StateService} from '@uirouter/angularjs';
 import {SharedModule} from '../../../../app/shared/shared.module';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
@@ -47,6 +48,7 @@ const STEP_NAME = TSWizardStepName.FREIGABE;
 export class OnlineFreigabeComponent {
     private readonly gesuchModelManager = inject(GesuchModelManager);
     private readonly wizardStepManager = inject(WizardStepManager);
+    private readonly $state = inject(StateService);
     protected readonly freigabeService = inject(FreigabeService);
 
     public alreadyFreigegeben = signal<boolean>(null);
@@ -84,15 +86,41 @@ export class OnlineFreigabeComponent {
         }
     }
 
+    /**
+     * This method determines whether to schedule a reload based on the type of betreuung
+     * The schedule is needed because of the nature of this async app.
+     *
+     * @param isTagesschule
+     * @private
+     */
+    private scheduleReload(isTagesschule: boolean): void {
+        const reloadAction = () => {
+            this.gesuchModelManager.clearGesuch();
+            this.$state.go(
+                this.$state.current.name,
+                {gesuchId: this.gesuchModelManager.getGesuch().id},
+                {reload: true}
+            );
+        };
+
+        if (isTagesschule) {
+            setTimeout(reloadAction, 500);
+        }
+    }
+
     public async freigeben(): Promise<TSGesuch | void> {
         if (!this.model.userConfirmedCorrectness) {
             return null;
         }
+
+        const isTagesschule =
+            this.gesuchModelManager.isThereAnySchulamtAngebot();
         const freigabeDto = new TSFreigabe(
             null,
             null,
             this.model.userConfirmedCorrectness
         );
+
         try {
             return await this.gesuchModelManager
                 .antragFreigeben(
@@ -101,6 +129,7 @@ export class OnlineFreigabeComponent {
                 )
                 .then(() => {
                     this.alreadyFreigegeben.set(true);
+                    this.scheduleReload(isTagesschule);
                 });
         } catch {
             return this.wizardStepManager.updateCurrentWizardStepStatusSafe(

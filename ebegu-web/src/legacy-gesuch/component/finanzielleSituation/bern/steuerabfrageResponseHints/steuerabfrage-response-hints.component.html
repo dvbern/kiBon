@@ -20,7 +20,7 @@
 ) {
     <div class="well well-status-warten minus-margin">
         <p class="ebegu-h3" [innerHTML]="getWarningText()"></p>
-        <div class="tw-flex tw-gap-8">
+        <div class="tw:flex tw:gap-8">
             @if (!isGesuchReadonly()) {
                 @if (
                     (showWarningRetry() && isGesuchsteller()) ||

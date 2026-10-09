@@ -1097,7 +1097,6 @@ public class ReportResourceAsync {
 		@Context UriInfo uriInfo
 	) {
 
-		final String methodName = "getZahlungenExcelReport";
 		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		Gemeinde gemeinde = null;
@@ -1109,7 +1108,7 @@ public class ReportResourceAsync {
 			gemeinde = gemeindeService.findGemeinde(gemeindeId)
 				.orElseThrow(
 					() -> new EbeguEntityNotFoundException(
-						methodName,
+						"getZahlungenExcelReport",
 						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
 					)
 				);
@@ -1121,7 +1120,7 @@ public class ReportResourceAsync {
 			)
 				.orElseThrow(
 					() -> new EbeguEntityNotFoundException(
-						methodName,
+						"getZahlungenExcelReport",
 						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
 					)
 				);
@@ -1133,25 +1132,6 @@ public class ReportResourceAsync {
 
 		if (bis != null) {
 			dateBis = DateUtil.parseStringToDateOrReturnNow(bis);
-		}
-
-		if (gesuchsperiodeId == null && dateVon != null && dateBis != null) {
-			if (dateBis.isBefore(dateVon)) {
-				throw new EbeguRuntimeException(
-					KibonLogLevel.NONE,
-					methodName,
-					"Fehler beim erstellen Report Zahlungen",
-					DAS_VON_DATUM_MUSS_VOR_DEM_BIS_DATUM_SEIN
-				);
-			}
-			if (dateVon.plusYears(1).isBefore(dateBis)) {
-				throw new EbeguRuntimeException(
-					KibonLogLevel.NONE,
-					methodName,
-					"Fehler beim erstellen Report Zahlungen",
-					ErrorCodeEnum.ERROR_ZAHLUNGEN_STAT_ZEITSPANNE_MAX_1_JAHR
-				);
-			}
 		}
 
 		final ReportVorlage reportVorlage = LocaleThreadLocal.get()

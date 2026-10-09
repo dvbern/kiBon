@@ -1067,22 +1067,4 @@ export class StatistikComponent implements OnInit, OnDestroy {
             gp => gp.id === this.statistikParameter.gesuchsperiode
         );
     }
-
-    public isVonBisOutsidePeriode(): boolean {
-        const periode = this.getSelectedPeriode();
-        if (!periode) {
-            return false;
-        }
-        const gueltigAb = periode.gueltigkeit.gueltigAb;
-        const gueltigBis = periode.gueltigkeit.gueltigBis;
-        const von = this.statistikParameter.von;
-        const bis = this.statistikParameter.bis;
-        const vonOutside =
-            !EbeguUtil.isNullOrUndefined(von) &&
-            (von.isBefore(gueltigAb) || von.isAfter(gueltigBis));
-        const bisOutside =
-            !EbeguUtil.isNullOrUndefined(bis) &&
-            (bis.isBefore(gueltigAb) || bis.isAfter(gueltigBis));
-        return vonOutside || bisOutside;
-    }
 }

@@ -836,7 +836,7 @@
                                             </mat-checkbox>
                                         </dv-input-container>
                                         <div
-                                            class="tw-col-xs-3 tw-col-xs-offset-6 tw-mb-12 statistik-button"
+                                            class="tw:col-xs-3 tw:col-xs-offset-6 tw:mb-12 statistik-button"
                                         >
                                             <dv-loading-button type="submit">
                                                 <span
@@ -2269,18 +2269,29 @@
                                             )
                                         "
                                     >
-                                        <div class="row">
+                                        <div class="row is-flex">
                                             <div class="col-xs-3">
                                                 <dv-date-picker-x
                                                     label="VON"
                                                     [minDate]="minDate"
-                                                    [maxDate]="maxDate"
+                                                    [maxDate]="
+                                                        isPeriodeKeineSelected()
+                                                            ? null
+                                                            : maxDate
+                                                    "
                                                     [(date)]="
                                                         statistikParameter.von
                                                     "
                                                     [required]="
                                                         isPeriodeKeineSelected()
                                                     "
+                                                    [gesuchsperiode]="
+                                                        getSelectedPeriode()
+                                                    "
+                                                    [errorMessageOverrides]="{
+                                                        dvGesuchsperiodeIsInDateRange:
+                                                            'ERROR_VON_BIS_AUSSERHALB_PERIODE'
+                                                    }"
                                                 >
                                                 </dv-date-picker-x>
                                             </div>
@@ -2291,41 +2302,36 @@
                                                         statistikParameter.von ||
                                                         minDate
                                                     "
-                                                    [maxDate]="maxDate"
+                                                    [maxDate]="
+                                                        isPeriodeKeineSelected()
+                                                            ? null
+                                                            : maxDate
+                                                    "
                                                     [(date)]="
                                                         statistikParameter.bis
                                                     "
                                                     [required]="
                                                         isPeriodeKeineSelected()
                                                     "
+                                                    [gesuchsperiode]="
+                                                        getSelectedPeriode()
+                                                    "
+                                                    [referenceDate]="
+                                                        statistikParameter.von
+                                                    "
+                                                    [maxZeitspanne]="
+                                                        isPeriodeKeineSelected()
+                                                            ? 1
+                                                            : null
+                                                    "
+                                                    [errorMessageOverrides]="{
+                                                        dvGesuchsperiodeIsInDateRange:
+                                                            'ERROR_VON_BIS_AUSSERHALB_PERIODE',
+                                                        maxZeitspanne:
+                                                            'ERROR_ZEITSPANNE_MAX_1_JAHR'
+                                                    }"
                                                 >
                                                 </dv-date-picker-x>
-                                                @if (
-                                                    isZeitspanneMoreThanOneJahr()
-                                                ) {
-                                                    <dv-error-messages
-                                                        [errorObject]="{
-                                                            zeitspanne: true
-                                                        }"
-                                                        [errorMessageOverrides]="{
-                                                            zeitspanne:
-                                                                'ERROR_ZEITSPANNE_MAX_1_JAHR'
-                                                        }"
-                                                        class="error"
-                                                    ></dv-error-messages>
-                                                }
-                                                @if (isVonBisOutsidePeriode()) {
-                                                    <dv-error-messages
-                                                        [errorObject]="{
-                                                            ausserhalbPeriode: true
-                                                        }"
-                                                        [errorMessageOverrides]="{
-                                                            ausserhalbPeriode:
-                                                                'ERROR_VON_BIS_AUSSERHALB_PERIODE'
-                                                        }"
-                                                        class="error"
-                                                    ></dv-error-messages>
-                                                }
                                             </div>
                                             <div class="col-xs-3">
                                                 <div class="form-group">
@@ -2528,8 +2534,7 @@
                                                     "
                                                     [buttonDisabled]="
                                                         bgZahlungenStatistikGemeindeAndInstitutionAlleSelected() ||
-                                                        isZeitspanneMoreThanOneJahr() ||
-                                                        isVonBisOutsidePeriode()
+                                                        isZeitspanneMoreThanOneJahr()
                                                     "
                                                 >
                                                     <span

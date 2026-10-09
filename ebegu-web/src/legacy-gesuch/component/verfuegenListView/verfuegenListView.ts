@@ -1003,6 +1003,15 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         return TSAntragStatus.BESCHWERDE_HAENGIG === this.getAntragStatus();
     }
 
+    /**
+     * Determines whether the "Abschließen" button can be displayed
+     * based on TSANTRAGSTATUS
+     * and areThereOnlySchulamtAngebote (Tagesschule or Ferieninsel)
+     * and if there are any betreuungen
+     * and if role is admin/sachbearbeiter ts Or gemeinde / superadmin
+     *
+     * @return {boolean} Returns true if the action can be displayed, otherwise false.
+     */
     public showAbschliessen(): boolean {
         const status = this.getAntragStatus();
         return (

@@ -394,7 +394,7 @@ export class KommentarViewController implements IController {
     }
 
     public getDossier(): TSDossier {
-        return this.getGesuch().dossier;
+        return this.getGesuch()?.dossier;
     }
 
     public saveBemerkungen(): void {

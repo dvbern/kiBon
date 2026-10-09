@@ -3,18 +3,18 @@
 </h2>
 
 <mat-dialog-content>
-    <p class="tw-text-gray-500">
+    <p class="tw:text-gray-500">
         <span translate>EMPFAENGERADRESSE_MAIL</span>:
         {{ data.empfaengerAdresse }}
     </p>
-    <p class="tw-text-gray-500">
+    <p class="tw:text-gray-500">
         <span translate>ZEITPUNKTVERSAND_MAIL</span>:
         {{ data.zeitpunktVersand }}
     </p>
     <mat-divider class="!my-4"></mat-divider>
 
     <div
-        class="tw-max-w-none tw-text-gray-800"
+        class="tw:max-w-none tw:text-gray-800"
         [innerHTML]="sanitize(data.body)"
     ></div>
 </mat-dialog-content>

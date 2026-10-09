@@ -53,6 +53,8 @@ xdescribe('freigabeView', () => {
     let applicationPropertyRS: any;
     let authServiceRS: AuthServiceRS;
     let $timeout: ITimeoutService;
+    let $state: any;
+    let berechnungsManager: any;
     let dossier: TSDossier;
     let fall: TSFall;
     let $translate: TranslateService;
@@ -79,6 +81,9 @@ xdescribe('freigabeView', () => {
             );
             authServiceRS = $injector.get('AuthServiceRS');
             $timeout = $injector.get('$timeout');
+            $state = jasmine.createSpyObj('$state', ['go']);
+            $state.current = {name: 'gesuch.freigabe'};
+            berechnungsManager = $injector.get('BerechnungsManager');
             $translate = $injector.get('$translate');
             einstellungRS = $injector.get('EinstellungRS');
             freigabeService = $injector.get('FreigabeService');
@@ -106,7 +111,7 @@ xdescribe('freigabeView', () => {
 
             controller = new FreigabeViewController(
                 gesuchModelManager,
-                $injector.get('BerechnungsManager'),
+                berechnungsManager,
                 wizardStepManager,
                 dialog,
                 downloadRS,
@@ -114,6 +119,7 @@ xdescribe('freigabeView', () => {
                 applicationPropertyRS,
                 authServiceRS,
                 $timeout,
+                $state,
                 $translate,
                 einstellungRS,
                 freigabeService
@@ -148,6 +154,7 @@ xdescribe('freigabeView', () => {
             expect(returned).toBeDefined();
         });
     });
+
     describe('confirmationCallback', () => {
         it('should return a Promise when the form is valid', () => {
             TestDataUtil.mockDefaultGesuchModelManagerHttpCalls($httpBackend);

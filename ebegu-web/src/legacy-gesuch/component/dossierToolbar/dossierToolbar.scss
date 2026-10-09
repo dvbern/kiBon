@@ -391,6 +391,9 @@
     }
     button.gesuchsperiode-button {
         margin-top: 2rem;
+        & > i.fa {
+            vertical-align: -0.1em;
+        }
     }
     button.antrag-typ-datum-button {
         padding: 0 0 0 5rem;
@@ -538,6 +541,10 @@ md-menu-bar.md-open:not(.md-keyboard-mode) md-menu:hover > button {
 
 i.ellipsis-icon {
     margin-left: 1rem;
+}
+
+i.ellipsis-icon.font-size-2 {
+    vertical-align: -0.1em;
 }
 
 .font-size-2 {
