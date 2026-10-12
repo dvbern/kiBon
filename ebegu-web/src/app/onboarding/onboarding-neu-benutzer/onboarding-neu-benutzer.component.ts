@@ -132,7 +132,8 @@ export class OnboardingNeuBenutzerComponent {
             });
         } else {
             this.authServiceRS.initRegistration({
-                gemeindeBGId: this.gemeinde?.id,
+                gemeindeBGId:
+                    this.gemeinde !== undefined ? this.gemeinde.id : null,
                 gemeindenId: listIds
             });
         }

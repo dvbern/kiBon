@@ -180,33 +180,38 @@ public class EingewoehnungFristRuleTest {
 	}
 
 	@Test
-	void shouldGiveEingewoehnung_WhenBeschaeftigungsAnspruchStartsDuringFirstMonthOfGP() {
-		final LocalDate AUGUST_15 = START_PERIODE.plusDays(14);
-
+	/*
+	 * Normalenfall, Eingewoehnung, 1 Erwerbspensum Begin Mitte August
+	 */
+	void testEingewoehnungFristRuleAnspruchAbMitteAugust() {
 		Betreuung betreuung = createGesuch(false, true);
 		Gesuch gesuch = betreuung.extractGesuch();
 
+		LocalDate AUG_15 = START_PERIODE.plusDays(15);
+
 		assertThat(gesuch.getGesuchsteller1(), notNullValue());
-
-		gesuch.getGesuchsteller1().getErwerbspensenContainers().clear();
-
-		ErwerbspensumContainer ewp = TestDataUtil.createErwerbspensum(
-			AUGUST_15,
-			ENDE_PERIODE,
-			40
-		);
-		gesuch.getGesuchsteller1().addErwerbspensumContainer(ewp);
+		gesuch.getGesuchsteller1()
+			.addErwerbspensumContainer(
+				TestDataUtil
+					.createErwerbspensum(
+						AUG_15,
+						ENDE_PERIODE,
+						100
+					)
+			);
 
 		List<VerfuegungZeitabschnitt> result = calculateMitEingewoehnung(
 			betreuung
 		);
 
+		assertThat(result.size(), is(3));
 		new ZeitabschnittAssertionHelper(result.get(0))
-			.assertAnspruch(60)
+			.assertAnspruch(0)
 			.assertGueltigAb(START_PERIODE)
-			.assertGueltigBis(AUGUST_15.minusDays(1))
-			.assertMessageKeyExists(ERWERBSPENSUM_EINGEWOEHNUNG);
+			.assertGueltigBis(AUG_15.minusDays(1));
 
+		assertThat(result.get(1).getGueltigkeit().getGueltigAb(), is(AUG_15));
+		assertThat(result.get(0).getEinkommensjahr(), is(2016));
 	}
 
 	@Test

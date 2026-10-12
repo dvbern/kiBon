@@ -34,12 +34,15 @@ import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.mail.MailTemplateConfiguration;
 import ch.dvbern.ebegu.services.AbstractMailServiceBean;
 import ch.dvbern.ebegu.services.BenutzerService;
+import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 
 /**
  * Service fuer Gemeindeantraege
  */
 @Stateless
 public class GemeindeKennzahlenMailService extends AbstractMailServiceBean {
+	private static final String MANDANT_INFO_MAIL =
+		"info.bg@be.ch";
 
 	@Inject
 	private MailTemplateConfiguration mailTemplateConfig;
@@ -65,7 +68,8 @@ public class GemeindeKennzahlenMailService extends AbstractMailServiceBean {
 				);
 
 		getBenutzerAndMandantInfoMails(
-			activeBenutzerInRolesOfActiveGemeinden
+			activeBenutzerInRolesOfActiveGemeinden,
+			mandant
 		).forEach(
 			email -> sendFirstErinnerungsmailToEmpfaenger(mandant, email)
 		);
@@ -100,7 +104,8 @@ public class GemeindeKennzahlenMailService extends AbstractMailServiceBean {
 			);
 
 		getBenutzerAndMandantInfoMails(
-			activeBgAdminsOfGemeinden
+			activeBgAdminsOfGemeinden,
+			mandant
 		).forEach(
 			email -> sendSecondErinnerungsmailToEmpfaenger(mandant, email)
 		);
@@ -116,13 +121,16 @@ public class GemeindeKennzahlenMailService extends AbstractMailServiceBean {
 	}
 
 	private List<String> getBenutzerAndMandantInfoMails(
-		Collection<Benutzer> baseBenutzer
+		Collection<Benutzer> baseBenutzer,
+		Mandant mandant
 	) {
 		List<String> receipientList = baseBenutzer
 			.stream()
 			.map(Benutzer::getEmail)
 			.collect(Collectors.toList());
-		receipientList.add(ebeguConfiguration.getSenderAddress());
+		if (mandant.getMandantIdentifier() == MandantIdentifier.BERN) {
+			receipientList.add(MANDANT_INFO_MAIL);
+		}
 		return receipientList;
 	}
 }

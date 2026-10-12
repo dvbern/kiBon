@@ -190,15 +190,24 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
             'include.text',
             'Freigabequittung ausstehend'
         );
-        cy.waitForRequest('GET', '**/dossier/fall/**', () => {
-            FreigabePO.getFreigabequittungEinscannenSimulierenButton().click();
-        });
+
+        cy.intercept('GET', '**/dossier/fall/**').as('fallLoad');
+        FreigabePO.getFreigabequittungEinscannenSimulierenButton().click();
+        cy.wait('@fallLoad'); // request triggered by the scan
+        cy.wait('@fallLoad'); // request from freigabeView.scheduleReload (500ms later)
+
+        SidenavPO.getGesuchStatus().should(
+            'not.include.text',
+            'Freigabequittung ausstehend'
+        );
 
         SidenavPO.goTo('GESUCH_ERSTELLEN');
+        const eingangsdatum = `31.07.${getPeriodeYears(TestPeriode[0]).anfang}`;
         AntragCreationPO.getEingangsdatum()
             .find('input')
             .clear()
-            .type(`31.07.${getPeriodeYears(TestPeriode[0]).anfang}`);
+            .type(eingangsdatum)
+            .should('have.value', eingangsdatum);
 
         cy.waitForRequest('PUT', '**/gesuche', () => {
             NavigationPO.saveAndGoNext();
