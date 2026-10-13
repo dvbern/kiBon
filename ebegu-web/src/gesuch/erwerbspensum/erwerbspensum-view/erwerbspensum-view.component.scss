@@ -1,0 +1,63 @@
+/*!
+ * Copyright (C) 2026 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+@use '@angular/material' as mat;
+
+/*
+ TEMP: comparison-only fix for KIBON-4218's mat-label demo. The shared
+ wrapper's overrides (gesuch-shared-form-style-material-input-wrapper.scss)
+ were tuned for gesuch-form-number-input's labelless layout (external native
+ label) and don't reserve label-text tokens or with-label padding, which
+ clips the floating label when a real mat-label is used inside it. Scoped
+ here via ::ng-deep instead of touching the shared file, since this is a
+ throwaway demo variant, not a real usage of the wrapper.
+ Remove together with the demo markup in erwerbspensum-view.component.html.
+*/
+.mat-label-demo {
+    ::ng-deep
+        .gesuch-shared-form-style-material-input-wrapper
+        .mat-mdc-form-field {
+        @include mat.form-field-overrides(
+            (
+                filled-label-text-color: #000000,
+                filled-focus-label-text-color: #000000,
+                filled-label-text-size: 1.4rem,
+                filled-label-text-weight: 400,
+                filled-label-text-tracking: 0.1rem,
+                filled-label-text-font:
+                    "'Open Sans', Arial, Helvetica, sans-serif",
+                filled-with-label-container-padding-top: 1rem,
+                filled-with-label-container-padding-bottom: 1rem,
+                filled-hover-label-text-color: #000000
+            )
+        );
+
+        .mat-mdc-text-field-wrapper {
+            overflow: visible;
+        }
+
+        /*
+        MDC's own filled-field rule (.mdc-text-field--filled
+        .mdc-floating-label--float-above) scales the floated label to 75% and
+        only lifts it far enough to sit half-overlapping the box - matching
+        Material's own filled-field look. We instead want the label fully
+        outside/above the box at its configured (unscaled) size
+        */
+        .mdc-text-field--filled .mdc-floating-label--float-above {
+            transform: translateY(-166.667%) translateX(0rem) scale(1);
+        }
+    }
+}

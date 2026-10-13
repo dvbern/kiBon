@@ -37,6 +37,7 @@ import ch.dvbern.ebegu.enums.EingewoehnungTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
+import ch.dvbern.ebegu.util.DateUtil;
 import ch.dvbern.ebegu.util.MathUtil;
 
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.KITA;
@@ -99,7 +100,8 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 		// und sollen nicht beachtet werden. wir stoppen hier.
 		if (!isEingewoehnungsZeitabschnittAtStartBetreuung(
 			eingewoehnung,
-			zeitabschnitte
+			zeitabschnitte,
+			betreuung.extractGesuchsperiode()
 		)) {
 			return zeitabschnitte;
 		}
@@ -154,7 +156,8 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 
 	private boolean isEingewoehnungsZeitabschnittAtStartBetreuung(
 		VerfuegungZeitabschnitt eingewoehnung,
-		List<VerfuegungZeitabschnitt> zeitabschnitte
+		List<VerfuegungZeitabschnitt> zeitabschnitte,
+		Gesuchsperiode gesuchsperiode
 	) {
 		Optional<VerfuegungZeitabschnitt> firstZeitabschnittWithAnspruchBetreuung =
 			zeitabschnitte.stream()
@@ -172,17 +175,19 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 				.sorted()
 				.findFirst();
 
-		if (firstZeitabschnittWithAnspruchBetreuung.isPresent()) {
-			return eingewoehnung.getGueltigkeit()
+		return firstZeitabschnittWithAnspruchBetreuung.filter(
+			verfuegungZeitabschnitt -> eingewoehnung.getGueltigkeit()
 				.getGueltigAb()
 				.isEqual(
-					firstZeitabschnittWithAnspruchBetreuung.get()
-						.getGueltigkeit()
-						.getGueltigAb()
-						.minusMonths(1)
-				);
-		}
-		return false;
+					DateUtil.getMax(
+						verfuegungZeitabschnitt
+							.getGueltigkeit()
+							.getGueltigAb()
+							.minusMonths(1),
+						gesuchsperiode.getGueltigkeit().getGueltigAb()
+					)
+				)
+		).isPresent();
 	}
 
 	private VerfuegungZeitabschnitt createEingewoehnungAbschnitt(
@@ -276,15 +281,12 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 		List<VerfuegungZeitabschnitt> gewaehrteEingewoehnungenGemeindeZeitabschnitte =
 			new ArrayList<>();
 
-		for (int i = 0;
-			 i < eingewoehnungsUeberscheidendeZeitabschnitte.size();
-			 i++) {
+		for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : eingewoehnungsUeberscheidendeZeitabschnitte) {
 			var isWohnsitzInGemeinde =
-				!eingewoehnungsUeberscheidendeZeitabschnitte.get(i)
+				!verfuegungZeitabschnitt
 					.getRelevantBgCalculationInput()
 					.isWohnsitzNichtInGemeindeGS1();
-			var wegzugsDatum = eingewoehnungsUeberscheidendeZeitabschnitte
-				.get(i)
+			var wegzugsDatum = verfuegungZeitabschnitt
 				.getGueltigkeit()
 				.getGueltigBis();
 

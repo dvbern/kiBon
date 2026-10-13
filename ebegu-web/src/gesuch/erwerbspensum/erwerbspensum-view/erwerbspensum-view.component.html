@@ -1,3 +1,20 @@
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
 <lib-gesuch-page-layout>
     <lib-gesuch-page-heading>
         {{ 'Dagmar Wälti' | translate }}
@@ -10,8 +27,8 @@
         ></dv-bisher-x>
     </lib-gesuch-page-heading>
 
-    <p>GesuchErwerbspensumView works!</p>
-    <fieldset>
+    <fieldset class="tw:flex tw:flex-col">
+        <h2>Testing Toggles</h2>
         <div class="tw:inline">
             <input type="checkbox" [(ngModel)]="hasBisher" id="has-bisher" />
             <label
@@ -20,6 +37,57 @@
                 >Toggle dv-bisher fürs Testing
             </label>
         </div>
+        <div class="tw:inline">
+            <input
+                type="checkbox"
+                [(ngModel)]="isInvalid"
+                (ngModelChange)="form.pensum().markAsTouched()"
+                id="is-invalid"
+            />
+            <label
+                for="is-invalid"
+                class="tw:inline tw:ml-2 ignore-danger-font-color tw:align-text-top"
+                >invalides Form
+            </label>
+        </div>
+        <div class="tw:inline">
+            <input type="checkbox" [(ngModel)]="isRequired" id="is-required" />
+            <label
+                for="is-required"
+                class="tw:inline tw:ml-2 ignore-danger-font-color tw:align-text-top"
+                >Pflichtfeld
+            </label>
+        </div>
+        <div class="tw:inline">
+            <input type="checkbox" [(ngModel)]="isDisabled" id="is-disabled" />
+            <label
+                for="is-disabled"
+                class="tw:inline tw:ml-2 ignore-danger-font-color tw:align-text-top"
+                >Read-only
+            </label>
+        </div>
+    </fieldset>
+
+    <fieldset class="tw:mt-4">
+        <h2 class="tw:pb-4">Number Input (mit nativem label):</h2>
+        <kib-gesuch-form-number-input
+            class="tw:mt-12 tw:block"
+            [formField]="form.pensum"
+        >
+            <span kibGesuchSharedFormLabelContent>
+                Pensum
+                <kib-tooltip>
+                    <div [innerHTML]="'TEST_TOOLTIP' | translate"></div>
+                </kib-tooltip>
+            </span>
+        </kib-gesuch-form-number-input>
+    </fieldset>
+
+    <fieldset>
+        <h2>Number Input 2:</h2>
+        <kib-gesuch-form-number-input [formField]="form.zweitesPensum">
+            <span kibGesuchSharedFormLabelContent>Zweites Pensum</span>
+        </kib-gesuch-form-number-input>
     </fieldset>
     <p>
         KibTooltip Text example erweitere Bedürfnisse:
@@ -71,4 +139,28 @@
             </table>
         </kib-tooltip>
     </p>
+    <fieldset class="tw:mt-4">
+        <h2>Bisher</h2>
+        <section class="tw:pb-4">
+            <span>Beispiel bisher (sonder Label) mit %: 100 %</span>
+
+            @if (hasBisher()) {
+                <kib-bisher id="erwerbspensum-bisher">
+                    <span kibBisherLabel>
+                        {{ 'LATS_BISHER_LABEL' | translate }}
+                    </span>
+
+                    <span kibBisherValue> {{ bisherValue }} % </span>
+                </kib-bisher>
+            }
+        </section>
+        <section>
+            <span>Beispiel bisher (default label): 100</span>
+            @if (hasBisher()) {
+                <kib-bisher id="erwerbspensum-bisher">
+                    <span kibBisherValue> {{ bisherValue }} </span>
+                </kib-bisher>
+            }
+        </section>
+    </fieldset>
 </lib-gesuch-page-layout>

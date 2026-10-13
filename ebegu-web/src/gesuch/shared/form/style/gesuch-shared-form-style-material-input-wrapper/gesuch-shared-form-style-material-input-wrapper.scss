@@ -1,0 +1,72 @@
+/*!
+ * Copyright (C) 2026 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+@use '@angular/material' as mat;
+@use 'style/variables' as *;
+
+.gesuch-shared-form-style-material-input-wrapper {
+    .mat-mdc-form-field {
+        width: 100%;
+
+        @include mat.form-field-overrides(
+            (
+                container-text-font: "'Open Sans', Arial, Helvetica, sans-serif",
+                container-height: 4rem,
+                container-text-size: 1.6rem,
+                container-text-weight: 700,
+                container-text-tracking: 0.1rem,
+                container-text-line-height: 2rem,
+                container-vertical-padding: calc((4rem - 2rem) / 2),
+                filled-container-shape: 0,
+                filled-disabled-input-text-color: $black,
+                filled-container-color: #ffffff,
+                filled-error-focus-active-indicator-color: transparent,
+                filled-input-text-color: #000000,
+                filled-active-indicator-color: transparent,
+                filled-hover-active-indicator-color: transparent,
+                filled-focus-active-indicator-color: transparent,
+                filled-active-indicator-height: 0,
+                state-layer-color: transparent,
+                hover-state-layer-opacity: 0,
+                focus-state-layer-opacity: 0
+            )
+        );
+    }
+
+    .mdc-text-field {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .mdc-text-field--focused {
+        outline: 2px solid #000000;
+        outline-offset: 0;
+    }
+
+    /*
+     .mdc-text-field's padding-left would shift the box's left edge inward,
+     out of line with the native label above it (which is flush left).
+     Applying the inset to the input element itself keeps that flush position.
+    */
+    .mat-mdc-input-element {
+        padding-left: 1rem;
+    }
+
+    .mat-form-field-invalid .mat-mdc-form-field-infix {
+        background-color: #ffe6e6;
+    }
+}

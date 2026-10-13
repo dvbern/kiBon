@@ -113,34 +113,62 @@ const getElementWithContent = (selector: string, text: string) => {
         .and('be.visible');
 };
 
+const sortGeneriertNewestFirst = () => {
+    const clickGeneriertHeader = () =>
+        cy.waitForRequest('GET', '**/v1/zahlungen/**', () => {
+            getElementWithContent(
+                '.mat-sort-header-container',
+                'Generiert'
+            ).click();
+        });
+
+    clickGeneriertHeader();
+
+    cy.contains('mat-header-cell', 'Generiert').then($header => {
+        if ($header.attr('aria-sort') !== 'descending') {
+            clickGeneriertHeader();
+        }
+    });
+
+    cy.contains('mat-header-cell', 'Generiert').should(
+        'have.attr',
+        'aria-sort',
+        'descending'
+    );
+};
+
+const openZahlungsauftrag = (beschrieb: string) => {
+    getElementWithContent('mat-cell', beschrieb)
+        .should('not.have.class', 'disabled-row')
+        .click();
+};
+
 const zahlungAlsInstitutionBestaetigenAction = (
     zahlungBeschrieb: string,
     institution: string,
     bestaetigungText: string
 ) => {
-    ZahlungslaufPO.getElementWithContent(
-        '.mat-sort-header-container',
-        'Generiert'
-    ).dblclick();
+    ZahlungslaufPO.sortGeneriertNewestFirst();
 
     cy.waitForRequest(
         'GET',
         '**/v1/zahlungen/zahlungsauftraginstitution/**',
         () => {
-            ZahlungslaufPO.getElementWithContent(
-                'mat-cell',
+            ZahlungslaufPO.openZahlungsauftrag(
                 zahlungBeschrieb + ' ' + dateToday
-            ).click();
+            );
         }
     );
 
-    ZahlungslaufPO.getElementWithContent('mat-cell', institution);
-    cy.get('[data-test="zahlungErhalten"]', {timeout: 15000})
-        .eq(0)
+    cy.contains('mat-row', institution, {timeout: 10000})
+        .find('[data-test="zahlungErhalten"]', {timeout: 15000})
         .should('be.visible')
         .click();
 
-    ZahlungslaufPO.getElementWithContent('mat-cell', bestaetigungText);
+    cy.contains('mat-row', institution, {timeout: 10000}).should(
+        'contain.text',
+        bestaetigungText
+    );
 };
 
 const goToZahlungsauftragPage = () => {
@@ -234,18 +262,15 @@ const isZahlungBestaetigtAction = (
 ) => {
     ZahlungslaufPO.userChangeAction(user);
     cy.ignoreUncaughtException();
+
+    ZahlungslaufPO.sortGeneriertNewestFirst();
     cy.wait(500);
-    ZahlungslaufPO.getElementWithContent(
-        '.mat-sort-header-container',
-        'Generiert'
-    ).dblclick();
+    ZahlungslaufPO.openZahlungsauftrag(zahlungBeschrieb + ' ' + dateToday);
     cy.wait(500);
-    ZahlungslaufPO.getElementWithContent(
-        'mat-cell',
-        zahlungBeschrieb + ' ' + dateToday
-    ).click();
-    cy.wait(500);
-    ZahlungslaufPO.getElementWithContent('mat-cell', bestaetigungText);
+
+    cy.contains('mat-row', bestaetigungText, {timeout: 10000}).should(
+        'be.visible'
+    );
 };
 
 const waitForZahlungAusloesenAction = () => {
@@ -307,5 +332,7 @@ export const ZahlungslaufPO = {
     isZahlungBestaetigtAction,
     waitForZahlungAusloesenAction,
     waitForRefreshAction,
-    getZahlungenSwitchButton
+    getZahlungenSwitchButton,
+    sortGeneriertNewestFirst,
+    openZahlungsauftrag
 };

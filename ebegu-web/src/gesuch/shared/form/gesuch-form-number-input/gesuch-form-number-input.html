@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<kib-gesuch-shared-form-style-material-input-wrapper>
+    <label
+        [for]="numberInput.id"
+        kibGesuchSharedFormLabel
+        [required]="required()"
+        [invalid]="invalid()"
+    >
+        <ng-content select="[kibGesuchSharedFormLabelContent]"></ng-content>
+    </label>
+    <mat-form-field appearance="fill" subscriptSizing="fixed">
+        <input
+            #numberInput="matInput"
+            matInput
+            [maskito]="maskitoOptionsSig()"
+            [(ngModel)]="rawValue"
+            (blur)="touch.emit()"
+            [disabled]="disabled()"
+            [required]="required()"
+            [errorStateMatcher]="matcher"
+            [class.ng-invalid]="invalid()"
+            [class.ng-valid]="!invalid()"
+        />
+        <mat-error>{{ errors()?.[0]?.message }}</mat-error>
+    </mat-form-field>
+</kib-gesuch-shared-form-style-material-input-wrapper>

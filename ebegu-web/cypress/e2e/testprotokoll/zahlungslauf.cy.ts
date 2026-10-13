@@ -19,6 +19,7 @@ import {TestFaellePO} from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/helper';
 import {TestPeriode} from '@dv-e2e/types';
 import {MANDANTS} from '@models/mandant';
+import dayjs from 'dayjs';
 import {ZahlungslaufPO} from '../../page-objects/antragverwaltung/zahlungslauf.po';
 
 describe('Kibon - generate Testfälle [Superadmin]', () => {
@@ -37,7 +38,8 @@ describe('Kibon - generate Testfälle [Superadmin]', () => {
     const testgemeindeParis = 'Paris';
     const testgemeindeSchwyz = 'Testgemeinde Schwyz';
 
-    const zahlungBeschrieb = 'zahlungslauf';
+    const runId = dayjs().format('HHmmss');
+    const zahlungBeschrieb = `zahlungslauf ${runId}`;
     const institution = 'Weissenstein';
     const bestaetigt = 'Bestätigt';
 
