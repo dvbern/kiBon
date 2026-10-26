@@ -51,8 +51,11 @@ import ch.dvbern.ebegu.api.dtos.JaxMandant;
 import ch.dvbern.ebegu.authentication.KibonJwt;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Benutzer;
+import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
+import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
 import ch.dvbern.ebegu.oidc.AuthConstants;
 import ch.dvbern.ebegu.oidc.CustomAuthenticationController;
@@ -66,7 +69,6 @@ import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.URLUtil;
 import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
-import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 
@@ -107,6 +109,9 @@ public class AuthResource {
 
 	@Inject
 	private KeycloakApi keycloakApi;
+
+	@Inject
+	private ApplicationPropertyService applicationPropertyService;
 
 	@Inject
 	private CreateBenutzerService createBenutzerService;
@@ -218,12 +223,23 @@ public class AuthResource {
 			OpenIdConstant.LOGIN_HINT
 		) String loginHint
 	) {
-		// kiBon-Logout ausführen
 		principalBean.findBenutzer().ifPresent(keycloakApi::logout);
 		invalidateSession(request);
 
-		if (isUserOfRealmBern()) {
-			return redirectToBeLoginLogout();
+		Mandant mandant = principalBean.getMandant();
+		Optional<String> idpAlias = applicationPropertyService
+			.getKeycloakIdpHint(mandant)
+			.getIdpAlias();
+		if (idpAlias.isPresent()) {
+			try {
+				return redirectToIdpLogout(mandant, idpAlias.get());
+			} catch (EbeguRuntimeException e) {
+				LOG.error(
+					"IDP-Logout fuer Mandant {} nicht moeglich, Logout erfolgt ohne IDP-Logout",
+					mandant.getName(),
+					e
+				);
+			}
 		}
 		return redirectToLogoutTarget(request, loginHint);
 	}
@@ -255,25 +271,25 @@ public class AuthResource {
 			.build();
 	}
 
-	private Response redirectToBeLoginLogout() {
-		// für Benutzer des Mandanten Bern soll der kiBon-Logout auch gleichzeitig zum AGOV-Logout führen.
-		// dafür wurde im IDP des Mandanten eine URL hinterlegt (diese findet man dann im Keycloak UI,
-		// Mandant Bern -> Identity Providers -> BE-Login -> OpenID Connect settings -> Logout URL).
+	/**
+	 * {@link Mandant}s with configured IDP (e.g. Bern) should perform a kiBon-Logout and an IDP-Logout (e.g. AGOV). To
+	 * do the IDP-Logout, the user may have to be forwarded to the IDP Logout page if keycloak cannot logout itself
+	 * directly
+	 *
+	 * @param mandant the {@link Mandant} for which the IDP-Logout redirect should be built
+	 * @param idpAlias the IDP Alias for which the IDP-Logout redirect should be built
+	 * @return the redirect to the IDP Logout page
+	 */
+	private Response redirectToIdpLogout(Mandant mandant, String idpAlias) {
 		String logoutURL = keycloakApi.getIDPLogoutUrl(
-			MandantIdentifier.BERN.getRealmName(),
-			"keycloak-oidc"
+			mandant.getMandantIdentifier().getRealmName(),
+			idpAlias
 		);
 
 		return new LogoutResponseBuilder().withStatus(200)
 			.withLogoutSuccess(true)
 			.withLogoutRedirect(logoutURL)
 			.build();
-	}
-
-	private boolean isUserOfRealmBern() {
-		return principalBean.getMandant()
-			.getMandantIdentifier()
-			== MandantIdentifier.BERN;
 	}
 
 	/**

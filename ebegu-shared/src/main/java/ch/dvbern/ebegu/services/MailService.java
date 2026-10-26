@@ -56,6 +56,18 @@ public interface MailService {
 	);
 
 	/**
+	 * Wie {@link #toOutboxMail(String, String, String, MandantIdentifier)}, aber in einer eigenen Transaktion.
+	 * Für Fehler-Mails, die vor einer Exception mit Rollback gespeichert werden und trotzdem verschickt
+	 * werden müssen.
+	 */
+	void toOutboxErrorMailInNewTransaction(
+		@Nonnull String subject,
+		@Nonnull String messageBody,
+		@Nonnull String mailadress,
+		@Nonnull MandantIdentifier mandantIdentifier
+	);
+
+	/**
 	 * Vorbereitet zu Senden eine Supportanfrage an die definierte Support-Email
 	 */
 	void prepareToSendSupportAnfrage(

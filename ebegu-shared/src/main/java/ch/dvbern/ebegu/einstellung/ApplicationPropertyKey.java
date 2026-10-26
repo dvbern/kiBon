@@ -17,6 +17,8 @@ package ch.dvbern.ebegu.einstellung;
 
 import java.util.Optional;
 
+import ch.dvbern.ebegu.enums.KeycloakIdpHint;
+
 /**
  * Keys fuer die Application Properties die wir in der DB speichern
  *
@@ -339,7 +341,13 @@ public enum ApplicationPropertyKey {
 		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
 	), @BooleanEinstellung QUARKUS_STATISTIK_LASTENAUSGLEICH_BG(
 		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
-	);
+	),
+
+	/**
+	 * Which Identity Provider (Keycloak IDP-Alias) to be used/preset for Login/Logout. NO_HINT when no IDP should be
+	 * used/preset.
+	 */
+	@EnumEinstellung(KeycloakIdpHint.class) KEYCLOAK_IDP_HINT;
 
 	private final KeyGrouping keyGrouping;
 

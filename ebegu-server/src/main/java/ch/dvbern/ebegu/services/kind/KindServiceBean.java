@@ -32,7 +32,6 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -54,7 +53,6 @@ import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuch_;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
-import ch.dvbern.ebegu.entities.Gesuchsperiode_;
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.KindContainer_;
@@ -74,7 +72,6 @@ import ch.dvbern.ebegu.services.EntityIndexer;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.KindService;
 import ch.dvbern.ebegu.services.WizardStepService;
-import ch.dvbern.ebegu.types.DateRange_;
 
 /**
  * Service fuer Kind
@@ -391,13 +388,21 @@ public class KindServiceBean extends AbstractBaseService implements
 		return persistence.getCriteriaResults(query);
 	}
 
-	@Nonnull
 	@Override
-	public Collection<KindContainer> findKinder(
-		@Nonnull Integer fallNummer,
-		@Nonnull Integer kindNummer,
-		int gesuchsperiodeStartJahr,
-		Mandant mandant
+	public void updateKeinSelbstbehaltFuerGemeinde(
+		KindContainer kindContainer,
+		@Nonnull Boolean keinSelbstbehaltFuerGemeinde
+	) {
+		kindContainer.setKeinSelbstbehaltDurchGemeinde(
+			keinSelbstbehaltFuerGemeinde
+		);
+		persistence.persist(kindContainer);
+	}
+
+	@Override
+	public Collection<KindContainer> getKindContainerToUpdate(
+		List<Integer> fallBatch,
+		Gesuchsperiode gesuchsperiode
 	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<KindContainer> query = cb.createQuery(
@@ -414,45 +419,18 @@ public class KindServiceBean extends AbstractBaseService implements
 			Gesuch_.gesuchsperiode
 		);
 
-		Predicate predicateFallNummer = cb.equal(
-			joinFall.get(Fall_.fallNummer),
-			fallNummer
-		);
-		Predicate predicateKindNummer = cb.equal(
-			root.get(KindContainer_.kindNummer),
-			kindNummer
-		);
-		Predicate predicateMandant = cb.equal(
-			joinFall.get(Fall_.mandant),
-			mandant
-		);
+		Predicate predicateFallNummer =
+			joinFall.get(Fall_.fallNummer).in(fallBatch);
 
-		Expression<Integer> yearExp = cb.function(
-			"YEAR",
-			Integer.class,
-			joinGesuchsperiode
-				.get(Gesuchsperiode_.gueltigkeit)
-				.get(DateRange_.gueltigAb)
+		Predicate predicatePeriode = cb.equal(
+			joinGesuchsperiode,
+			gesuchsperiode
 		);
-		Predicate predicatePeriode = cb.equal(yearExp, gesuchsperiodeStartJahr);
 		query.where(
 			predicateFallNummer,
-			predicateKindNummer,
-			predicatePeriode,
-			predicateMandant
+			predicatePeriode
 		);
 
 		return persistence.getCriteriaResults(query);
-	}
-
-	@Override
-	public void updateKeinSelbstbehaltFuerGemeinde(
-		KindContainer kindContainer,
-		@Nonnull Boolean keinSelbstbehaltFuerGemeinde
-	) {
-		kindContainer.setKeinSelbstbehaltDurchGemeinde(
-			keinSelbstbehaltFuerGemeinde
-		);
-		persistence.persist(kindContainer);
 	}
 }

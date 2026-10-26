@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.DemoFeatureTyp;
+import ch.dvbern.ebegu.enums.KeycloakIdpHint;
 
 /**
  * Service zum Verwalten von Application Properties
@@ -170,4 +171,15 @@ public interface ApplicationPropertyService {
 
 	@Nonnull
 	Boolean isReminderGemeindeKennzahlenAktiviert(@Nonnull Mandant mandant);
+
+	/**
+	 * Returns the KeycloakIdpHint for the given Mandant
+	 *
+	 * @param mandant the mandant for which the ApplicationProperty should be retrieved
+	 * @return the KeycloakIdpHint for the given Mandant
+	 * @throws ch.dvbern.ebegu.errors.EbeguRuntimeException when no ApplicationProperty is configured for the given
+	 * Mandant
+	 */
+	@Nonnull
+	KeycloakIdpHint getKeycloakIdpHint(@Nonnull Mandant mandant);
 }

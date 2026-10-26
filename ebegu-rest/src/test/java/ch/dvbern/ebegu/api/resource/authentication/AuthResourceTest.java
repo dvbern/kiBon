@@ -28,9 +28,11 @@ import ch.dvbern.ebegu.api.converter.JaxBenutzerConverter;
 import ch.dvbern.ebegu.authentication.KibonJwt;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
+import ch.dvbern.ebegu.enums.KeycloakIdpHint;
 import ch.dvbern.ebegu.services.BenutzerService;
 import ch.dvbern.ebegu.services.CreateBenutzerService;
 import ch.dvbern.ebegu.services.MandantService;
@@ -82,6 +84,9 @@ class AuthResourceTest extends EasyMockSupport {
 	@Mock
 	private CreateBenutzerService createBenutzerService;
 
+	@Mock
+	private ApplicationPropertyService applicationPropertyService;
+
 	@TestSubject
 	AuthResource testee = new AuthResource();
 
@@ -96,6 +101,8 @@ class AuthResourceTest extends EasyMockSupport {
 			EasyMock.expect(mandant.getMandantIdentifier())
 				.andReturn(MandantIdentifier.LUZERN);
 			expect(principalBean.getMandant()).andReturn(mandant);
+			expect(applicationPropertyService.getKeycloakIdpHint(mandant))
+				.andReturn(KeycloakIdpHint.NO_HINT);
 			Benutzer benutzer = new Benutzer();
 			expect(principalBean.findBenutzer()).andReturn(
 				Optional.of(benutzer)
@@ -169,6 +176,8 @@ class AuthResourceTest extends EasyMockSupport {
 				MandantIdentifier.BERN
 			);
 			expect(principalBean.getMandant()).andReturn(mandant);
+			expect(applicationPropertyService.getKeycloakIdpHint(mandant))
+				.andReturn(KeycloakIdpHint.BELOGIN_LEGACY);
 
 			expect(
 				keycloakApi.getIDPLogoutUrl(
@@ -210,6 +219,8 @@ class AuthResourceTest extends EasyMockSupport {
 			EasyMock.expect(mandant.getMandantIdentifier())
 				.andReturn(MandantIdentifier.LUZERN);
 			expect(principalBean.getMandant()).andReturn(mandant);
+			expect(applicationPropertyService.getKeycloakIdpHint(mandant))
+				.andReturn(KeycloakIdpHint.NO_HINT);
 			expect(principalBean.findBenutzer()).andReturn(Optional.empty());
 			expect(request.getSession(false)).andReturn(null);
 
@@ -253,6 +264,8 @@ class AuthResourceTest extends EasyMockSupport {
 			EasyMock.expect(mandant.getMandantIdentifier())
 				.andReturn(MandantIdentifier.LUZERN);
 			expect(principalBean.getMandant()).andReturn(mandant);
+			expect(applicationPropertyService.getKeycloakIdpHint(mandant))
+				.andReturn(KeycloakIdpHint.NO_HINT);
 			expect(principalBean.findBenutzer()).andReturn(Optional.empty());
 			expect(request.getSession(false)).andReturn(null);
 

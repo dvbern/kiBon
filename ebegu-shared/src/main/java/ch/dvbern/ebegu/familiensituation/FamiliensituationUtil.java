@@ -21,6 +21,8 @@ import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -35,5 +37,31 @@ public final class FamiliensituationUtil {
 			familiensituation.getGemeinsameSteuererklaerung() != null
 			&&
 			familiensituation.getGemeinsameSteuererklaerung();
+	}
+
+	/**
+	 * Determines whether the given familiensituation represents a specific case of
+	 * "Konkubinat ohne Kind" where the Konkubinat becomes a certain number of years old.
+	 * The number of years is defined by the parameter paramMinDauerKonkubinat.
+	 *
+	 * @param familiensituation the {@link Familiensituation} to check
+	 * @param gesuch the {@link Gesuch} of the {@link Familiensituation} containing the {@link Gesuchsperiode}
+	 * @param paramMinDauerKonkubinat the duration (in years) to qualify as a special case
+	 * @return true if the {@link Familiensituation} satisfies the special case criteria, otherwise false
+	 */
+	public static boolean isKonkubinatOhneKindSpezialfall(
+		Familiensituation familiensituation,
+		Gesuch gesuch,
+		int paramMinDauerKonkubinat
+	) {
+		return familiensituation.getFamilienstatus()
+			== EnumFamilienstatus.KONKUBINAT_KEIN_KIND
+			&& familiensituation.getStartKonkubinat() != null
+			&& gesuch.getGesuchsperiode()
+				.getGueltigkeit()
+				.contains(
+					familiensituation.getStartKonkubinat()
+						.plusYears(paramMinDauerKonkubinat)
+				);
 	}
 }

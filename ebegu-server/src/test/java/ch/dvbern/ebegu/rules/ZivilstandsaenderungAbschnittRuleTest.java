@@ -30,6 +30,7 @@ import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
+import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
@@ -52,6 +53,10 @@ import static org.hamcrest.Matchers.is;
 
 @ExtendWith(EasyMockExtension.class)
 class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
+	private final LocalDate GESUCHSPERIODE_START = LocalDate.of(2025, 8, 1);
+	private final LocalDate GESUCHSPERIODE_END = LocalDate.of(2026, 7, 31);
+	private final int PARAM_MIN_DAUER_KONKUBINAT = 2;
+
 	@Mock
 	private AbstractPlatz mockPlatz;
 	@Mock
@@ -66,12 +71,9 @@ class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
 	private ZivilstandsaenderungAbschnittRule zivilstandsaenderungAbschnittRule =
 		new ZivilstandsaenderungAbschnittRule(
 			Constants.DEFAULT_GUELTIGKEIT,
-			2,
+			PARAM_MIN_DAUER_KONKUBINAT,
 			Locale.GERMAN
 		);
-
-	private final LocalDate GESUCHSPERIODE_START = LocalDate.of(2025, 8, 1);
-	private final LocalDate GESUCHSPERIODE_END = LocalDate.of(2026, 7, 31);
 
 	@BeforeEach
 	void setUp() {
@@ -526,6 +528,212 @@ class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
 			}
 		}
 
+	}
+
+	@Nested
+	class KonkubinatOhneKindInMutation {
+		LocalDate startdatumKonkubinat = LocalDate.of(2023, 12, 15);
+
+		private void setupMutation(LocalDate startKonkubinat) {
+			expect(mockFamiliensituation.getFamilienstatus())
+				.andReturn(EnumFamilienstatus.KONKUBINAT_KEIN_KIND)
+				.anyTimes();
+			expect(mockFamiliensituation.getStartKonkubinat())
+				.andReturn(startKonkubinat)
+				.anyTimes();
+			expect(mockFamiliensituation.getAenderungPer())
+				.andReturn(startKonkubinat)
+				.anyTimes();
+			expect(mockGesuch.extractMandant()).andReturn(mockMandant)
+				.anyTimes();
+			expect(mockMandant.getMandantIdentifier())
+				.andReturn(MandantIdentifier.BERN)
+				.anyTimes();
+		}
+
+		@Nested
+		class ZweiJahresDatumInPeriode {
+			LocalDate dec2025 = LocalDate.of(2025, 12, 31);
+
+			@BeforeEach
+			void setup() {
+				setupMutation(startdatumKonkubinat);
+			}
+
+			@Test
+			void createVerfuegungsZeitabschnitte_shouldSplitAtMonthAfterTwoYears_WhenKonkubinatReachesTwoYearsInGesuchsperiode() {
+				expect(
+					mockFamiliensituationErstgesuch.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(false).anyTimes();
+				expect(mockFamiliensituation.hasSecondGesuchsteller(dec2025))
+					.andReturn(false)
+					.anyTimes();
+				expect(
+					mockFamiliensituation.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(true).anyTimes();
+				replayAll();
+
+				var abschnitte = zivilstandsaenderungAbschnittRule
+					.createVerfuegungsZeitabschnitte(mockPlatz);
+
+				assertThat(abschnitte.size(), is(2));
+				assertThat(
+					abschnitte.get(0).getGueltigkeit(),
+					is(new DateRange(GESUCHSPERIODE_START, dec2025))
+				);
+				assertThat(
+					abschnitte.get(1).getGueltigkeit(),
+					is(
+						new DateRange(
+							LocalDate.of(2026, 1, 1),
+							GESUCHSPERIODE_END
+						)
+					)
+				);
+			}
+
+			@Test
+			void createVerfuegungsZeitabschnitte_shouldHaveOneGSBeforeAndTwoGSAfterTwoYears_WhenKonkubinatReachesTwoYearsInGesuchsperiode() {
+				expect(
+					mockFamiliensituationErstgesuch.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(false).anyTimes();
+				expect(mockFamiliensituation.hasSecondGesuchsteller(dec2025))
+					.andReturn(false)
+					.anyTimes();
+				expect(
+					mockFamiliensituation.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(true).anyTimes();
+				replayAll();
+
+				var abschnitte = zivilstandsaenderungAbschnittRule
+					.createVerfuegungsZeitabschnitte(mockPlatz);
+
+				assertThat(
+					abschnitte.get(0)
+						.getBgCalculationInputAsiv()
+						.isHasSecondGesuchstellerForFinanzielleSituation(),
+					is(false)
+				);
+				assertThat(
+					abschnitte.get(0)
+						.getBgCalculationInputGemeinde()
+						.isHasSecondGesuchstellerForFinanzielleSituation(),
+					is(false)
+				);
+				assertThat(
+					abschnitte.get(1)
+						.getBgCalculationInputAsiv()
+						.isHasSecondGesuchstellerForFinanzielleSituation(),
+					is(true)
+				);
+				assertThat(
+					abschnitte.get(1)
+						.getBgCalculationInputGemeinde()
+						.isHasSecondGesuchstellerForFinanzielleSituation(),
+					is(true)
+				);
+			}
+
+			@Test
+			void createVerfuegungsZeitabschnitte_shouldAddKonkubinatBemerkungOnlyAfterTwoYears_WhenKonkubinatReachesTwoYearsInGesuchsperiode() {
+				expect(
+					mockFamiliensituationErstgesuch.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(false).anyTimes();
+				expect(mockFamiliensituation.hasSecondGesuchsteller(dec2025))
+					.andReturn(false)
+					.anyTimes();
+				expect(
+					mockFamiliensituation.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(true).anyTimes();
+				replayAll();
+
+				var abschnitte = zivilstandsaenderungAbschnittRule
+					.createVerfuegungsZeitabschnitte(mockPlatz);
+
+				assertThat(
+					abschnitte.get(0)
+						.getBemerkungenDTOList()
+						.containsMsgKey(
+							MsgKey.FAMILIENSITUATION_KONKUBINAT_MSG
+						),
+					is(false)
+				);
+				assertThat(
+					abschnitte.get(1)
+						.getBemerkungenDTOList()
+						.containsMsgKey(
+							MsgKey.FAMILIENSITUATION_KONKUBINAT_MSG
+						),
+					is(true)
+				);
+			}
+		}
+
+		@Nested
+		class ZweiJahresDatumAusserhalbPeriode {
+
+			@Test
+			void createVerfuegungsZeitabschnitte_shouldHaveOneAbschnitt_WhenKonkubinatReachedTwoYearsBeforeGesuchsperiode() {
+				setupMutation(LocalDate.of(2023, 7, 31));
+				expect(
+					mockFamiliensituationErstgesuch.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(true).anyTimes();
+				expect(
+					mockFamiliensituation.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(true).anyTimes();
+				replayAll();
+
+				var abschnitte = zivilstandsaenderungAbschnittRule
+					.createVerfuegungsZeitabschnitte(mockPlatz);
+
+				assertThat(abschnitte.size(), is(1));
+				assertThat(
+					abschnitte.get(0).getGueltigkeit(),
+					is(new DateRange(GESUCHSPERIODE_START, GESUCHSPERIODE_END))
+				);
+			}
+
+			@Test
+			void createVerfuegungsZeitabschnitte_shouldHaveOneAbschnitt_WhenKonkubinatReachesTwoYearsAfterGesuchsperiode() {
+				setupMutation(LocalDate.of(2024, 8, 1));
+				expect(
+					mockFamiliensituationErstgesuch.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(false).anyTimes();
+				expect(
+					mockFamiliensituation.hasSecondGesuchsteller(
+						GESUCHSPERIODE_END
+					)
+				).andReturn(false).anyTimes();
+				replayAll();
+
+				var abschnitte = zivilstandsaenderungAbschnittRule
+					.createVerfuegungsZeitabschnitte(mockPlatz);
+
+				assertThat(abschnitte.size(), is(1));
+				assertThat(
+					abschnitte.get(0).getGueltigkeit(),
+					is(new DateRange(GESUCHSPERIODE_START, GESUCHSPERIODE_END))
+				);
+			}
+		}
 	}
 
 }

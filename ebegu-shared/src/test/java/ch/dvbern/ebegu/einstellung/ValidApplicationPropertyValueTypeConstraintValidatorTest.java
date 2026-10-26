@@ -111,6 +111,41 @@ class ValidApplicationPropertyValueTypeConstraintValidatorTest extends
 	}
 
 	@Nested
+	class KeycloakIdpHintApplicationProperyTest {
+
+		@ParameterizedTest
+		@ValueSource(strings = { "NO_HINT", "BELOGIN_LEGACY", "BELOGIN_CIAM" })
+		void enumConstantShouldBeValidKeycloakIdpHint(String value) {
+			ApplicationProperty applicationPropery = new ApplicationProperty(
+				ApplicationPropertyKey.KEYCLOAK_IDP_HINT,
+				value
+			);
+			assertTrue(
+				validator.isValid(
+					applicationPropery,
+					constraintValidatorContext
+				)
+			);
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "keycloak-oidc", "no_hint", "UNKNOWN", "" })
+		void nonEnumConstantShouldNotBeValidKeycloakIdpHint(String value) {
+			ApplicationProperty applicationPropery = new ApplicationProperty(
+				ApplicationPropertyKey.KEYCLOAK_IDP_HINT,
+				value
+			);
+			mockContextMessageBuilding();
+			assertFalse(
+				validator.isValid(
+					applicationPropery,
+					constraintValidatorContext
+				)
+			);
+		}
+	}
+
+	@Nested
 	class NumberApplicationProperyTest {
 
 		@ParameterizedTest

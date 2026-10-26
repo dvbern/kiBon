@@ -12,6 +12,7 @@ import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
 import {TSFachstellenTyp} from '../../../models/enums/TSFachstellenTyp';
 import {TSFinanzielleSituationTyp} from '../../../models/enums/TSFinanzielleSituationTyp';
 import {TSGeschwisterbonusTyp} from '../../../models/enums/TSGeschwisterbonusTyp';
+import {TSKeycloakIdpHint} from '../../../models/enums/TSKeycloakIdpHint';
 import {TSKinderabzugTyp} from '../../../models/enums/TSKinderabzugTyp';
 import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
 import type {TSEinstellungKey} from '../TSEinstellungKey';
@@ -55,7 +56,8 @@ const configEnums = [
     TSBetreuungsangebotTyp,
     TSDokumentTyp,
     BetreuungComparator,
-    HoehereBeitraegeTyp
+    HoehereBeitraegeTyp,
+    TSKeycloakIdpHint
 ] as const;
 
 const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
@@ -291,6 +293,7 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
     DOKUMENT_ZU_UEBERNEHMEN_TYPS: createConfiguration(TSDokumentTyp),
     BENACHRICHTIGUNG_GEMEINDE_AKTIV: createConfiguration(Boolean),
     BENUTZENDE_EDIT_NAME_ALLOWED: createConfiguration(Boolean),
+    KEYCLOAK_IDP_HINT: createConfiguration(TSKeycloakIdpHint),
     ABGELOESTE_VIEW_ANTRAGSTELLER: createConfiguration(Boolean),
     ABGELOESTE_VIEW_FAMILIENSITUATION: createConfiguration(Boolean),
     ABGELOESTE_VIEW_KINDER_LIST: createConfiguration(Boolean),

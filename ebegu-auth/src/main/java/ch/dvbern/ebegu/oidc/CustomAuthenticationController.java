@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import jakarta.annotation.Priority;
@@ -35,6 +36,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.UriBuilder;
 
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.services.MandantService;
+import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import org.glassfish.soteria.mechanisms.openid.OpenIdState;
 import org.glassfish.soteria.mechanisms.openid.controller.NonceController;
@@ -96,6 +101,12 @@ public class CustomAuthenticationController
 	@Inject
 	private OpenIdConfiguration configuration;
 
+	@Inject
+	private MandantService mandantService;
+
+	@Inject
+	private ApplicationPropertyService applicationPropertyService;
+
 	private static final Logger LOGGER = Logger.getLogger(
 		CustomAuthenticationController.class.getName()
 	);
@@ -130,10 +141,9 @@ public class CustomAuthenticationController
 				)
 			);
 
-		if (shouldForwardDirectlyToBelogin(request)) {
-			// beim Bern muessen wir noch ein hinweis geben wenn man ins belogin sich direkt einloggen will
-			authRequest.queryParam("kc_idp_hint", "keycloak-oidc");
-		}
+		findIdpHintAlias(request).ifPresent(
+			alias -> authRequest.queryParam("kc_idp_hint", alias)
+		);
 
 		OpenIdState state = new OpenIdState();
 		authRequest.queryParam(OpenIdConstant.STATE, state.getValue());
@@ -214,14 +224,29 @@ public class CustomAuthenticationController
 			);
 	}
 
-	private static boolean shouldForwardDirectlyToBelogin(
-		HttpServletRequest request
-	) {
-		return (request.getParameterMap().get(OpenIdConstant.LOGIN_HINT) == null
+	private static boolean shouldSendIdpHint(HttpServletRequest request) {
+		return request.getParameterMap().get(OpenIdConstant.LOGIN_HINT) == null
 			|| !request.getParameterMap()
 				.get(OpenIdConstant.LOGIN_HINT)[0]
-				.contains(".persona@mailbucket"))
-			&& request.getRequestURL().toString().contains("be.kibon.ch");
+				.contains(".persona@mailbucket");
+	}
+
+	Optional<String> findIdpHintAlias(HttpServletRequest request) {
+		if (!shouldSendIdpHint(request)) {
+			return Optional.empty();
+		}
+
+		MandantIdentifier mandantIdentifier =
+			MandantCookieUtil.getMandantFromCookie(request);
+		var mandant = mandantService.findMandantByIdentifier(mandantIdentifier)
+			.orElseThrow(
+				() -> new EbeguRuntimeException(
+					"findIdpHintAlias",
+					"Mandant nicht gefunden: " + mandantIdentifier
+				)
+			);
+		return applicationPropertyService.getKeycloakIdpHint(mandant)
+			.getIdpAlias();
 	}
 
 	private boolean isMandantUnbekannt(HttpServletRequest request) {

@@ -31,6 +31,7 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status.Family;
 
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
@@ -333,13 +334,38 @@ public class KeycloakApi {
 	}
 
 	public String getIDPLogoutUrl(String realmName, String idpAlias) {
-		IdentityProviderRepresentation idp = keycloak
-			.realm(realmName)
-			.identityProviders()
-			.get(idpAlias)
-			.toRepresentation();
+		IdentityProviderRepresentation idp;
+		try {
+			idp = keycloak
+				.realm(realmName)
+				.identityProviders()
+				.get(idpAlias)
+				.toRepresentation();
+		} catch (NotFoundException e) {
+			throw new EbeguRuntimeException(
+				"getIDPLogoutUrl",
+				MessageFormat.format(
+					"Der Keycloak IDP-Alias ''{0}'' (Einstellung {1}) ist im Realm ''{2}'' nicht konfiguriert",
+					idpAlias,
+					ApplicationPropertyKey.KEYCLOAK_IDP_HINT,
+					realmName
+				),
+				e
+			);
+		}
 
-		return idp.getConfig().get("logoutUrl");
+		String logoutUrl = idp.getConfig().get("logoutUrl");
+		if (logoutUrl == null) {
+			throw new EbeguRuntimeException(
+				"getIDPLogoutUrl",
+				MessageFormat.format(
+					"Beim Keycloak IDP ''{0}'' im Realm ''{1}'' ist keine logoutUrl konfiguriert",
+					idpAlias,
+					realmName
+				)
+			);
+		}
+		return logoutUrl;
 	}
 
 	private Optional<UserResource> getUserResourceOptional(Benutzer benutzer) {

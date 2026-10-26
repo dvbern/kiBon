@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 DV Bern AG, Switzerland
+ * Copyright (C) 2026 DV Bern AG, Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -13,19 +13,26 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
-package ch.dvbern.ebegu.services.reporting;
+package ch.dvbern.ebegu.services.reporting.zemis;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -35,12 +42,15 @@ import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityNotFoundException;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.KindContainer;
+import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.reporting.ReportVorlage;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
@@ -52,15 +62,16 @@ import ch.dvbern.ebegu.reporting.lastenausgleich.KindMitZemisNummerDataRow;
 import ch.dvbern.ebegu.reporting.lastenausgleich.KinderMitZemisNummerExcelConverter;
 import ch.dvbern.ebegu.services.BenutzerService;
 import ch.dvbern.ebegu.services.GesuchService;
+import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import ch.dvbern.ebegu.services.KindService;
 import ch.dvbern.ebegu.services.MailService;
+import ch.dvbern.ebegu.services.reporting.AbstractReportServiceBean;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.UploadFileInfo;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergeException;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergerDTO;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -68,9 +79,9 @@ import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static ch.dvbern.ebegu.enums.reporting.MergeFieldMahlzeitenverguenstigung.fallNummer;
 import static ch.dvbern.ebegu.services.reporting.ReportUtil.createWorkbook;
 import static ch.dvbern.ebegu.services.reporting.ReportUtil.getContentTypeForExport;
+import static org.apache.commons.collections4.ListUtils.partition;
 
 @Stateless
 @Local(ReportKinderMitZemisNummerService.class)
@@ -81,6 +92,7 @@ public class ReportKinderMitZemisNummerServiceBean extends
 	private static final Logger LOGGER = LoggerFactory.getLogger(
 		ReportKinderMitZemisNummerServiceBean.class
 	);
+	private static final int BATCH_SIZE = 500;
 
 	private final KinderMitZemisNummerExcelConverter kinderMitZemisNummerExcelConverter =
 		new KinderMitZemisNummerExcelConverter();
@@ -111,6 +123,9 @@ public class ReportKinderMitZemisNummerServiceBean extends
 
 	@Inject
 	private ApplicationPropertyService applicationPropertyService;
+
+	@Inject
+	private GesuchsperiodeService gesuchsperiodeService;
 
 	@Nonnull
 	@Override
@@ -159,9 +174,11 @@ public class ReportKinderMitZemisNummerServiceBean extends
 	}
 
 	@Override
-	public void setFlagAndSaveZemisExcel(@Nonnull byte[] fileContent)
+	public void setFlagAndSaveZemisExcel(
+		@Nonnull byte[] fileContent,
+		@Nonnull Mandant mandant
+	)
 		throws IOException {
-
 		try (
 			InputStream is = new ByteArrayInputStream(fileContent);
 			Workbook workbook = WorkbookFactory.create(is);
@@ -169,52 +186,137 @@ public class ReportKinderMitZemisNummerServiceBean extends
 			Sheet sheet = workbook.getSheetAt(0);
 
 			final int firstRelevantRow = 6;
-			int rowNumber = 0;
 
 			try {
-				for (Row row : sheet) {
-					rowNumber = row.getRowNum();
-					if (rowNumber >= firstRelevantRow) {
-						Collection<KindContainer> kindContainerToUpdate =
-							getKindContainerToUpdate(row);
-						boolean keinSelbstbehaltFuerGemeinde = row.getCell(8)
-							.getBooleanCellValue();
-
-						kindContainerToUpdate
-							.stream()
-							.filter(
-								kindContainer -> needsUpdateKeinSelbsbehalt(
-									kindContainer,
-									keinSelbstbehaltFuerGemeinde
-								)
+				List<ZemisImportRow> rows = ZemisExcelParserUtils.readExcel(
+					sheet,
+					firstRelevantRow
+				);
+				// Group all the Zemis by Gesuchsperiode
+				Map<Integer, List<ZemisImportRow>> rowsByStartYear =
+					rows.stream()
+						.collect(
+							Collectors.groupingBy(
+								ZemisImportRow::gesuchsperiodeStartJahr
 							)
-							.forEach(
-								kindContainer -> updateKeinSelbstbehalt(
-									kindContainer,
-									keinSelbstbehaltFuerGemeinde
-								)
-							);
-					}
+						);
 
+				boolean publishSchnittstelleEventAktiviert =
+					applicationPropertyService
+						.isPublishSchnittstelleEventsAktiviert(
+							mandant
+						);
+
+				for (List<ZemisImportRow> periodeRows : rowsByStartYear
+					.values()) {
+
+					int startYear = periodeRows.get(0)
+						.gesuchsperiodeStartJahr();
+					// load each periods only once
+					Optional<Gesuchsperiode> gesuchsperiodeOpt =
+						gesuchsperiodeService.getGesuchsperiodeAm(
+							LocalDate.of(startYear, Month.AUGUST, 1),
+							mandant
+						);
+
+					Set<Integer> fallNummern = periodeRows.stream()
+						.map(ZemisImportRow::fallNummer)
+						.collect(Collectors.toSet());
+
+					for (List<Integer> fallBatch : partition(
+						new ArrayList<>(fallNummern),
+						BATCH_SIZE
+					)) {
+						processBatch(
+							gesuchsperiodeOpt.orElseThrow(
+								EntityNotFoundException::new
+							),
+							fallBatch,
+							periodeRows,
+							publishSchnittstelleEventAktiviert
+						);
+					}
 				}
+
 				sendMail(
 					"ZEMIS Excel verarbeitet",
 					"Die Verarbeitung des ZEMIS Excels wurde "
 						+ "erfolgreich abgeschlossen"
 				);
 
-			} catch (IllegalStateException e) {
-				String message = "Falsches Format vom ZEMIS Excel in Zeile "
-					+ (rowNumber + 1);
-				sendMail(
+			} catch (EbeguRuntimeException e) {
+				sendErrorMail(
 					"Fehler bei der Verarbeitung des ZEMIS Excels",
-					message
+					ServerMessageUtil.translateEnumValue(
+						e.getErrorCodeEnum(),
+						Constants.DEFAULT_LOCALE,
+						mandant,
+						e.getArgs().toArray()
+					)
 				);
+				throw e;
+			}
+		}
+	}
+
+	private void processBatch(
+		Gesuchsperiode gesuchsperiode,
+		List<Integer> fallBatch,
+		List<ZemisImportRow> periodeRows,
+		boolean publishSchnittstelleEventAktiviert
+	) {
+		// Load all the kind from the given fallBatch for the givenPeriode at once
+		Collection<KindContainer> kindContainersToUpdate =
+			kindService.getKindContainerToUpdate(fallBatch, gesuchsperiode);
+
+		// Put all the excel row in a map, grouped by a given key
+		Map<ZemisImportRow.KindKey, ZemisImportRow> rowsByKey =
+			periodeRows.stream()
+				.collect(
+					Collectors.toMap(
+						ZemisImportRow::key,
+						Function.identity(),
+						(first, second) -> first
+					)
+				);
+
+		for (KindContainer kindContainerToUpdate : kindContainersToUpdate) {
+			long fallNummer = kindContainerToUpdate.getGesuch()
+				.getFall()
+				.getFallNummer();
+			try {
+				ZemisImportRow.KindKey key = new ZemisImportRow.KindKey(
+					(int) fallNummer,
+					kindContainerToUpdate.getKindNummer(),
+					kindContainerToUpdate.getGesuch()
+						.getDossier()
+						.getGemeinde()
+						.getName()
+				);
+
+				ZemisImportRow row = rowsByKey.get(key);
+
+				if (row != null) {
+					boolean keinSelbstbehaltFuerGemeinde =
+						row.keinSelbstbehalt();
+
+					if (needsUpdateKeinSelbsbehalt(
+						kindContainerToUpdate,
+						keinSelbstbehaltFuerGemeinde
+					)) {
+						updateKeinSelbstbehalt(
+							kindContainerToUpdate,
+							keinSelbstbehaltFuerGemeinde,
+							publishSchnittstelleEventAktiviert
+						);
+					}
+				}
+			} catch (RuntimeException e) {
 				throw new EbeguRuntimeException(
-					"setFlagAndSaveZemisExcel",
-					ErrorCodeEnum.ERROR_WRONG_FORMAT_ZEMIS,
+					"processBatch",
+					ErrorCodeEnum.ERROR_ZEMIS_UPDATE_FALL,
 					e,
-					rowNumber + 1
+					fallNummer
 				);
 			}
 		}
@@ -224,15 +326,6 @@ public class ReportKinderMitZemisNummerServiceBean extends
 		KindContainer kindContainerToUpdate,
 		boolean keinSelbstbehaltFuerGemeinde
 	) {
-
-		if (!applicationPropertyService.isPublishSchnittstelleEventsAktiviert(
-			kindContainerToUpdate
-				.getGesuch()
-				.extractMandant()
-		)) {
-			return;
-		}
-
 		kindContainerToUpdate.getAllPlaetze()
 			.forEach(
 				platz -> event.fire(
@@ -269,7 +362,7 @@ public class ReportKinderMitZemisNummerServiceBean extends
 		LOGGER.info(
 			"Updating KindContainer with id {}, Fallnummer {}, and Kindnummer {}.has kindAusAsylwesen == false or has wrong Gesuchstatus. Not setting keinSelbstbehaltFuerGemeinde",
 			kindContainer.getId(),
-			fallNummer,
+			kindContainer.getGesuch().getFall().getFallNummer(),
 			kindContainer.getKindNummer()
 		);
 	}
@@ -281,7 +374,7 @@ public class ReportKinderMitZemisNummerServiceBean extends
 		LOGGER.info(
 			"Updating KindContainer with id {}, Fallnummer {}, and Kindnummer {}. Set keine keinSelbstbehaltFuerGemeinde = {}",
 			kindContainer.getId(),
-			fallNummer,
+			kindContainer.getGesuch().getFall().getFallNummer(),
 			kindContainer.getKindNummer(),
 			keinSelbstbehaltFuerGemeinde
 		);
@@ -289,20 +382,30 @@ public class ReportKinderMitZemisNummerServiceBean extends
 
 	private void updateKeinSelbstbehalt(
 		KindContainer kindContainer,
-		boolean keinSelbstbehaltFuerGemeinde
+		boolean keinSelbstbehaltFuerGemeinde,
+		boolean publishSchnittstelleEventsAktiviert
 	) {
-
 		kindService.updateKeinSelbstbehaltFuerGemeinde(
 			kindContainer,
 			keinSelbstbehaltFuerGemeinde
 		);
+		if (!publishSchnittstelleEventsAktiviert
+		) {
+			return;
+		}
 		fireGemeindeSelbstbehaltChangedEvent(
 			kindContainer,
 			keinSelbstbehaltFuerGemeinde
 		);
 	}
 
-	// Nur KindContainers überschreiben die zu verfügten Gesuchen gehören und die immer noch kindAusAsylwesen == true haben.
+	/**
+	 * Nur KindContainers überschreiben die zu verfügten Gesuchen gehören und die immer noch kindAusAsylwesen == true
+	 * haben.
+	 *
+	 * @param kindContainer
+	 * @return
+	 */
 	private boolean overrideAllowed(@Nonnull KindContainer kindContainer) {
 		boolean kindAusAyslwesen = false;
 		if (kindContainer.getKindJA() != null
@@ -315,25 +418,29 @@ public class ReportKinderMitZemisNummerServiceBean extends
 		return kindAusAyslwesen && gesuchVerfuegt;
 	}
 
-	private Collection<KindContainer> getKindContainerToUpdate(Row row) {
-		int fallNummer = (int) row.getCell(0).getNumericCellValue();
-		int kindNummer = (int) row.getCell(5).getNumericCellValue();
-		String gesuchsperiodeStr = row.getCell(1).getStringCellValue();
-		int gesuchsperiodeStartJahr = Integer.parseInt(
-			gesuchsperiodeStr.split("/")[0]
-		);
-
-		return kindService.findKinder(
-			fallNummer,
-			kindNummer,
-			gesuchsperiodeStartJahr,
-			principalBean.getMandant()
+	private void sendMail(@Nonnull String subject, @Nonnull String message) {
+		mailService.toOutboxMail(
+			subject,
+			message,
+			getCurrentBenutzerEmail(),
+			getCurrentMandantIdentifier()
 		);
 	}
 
-	private void sendMail(@Nonnull String subject, @Nonnull String message) {
-		final MandantIdentifier mandantIdentifier = principalBean.getMandant()
-			.getMandantIdentifier();
+	private void sendErrorMail(
+		@Nonnull String subject,
+		@Nonnull String message
+	) {
+		mailService.toOutboxErrorMailInNewTransaction(
+			subject,
+			message,
+			getCurrentBenutzerEmail(),
+			getCurrentMandantIdentifier()
+		);
+	}
+
+	@Nonnull
+	private String getCurrentBenutzerEmail() {
 		Benutzer benutzer = benutzerService.getCurrentBenutzer()
 			.orElseThrow(
 				() -> new EbeguRuntimeException(
@@ -341,12 +448,12 @@ public class ReportKinderMitZemisNummerServiceBean extends
 					"No User is logged in"
 				)
 			);
-		mailService.toOutboxMail(
-			subject,
-			message,
-			benutzer.getEmail(),
-			mandantIdentifier
-		);
+		return benutzer.getEmail();
+	}
+
+	@Nonnull
+	private MandantIdentifier getCurrentMandantIdentifier() {
+		return principalBean.getMandant().getMandantIdentifier();
 	}
 
 	@Nonnull

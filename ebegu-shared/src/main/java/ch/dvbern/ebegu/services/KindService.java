@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.dto.KindDubletteDTO;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.kind.KindResetDecisionBasis;
@@ -79,21 +80,18 @@ public interface KindService {
 	@Nonnull
 	Set<KindDubletteDTO> getKindDubletten(@Nonnull String gesuchId);
 
-	/**
-	 * Sucht Kinder anhand der FallNummer, KindNummer und Gesuchsperiode-Start Jahr
-	 * Bei Mutationen innerhalb einer Gesuchsperiode gibt es mehrere Kinder mit der gleichen
-	 * Fallnummer, Kindnummer und Gesuchsperiode.
-	 */
-	@Nonnull
-	Collection<KindContainer> findKinder(
-		@Nonnull Integer fallNummer,
-		@Nonnull Integer kindNummer,
-		int gesuchsperiodeStartJahr,
-		Mandant mandant
-	);
-
 	void updateKeinSelbstbehaltFuerGemeinde(
 		KindContainer kindContainer,
 		@Nonnull Boolean keinSelbstbehaltFuerGemeinde
+	);
+
+	/**
+	 * Sucht alle verlinkte Kinder anhand einer FallNummern Liste und gegebene Gesuchsperiode
+	 * Bei Mutationen innerhalb einer Gesuchsperiode gibt es mehrere Kinder mit der gleichen
+	 * Fallnummer und Gesuchsperiode.
+	 */
+	Collection<KindContainer> getKindContainerToUpdate(
+		List<Integer> fallBatch,
+		Gesuchsperiode gesuchsperiode
 	);
 }

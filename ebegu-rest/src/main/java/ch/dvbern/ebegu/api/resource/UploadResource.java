@@ -570,7 +570,8 @@ public class UploadResource {
 		avClient.scan(file.getContent(), file.getFilename());
 
 		reportKinderMitZemisNummerService.setFlagAndSaveZemisExcel(
-			file.getContent()
+			file.getContent(),
+			principal.getMandant()
 		);
 
 		return Response.ok().build();

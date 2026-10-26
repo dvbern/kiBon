@@ -129,6 +129,17 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	}
 
 	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void toOutboxErrorMailInNewTransaction(
+		@Nonnull String subject,
+		@Nonnull String messageBody,
+		@Nonnull String mailadress,
+		@Nonnull MandantIdentifier mandantIdentifier
+	) {
+		toOutboxMail(subject, messageBody, mailadress, mandantIdentifier);
+	}
+
+	@Override
 	public void prepareToSendInfoBetreuungenBestaetigt(@Nonnull Gesuch gesuch) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
 			gesuch,
