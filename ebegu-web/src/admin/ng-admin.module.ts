@@ -39,7 +39,7 @@ import {UebersichtVersendeteMailsComponent} from './component/uebersichtVersende
 import {NgAdminRoutingModule} from './ng-admin-routing.module';
 import {GesuchsperiodenEinstellungenComponent} from '@admin/gesuchsperioden-einstellungen';
 import {EditEinstellungComponent} from '@admin/einstellungen';
-import {ApplicationPropertyGroupComponent} from './einstellungen/application-property-group/application-property-group.component';
+import {KibonConfigurationGroup} from './einstellungen/kibon-configuration-group/kibon-configuration-group.component';
 
 @NgModule({
     imports: [
@@ -48,7 +48,7 @@ import {ApplicationPropertyGroupComponent} from './einstellungen/application-pro
         EditEinstellungComponent,
         StringSqlDateToDisplayDatePipe,
         GesuchsperiodenEinstellungenComponent,
-        ApplicationPropertyGroupComponent,
+        KibonConfigurationGroup,
         DateTimePickerComponent,
         MatTimepicker,
         MatTimepickerToggle,

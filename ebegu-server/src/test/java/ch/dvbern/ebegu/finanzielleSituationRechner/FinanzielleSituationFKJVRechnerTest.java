@@ -23,8 +23,8 @@ import ch.dvbern.ebegu.entities.FinanzielleSituation;
 import ch.dvbern.ebegu.entities.FinanzielleSituationContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -37,7 +37,7 @@ public class FinanzielleSituationFKJVRechnerTest extends
 		"10000"
 	);
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		finSitRechner = new FinanzielleSituationFKJVRechner();
 	}

@@ -19,12 +19,12 @@ package ch.dvbern.ebegu.util;
 
 import java.math.BigDecimal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.math.BigDecimal.valueOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BetreuungUtilTest {
 
@@ -107,36 +107,36 @@ public class BetreuungUtilTest {
 	@Test
 	public void validateBGNummer() {
 		assertTrue(
-			"18.000108.1.2",
-			BetreuungUtil.validateReferenzNummer("18.000108.003.1.2")
+			BetreuungUtil.validateReferenzNummer("18.000108.003.1.2"),
+			"18.000108.1.2"
 		);
 		assertTrue(
-			"88.999999.77.66",
-			BetreuungUtil.validateReferenzNummer("88.999999.003.77.66")
+			BetreuungUtil.validateReferenzNummer("88.999999.003.77.66"),
+			"88.999999.77.66"
 		);
 		assertTrue(
-			"88.999999.7.66",
-			BetreuungUtil.validateReferenzNummer("88.999999.003.7.66")
+			BetreuungUtil.validateReferenzNummer("88.999999.003.7.66"),
+			"88.999999.7.66"
 		);
 		assertTrue(
-			"88.999999.77.6",
-			BetreuungUtil.validateReferenzNummer("88.999999.003.77.6")
+			BetreuungUtil.validateReferenzNummer("88.999999.003.77.6"),
+			"88.999999.77.6"
 		);
 		assertFalse(
-			"1.000108.1.2",
-			BetreuungUtil.validateReferenzNummer("1.000108.003.1.2")
+			BetreuungUtil.validateReferenzNummer("1.000108.003.1.2"),
+			"1.000108.1.2"
 		);
 		assertFalse(
-			"88.99999.77.66",
-			BetreuungUtil.validateReferenzNummer("88.99999.003.77.66")
+			BetreuungUtil.validateReferenzNummer("88.99999.003.77.66"),
+			"88.99999.77.66"
 		);
 		assertFalse(
-			"88.999999.66",
-			BetreuungUtil.validateReferenzNummer("88.999999.003.66")
+			BetreuungUtil.validateReferenzNummer("88.999999.003.66"),
+			"88.999999.66"
 		);
 		assertFalse(
-			"88.999999.66",
-			BetreuungUtil.validateReferenzNummer("88.999999.003.66")
+			BetreuungUtil.validateReferenzNummer("88.999999.003.66"),
+			"88.999999.66"
 		);
 	}
 

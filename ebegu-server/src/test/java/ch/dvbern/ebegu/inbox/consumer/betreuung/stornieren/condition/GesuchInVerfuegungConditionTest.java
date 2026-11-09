@@ -26,10 +26,10 @@ import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.util.EnumTestSupport;
 import org.easymock.EasyMock;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GesuchInVerfuegungConditionTest extends
 	EnumTestSupport<Boolean, AntragStatus> {
@@ -86,9 +86,9 @@ class GesuchInVerfuegungConditionTest extends
 
 		// Assert true, wenn der aktuelle Status für die hier zu testende Bedingung mit "wahr" evalUiert, sonst assert false..
 		if (STATES_EVALUATING_TO_TRUE.contains(state)) {
-			Assertions.assertTrue(testResult);
+			assertTrue(testResult);
 		} else {
-			Assertions.assertFalse(testResult);
+			assertFalse(testResult);
 		}
 	}
 

@@ -30,9 +30,14 @@ import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer KesbPlatzierungCalcRule
@@ -44,7 +49,7 @@ public class KesbPlatzierungCalcRuleTest {
 	@Nonnull
 	private Betreuung betreuung;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		betreuung = EbeguRuleTestsHelper.createBetreuungWithPensum(
 			Constants.DEFAULT_GUELTIGKEIT.getGueltigAb(),
@@ -56,11 +61,11 @@ public class KesbPlatzierungCalcRuleTest {
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		ErwerbspensumContainer erwerbspensumContainer = TestDataUtil
 			.createErwerbspensumContainer();
-		Assert.assertNotNull(erwerbspensumContainer.getErwerbspensumJA());
+		assertNotNull(erwerbspensumContainer.getErwerbspensumJA());
 		erwerbspensumContainer.getErwerbspensumJA()
 			.setGueltigkeit(Constants.DEFAULT_GUELTIGKEIT);
-		Assert.assertNotNull(betreuung.extractGesuch().getGesuchsteller1());
-		Assert.assertNotNull(
+		assertNotNull(betreuung.extractGesuch().getGesuchsteller1());
+		assertNotNull(
 			Objects.requireNonNull(
 				betreuung.extractGesuch().getGesuchsteller1()
 			)
@@ -72,7 +77,7 @@ public class KesbPlatzierungCalcRuleTest {
 
 	@Test
 	public void testPensumWithKesbPlatzierung() {
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getErweiterteBetreuungContainer()
 				.getErweiterteBetreuungJA()
 		);
@@ -82,19 +87,22 @@ public class KesbPlatzierungCalcRuleTest {
 		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
 			betreuung
 		);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(0, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertEquals(
+		assertEquals(1, result.size());
+		assertEquals(
+			0,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
+		assertEquals(
 			2,
 			result.get(0).getBemerkungenDTOList().uniqueSize()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.KESB_PLATZIERUNG_MSG)
@@ -103,7 +111,7 @@ public class KesbPlatzierungCalcRuleTest {
 
 	@Test
 	public void testPensumWithoutKesbPlatzierung() {
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getErweiterteBetreuungContainer()
 				.getErweiterteBetreuungJA()
 		);
@@ -113,8 +121,8 @@ public class KesbPlatzierungCalcRuleTest {
 		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
 			betreuung
 		);
-		Assert.assertEquals(1, result.size());
-		Assert.assertNotEquals(
+		assertEquals(1, result.size());
+		assertNotEquals(
 			0,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);

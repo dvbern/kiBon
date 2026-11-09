@@ -64,7 +64,6 @@ import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,6 +74,8 @@ import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(EasyMockExtension.class)
 class GesuchServiceBeanTest extends EasyMockSupport {
@@ -110,11 +111,11 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 
 		try {
 			gesuchService.removeAntrag(papierErstgesuch);
-			Assertions.fail(
+			fail(
 				"Exception erwartet. Gesuchsteller darf kein Papiergesuch löschen"
 			);
 		} catch (EbeguRuntimeException e) {
-			Assertions.assertEquals(
+			assertEquals(
 				ErrorCodeEnum.ERROR_DELETION_NOT_ALLOWED_FOR_GS,
 				e.getErrorCodeEnum()
 			);
@@ -133,11 +134,11 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 
 		try {
 			gesuchService.removeAntrag(onlineGesuch);
-			Assertions.fail(
+			fail(
 				"Exception erwartet. Gesuchsteller darf ein freigegebenes Gesuch nicht mehr löschen"
 			);
 		} catch (EbeguRuntimeException e) {
-			Assertions.assertEquals(
+			assertEquals(
 				ErrorCodeEnum.ERROR_DELETION_ANTRAG_NOT_ALLOWED,
 				e.getErrorCodeEnum()
 			);
@@ -175,11 +176,11 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 
 		try {
 			gesuchService.removeAntrag(onlineGesuch);
-			Assertions.fail(
+			fail(
 				"Exception erwartet. Gemeinde darf ein online Gesuch nicht löschen"
 			);
 		} catch (EbeguRuntimeException e) {
-			Assertions.assertEquals(
+			assertEquals(
 				ErrorCodeEnum.ERROR_DELETION_NOT_ALLOWED_FOR_JA,
 				e.getErrorCodeEnum()
 			);
@@ -201,11 +202,11 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 
 		try {
 			gesuchService.removeAntrag(papierErstgesuch);
-			Assertions.fail(
+			fail(
 				"Gemeinde darf kein Gesuch löschen, das bereits im Status VERFUEGEN oder verfügt ist"
 			);
 		} catch (EbeguRuntimeException e) {
-			Assertions.assertEquals(
+			assertEquals(
 				ErrorCodeEnum.ERROR_DELETION_ANTRAG_NOT_ALLOWED,
 				e.getErrorCodeEnum()
 			);
@@ -270,7 +271,7 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 			.andReturn(onlineErstgesuch);
 		replay(gesuchServicePartialMock);
 
-		Assertions.assertEquals(
+		assertEquals(
 			gesuchServicePartialMock.isFirstGesuchOnline(papierGesuch),
 			true
 		);
@@ -293,7 +294,7 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 			.andReturn(papierErstgesuch);
 		replay(gesuchServicePartialMock);
 
-		Assertions.assertEquals(
+		assertEquals(
 			gesuchServicePartialMock.isFirstGesuchOnline(papierGesuch),
 			false
 		);
@@ -325,7 +326,7 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 
 			replayAll();
 
-			Assertions.assertEquals(
+			assertEquals(
 				Optional.empty(),
 				gesuchService.getMailOfGesuchForDossierWithLatestMutationOfGS2(
 					dossier
@@ -342,7 +343,7 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 
 			replayAll();
 
-			Assertions.assertEquals(
+			assertEquals(
 				Optional.of(GS2_MAIL),
 				gesuchService.getMailOfGesuchForDossierWithLatestMutationOfGS2(
 					dossier
@@ -360,7 +361,7 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 			);
 			replayAll();
 
-			Assertions.assertEquals(
+			assertEquals(
 				Optional.empty(),
 				gesuchService.getMailOfGesuchForDossierWithLatestMutationOfGS2(
 					dossier

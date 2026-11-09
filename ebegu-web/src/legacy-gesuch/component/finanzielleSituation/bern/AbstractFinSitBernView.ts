@@ -90,8 +90,6 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
                     CONSTANTS.DATE_FORMAT
                 );
             });
-
-        this.loadCheckIsZPVSet(this.getGesuchstellerContainer());
     }
 
     private getGesuchstellerContainer(): TSGesuchstellerContainer {
@@ -177,16 +175,14 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
         );
     }
 
-    private async loadCheckIsZPVSet(
-        gsContainer: TSGesuchstellerContainer
-    ): Promise<void> {
+    protected async loadCheckIsZPVSet(): Promise<void> {
         // If we are not the GS themselves, we are not allowed to know whether a identification number is set
         if (!this.authServiceRS.isRole(TSRole.GESUCHSTELLER)) {
             this.stekIdentifierSetOnGS = false;
             return;
         }
         this.gesuchstellerRS
-            .isZPVNummerSetOnGS(gsContainer.id)
+            .isZPVNummerSetOnGS(this.getGesuchstellerContainer().id)
             .then(isSetOnGS => (this.stekIdentifierSetOnGS = isSetOnGS));
     }
 
@@ -332,14 +328,14 @@ export abstract class AbstractFinSitBernView extends AbstractGesuchViewControlle
                 null,
                 RemoveDialogController,
                 {
-                    title: 'FINANZIELLE_SITUATION_STEUERDATEN_ZPV_VERKNUEPFUNG_ZURUECKSETZEN_CONFIRMATION',
+                    title: 'FINANZIELLE_SITUATION_STEUERDATEN_VERKNUEPFUNG_ZURUECKSETZEN_CONFIRMATION',
                     translateParams: {gsName: gs.extractFullName()}
                 }
             )
             .then(async () => {
                 await this.gesuchstellerRS.resetStekIdentifier(gs.id);
                 await this.callKiBonAnfrageAndUpdateFinSit();
-                await this.loadCheckIsZPVSet(gs);
+                await this.loadCheckIsZPVSet();
             });
     }
 }

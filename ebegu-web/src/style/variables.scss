@@ -152,6 +152,14 @@ $z-index-toolbar: 104;
 $z-index-dialog: 110;
 $z-index-error: 106;
 
+/* Font */
+$kibon-font-family:
+    Open Sans,
+    Arial,
+    Helvetica,
+    sans-serif;
+$kibon-font-weight-bold: 600;
+
 // tailwind does not have access to scss variables
 // therefor, we have to set them as plain css variables as well
 :root {

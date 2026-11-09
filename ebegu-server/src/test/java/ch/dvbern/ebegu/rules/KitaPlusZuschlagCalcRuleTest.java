@@ -35,11 +35,14 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.KITAPLUS_ZUSCHLAG_AKTIVIERT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KitaPlusZuschlagCalcRuleTest {
 
@@ -68,11 +71,11 @@ class KitaPlusZuschlagCalcRuleTest {
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		ErwerbspensumContainer erwerbspensumContainer = TestDataUtil
 			.createErwerbspensumContainer();
-		Assertions.assertNotNull(erwerbspensumContainer.getErwerbspensumJA());
+		assertNotNull(erwerbspensumContainer.getErwerbspensumJA());
 		erwerbspensumContainer.getErwerbspensumJA()
 			.setGueltigkeit(Constants.DEFAULT_GUELTIGKEIT);
-		Assertions.assertNotNull(betreuung.extractGesuch().getGesuchsteller1());
-		Assertions.assertNotNull(
+		assertNotNull(betreuung.extractGesuch().getGesuchsteller1());
+		assertNotNull(
 			Objects.requireNonNull(
 				betreuung.extractGesuch().getGesuchsteller1()
 			)
@@ -106,7 +109,7 @@ class KitaPlusZuschlagCalcRuleTest {
 			.setKitaPlusZuschlagBestaetigt(true);
 
 		ruleToTest.executeRule(betreuung, inputData);
-		Assertions.assertTrue(inputData.isKitaPlusZuschlag());
+		assertTrue(inputData.isKitaPlusZuschlag());
 	}
 
 	@Test
@@ -119,7 +122,7 @@ class KitaPlusZuschlagCalcRuleTest {
 			.setKitaPlusZuschlag(false);
 
 		ruleToTest.executeRule(betreuung, inputData);
-		Assertions.assertFalse(inputData.isKitaPlusZuschlag());
+		assertFalse(inputData.isKitaPlusZuschlag());
 	}
 
 	@Test
@@ -139,7 +142,7 @@ class KitaPlusZuschlagCalcRuleTest {
 			betreuung,
 			einstellungenMap
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			result.get(0).getVerguenstigung(),
 			new BigDecimal("1414.50")
 		);
@@ -166,7 +169,7 @@ class KitaPlusZuschlagCalcRuleTest {
 			einstellungenMap
 		);
 		// 1424.1 + 32 * 12 = 1860
-		Assertions.assertEquals(
+		assertEquals(
 			result.get(0).getVerguenstigung(),
 			new BigDecimal("1808.10")
 		);
@@ -189,7 +192,7 @@ class KitaPlusZuschlagCalcRuleTest {
 			betreuung,
 			einstellungenMap
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			new BigDecimal("1414.50"),
 			result.get(0).getVerguenstigung()
 		);
@@ -205,6 +208,6 @@ class KitaPlusZuschlagCalcRuleTest {
 			.setKitaPlusZuschlag(true);
 
 		ruleToTest.executeRule(betreuung, inputData);
-		Assertions.assertFalse(inputData.isKitaPlusZuschlag());
+		assertFalse(inputData.isKitaPlusZuschlag());
 	}
 }

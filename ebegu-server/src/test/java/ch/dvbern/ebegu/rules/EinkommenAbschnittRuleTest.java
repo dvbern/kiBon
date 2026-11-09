@@ -33,8 +33,11 @@ import ch.dvbern.ebegu.rules.util.BemerkungsMerger;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer EinkommenAbschnittRule
@@ -77,8 +80,8 @@ public class EinkommenAbschnittRuleTest {
 				null
 			);
 
-		Assert.assertEquals(1, zeitabschnitte.size());
-		Assert.assertEquals(
+		assertEquals(1, zeitabschnitte.size());
+		assertEquals(
 			0,
 			EINKOMMEN_FINANZIELLE_SITUATION.compareTo(
 				zeitabschnitte.get(0)
@@ -403,13 +406,13 @@ public class EinkommenAbschnittRuleTest {
 		List<VerfuegungZeitabschnitt> zeitabschnitte,
 		ExpectedResult... expectedResults
 	) {
-		Assert.assertEquals(expectedResults.length, zeitabschnitte.size());
+		assertEquals(expectedResults.length, zeitabschnitte.size());
 		int i = 0;
 		for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : zeitabschnitte) {
 			verfuegungZeitabschnitt.getBgCalculationResultAsiv()
 				.roundAllValues();
 			ExpectedResult expectedResult = expectedResults[i++];
-			Assert.assertTrue(
+			assertTrue(
 				MathUtil.isSame(
 					expectedResult.massgebendesEinkommen,
 					verfuegungZeitabschnitt
@@ -417,12 +420,12 @@ public class EinkommenAbschnittRuleTest {
 						.getMassgebendesEinkommen()
 				)
 			);
-			Assert.assertEquals(
+			assertEquals(
 				expectedResult.einkommensjahr,
 				verfuegungZeitabschnitt.getRelevantBgCalculationInput()
 					.getEinkommensjahr()
 			);
-			Assert.assertEquals(
+			assertEquals(
 				verfuegungZeitabschnitt
 					.getVerfuegungZeitabschnittBemerkungList()
 					.stream()
@@ -463,7 +466,7 @@ public class EinkommenAbschnittRuleTest {
 		);
 		Gesuch gesuch = betreuung.extractGesuch();
 		TestDataUtil.setFinanzielleSituation(gesuch, massgebendesEk);
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		if (ekv1 != null) {
 			TestDataUtil.setEinkommensverschlechterung(
 				gesuch,
@@ -487,7 +490,7 @@ public class EinkommenAbschnittRuleTest {
 		List<VerfuegungZeitabschnitt> zeitabschnitte = einkommenAbschnittRule
 			.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
 		zeitabschnitte = einkommenCalcRule.calculate(betreuung, zeitabschnitte);
-		Assert.assertNotNull(zeitabschnitte);
+		assertNotNull(zeitabschnitte);
 		BemerkungsMerger.prepareGeneratedBemerkungen(
 			zeitabschnitte,
 			gesuch.extractMandant()

@@ -25,11 +25,11 @@ import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.types.DateRange;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.test.TestDataUtil.START_PERIODE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class AbstractMutationsMergerAnspruchVorgaengerHandlerTest {
 	//01.09.XXXX
@@ -64,7 +64,7 @@ public abstract class AbstractMutationsMergerAnspruchVorgaengerHandlerTest {
 			resultVorgaenger,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZEHN_PERCENT,
 			bgCalculationInput.getAnspruchspensumProzent()
 		);
@@ -79,7 +79,7 @@ public abstract class AbstractMutationsMergerAnspruchVorgaengerHandlerTest {
 			resultVorgaenger,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_PERCENT,
 			bgCalculationInput.getAnspruchspensumProzent()
 		);
@@ -94,7 +94,7 @@ public abstract class AbstractMutationsMergerAnspruchVorgaengerHandlerTest {
 			resultVorgaenger,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.minusMonths(1)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_PERCENT,
 			bgCalculationInput.getAnspruchspensumProzent()
 		);
@@ -109,7 +109,7 @@ public abstract class AbstractMutationsMergerAnspruchVorgaengerHandlerTest {
 			resultVorgaenger,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.minusMonths(1)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZEHN_PERCENT,
 			bgCalculationInput.getAnspruchspensumProzent()
 		);

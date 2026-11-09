@@ -45,9 +45,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.dtos.JaxEinstellung;
 import ch.dvbern.ebegu.api.dtos.JaxId;
-import ch.dvbern.ebegu.api.property.converter.JaxConfigurationConverter;
+import ch.dvbern.ebegu.api.einstellung.convertor.JaxConfigurationConverter;
+import ch.dvbern.ebegu.api.einstellung.dto.JaxEinstellung;
+import ch.dvbern.ebegu.api.einstellung.dto.JaxEinstellungWithMetadata;
 import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.einstellung.EinstellungService;
@@ -219,16 +220,14 @@ public class EinstellungResource {
 	}
 
 	@Operation(
-		summary = "Get all kiBon parameter for a specific Gesuchsperiode. The id of the gesuchsperiode is "
-			+
-			"passed  as a pathParam")
+		summary = "Get all kiBon-Einstellungen of the provided gesuchsperiode that are applicable by activated application properties and mandant")
 	@Nonnull
 	@GET
-	@Path("gesuchsperiode/{id}/mandant-active")
+	@Path("gesuchsperiode/{id}/applicable")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@PermitAll
-	public List<JaxEinstellung> getAllEinstellungenActiveByMandant(
+	@RolesAllowed(SUPER_ADMIN)
+	public List<JaxEinstellungWithMetadata> getAllApplicableEinstellungenByMandantAndApplicationProperty(
 		@Nonnull @NotNull @PathParam("id") JaxId id
 	) {
 
@@ -238,18 +237,14 @@ public class EinstellungResource {
 			.findGesuchsperiode(gesuchsperiodeId);
 		return gesuchsperiode
 			.map(
-				gp -> einstellungService.getAllEinstellungenBySystem(gp)
-					.stream()
-					.filter(
-						einstellung -> einstellung.getKey()
-							.isEinstellungActivForMandant(
-								gp.getMandant()
-									.getMandantIdentifier()
-							)
+				gp -> einstellungService
+					.getAllEinstellungenBySystemApplicableByApplicationPropertiesAndMandant(
+						gp
 					)
+					.stream()
 					.map(
 						einstellung -> converter
-							.einstellungToJAX(einstellung)
+							.einstellungToJAXWithMetadata(einstellung)
 					)
 					.collect(Collectors.toList())
 			)

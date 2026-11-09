@@ -30,10 +30,12 @@ import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.validators.CheckPensumFachstellenOverlappingValidator;
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test fuer {@link CheckPensumFachstellenOverlappingValidator}
@@ -87,7 +89,7 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 			augTilJan,
 			augTilOct
 		); //overlapping
-		Assertions.assertFalse(validator.isValid(kindContainer, contextMock));
+		assertFalse(validator.isValid(kindContainer, contextMock));
 	}
 
 	@Test
@@ -98,7 +100,7 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 			augTilOct,
 			octTilJan
 		); //overlapping
-		Assertions.assertFalse(validator.isValid(kindContainer, contextMock));
+		assertFalse(validator.isValid(kindContainer, contextMock));
 	}
 
 	@Test
@@ -111,14 +113,14 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 			augTilOct,
 			octTilJan
 		); //overlapping
-		Assertions.assertFalse(validator.isValid(kindContainer, contextMock));
+		assertFalse(validator.isValid(kindContainer, contextMock));
 	}
 
 	@Test
 	void testCheckBetreuungspensumEmptyNotOverlapping() {
 		KindContainer kindContainer =
 			createBetreuungWithFachstellenFachstellen(); //overlapping
-		Assertions.assertTrue(validator.isValid(kindContainer, contextMock));
+		assertTrue(validator.isValid(kindContainer, contextMock));
 	}
 
 	@Test
@@ -129,7 +131,7 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 			augTilOct,
 			novTilJan
 		); // not overlapping
-		Assertions.assertTrue(validator.isValid(kindContainer, contextMock));
+		assertTrue(validator.isValid(kindContainer, contextMock));
 	}
 
 	@Test
@@ -142,7 +144,7 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 			novTilJan,
 			febTilJul
 		); // not overlapping
-		Assertions.assertTrue(validator.isValid(kindContainer, contextMock));
+		assertTrue(validator.isValid(kindContainer, contextMock));
 	}
 
 	@Test
@@ -153,7 +155,7 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 			augTilOct,
 			novTilJan
 		); // not overlapping
-		Assertions.assertFalse(validator.isValid(kindContainer, contextMock));
+		assertFalse(validator.isValid(kindContainer, contextMock));
 	}
 
 	@Nonnull

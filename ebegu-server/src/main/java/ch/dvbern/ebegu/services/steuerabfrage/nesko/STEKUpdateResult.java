@@ -1,0 +1,5 @@
+package ch.dvbern.ebegu.services.steuerabfrage.nesko;
+
+public enum STEKUpdateResult {
+	SUCCESS, GESUCH_NOT_IN_STATE_FOR_STEK_UPDATE, ERROR_NO_STEK_IDENTIFIER, ERROR_BAD_GESUCHSTELLER, ERROR_STEK_IDENTIFIER_ALREADY_IN_GESUCH
+}

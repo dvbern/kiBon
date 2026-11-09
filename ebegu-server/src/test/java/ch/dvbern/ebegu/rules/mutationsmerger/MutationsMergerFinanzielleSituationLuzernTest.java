@@ -32,10 +32,10 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.test.TestDataUtil.START_PERIODE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests fuer Verfügungsmuster
@@ -75,7 +75,7 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 			prepareBetreuung(EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT),
 			null
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -96,7 +96,7 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 			),
 			null
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -114,7 +114,7 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 			prepareBetreuung(EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT),
 			null
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -135,7 +135,7 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 			),
 			null
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -156,7 +156,7 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 			),
 			null
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -177,7 +177,7 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 			),
 			null
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -198,7 +198,7 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 			),
 			null
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -219,7 +219,7 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 			),
 			null
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -245,7 +245,7 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 			betreuung,
 			null
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);

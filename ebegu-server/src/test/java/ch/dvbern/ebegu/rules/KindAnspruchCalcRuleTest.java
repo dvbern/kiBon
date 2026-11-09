@@ -34,9 +34,12 @@ import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class KindAnspruchCalcRuleTest {
 
@@ -46,7 +49,7 @@ public class KindAnspruchCalcRuleTest {
 	@Nonnull
 	private Map<EinstellungKey, Einstellung> einstellungen;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		betreuung = EbeguRuleTestsHelper.createBetreuungWithPensum(
 			Constants.DEFAULT_GUELTIGKEIT.getGueltigAb(),
@@ -84,9 +87,12 @@ public class KindAnspruchCalcRuleTest {
 			betreuung,
 			einstellungen
 		);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertFalse(
+		assertEquals(1, result.size());
+		assertEquals(
+			100,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertFalse(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(
@@ -103,10 +109,13 @@ public class KindAnspruchCalcRuleTest {
 			betreuung,
 			einstellungen
 		);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(0, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertTrue(
+		assertEquals(1, result.size());
+		assertEquals(
+			0,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(
@@ -123,10 +132,13 @@ public class KindAnspruchCalcRuleTest {
 			betreuung,
 			einstellungen
 		);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(0, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertTrue(
+		assertEquals(1, result.size());
+		assertEquals(
+			0,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(

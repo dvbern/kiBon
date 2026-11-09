@@ -31,7 +31,7 @@ import ch.dvbern.kibon.exchange.commons.platzbestaetigung.GesuchstellerDTO;
 import ch.dvbern.kibon.exchange.commons.platzbestaetigung.KindDTO;
 import ch.dvbern.kibon.exchange.commons.types.BetreuungsangebotTyp;
 import ch.dvbern.kibon.exchange.commons.util.AvroConverter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -27,8 +27,12 @@ import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test Class for Bemerkungsmerger
@@ -131,30 +135,30 @@ public class BemerkungsMergerTest {
 			TestDataUtil.getMandantKantonBern(),
 			false
 		);
-		Assert.assertNotNull(resultingBem);
+		assertNotNull(resultingBem);
 		String[] strings = NEW_LINE.split(resultingBem);
-		Assert.assertEquals(5, strings.length);
-		Assert.assertTrue(
+		assertEquals(5, strings.length);
+		assertTrue(
 			strings[0].startsWith(
 				"01.01.2016 - 29.02.2016: Für diesen Zeitraum wird noch kein Betreuungsgutschein ausgestellt"
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			strings[1].startsWith(
 				"01.01.2016 - 31.03.2016: Betreuungsangebot Schulamt"
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			strings[2].startsWith(
 				"01.01.2016 - 31.05.2016: Das Kind wird länger als "
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			strings[3].startsWith(
 				"01.04.2016 - 31.05.2016: Für diesen Zeitraum wird noch kein Betreuungsgutschein ausgestellt"
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			strings[4].startsWith(
 				"01.05.2016 - 31.05.2016: Betreuungsangebot Schulamt"
 			)
@@ -181,7 +185,7 @@ public class BemerkungsMergerTest {
 				TestDataUtil.getMandantKantonBern(),
 				false
 			);
-			Assert.fail("Should throw exception because of overlap");
+			fail("Should throw exception because of overlap");
 		} catch (IllegalArgumentException ignore) {
 			//noop
 		}
@@ -222,15 +226,15 @@ public class BemerkungsMergerTest {
 			TestDataUtil.getMandantKantonBern(),
 			false
 		);
-		Assert.assertNotNull(resultingBem);
+		assertNotNull(resultingBem);
 		String[] strings = NEW_LINE.split(resultingBem);
-		Assert.assertEquals(2, strings.length);
-		Assert.assertTrue(
+		assertEquals(2, strings.length);
+		assertTrue(
 			strings[0].startsWith(
 				"01.01.2016 - 31.01.2016: Für diesen Zeitraum ist das erforderliche Beschäftigungspensum für den Erhalt eines Betreuungsgutscheins nicht erreicht"
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			strings[1].startsWith(
 				"01.02.2016 - 29.02.2016: Für diesen Zeitraum ist der Bedarf für die familienergänzende Betreuung"
 			)
@@ -254,14 +258,14 @@ public class BemerkungsMergerTest {
 			TestDataUtil.getMandantKantonBern(),
 			true
 		);
-		Assert.assertNotNull(resultingBem);
+		assertNotNull(resultingBem);
 		String[] strings = NEW_LINE.split(resultingBem);
-		Assert.assertEquals(1, strings.length);
-		Assert.assertTrue(
+		assertEquals(1, strings.length);
+		assertTrue(
 			strings[0].startsWith(
 				"01.01.2016 - 31.01.2016: Ihr Antrag wegen Einkommensverschlechterung wurde abgelehnt. "
 			)
 		);
-		Assert.assertTrue(strings[0].contains("(Art. 57 Abs. 2 FKJV)"));
+		assertTrue(strings[0].contains("(Art. 57 Abs. 2 FKJV)"));
 	}
 }

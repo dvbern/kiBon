@@ -22,12 +22,6 @@
                 </div>
             </div>
 
-            @if (dokumenteZuUebernehmenEinstellung()) {
-                <lib-dokumente-zu-uebernehmen-einstellung-group
-                    [einstellung]="dokumenteZuUebernehmenEinstellung()!"
-                ></lib-dokumente-zu-uebernehmen-einstellung-group>
-            }
-
             <div class="tw:w-[85%]">
                 <input
                     class="filter"
@@ -36,6 +30,23 @@
                     type="text"
                     placeholder="{{ 'SUCHBEGRIFF_EINGEBEN' | translate }}"
                 />
+            </div>
+
+            <div class="tw:flex tw:flex-col tw:gap-8 tw:mb-8">
+                @if (dokumenteZuUebernehmenEinstellung()) {
+                    <lib-dokumente-zu-uebernehmen-einstellung-group
+                        [einstellung]="dokumenteZuUebernehmenEinstellung()!"
+                        [filter]="trimmedAndLocalizedFilter()"
+                    ></lib-dokumente-zu-uebernehmen-einstellung-group>
+                }
+
+                @for (entry of groupedEinstellungen(); track entry.group) {
+                    <kib-kibon-configuration-group
+                        [groupName]="'EINSTELLUNG_KEY_GROUP_' + entry.group"
+                        [configurations]="entry.configurations"
+                        (configurationChange)="updateChangedEinstellung($event)"
+                    ></kib-kibon-configuration-group>
+                }
             </div>
 
             <mat-table [dataSource]="tableData()">
@@ -54,7 +65,9 @@
                                 value: item.value,
                                 key: item.key
                             }"
-                            (einstellungChange)="item.value = $event.value"
+                            (einstellungChange)="
+                                updateChangedEinstellung($event)
+                            "
                             [readOnly]="
                                 !periodenParamsEditableForPeriode(
                                     gesuchsperiode()
@@ -74,7 +87,7 @@
                 ></mat-row>
             </mat-table>
 
-            @if (!isReadonly() && tableData().data.length > 0) {
+            @if (!isReadonly()) {
                 <div class="row">
                     @if (gesuchsperiode) {
                         <div class="col-md-12">
@@ -84,9 +97,7 @@
                                 buttonClass="color-success"
                             >
                                 <span>{{
-                                    tableData().data[0].isNew()
-                                        ? ('SAVE' | translate)
-                                        : ('UPDATE_EINSTELLUNGEN' | translate)
+                                    'UPDATE_EINSTELLUNGEN' | translate
                                 }}</span>
                             </dv-loading-button>
                         </div>

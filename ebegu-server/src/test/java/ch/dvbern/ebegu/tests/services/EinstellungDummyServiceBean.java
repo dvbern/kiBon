@@ -206,6 +206,14 @@ public class EinstellungDummyServiceBean extends AbstractBaseService implements
 		return dummyObjects.values();
 	}
 
+	@NonNull
+	@Override
+	public Collection<Einstellung> getAllEinstellungenBySystemApplicableByApplicationPropertiesAndMandant(
+		@NonNull Gesuchsperiode gesuchsperiode
+	) {
+		return getAllEinstellungenBySystem(gesuchsperiode);
+	}
+
 	@Nonnull
 	@Override
 	public Collection<Einstellung> getAllEinstellungenByMandant(

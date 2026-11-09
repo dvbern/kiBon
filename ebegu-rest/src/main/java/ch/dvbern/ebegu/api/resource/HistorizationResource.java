@@ -34,7 +34,7 @@ import jakarta.ws.rs.core.Response;
 
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 import ch.dvbern.ebegu.api.dtos.JaxEnversRevision;
-import ch.dvbern.ebegu.api.property.converter.JaxConfigurationConverter;
+import ch.dvbern.ebegu.api.einstellung.convertor.JaxConfigurationConverter;
 import ch.dvbern.ebegu.einstellung.ApplicationProperty;
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.services.HistorizationService;

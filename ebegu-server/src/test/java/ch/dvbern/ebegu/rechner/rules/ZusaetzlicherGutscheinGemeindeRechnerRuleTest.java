@@ -35,7 +35,6 @@ import ch.dvbern.ebegu.rechner.RechnerRuleParameterDTO;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.util.MathUtil;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -46,6 +45,9 @@ import static ch.dvbern.ebegu.enums.EinschulungTyp.KLASSE1;
 import static ch.dvbern.ebegu.enums.EinschulungTyp.VORSCHULALTER;
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESSCHULE;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ZusaetzlicherGutscheinGemeindeRechnerRuleTest {
 
@@ -89,19 +91,19 @@ class ZusaetzlicherGutscheinGemeindeRechnerRuleTest {
 
 	@Test
 	void isConfigueredForGemeinde() {
-		Assertions.assertFalse(rule.isConfigueredForGemeinde(londonDTO));
-		Assertions.assertTrue(rule.isConfigueredForGemeinde(parisDTO));
+		assertFalse(rule.isConfigueredForGemeinde(londonDTO));
+		assertTrue(rule.isConfigueredForGemeinde(parisDTO));
 	}
 
 	@Test
 	void isRelevantForVerfuegung() {
-		Assertions.assertFalse(
+		assertFalse(
 			rule.isRelevantForVerfuegung(
 				prepareInput(KLASSE1, BetreuungsangebotTyp.KITA),
 				parisDTO
 			)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			rule.isRelevantForVerfuegung(
 				prepareInput(VORSCHULALTER, BetreuungsangebotTyp.KITA),
 				parisDTO
@@ -111,7 +113,7 @@ class ZusaetzlicherGutscheinGemeindeRechnerRuleTest {
 
 	@Test
 	void isRelevantForVerfuegungUngueltigesAngebot() {
-		Assertions.assertFalse(
+		assertFalse(
 			rule.isRelevantForVerfuegung(
 				prepareInput(VORSCHULALTER, TAGESSCHULE),
 				parisDTO
@@ -128,7 +130,7 @@ class ZusaetzlicherGutscheinGemeindeRechnerRuleTest {
 			londonDTO,
 			result
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			result.getZusaetzlicherGutscheinGemeindeBetrag()
 		);
@@ -138,7 +140,7 @@ class ZusaetzlicherGutscheinGemeindeRechnerRuleTest {
 			parisDTO,
 			result
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(30),
 			result.getZusaetzlicherGutscheinGemeindeBetrag()
 		);

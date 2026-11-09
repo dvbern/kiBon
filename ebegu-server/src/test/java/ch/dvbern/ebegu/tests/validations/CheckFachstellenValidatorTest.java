@@ -40,13 +40,15 @@ import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE;
 import static org.easymock.EasyMock.expect;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer {@link CheckFachstellenValidator}
@@ -76,7 +78,7 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
-		Assertions.assertTrue(isValid);
+		assertTrue(isValid);
 	}
 
 	@Test
@@ -94,7 +96,7 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
-		Assertions.assertTrue(isValid);
+		assertTrue(isValid);
 	}
 
 	@Test
@@ -119,7 +121,7 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
-		Assertions.assertTrue(isValid);
+		assertTrue(isValid);
 	}
 
 	@Test
@@ -137,7 +139,7 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
-		Assertions.assertFalse(isValid);
+		assertFalse(isValid);
 	}
 
 	@Test
@@ -162,7 +164,7 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
-		Assertions.assertFalse(isValid);
+		assertFalse(isValid);
 	}
 
 	@Test
@@ -193,7 +195,7 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
-		Assertions.assertFalse(isValid);
+		assertFalse(isValid);
 	}
 
 	private static PensumFachstelle createPensumFachstelleWithIntegrationTyp(
@@ -219,7 +221,7 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 			1
 		);
 		replayAll();
-		Assertions.assertThrows(EbeguRuntimeException.class, () -> {
+		assertThrows(EbeguRuntimeException.class, () -> {
 			validator.isValid(kindContainer, null);
 		});
 	}
@@ -239,7 +241,7 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
-		Assertions.assertTrue(isValid);
+		assertTrue(isValid);
 	}
 
 	@Test()
@@ -257,7 +259,7 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
-		Assertions.assertFalse(isValid);
+		assertFalse(isValid);
 	}
 
 	private void createEinstellungMock(

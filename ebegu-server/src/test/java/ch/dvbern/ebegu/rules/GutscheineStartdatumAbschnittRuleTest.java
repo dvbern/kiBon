@@ -28,9 +28,12 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GutscheineStartdatumAbschnittRuleTest {
 
@@ -43,7 +46,7 @@ public class GutscheineStartdatumAbschnittRuleTest {
 			Constants.DEFAULT_LOCALE
 		);
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		betreuung = TestDataUtil.createDefaultBetreuung();
 		Gesuch gesuch = TestDataUtil.createDefaultGesuch();
@@ -55,14 +58,14 @@ public class GutscheineStartdatumAbschnittRuleTest {
 		List<VerfuegungZeitabschnitt> results = rule
 			.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
 
-		Assert.assertEquals(1, results.size());
+		assertEquals(1, results.size());
 		VerfuegungZeitabschnitt result = results.get(0);
 
-		Assert.assertTrue(
+		assertTrue(
 			result.getBgCalculationInputAsiv()
 				.isAbschnittLiegtNachBEGUStartdatum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Constants.GESUCHSPERIODE_17_18,
 			result.getGueltigkeit()
 		);
@@ -80,13 +83,13 @@ public class GutscheineStartdatumAbschnittRuleTest {
 		List<VerfuegungZeitabschnitt> results = rule
 			.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
 
-		Assert.assertEquals(1, results.size());
+		assertEquals(1, results.size());
 		VerfuegungZeitabschnitt result = results.get(0);
-		Assert.assertFalse(
+		assertFalse(
 			result.getBgCalculationInputAsiv()
 				.isAbschnittLiegtNachBEGUStartdatum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Constants.GESUCHSPERIODE_17_18,
 			result.getGueltigkeit()
 		);
@@ -104,13 +107,13 @@ public class GutscheineStartdatumAbschnittRuleTest {
 		List<VerfuegungZeitabschnitt> results = rule
 			.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
 
-		Assert.assertEquals(1, results.size());
+		assertEquals(1, results.size());
 		VerfuegungZeitabschnitt result = results.get(0);
-		Assert.assertTrue(
+		assertTrue(
 			result.getBgCalculationInputAsiv()
 				.isAbschnittLiegtNachBEGUStartdatum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Constants.GESUCHSPERIODE_17_18,
 			result.getGueltigkeit()
 		);
@@ -128,10 +131,10 @@ public class GutscheineStartdatumAbschnittRuleTest {
 		List<VerfuegungZeitabschnitt> results = rule
 			.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
 
-		Assert.assertEquals(2, results.size());
+		assertEquals(2, results.size());
 
 		VerfuegungZeitabschnitt beforeStartdatumResult = results.get(0);
-		Assert.assertFalse(
+		assertFalse(
 			beforeStartdatumResult.getBgCalculationInputAsiv()
 				.isAbschnittLiegtNachBEGUStartdatum()
 		);
@@ -139,13 +142,13 @@ public class GutscheineStartdatumAbschnittRuleTest {
 			Constants.GESUCHSPERIODE_17_18_AB,
 			Constants.GESUCHSPERIODE_17_18_BIS.minusDays(1)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			rangeBeforeStartdatum,
 			beforeStartdatumResult.getGueltigkeit()
 		);
 
 		VerfuegungZeitabschnitt afterStartdatumResult = results.get(1);
-		Assert.assertTrue(
+		assertTrue(
 			afterStartdatumResult.getBgCalculationInputAsiv()
 				.isAbschnittLiegtNachBEGUStartdatum()
 		);
@@ -153,7 +156,7 @@ public class GutscheineStartdatumAbschnittRuleTest {
 			Constants.GESUCHSPERIODE_17_18_BIS,
 			Constants.GESUCHSPERIODE_17_18_BIS
 		);
-		Assert.assertEquals(
+		assertEquals(
 			rangeAfterStartdatum,
 			afterStartdatumResult.getGueltigkeit()
 		);

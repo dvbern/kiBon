@@ -30,11 +30,13 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.enums.MsgKey.EINKOMMEN_MAX_MSG;
 import static ch.dvbern.ebegu.test.TestDataUtil.START_PERIODE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer Verfügungsmuster
@@ -74,7 +76,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -92,7 +94,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.withDayOfMonth(1)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -110,7 +112,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -128,7 +130,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.withDayOfMonth(1)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -146,7 +148,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.plusMonths(1)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -164,7 +166,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.plusMonths(1)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -182,7 +184,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.minusMonths(1)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -200,7 +202,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.minusMonths(1)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
@@ -219,7 +221,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.plusMonths(1)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bgCalculationInput.getParent()
 				.getBemerkungenDTOList()
 				.containsMsgKey(EINKOMMEN_MAX_MSG)
@@ -239,7 +241,7 @@ class MutationsMergerFinanzielleSituationSchwyzTest {
 			initBetreuung(),
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.minusMonths(1)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			bgCalculationInput.getParent()
 				.getBemerkungenDTOList()
 				.containsMsgKey(EINKOMMEN_MAX_MSG)

@@ -133,7 +133,7 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 	public UploadFileInfo generateExcelReportZahlungen(
 		@Nonnull ReportVorlage reportVorlage,
 		@Nonnull Locale locale,
-		@Nonnull String gesuchsperiodeId,
+		@Nullable String gesuchsperiodeId,
 		@Nullable String gemeindeId,
 		@Nullable String institutionId,
 		@Nullable String von,
@@ -147,15 +147,18 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 				reportVorlage.getDataSheetName()
 			);
 
-			var periode = gesuchsperiodeService.findGesuchsperiode(
-				gesuchsperiodeId
-			)
-				.orElseThrow(
-					() -> new EbeguEntityNotFoundException(
-						"generateExcelReportZahlungen",
-						gesuchsperiodeId
-					)
-				);
+			Gesuchsperiode periode = null;
+			if (gesuchsperiodeId != null) {
+				periode = gesuchsperiodeService.findGesuchsperiode(
+					gesuchsperiodeId
+				)
+					.orElseThrow(
+						() -> new EbeguEntityNotFoundException(
+							"generateExcelReportZahlungen",
+							gesuchsperiodeId
+						)
+					);
+			}
 
 			Gemeinde gemeinde = null;
 			if (gemeindeId != null) {
@@ -246,7 +249,7 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 	}
 
 	private List<ReportZahlungspositionDTO> findZahlungsauftrageWithAuszahlungsTypInstitution(
-		@Nonnull Gesuchsperiode periode,
+		@Nullable Gesuchsperiode periode,
 		@Nullable Gemeinde gemeinde,
 		@Nullable Institution institution,
 		@Nullable LocalDate datumVon,
@@ -259,12 +262,14 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 		List<Predicate> predicates = new ArrayList<>();
 
 		Root<Zahlungsauftrag> root = query.from(Zahlungsauftrag.class);
-		Predicate predicateInPeriode = cb.between(
-			root.get(AbstractEntity_.timestampErstellt),
-			periode.getGueltigkeit().getGueltigAb().atStartOfDay(),
-			periode.getGueltigkeit().getGueltigBis().atStartOfDay()
-		);
-		predicates.add(predicateInPeriode);
+		if (periode != null) {
+			Predicate predicateInPeriode = cb.between(
+				root.get(AbstractEntity_.timestampErstellt),
+				periode.getGueltigkeit().getGueltigAb().atStartOfDay(),
+				periode.getGueltigkeit().getGueltigBis().atStartOfDay()
+			);
+			predicates.add(predicateInPeriode);
+		}
 
 		Predicate zahlungslaufTyp = cb.equal(
 			root.get(Zahlungsauftrag_.zahlungslaufTyp),

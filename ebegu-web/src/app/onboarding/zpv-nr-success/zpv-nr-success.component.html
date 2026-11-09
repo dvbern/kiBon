@@ -16,15 +16,15 @@
   -->
 <div style="display: inline-block; max-width: 100%">
     <div class="onboarding-welcome">
-        @if (result === ZPVUpdateResult.SUCCESS) {
-            <p class="mb-4" translate>ZPV_GS2_SUCCESS</p>
+        @if (result === STEKUpdateResult.SUCCESS) {
+            <p class="mb-4" translate>STEK_IDENTIFIER_GS2_SUCCESS</p>
         } @else {
             <p translate class="well well-status-abgewiesen">
-                {{ 'ZPV_UPDATE_RESULT_' + result }}
+                {{ 'STEK_UPDATE_RESULT_' + result }}
             </p>
         }
 
-        <p translate>ZPV_LOGOUT</p>
+        <p translate>STEK_IDENTIFIER_LOGOUT</p>
     </div>
 
     <div class="onboarding-login">
@@ -33,7 +33,7 @@
                 <button
                     class="dv-btn onboarding-red-border-button onboarding-login-button-width"
                 >
-                    <span translate>ZPV_ZUM_BE_LOGIN</span>
+                    <span translate>STEK_IDENTIFIER_ZUM_BE_LOGIN</span>
                 </button>
             </a>
         </div>

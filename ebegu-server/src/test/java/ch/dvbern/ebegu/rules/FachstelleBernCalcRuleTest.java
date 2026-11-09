@@ -42,12 +42,15 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.KITA;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Testet die MaximalesEinkommen-Regel
@@ -91,14 +94,14 @@ class FachstelleBernCalcRuleTest {
 			List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper
 				.calculate(betreuung);
 
-			Assertions.assertNotNull(result);
-			Assertions.assertEquals(1, result.size());
+			assertNotNull(result);
+			assertEquals(1, result.size());
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				40,
 				abschnitt.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt.getBetreuungspensumProzent()
 			);
@@ -123,14 +126,14 @@ class FachstelleBernCalcRuleTest {
 			List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper
 				.calculate(betreuung);
 
-			Assertions.assertNotNull(result);
-			Assertions.assertEquals(1, result.size());
+			assertNotNull(result);
+			assertEquals(1, result.size());
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				100,
 				abschnitt.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt.getBetreuungspensumProzent()
 			);
@@ -157,34 +160,34 @@ class FachstelleBernCalcRuleTest {
 			List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper
 				.calculate(betreuung);
 
-			Assertions.assertNotNull(result);
-			Assertions.assertEquals(3, result.size());
+			assertNotNull(result);
+			assertEquals(3, result.size());
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(0),
 				abschnitt.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				40,
 				abschnitt1.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt1.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				40,
 				abschnitt2.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt2.getBetreuungspensumProzent()
 			);
@@ -211,34 +214,34 @@ class FachstelleBernCalcRuleTest {
 			List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper
 				.calculate(betreuung);
 
-			Assertions.assertNotNull(result);
-			Assertions.assertEquals(3, result.size());
+			assertNotNull(result);
+			assertEquals(3, result.size());
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(0),
 				abschnitt.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt1.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt1.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt2.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt2.getBetreuungspensumProzent()
 			);
@@ -286,55 +289,55 @@ class FachstelleBernCalcRuleTest {
 			List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper
 				.calculate(betreuung);
 
-			Assertions.assertNotNull(result);
-			Assertions.assertEquals(5, result.size());
+			assertNotNull(result);
+			assertEquals(5, result.size());
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(0),
 				abschnitt.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				40,
 				abschnitt1.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt1.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				40,
 				abschnitt2.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt2.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt3 = result.get(3);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt3.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(0),
 				abschnitt3.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt4 = result.get(4);
-			Assertions.assertEquals(
+			assertEquals(
 				40,
 				abschnitt4.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt4.getBetreuungspensumProzent()
 			);
@@ -382,55 +385,55 @@ class FachstelleBernCalcRuleTest {
 			List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper
 				.calculate(betreuung);
 
-			Assertions.assertNotNull(result);
-			Assertions.assertEquals(5, result.size());
+			assertNotNull(result);
+			assertEquals(5, result.size());
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(0),
 				abschnitt.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt1.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt1.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt2.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt2.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt3 = result.get(3);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt3.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(0),
 				abschnitt3.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt4 = result.get(4);
-			Assertions.assertEquals(
+			assertEquals(
 				0,
 				abschnitt4.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt4.getBetreuungspensumProzent()
 			);
@@ -478,55 +481,55 @@ class FachstelleBernCalcRuleTest {
 			List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper
 				.calculate(betreuung);
 
-			Assertions.assertNotNull(result);
-			Assertions.assertEquals(5, result.size());
+			assertNotNull(result);
+			assertEquals(5, result.size());
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				100,
 				abschnitt.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(0),
 				abschnitt.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				100,
 				abschnitt1.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt1.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				100,
 				abschnitt2.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt2.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt3 = result.get(3);
-			Assertions.assertEquals(
+			assertEquals(
 				100,
 				abschnitt3.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(0),
 				abschnitt3.getBetreuungspensumProzent()
 			);
 
 			final VerfuegungZeitabschnitt abschnitt4 = result.get(4);
-			Assertions.assertEquals(
+			assertEquals(
 				100,
 				abschnitt4.getAnspruchberechtigtesPensum()
 			);
-			Assertions.assertEquals(
+			assertEquals(
 				MathUtil.DEFAULT.from(betreuungspensum),
 				abschnitt4.getBetreuungspensumProzent()
 			);
@@ -553,20 +556,20 @@ class FachstelleBernCalcRuleTest {
 				.calculate(betreuung);
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				3,
 				abschnitt.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.FACHSTELLE_MSG)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				result.get(0)
 					.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				result.get(0)
 					.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
@@ -591,15 +594,15 @@ class FachstelleBernCalcRuleTest {
 				.calculate(betreuung);
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				result.get(0)
 					.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
@@ -624,15 +627,15 @@ class FachstelleBernCalcRuleTest {
 				.calculate(betreuung);
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				1,
 				abschnitt.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
@@ -640,37 +643,37 @@ class FachstelleBernCalcRuleTest {
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				3,
 				abschnitt1.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.FACHSTELLE_MSG)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				3,
 				abschnitt2.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.FACHSTELLE_MSG)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
@@ -694,15 +697,15 @@ class FachstelleBernCalcRuleTest {
 				.calculate(betreuung);
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				1,
 				abschnitt.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
@@ -710,33 +713,33 @@ class FachstelleBernCalcRuleTest {
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt1.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
 					)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt2.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
 					)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
@@ -779,15 +782,15 @@ class FachstelleBernCalcRuleTest {
 				.calculate(betreuung);
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				1,
 				abschnitt.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
@@ -795,51 +798,51 @@ class FachstelleBernCalcRuleTest {
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				3,
 				abschnitt1.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.FACHSTELLE_MSG)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				3,
 				abschnitt2.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.FACHSTELLE_MSG)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
 
 			final VerfuegungZeitabschnitt abschnitt3 = result.get(3);
-			Assertions.assertEquals(
+			assertEquals(
 				1,
 				abschnitt3.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt3.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				abschnitt3.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
@@ -847,19 +850,19 @@ class FachstelleBernCalcRuleTest {
 			);
 
 			final VerfuegungZeitabschnitt abschnitt4 = result.get(4);
-			Assertions.assertEquals(
+			assertEquals(
 				3,
 				abschnitt4.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt4.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.FACHSTELLE_MSG)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt4.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt4.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
@@ -902,15 +905,15 @@ class FachstelleBernCalcRuleTest {
 				.calculate(betreuung);
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				1,
 				abschnitt.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
@@ -918,47 +921,47 @@ class FachstelleBernCalcRuleTest {
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt1.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
 					)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt2.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
 					)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
 
 			final VerfuegungZeitabschnitt abschnitt3 = result.get(3);
-			Assertions.assertEquals(
+			assertEquals(
 				1,
 				abschnitt3.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt3.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				abschnitt3.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
@@ -966,17 +969,17 @@ class FachstelleBernCalcRuleTest {
 			);
 
 			final VerfuegungZeitabschnitt abschnitt4 = result.get(4);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt4.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt4.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
 					)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt4.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH)
 			);
@@ -1019,19 +1022,19 @@ class FachstelleBernCalcRuleTest {
 				.calculate(betreuung);
 
 			final VerfuegungZeitabschnitt abschnitt = result.get(0);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
@@ -1039,47 +1042,47 @@ class FachstelleBernCalcRuleTest {
 			);
 
 			final VerfuegungZeitabschnitt abschnitt1 = result.get(1);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt1.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt1.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
 
 			final VerfuegungZeitabschnitt abschnitt2 = result.get(2);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt2.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt2.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
 
 			final VerfuegungZeitabschnitt abschnitt3 = result.get(3);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt3.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt3.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				abschnitt3.getBemerkungenDTOList()
 					.containsMsgKey(
 						MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG
@@ -1087,15 +1090,15 @@ class FachstelleBernCalcRuleTest {
 			);
 
 			final VerfuegungZeitabschnitt abschnitt4 = result.get(4);
-			Assertions.assertEquals(
+			assertEquals(
 				2,
 				abschnitt4.getBemerkungenDTOList().uniqueSize()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt4.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				abschnitt4.getBemerkungenDTOList()
 					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
 			);
@@ -1146,7 +1149,7 @@ class FachstelleBernCalcRuleTest {
 			gesuch,
 			new FinanzielleSituationBernRechner()
 		);
-		Assertions.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -1159,7 +1162,7 @@ class FachstelleBernCalcRuleTest {
 			.setFinanzielleSituationContainer(
 				new FinanzielleSituationContainer()
 			);
-		Assertions.assertNotNull(
+		assertNotNull(
 			gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
 		);
 		gesuch.getGesuchsteller1()

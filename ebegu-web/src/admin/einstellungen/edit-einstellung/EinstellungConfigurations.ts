@@ -1,4 +1,6 @@
+import {GroupableConfiguration} from '../../../models/einstellung/GroupableConfiguration';
 import {TSApplicationPropertyKey} from '../../../models/einstellung/TSApplicationPropertyKey';
+import {TSAbstractDateRangedEntity} from '../../../models/entity/TSAbstractDateRangedEntity';
 import {BetreuungComparator} from '../../../models/enums/BetreuungComparator';
 import {TSGemeindeZusaetzlicherGutscheinTyp} from '../../../models/enums/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
 import {HoehereBeitraegeTyp} from '../../../models/enums/HoehereBeitraegeTyp';
@@ -15,6 +17,7 @@ import {TSGeschwisterbonusTyp} from '../../../models/enums/TSGeschwisterbonusTyp
 import {TSKeycloakIdpHint} from '../../../models/enums/TSKeycloakIdpHint';
 import {TSKinderabzugTyp} from '../../../models/enums/TSKinderabzugTyp';
 import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
+import {Erklaerable} from '../Erklaerable';
 import type {TSEinstellungKey} from '../TSEinstellungKey';
 
 interface EinstellungConfiguration {
@@ -37,9 +40,7 @@ const createConfiguration = (
     return {type, options};
 };
 
-type AllKeys =
-    | keyof typeof TSEinstellungKey
-    | keyof typeof TSApplicationPropertyKey;
+type AllKeys = `${TSEinstellungKey}` | `${TSApplicationPropertyKey}`;
 
 const configEnums = [
     TSEinschulungTyp,
@@ -319,6 +320,12 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
 type ConfigurableEnums = (typeof configEnums)[number];
 
 export type ConfigurableEinstellung = {key: AllKeys; value: string};
+
+export type KibonConfiguration = ConfigurableEinstellung &
+    Pick<TSAbstractDateRangedEntity, 'timestampMutiert'> & {
+        metadata: GroupableConfiguration;
+        userMutiert?: string;
+    } & Erklaerable;
 
 export type EinstellungType =
     | typeof Date

@@ -28,9 +28,13 @@ import ch.dvbern.ebegu.enums.DokumentTyp;
 import ch.dvbern.ebegu.enums.GeneratedDokumentTyp;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Testet BetreuungResource
@@ -40,7 +44,7 @@ public class DokumenteUtilTest {
 
 	private Mandant mandant;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		mandant = new Mandant();
 		mandant.setMandantIdentifier(MandantIdentifier.BERN);
@@ -86,15 +90,15 @@ public class DokumenteUtilTest {
 			DokumentGrundTyp.FAMILIENSITUATION
 		);
 
-		Assert.assertNotNull(mergedFamsit);
-		Assert.assertEquals(2, mergedFamsit.size());
+		assertNotNull(mergedFamsit);
+		assertEquals(2, mergedFamsit.size());
 
-		Assert.assertEquals(
+		assertEquals(
 			3,
 			getByDokumentType(mergedFamsit, DokumentTyp.JAHRESLOHNAUSWEISE)
 				.size()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			1,
 			getByDokumentType(mergedFamsit, DokumentTyp.STEUERERKLAERUNG)
 				.size()
@@ -104,9 +108,9 @@ public class DokumenteUtilTest {
 			mergeNeededAndPersisted,
 			DokumentGrundTyp.ERWERBSPENSUM
 		);
-		Assert.assertNotNull(mergedERWERBSPENSUM);
-		Assert.assertEquals(1, mergedERWERBSPENSUM.size());
-		Assert.assertEquals(
+		assertNotNull(mergedERWERBSPENSUM);
+		assertEquals(1, mergedERWERBSPENSUM.size());
+		assertEquals(
 			1,
 			getByDokumentType(
 				mergedERWERBSPENSUM,
@@ -117,7 +121,7 @@ public class DokumenteUtilTest {
 
 	@Test
 	public void testGetFileNameForGeneratedDokumentTypBEGLEITSCHREIBEN() {
-		Assert.assertEquals(
+		assertEquals(
 			"Deckblatt_16.000001.pdf",
 			DokumenteUtil
 				.getFileNameForGeneratedDokumentTyp(
@@ -131,7 +135,7 @@ public class DokumenteUtilTest {
 
 	@Test
 	public void testGetFileNameForGeneratedDokumentTypFINANZIELLE_SITUATION() {
-		Assert.assertEquals(
+		assertEquals(
 			"Finanzielle_Verhaeltnisse_16.000001.pdf",
 			DokumenteUtil
 				.getFileNameForGeneratedDokumentTyp(
@@ -145,7 +149,7 @@ public class DokumenteUtilTest {
 
 	@Test
 	public void testGetFileNameForGeneratedDokumentTypVERFUEGUNG_KITA() {
-		Assert.assertEquals(
+		assertEquals(
 			"Verfuegung_16.000001.1.1.pdf",
 			DokumenteUtil
 				.getFileNameForGeneratedDokumentTyp(
@@ -177,7 +181,7 @@ public class DokumenteUtilTest {
 			persistedDok,
 			neededDok
 		);
-		Assert.assertEquals(0, result);
+		assertEquals(0, result);
 	}
 
 	@Test
@@ -200,7 +204,7 @@ public class DokumenteUtilTest {
 			persistedDok,
 			neededDok
 		);
-		Assert.assertNotEquals(0, result);
+		assertNotEquals(0, result);
 	}
 
 	@Test
@@ -223,7 +227,7 @@ public class DokumenteUtilTest {
 			persistedDok,
 			neededDok
 		);
-		Assert.assertNotEquals(0, result);
+		assertNotEquals(0, result);
 	}
 
 	@Test
@@ -246,44 +250,51 @@ public class DokumenteUtilTest {
 			persistedDok,
 			neededDok
 		);
-		Assert.assertNotEquals(0, result);
+		assertNotEquals(0, result);
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void pathWithTraversalStartShouldNotBeValid() {
-		String directoryPath = "/server/data/uploads";
-		String pathWithTraversalStart = "/server/data/uploads/./../filename";
+		assertThrows(EbeguRuntimeException.class, () -> {
+			String directoryPath = "/server/data/uploads";
+			String pathWithTraversalStart =
+				"/server/data/uploads/./../filename";
 
-		DokumenteUtil.validateDokumentDirectory(
-			pathWithTraversalStart,
-			directoryPath
-		);
+			DokumenteUtil.validateDokumentDirectory(
+				pathWithTraversalStart,
+				directoryPath
+			);
+		});
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void pathWithTraversalShouldNotBeValid() {
-		String directoryPath = "/server/data/uploads";
-		String pathWithTraversalStart = "/server/data/uploads/../filename";
+		assertThrows(EbeguRuntimeException.class, () -> {
+			String directoryPath = "/server/data/uploads";
+			String pathWithTraversalStart = "/server/data/uploads/../filename";
 
-		DokumenteUtil.validateDokumentDirectory(
-			pathWithTraversalStart,
-			directoryPath
-		);
+			DokumenteUtil.validateDokumentDirectory(
+				pathWithTraversalStart,
+				directoryPath
+			);
+		});
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void pathWithMultipleTraversalShouldNotBeValid() {
-		String directoryPath = "/server/data/uploads";
-		String pathWithTraversalStart =
-			"/server/data/uploads/../../../../filename";
+		assertThrows(EbeguRuntimeException.class, () -> {
+			String directoryPath = "/server/data/uploads";
+			String pathWithTraversalStart =
+				"/server/data/uploads/../../../../filename";
 
-		DokumenteUtil.validateDokumentDirectory(
-			pathWithTraversalStart,
-			directoryPath
-		);
+			DokumenteUtil.validateDokumentDirectory(
+				pathWithTraversalStart,
+				directoryPath
+			);
+		});
 	}
 
-	@Test()
+	@Test
 	public void pathWithoutTraversalStartingWithShouldBeValid() {
 		String directoryPath = "/server/data/uploads";
 		String pathWithTraversalStart = "/server/data/uploads/filename";
@@ -334,7 +345,7 @@ public class DokumenteUtilTest {
 		dokumentGrund.setDokumentTyp(dokumentTyp);
 
 		Dokument dokument = new Dokument();
-		Assert.assertNotNull(dokumentGrund.getDokumente());
+		assertNotNull(dokumentGrund.getDokumente());
 		dokumentGrund.getDokumente().add(dokument);
 
 		dokumentGrundsNeeded.add(dokumentGrund);
@@ -354,11 +365,11 @@ public class DokumenteUtilTest {
 		for (int i = 1; i < number; i++) {
 			Dokument dokument = new Dokument();
 			dokument.setFilename(i + " ");
-			Assert.assertNotNull(dokumentGrund.getDokumente());
+			assertNotNull(dokumentGrund.getDokumente());
 			dokumentGrund.getDokumente().add(dokument);
 		}
 		Dokument dokument = new Dokument();
-		Assert.assertNotNull(dokumentGrund.getDokumente());
+		assertNotNull(dokumentGrund.getDokumente());
 		dokumentGrund.getDokumente().add(dokument);
 
 		dokumentGrunds.add(dokumentGrund);

@@ -12,12 +12,13 @@ import ch.dvbern.ebegu.entities.Zahlungsposition;
 import ch.dvbern.ebegu.enums.ZahlungspositionStatus;
 import ch.dvbern.ebegu.types.DateRange;
 import org.easymock.EasyMock;
-import org.easymock.EasyMockRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.easymock.EasyMockExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(EasyMockRunner.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@ExtendWith(EasyMockExtension.class)
 public class ZahlungAuftragExcelConverterTest {
 
 	@Test
@@ -70,8 +71,11 @@ public class ZahlungAuftragExcelConverterTest {
 			new ZahlungAuftragDetailsExcelConverter();
 		List<Zahlungsposition> filteredList = converter
 			.filterZahlungspositionenMitSummeUngleich0(zahlungspositionen);
-		Assert.assertEquals(2, filteredList.size());
-		Assert.assertEquals(notInvertedZahlungsposition, filteredList.get(0));
+		assertEquals(2, filteredList.size());
+		assertEquals(
+			notInvertedZahlungsposition,
+			filteredList.get(0)
+		);
 	}
 
 	private Zahlungsposition createZahlungsposition(

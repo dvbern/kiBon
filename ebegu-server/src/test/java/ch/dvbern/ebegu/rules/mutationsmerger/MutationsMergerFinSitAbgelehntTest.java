@@ -42,8 +42,12 @@ import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
 import ch.dvbern.ebegu.rules.MonatsRule;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer den Mutationsmerger im Spezialfall, dass in der Mutation die FinSit abgelehnt wurde.
@@ -82,8 +86,8 @@ public class MutationsMergerFinSitAbgelehntTest {
 
 		// Unabhaengig von Einreichefrist und Erhoehung/Senkung des Einkommens:
 		// Weil FinSit abgelehnt, muss ueber die gesamte GP das alte Einkommen gelten!
-		Assert.assertNotNull(zeitabschnitte);
-		Assert.assertEquals(12, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(12, zeitabschnitte.size());
 		checkAllZeitabschnitte(zeitabschnitte, EINKOMMEN_TIEFER);
 	}
 
@@ -101,8 +105,8 @@ public class MutationsMergerFinSitAbgelehntTest {
 
 		// Unabhaengig von Einreichefrist und Erhoehung/Senkung des Einkommens:
 		// Weil FinSit abgelehnt, muss ueber die gesamte GP das alte Einkommen gelten!
-		Assert.assertNotNull(zeitabschnitte);
-		Assert.assertEquals(12, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(12, zeitabschnitte.size());
 		checkAllZeitabschnitte(zeitabschnitte, EINKOMMEN_HOEHER);
 	}
 
@@ -120,8 +124,8 @@ public class MutationsMergerFinSitAbgelehntTest {
 
 		// Unabhaengig von Einreichefrist und Erhoehung/Senkung des Einkommens:
 		// Weil FinSit abgelehnt, muss ueber die gesamte GP das alte Einkommen gelten!
-		Assert.assertNotNull(zeitabschnitte);
-		Assert.assertEquals(12, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(12, zeitabschnitte.size());
 		checkAllZeitabschnitte(zeitabschnitte, EINKOMMEN_TIEFER);
 	}
 
@@ -139,8 +143,8 @@ public class MutationsMergerFinSitAbgelehntTest {
 
 		// Unabhaengig von Einreichefrist und Erhoehung/Senkung des Einkommens:
 		// Weil FinSit abgelehnt, muss ueber die gesamte GP das alte Einkommen gelten!
-		Assert.assertNotNull(zeitabschnitte);
-		Assert.assertEquals(12, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(12, zeitabschnitte.size());
 		checkAllZeitabschnitte(zeitabschnitte, EINKOMMEN_HOEHER);
 	}
 
@@ -177,10 +181,10 @@ public class MutationsMergerFinSitAbgelehntTest {
 
 		//Vor dem Mutations-Merger ist Sozialhilfe false
 		verfuegungsZeitabschnitteMutiert.forEach(za -> {
-			Assert.assertFalse(
+			assertFalse(
 				za.getBgCalculationInputAsiv().isSozialhilfeempfaenger()
 			);
-			Assert.assertFalse(
+			assertFalse(
 				za.getBgCalculationResultAsiv().isSozialhilfeAkzeptiert()
 			);
 		});
@@ -192,13 +196,13 @@ public class MutationsMergerFinSitAbgelehntTest {
 			);
 
 		//Nach dem Mutations-Merger ist Sozialhilfe true
-		Assert.assertNotNull(result);
-		Assert.assertEquals(12, result.size());
+		assertNotNull(result);
+		assertEquals(12, result.size());
 		result.forEach(za -> {
-			Assert.assertTrue(
+			assertTrue(
 				za.getBgCalculationInputAsiv().isSozialhilfeempfaenger()
 			);
-			Assert.assertTrue(
+			assertTrue(
 				za.getBgCalculationResultAsiv().isSozialhilfeAkzeptiert()
 			);
 		});
@@ -236,10 +240,10 @@ public class MutationsMergerFinSitAbgelehntTest {
 
 		//Vor dem Mutations-Merger ist Sozialhilfe True
 		verfuegungsZeitabschnitteMutiert.forEach(za -> {
-			Assert.assertTrue(
+			assertTrue(
 				za.getBgCalculationInputAsiv().isSozialhilfeempfaenger()
 			);
-			Assert.assertTrue(
+			assertTrue(
 				za.getBgCalculationResultAsiv().isSozialhilfeAkzeptiert()
 			);
 		});
@@ -251,13 +255,13 @@ public class MutationsMergerFinSitAbgelehntTest {
 			);
 
 		//Nach dem Mutations-Merger ist Sozialhilfe False -> Handle abgelehnte Sozialhilfe
-		Assert.assertNotNull(result);
-		Assert.assertEquals(12, result.size());
+		assertNotNull(result);
+		assertEquals(12, result.size());
 		result.forEach(za -> {
-			Assert.assertFalse(
+			assertFalse(
 				za.getBgCalculationInputAsiv().isSozialhilfeempfaenger()
 			);
-			Assert.assertFalse(
+			assertFalse(
 				za.getBgCalculationResultAsiv().isSozialhilfeAkzeptiert()
 			);
 		});
@@ -375,11 +379,11 @@ public class MutationsMergerFinSitAbgelehntTest {
 		BigDecimal massgebendesEinkommen
 	) {
 		zeitabschnitte.forEach(
-			za -> Assert.assertEquals(
-				"Falsches Massgebendes Einkommen in Zeitabschnitt "
-					+ za,
+			za -> assertEquals(
 				massgebendesEinkommen,
-				za.getMassgebendesEinkommen()
+				za.getMassgebendesEinkommen(),
+				"Falsches Massgebendes Einkommen in Zeitabschnitt "
+					+ za
 			)
 		);
 	}
@@ -437,7 +441,7 @@ public class MutationsMergerFinSitAbgelehntTest {
 		);
 		gesuch.getFinanzDatenDTO()
 			.setMassgebendesEinkBjVorAbzFamGr(massgebendesEinkommen);
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(

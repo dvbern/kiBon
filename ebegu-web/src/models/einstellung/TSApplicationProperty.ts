@@ -13,13 +13,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {Erklaerable} from '../../admin/einstellungen/Erklaerable';
 import {TSAbstractMutableEntity} from '../entity/TSAbstractMutableEntity';
 import {TSApplicationPropertyKey} from './TSApplicationPropertyKey';
 
-export class TSApplicationProperty extends TSAbstractMutableEntity {
+export class TSApplicationProperty
+    extends TSAbstractMutableEntity
+    implements Erklaerable
+{
     public name: TSApplicationPropertyKey;
     public value: string;
     public erklaerung: string = null;
-    public keyGroup: string = null;
-    public subKeyGroup: string = null;
 }

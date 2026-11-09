@@ -21,13 +21,21 @@ import {
     disabled,
     form,
     FormField,
+    max,
+    min,
     required,
     validate
 } from '@angular/forms/signals';
+import {MatError, MatFormField} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
 import {TranslateModule} from '@ngx-translate/core';
 import {SharedModule} from '../../../app/shared/shared.module';
+import {GesuchFormError} from '../../shared/form/gesuch-form-error/gesuch-form-error';
 import {GesuchFormNumberInput} from '../../shared/form/gesuch-form-number-input/gesuch-form-number-input';
+import {GesuchSharedFormLabel} from '../../shared/form/style/gesuch-shared-form-label';
 import {GesuchSharedFormLabelContent} from '../../shared/form/style/gesuch-shared-form-label-content';
+import {GesuchSharedFormStyleMaterialInputWrapper} from '../../shared/form/style/gesuch-shared-form-style-material-input-wrapper/gesuch-shared-form-style-material-input-wrapper';
+import {strictEmail} from '../../shared/form/validators/gesuch-form-validators';
 import {GesuchPageHeadingComponent} from '../../shared/heading';
 import {GesuchPageLayoutComponent} from '../../shared/page-layout';
 import {KibTooltip} from '../../shared/kib-tooltip/kib-tooltip';
@@ -45,6 +53,12 @@ import {BisherValue} from '../../shared/kib-bisher/bisher-value';
         GesuchFormNumberInput,
         FormField,
         GesuchSharedFormLabelContent,
+        GesuchSharedFormLabel,
+        GesuchSharedFormStyleMaterialInputWrapper,
+        GesuchFormError,
+        MatFormField,
+        MatInput,
+        MatError,
         KibTooltip,
         KibBisherComponent,
         BisherLabel,
@@ -61,7 +75,12 @@ export class ErwerbspensumViewComponent {
     isRequired = model(false);
     isDisabled = model(false);
 
-    formModel = signal<PoCForm>({pensum: 0, zweitesPensum: 0});
+    formModel = signal<PoCForm>({
+        pensum: 0,
+        zweitesPensum: 0,
+        fehlerDemoPensum: null,
+        fehlerDemoEmail: ''
+    });
     form = form(this.formModel, p => {
         applyWhen(
             p.pensum,
@@ -77,10 +96,17 @@ export class ErwerbspensumViewComponent {
             this.isInvalid() ? {kind: 'error', message: 'Some error'} : null
         );
         required(p.zweitesPensum);
+        required(p.fehlerDemoPensum);
+        min(p.fehlerDemoPensum, 10);
+        max(p.fehlerDemoPensum, 100);
+        required(p.fehlerDemoEmail);
+        strictEmail(p.fehlerDemoEmail);
     });
 }
 
 interface PoCForm {
     pensum: number | null;
     zweitesPensum: number | null;
+    fehlerDemoPensum: number | null;
+    fehlerDemoEmail: string;
 }

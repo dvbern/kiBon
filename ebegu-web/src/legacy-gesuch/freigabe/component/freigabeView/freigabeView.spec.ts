@@ -106,7 +106,7 @@ xdescribe('freigabeView', () => {
                 new TSGesuchsperiode()
             );
             spyOn(einstellungRS, 'findEinstellung').and.returnValue(
-                of(new TSEinstellung(null, null, 'true'))
+                of(new TSEinstellung(null, 'true'))
             );
 
             controller = new FreigabeViewController(

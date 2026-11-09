@@ -20,14 +20,42 @@ package ch.dvbern.ebegu.einstellung;
 
 import org.jetbrains.annotations.Nullable;
 
-public record KeyGrouping(KeyGroup keyGroup,
-						  @Nullable SubKeyGroup subKeyGroup) {
+/**
+ * @param keyGroup the group the key belongs to, null if ungrouped
+ * @param subKeyGroup the optional sub group within the group
+ * @param keyOrder the position of the key within its group. The backend only determines the order, sorting is done by
+ * the consumer. Keys without an explicit order are placed last
+ */
+public record KeyGrouping(ConfigurableKeyGroup keyGroup,
+						  @Nullable SubKeyGroup subKeyGroup,
+						  int keyOrder) {
 
-	public static KeyGrouping of(KeyGroup keyGroup) {
-		return new KeyGrouping(keyGroup, null);
+	public static final int DEFAULT_ORDER = 9999;
+
+	public static KeyGrouping of(ConfigurableKeyGroup keyGroup) {
+		return new KeyGrouping(keyGroup, null, DEFAULT_ORDER);
 	}
 
-	public static KeyGrouping of(KeyGroup keyGroup, SubKeyGroup subKeyGroup) {
-		return new KeyGrouping(keyGroup, subKeyGroup);
+	public static KeyGrouping of(ConfigurableKeyGroup keyGroup, int keyOrder) {
+		return new KeyGrouping(keyGroup, null, keyOrder);
+	}
+
+	public static KeyGrouping of(
+		ConfigurableKeyGroup keyGroup,
+		SubKeyGroup subKeyGroup
+	) {
+		return new KeyGrouping(keyGroup, subKeyGroup, DEFAULT_ORDER);
+	}
+
+	public static KeyGrouping of(
+		ConfigurableKeyGroup keyGroup,
+		SubKeyGroup subKeyGroup,
+		int keyOrder
+	) {
+		return new KeyGrouping(keyGroup, subKeyGroup, keyOrder);
+	}
+
+	public static KeyGrouping NONE() {
+		return new KeyGrouping(null, null, DEFAULT_ORDER);
 	}
 }

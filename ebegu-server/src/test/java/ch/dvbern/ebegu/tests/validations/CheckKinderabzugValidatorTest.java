@@ -17,9 +17,11 @@ package ch.dvbern.ebegu.tests.validations;
 
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.validators.CheckKinderabzugValidator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer {@link CheckKinderabzugValidator}
@@ -38,7 +40,7 @@ class CheckKinderabzugValidatorTest {
 		var kind = new Kind();
 		kind.setPflegekind(true);
 		kind.setPflegeEntschaedigungErhalten(true);
-		Assertions.assertTrue(validator.isValid(kind, null));
+		assertTrue(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -47,7 +49,7 @@ class CheckKinderabzugValidatorTest {
 		kind.setPflegekind(true);
 		kind.setPflegeEntschaedigungErhalten(true);
 		kind.setObhutAlternierendAusueben(true);
-		Assertions.assertFalse(validator.isValid(kind, null));
+		assertFalse(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -56,7 +58,7 @@ class CheckKinderabzugValidatorTest {
 		kind.setPflegekind(false);
 		kind.setObhutAlternierendAusueben(true);
 		kind.setGemeinsamesGesuch(false);
-		Assertions.assertTrue(validator.isValid(kind, null));
+		assertTrue(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -66,7 +68,7 @@ class CheckKinderabzugValidatorTest {
 		kind.setObhutAlternierendAusueben(true);
 		kind.setInErstausbildung(true);
 		kind.setGemeinsamesGesuch(false);
-		Assertions.assertFalse(validator.isValid(kind, null));
+		assertFalse(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -76,7 +78,7 @@ class CheckKinderabzugValidatorTest {
 		kind.setInErstausbildung(true);
 		kind.setLebtKindAlternierend(false);
 		kind.setAlimenteBezahlen(true);
-		Assertions.assertTrue(validator.isValid(kind, null));
+		assertTrue(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -87,7 +89,7 @@ class CheckKinderabzugValidatorTest {
 		kind.setObhutAlternierendAusueben(true);
 		kind.setLebtKindAlternierend(false);
 		kind.setAlimenteBezahlen(true);
-		Assertions.assertFalse(validator.isValid(kind, null));
+		assertFalse(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -97,7 +99,7 @@ class CheckKinderabzugValidatorTest {
 		kind.setInErstausbildung(true);
 		kind.setLebtKindAlternierend(true);
 		kind.setAlimenteErhalten(true);
-		Assertions.assertTrue(validator.isValid(kind, null));
+		assertTrue(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -108,7 +110,7 @@ class CheckKinderabzugValidatorTest {
 		kind.setLebtKindAlternierend(true);
 		kind.setAlimenteErhalten(true);
 		kind.setAlimenteBezahlen(true);
-		Assertions.assertFalse(validator.isValid(kind, null));
+		assertFalse(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -116,7 +118,7 @@ class CheckKinderabzugValidatorTest {
 		var kind = new Kind();
 		kind.setUnterhaltspflichtig(false);
 		kind.setLebtKindAlternierend(true);
-		Assertions.assertFalse(validator.isValid(kind, null));
+		assertFalse(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -124,7 +126,7 @@ class CheckKinderabzugValidatorTest {
 		var kind = new Kind();
 		kind.setUnterhaltspflichtig(true);
 		kind.setLebtKindAlternierend(null);
-		Assertions.assertFalse(validator.isValid(kind, null));
+		assertFalse(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -132,7 +134,7 @@ class CheckKinderabzugValidatorTest {
 		var kind = new Kind();
 		kind.setUnterhaltspflichtig(true);
 		kind.setLebtKindAlternierend(true);
-		Assertions.assertTrue(validator.isValid(kind, null));
+		assertTrue(validator.isValid(kind, null));
 	}
 
 	@Test
@@ -140,6 +142,6 @@ class CheckKinderabzugValidatorTest {
 		var kind = new Kind();
 		kind.setUnterhaltspflichtig(false);
 		kind.setLebtKindAlternierend(null);
-		Assertions.assertTrue(validator.isValid(kind, null));
+		assertTrue(validator.isValid(kind, null));
 	}
 }

@@ -41,18 +41,19 @@ import ch.dvbern.ebegu.dto.dataexport.v1.VerfuegungenExportDTO;
 import ch.dvbern.ebegu.dto.dataexport.v1.ZeitabschnittExportDTO;
 import ch.dvbern.ebegu.enums.Land;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Testing Marshalling
  */
 public class ExportDTOMarshallingTest {
 
-	@Rule
-	public final TemporaryFolder folder = new TemporaryFolder();
+	@TempDir
+	public File folder;
 
 	@Test
 	public void testMarshalling() throws JAXBException, IOException {
@@ -70,7 +71,7 @@ public class ExportDTOMarshallingTest {
 		// Write to System.out
 		//		marshaller.marshal(exportDTO, System.out);
 
-		File createdFile = folder.newFile("myTestExportDto.xml");
+		File createdFile = newFile(folder, "myTestExportDto.xml");
 		marshaller.marshal(exportDTO, createdFile);
 		// get variables from our xml file, created before
 
@@ -81,9 +82,9 @@ public class ExportDTOMarshallingTest {
 			.getVerfuegungen();
 
 		for (VerfuegungExportDTO dto : verfuegungen) {
-			Assert.assertEquals("16.0000001.1.1", dto.getRefnr());
+			assertEquals("16.0000001.1.1", dto.getRefnr());
 		}
-		Assert.assertEquals(exportDTO, readBeackVerfuegung);
+		assertEquals(exportDTO, readBeackVerfuegung);
 	}
 
 	@Test
@@ -104,16 +105,16 @@ public class ExportDTOMarshallingTest {
 		Unmarshaller um = context.createUnmarshaller();
 		VerfuegungenExportDTO readBeackVerfuegung = (VerfuegungenExportDTO) um
 			.unmarshal(fileToRead);
-		Assert.assertNotNull(readBeackVerfuegung);
+		assertNotNull(readBeackVerfuegung);
 		List<VerfuegungExportDTO> verfuegungen = readBeackVerfuegung
 			.getVerfuegungen();
 
 		for (VerfuegungExportDTO dto : verfuegungen) {
-			Assert.assertEquals("16.0000001.1.1", dto.getRefnr());
+			assertEquals("16.0000001.1.1", dto.getRefnr());
 		}
 		VerfuegungenExportDTO exportDTO = createTestdata();
 
-		Assert.assertEquals(exportDTO, readBeackVerfuegung);
+		assertEquals(exportDTO, readBeackVerfuegung);
 	}
 
 	@Nonnull
@@ -193,6 +194,12 @@ public class ExportDTOMarshallingTest {
 			minimalerElternbeitrag,
 			verg
 		);
+	}
+
+	private static File newFile(File parent, String child) throws IOException {
+		File result = new File(parent, child);
+		result.createNewFile();
+		return result;
 	}
 
 }

@@ -23,7 +23,9 @@ import java.net.URI;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
@@ -85,6 +87,52 @@ public class LocalLoginResource {
 		return Response.ok(
 			localLoginService.getLocalLoginUsers(
 				mandantIdentifier
+			)
+		).build();
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/passwordRequired")
+	public Response passwordRequired(@Context HttpServletRequest request) {
+		assertLocalloginEnabled();
+
+		var requestUri = URI.create(
+			request.getRequestURL().toString()
+		);
+
+		MandantIdentifier mandantIdentifier =
+			MandantIdentifier.getByHostname(requestUri);
+
+		return Response.ok(
+			localLoginService.isPasswordRequired(mandantIdentifier)
+		).build();
+	}
+
+	public record VerifyPasswordRequest(String password) {
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/verifyPassword")
+	public Response verifyPassword(
+		@Context HttpServletRequest request,
+		VerifyPasswordRequest body
+	) {
+		assertLocalloginEnabled();
+
+		var requestUri = URI.create(
+			request.getRequestURL().toString()
+		);
+
+		MandantIdentifier mandantIdentifier =
+			MandantIdentifier.getByHostname(requestUri);
+
+		return Response.ok(
+			localLoginService.verifyPassword(
+				mandantIdentifier,
+				body == null ? null : body.password()
 			)
 		).build();
 	}

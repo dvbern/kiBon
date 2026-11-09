@@ -40,13 +40,13 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANSPRUCH_MONATSWEISE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class MonatsMergerRuleTest {
 
@@ -394,21 +394,21 @@ public class MonatsMergerRuleTest {
 
 		for (VerfuegungZeitabschnitt zeitabschnitt : verfuegungZeitabschnitte) {
 			//Jeder Zeitabschnitt beginnt am 1. des Monats
-			Assert.assertEquals(
+			assertEquals(
 				zeitabschnitt.getGueltigkeit()
 					.getGueltigAb()
 					.with(TemporalAdjusters.firstDayOfMonth()),
 				zeitabschnitt.getGueltigkeit().getGueltigAb()
 			);
 			//Jeder Zeitabschnitt endet am letzten Tag des Monats
-			Assert.assertEquals(
+			assertEquals(
 				zeitabschnitt.getGueltigkeit()
 					.getGueltigBis()
 					.with(TemporalAdjusters.lastDayOfMonth()),
 				zeitabschnitt.getGueltigkeit().getGueltigBis()
 			);
 			//Jeder Zeitabschnitt ist genau ein Monat lang
-			Assert.assertEquals(
+			assertEquals(
 				zeitabschnitt.getGueltigkeit().getGueltigAb().getMonth(),
 				zeitabschnitt.getGueltigkeit().getGueltigBis().getMonth()
 			);
@@ -427,7 +427,7 @@ public class MonatsMergerRuleTest {
 			TestDataUtil.ENDE_PERIODE,
 			70
 		);
-		Assert.assertNotNull(ewp2.getErwerbspensumJA());
+		assertNotNull(ewp2.getErwerbspensumJA());
 		TestDataUtil.addUnbezahlterUrlaubToErwerbspensum(
 			ewp2.getErwerbspensumJA(),
 			JANUAR_26,
@@ -441,7 +441,7 @@ public class MonatsMergerRuleTest {
 		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
 			betreuung
 		);
-		Assert.assertNotNull(result);
+		assertNotNull(result);
 
 		result = EbeguRuleTestsHelper.runSingleAbschlussRule(
 			new MonatsRule(false),
@@ -571,7 +571,7 @@ public class MonatsMergerRuleTest {
 		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
 			betreuung
 		);
-		Assert.assertNotNull(result);
+		assertNotNull(result);
 
 		result = EbeguRuleTestsHelper.runSingleAbschlussRule(
 			new MonatsRule(false),
@@ -587,11 +587,11 @@ public class MonatsMergerRuleTest {
 		//ZA August Betreuung während kompletem Monat Anteil an zu beazahlenden Vollkosten = 0
 		VerfuegungZeitabschnitt zaAugust =
 			getVerfuegungZeitabschnittGueltigInMonth(result, Month.AUGUST);
-		Assert.assertFalse(
+		assertFalse(
 			zaAugust.getRelevantBgCalculationInput()
 				.isBezahltKompletteVollkosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			zaAugust.getRelevantBgCalculationInput()
 				.getBezahltVollkostenMonatAnteil()
@@ -603,11 +603,11 @@ public class MonatsMergerRuleTest {
 				result,
 				Month.SEPTEMBER
 			);
-		Assert.assertFalse(
+		assertFalse(
 			zaSeptember.getRelevantBgCalculationInput()
 				.isBezahltKompletteVollkosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("0.5").stripTrailingZeros(),
 			zaSeptember.getRelevantBgCalculationInput()
 				.getBezahltVollkostenMonatAnteil()
@@ -617,11 +617,11 @@ public class MonatsMergerRuleTest {
 		//ZA Oktober Betreuung vom 27.10-31.10 -> 5 Tage -> Anteil an zu beazahlenden Vollkosten = 0.8387 (01.10.-26.10 => 83.87 %)
 		VerfuegungZeitabschnitt zaOctober =
 			getVerfuegungZeitabschnittGueltigInMonth(result, Month.OCTOBER);
-		Assert.assertFalse(
+		assertFalse(
 			zaOctober.getRelevantBgCalculationInput()
 				.isBezahltKompletteVollkosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("0.8387").stripTrailingZeros(),
 			zaOctober.getRelevantBgCalculationInput()
 				.getBezahltVollkostenMonatAnteil()
@@ -634,11 +634,11 @@ public class MonatsMergerRuleTest {
 				result,
 				Month.NOVEMBER
 			);
-		Assert.assertFalse(
+		assertFalse(
 			zaNovember.getRelevantBgCalculationInput()
 				.isBezahltKompletteVollkosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			zaNovember.getRelevantBgCalculationInput()
 				.getBezahltVollkostenMonatAnteil()
@@ -654,7 +654,7 @@ public class MonatsMergerRuleTest {
 			.getBemerkungenStream()
 			.filter(bemerkung -> bemerkung.getMsgKey() == msgKey)
 			.forEach(
-				bemerkung -> Assert.assertEquals(
+				bemerkung -> assertEquals(
 					bemerkung.getGueltigkeit(),
 					gueltigkeit
 				)
@@ -667,7 +667,7 @@ public class MonatsMergerRuleTest {
 		verfuegungZeitabschnitt.getBemerkungenDTOList()
 			.getBemerkungenStream()
 			.forEach(
-				bemerkung -> Assert.assertNull(
+				bemerkung -> assertNull(
 					bemerkung.getGueltigkeit()
 				)
 			);
@@ -682,7 +682,7 @@ public class MonatsMergerRuleTest {
 			.createGesuchWithBetreuungspensum(gs2);
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 
 		Arrays.stream(erwerbspensumContainers)
 			.forEach(
@@ -700,7 +700,7 @@ public class MonatsMergerRuleTest {
 			.createGesuchWithBetreuungspensum(false);
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 
 		Arrays.stream(erwerbspensumContainers)
 			.forEach(

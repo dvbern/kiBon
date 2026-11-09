@@ -55,7 +55,7 @@ import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.GesuchstellerService;
 import ch.dvbern.ebegu.services.MandantService;
-import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZpvService;
+import ch.dvbern.ebegu.services.steuerabfrage.nesko.StekService;
 import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import ch.dvbern.ebegu.validators.CheckEmail;
@@ -96,7 +96,7 @@ public class GesuchstellerResource {
 	private MandantService mandantService;
 
 	@Inject
-	private ZpvService zpvService;
+	private StekService stekService;
 
 	@Operation(
 		summary = "Updates a Gesuchsteller or creates it if it doesn't exist in the database. The transfer "
@@ -222,7 +222,7 @@ public class GesuchstellerResource {
 		MandantIdentifier mandant = getMandantBernFromCookieOrThrow(
 			mandantCookie
 		);
-		zpvService.sendInitUpdateZPVNr(
+		stekService.sendInitUpdateZPVNr(
 			email,
 			korrespondenzSprache,
 			gesuchstellerOpt.get(),
@@ -300,7 +300,7 @@ public class GesuchstellerResource {
 			);
 		}
 
-		this.zpvService.resetStekIdentifier(gesuchstellerOpt.get());
+		this.stekService.resetStekIdentifier(gesuchstellerOpt.get());
 
 		return Response.ok().build();
 	}

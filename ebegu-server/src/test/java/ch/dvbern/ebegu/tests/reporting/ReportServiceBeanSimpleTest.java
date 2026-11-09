@@ -21,28 +21,35 @@ import ch.dvbern.ebegu.enums.Eingangsart;
 import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.enums.WizardStepStatus;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ReportServiceBeanSimpleTest {
 
 	@Test
 	public void testGesuchStichtagQueryAssumptions() {
-		Assert.assertEquals(
+		assertEquals(
 			"IN_BEARBEITUNG_JA",
 			AntragStatus.IN_BEARBEITUNG_JA.name()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			"FREIGABEQUITTUNG",
 			AntragStatus.FREIGABEQUITTUNG.name()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			"BESCHWERDE_HAENGIG",
 			AntragStatus.BESCHWERDE_HAENGIG.name()
 		);
-		Assert.assertEquals("PRUEFUNG_STV", AntragStatus.PRUEFUNG_STV.name());
-		Assert.assertEquals("GEPRUEFT_STV", AntragStatus.GEPRUEFT_STV.name());
-		Assert.assertEquals(
+		assertEquals(
+			"PRUEFUNG_STV",
+			AntragStatus.PRUEFUNG_STV.name()
+		);
+		assertEquals(
+			"GEPRUEFT_STV",
+			AntragStatus.GEPRUEFT_STV.name()
+		);
+		assertEquals(
 			"TAGESSCHULE",
 			BetreuungsangebotTyp.TAGESSCHULE.name()
 		);
@@ -50,67 +57,82 @@ public class ReportServiceBeanSimpleTest {
 
 	@Test
 	public void testGesuchZeitraumQueryAssumptions() {
-		Assert.assertEquals("ONLINE", Eingangsart.ONLINE.name());
-		Assert.assertEquals("PAPIER", Eingangsart.PAPIER.name());
+		assertEquals("ONLINE", Eingangsart.ONLINE.name());
+		assertEquals("PAPIER", Eingangsart.PAPIER.name());
 
-		Assert.assertEquals("ERSTGESUCH", AntragTyp.ERSTGESUCH.name());
-		Assert.assertEquals(
+		assertEquals("ERSTGESUCH", AntragTyp.ERSTGESUCH.name());
+		assertEquals(
 			"ERNEUERUNGSGESUCH",
 			AntragTyp.ERNEUERUNGSGESUCH.name()
 		);
-		Assert.assertEquals("MUTATION", AntragTyp.MUTATION.name());
+		assertEquals("MUTATION", AntragTyp.MUTATION.name());
 
-		Assert.assertEquals("ABWESENHEIT", WizardStepName.ABWESENHEIT.name());
-		Assert.assertEquals("BETREUUNG", WizardStepName.BETREUUNG.name());
-		Assert.assertEquals("DOKUMENTE", WizardStepName.DOKUMENTE.name());
-		Assert.assertEquals(
+		assertEquals(
+			"ABWESENHEIT",
+			WizardStepName.ABWESENHEIT.name()
+		);
+		assertEquals("BETREUUNG", WizardStepName.BETREUUNG.name());
+		assertEquals("DOKUMENTE", WizardStepName.DOKUMENTE.name());
+		assertEquals(
 			"EINKOMMENSVERSCHLECHTERUNG",
 			WizardStepName.EINKOMMENSVERSCHLECHTERUNG.name()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			"ERWERBSPENSUM",
 			WizardStepName.ERWERBSPENSUM.name()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			"FAMILIENSITUATION",
 			WizardStepName.FAMILIENSITUATION.name()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			"FINANZIELLE_SITUATION",
 			WizardStepName.FINANZIELLE_SITUATION.name()
 		);
-		Assert.assertEquals("FREIGABE", WizardStepName.FREIGABE.name());
-		Assert.assertEquals(
+		assertEquals("FREIGABE", WizardStepName.FREIGABE.name());
+		assertEquals(
 			"GESUCH_ERSTELLEN",
 			WizardStepName.GESUCH_ERSTELLEN.name()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			"GESUCHSTELLER",
 			WizardStepName.GESUCHSTELLER.name()
 		);
-		Assert.assertEquals("KINDER", WizardStepName.KINDER.name());
-		Assert.assertEquals("UMZUG", WizardStepName.UMZUG.name());
-		Assert.assertEquals("VERFUEGEN", WizardStepName.VERFUEGEN.name());
+		assertEquals("KINDER", WizardStepName.KINDER.name());
+		assertEquals("UMZUG", WizardStepName.UMZUG.name());
+		assertEquals("VERFUEGEN", WizardStepName.VERFUEGEN.name());
 
-		Assert.assertEquals("MUTIERT", WizardStepStatus.MUTIERT.name());
+		assertEquals("MUTIERT", WizardStepStatus.MUTIERT.name());
 
-		Assert.assertEquals(
+		assertEquals(
 			"TAGESSCHULE",
 			BetreuungsangebotTyp.TAGESSCHULE.name()
 		);
 
-		Assert.assertEquals("VERFUEGT", AntragStatus.VERFUEGT.name());
-		Assert.assertEquals("NUR_SCHULAMT", AntragStatus.NUR_SCHULAMT.name());
-		Assert.assertEquals(
+		assertEquals("VERFUEGT", AntragStatus.VERFUEGT.name());
+		assertEquals(
+			"NUR_SCHULAMT",
+			AntragStatus.NUR_SCHULAMT.name()
+		);
+		assertEquals(
 			"BESCHWERDE_HAENGIG",
 			AntragStatus.BESCHWERDE_HAENGIG.name()
 		);
-		Assert.assertEquals("PRUEFUNG_STV", AntragStatus.PRUEFUNG_STV.name());
-		Assert.assertEquals(
+		assertEquals(
+			"PRUEFUNG_STV",
+			AntragStatus.PRUEFUNG_STV.name()
+		);
+		assertEquals(
 			"IN_BEARBEITUNG_STV",
 			AntragStatus.IN_BEARBEITUNG_STV.name()
 		);
-		Assert.assertEquals("GEPRUEFT_STV", AntragStatus.GEPRUEFT_STV.name());
-		Assert.assertEquals("KEIN_ANGEBOT", AntragStatus.KEIN_ANGEBOT.name());
+		assertEquals(
+			"GEPRUEFT_STV",
+			AntragStatus.GEPRUEFT_STV.name()
+		);
+		assertEquals(
+			"KEIN_ANGEBOT",
+			AntragStatus.KEIN_ANGEBOT.name()
+		);
 	}
 }

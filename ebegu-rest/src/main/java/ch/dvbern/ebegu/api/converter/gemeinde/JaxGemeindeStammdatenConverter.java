@@ -36,11 +36,12 @@ import ch.dvbern.ebegu.api.converter.JaxBenutzerConverter;
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 import ch.dvbern.ebegu.api.dtos.JaxAbstractGemeindeStammdaten;
 import ch.dvbern.ebegu.api.dtos.JaxFerieninselZeitraum;
-import ch.dvbern.ebegu.api.dtos.JaxGemeindeKonfiguration;
 import ch.dvbern.ebegu.api.dtos.JaxGemeindeStammdaten;
 import ch.dvbern.ebegu.api.dtos.JaxGemeindeStammdatenGesuchsperiodeFerieninsel;
 import ch.dvbern.ebegu.api.dtos.JaxGemeindeStammdatenKorrespondenz;
 import ch.dvbern.ebegu.api.dtos.JaxGemeindeStammdatenLite;
+import ch.dvbern.ebegu.api.einstellung.convertor.JaxConfigurationConverter;
+import ch.dvbern.ebegu.api.einstellung.dto.JaxGemeindeKonfiguration;
 import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.einstellung.EinstellungService;
@@ -88,6 +89,8 @@ public class JaxGemeindeStammdatenConverter extends AbstractBaseConverter {
 	private EinstellungService einstellungService;
 	@Inject
 	private FerieninselStammdatenService ferieninselStammdatenService;
+	@Inject
+	private JaxConfigurationConverter configurationConverter;
 
 	@Nonnull
 	public GemeindeStammdaten gemeindeStammdatenToEntity(
@@ -596,7 +599,11 @@ public class JaxGemeindeStammdatenConverter extends AbstractBaseConverter {
 			.addAll(
 				gemeindeKonfigurationMap.entrySet()
 					.stream()
-					.map(x -> einstellungToJAX(x.getValue()))
+					.map(
+						x -> configurationConverter.einstellungToJAX(
+							x.getValue()
+						)
+					)
 					.collect(Collectors.toList())
 			);
 

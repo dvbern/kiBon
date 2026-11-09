@@ -29,12 +29,14 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests fuer KesbPlatzierungCalcRule
@@ -93,7 +95,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS1(0);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					0,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -104,7 +106,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS1(20);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					DEFAULT_AUSSERORDENTLICHER_ANSPRUCH,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -115,7 +117,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS1(60);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					DEFAULT_AUSSERORDENTLICHER_ANSPRUCH,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -138,7 +140,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS1(19);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					0,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -150,7 +152,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS1(60);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					DEFAULT_AUSSERORDENTLICHER_ANSPRUCH,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -173,7 +175,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS1(pensum);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					0,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -185,7 +187,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS1(pensum);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					DEFAULT_AUSSERORDENTLICHER_ANSPRUCH,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -214,7 +216,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(80);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					0,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -226,7 +228,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(80);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertNotNull(
+				assertNotNull(
 					bgCalculationInput.getParent()
 						.getBemerkungenDTOList()
 						.findFirstBemerkungByMsgKey(
@@ -241,7 +243,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(31);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					0,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -253,7 +255,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(50);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					DEFAULT_AUSSERORDENTLICHER_ANSPRUCH,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -265,7 +267,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(59);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					DEFAULT_AUSSERORDENTLICHER_ANSPRUCH,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -277,7 +279,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(100);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					DEFAULT_AUSSERORDENTLICHER_ANSPRUCH,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -300,7 +302,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(80);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					0,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -312,7 +314,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(80);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertNotNull(
+				assertNotNull(
 					bgCalculationInput.getParent()
 						.getBemerkungenDTOList()
 						.findFirstBemerkungByMsgKey(
@@ -327,7 +329,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(50);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					0,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -339,7 +341,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(60);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					DEFAULT_AUSSERORDENTLICHER_ANSPRUCH,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -363,7 +365,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(80);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					0,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -375,7 +377,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(80);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertNotNull(
+				assertNotNull(
 					bgCalculationInput.getParent()
 						.getBemerkungenDTOList()
 						.findFirstBemerkungByMsgKey(
@@ -390,7 +392,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(50);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					0,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);
@@ -402,7 +404,7 @@ class FKJVAusserordentlicherAnspruchCalcRuleTest {
 				bgCalculationInput.setErwerbspensumGS2(60);
 				ruleToTest.executeRule(betreuung, bgCalculationInput);
 
-				Assert.assertEquals(
+				assertEquals(
 					DEFAULT_AUSSERORDENTLICHER_ANSPRUCH,
 					bgCalculationInput.getAusserordentlicherAnspruch()
 				);

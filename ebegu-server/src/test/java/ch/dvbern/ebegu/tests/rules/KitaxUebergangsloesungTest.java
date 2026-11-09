@@ -39,8 +39,11 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Testet die "Hacks", welche fuer die Uebergangsloesung der Stadt Bern mit Ki-Tax gemacht wurden:
@@ -113,7 +116,7 @@ public class KitaxUebergangsloesungTest extends AbstractBGRechnerTest {
 		BGCalculationResult augustGemeinde = august
 			.getBgCalculationResultGemeinde();
 		BGCalculationResult augustAsiv = august.getBgCalculationResultAsiv();
-		Assert.assertNotNull(augustGemeinde);
+		assertNotNull(augustGemeinde);
 		assertResult(
 			augustGemeinde,
 			anspruchFEBR,
@@ -139,7 +142,7 @@ public class KitaxUebergangsloesungTest extends AbstractBGRechnerTest {
 		BGCalculationResult januarGemeinde = januar
 			.getBgCalculationResultGemeinde();
 		BGCalculationResult januarAsiv = januar.getBgCalculationResultAsiv();
-		Assert.assertNotNull(januarGemeinde);
+		assertNotNull(januarGemeinde);
 		assertResult(januarGemeinde, 0, 0, 0, 0, 0, 0);
 		assertResult(januarAsiv, 0, 0, 0, 0, 0, 0);
 
@@ -165,7 +168,7 @@ public class KitaxUebergangsloesungTest extends AbstractBGRechnerTest {
 		januar = abschnitte.get(5);
 		januarGemeinde = januar.getBgCalculationResultGemeinde();
 		januarAsiv = januar.getBgCalculationResultAsiv();
-		Assert.assertNotNull(januarGemeinde);
+		assertNotNull(januarGemeinde);
 		assertResult(
 			januarGemeinde,
 			anspruchASIV,
@@ -194,8 +197,8 @@ public class KitaxUebergangsloesungTest extends AbstractBGRechnerTest {
 			TestDataUtil.createCustomGesuchsperiode(2020, 2021),
 			finanzielleSituationBernRechner
 		);
-		Assert.assertNotNull(lauraWalther.getGesuchsteller1());
-		Assert.assertNotNull(
+		assertNotNull(lauraWalther.getGesuchsteller1());
+		assertNotNull(
 			lauraWalther.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 		);
@@ -223,15 +226,15 @@ public class KitaxUebergangsloesungTest extends AbstractBGRechnerTest {
 			kitaxParameter,
 			Constants.DEFAULT_LOCALE
 		);
-		Assert.assertNotNull(gesuch.getKindContainers());
-		Assert.assertEquals(1, gesuch.getKindContainers().size());
+		assertNotNull(gesuch.getKindContainers());
+		assertEquals(1, gesuch.getKindContainers().size());
 		KindContainer kind = gesuch.getKindContainers().iterator().next();
-		Assert.assertNotNull(kind.getBetreuungen());
-		Assert.assertEquals(1, kind.getBetreuungen().size());
+		assertNotNull(kind.getBetreuungen());
+		assertEquals(1, kind.getBetreuungen().size());
 		Betreuung betreuung = kind.getBetreuungen().iterator().next();
 		Verfuegung verfuegung = betreuung.getVerfuegungOrVerfuegungPreview();
-		Assert.assertNotNull(verfuegung);
-		Assert.assertEquals(12, verfuegung.getZeitabschnitte().size());
+		assertNotNull(verfuegung);
+		assertEquals(12, verfuegung.getZeitabschnitte().size());
 		return verfuegung.getZeitabschnitte();
 	}
 
@@ -244,47 +247,47 @@ public class KitaxUebergangsloesungTest extends AbstractBGRechnerTest {
 		double expectedMinElternbeitrag,
 		double expectedMinElternbeitragGekuerzt
 	) {
-		Assert.assertEquals(
+		assertEquals(
 			expectedAnspruch,
 			result.getAnspruchspensumProzent()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			MathUtil.isSame(
 				MathUtil.DEFAULT.from(expectedVollkosten),
 				result.getVollkosten()
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			MathUtil.isSame(
 				MathUtil.DEFAULT.from(expectedVerguenstigung),
 				result.getVerguenstigungOhneBeruecksichtigungVollkosten()
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			MathUtil.isSame(
 				MathUtil.DEFAULT.from(expectedVerguenstigung),
 				result.getVerguenstigungOhneBeruecksichtigungMinimalbeitrag()
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			MathUtil.isSame(
 				MathUtil.DEFAULT.from(expectedVerguenstigung),
 				result.getVerguenstigung()
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			MathUtil.isSame(
 				MathUtil.DEFAULT.from(expectedElternbeitrag),
 				result.getElternbeitrag()
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			MathUtil.isSame(
 				MathUtil.DEFAULT.from(expectedMinElternbeitrag),
 				result.getMinimalerElternbeitrag()
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			MathUtil.isSame(
 				MathUtil.DEFAULT.from(expectedMinElternbeitragGekuerzt),
 				result.getMinimalerElternbeitragGekuerzt()
@@ -299,15 +302,17 @@ public class KitaxUebergangsloesungTest extends AbstractBGRechnerTest {
 		BGCalculationResult lastResultGemeinde = last
 			.getBgCalculationResultGemeinde();
 		BGCalculationResult lastResultAsiv = last.getBgCalculationResultAsiv();
-		Assert.assertNotNull(lastResultGemeinde);
-		Assert.assertNotNull(lastResultAsiv);
+		assertNotNull(lastResultGemeinde);
+		assertNotNull(lastResultAsiv);
 		for (VerfuegungZeitabschnitt zeitabschnitt : abschnitte) {
 			BGCalculationResult currentResultGemeinde = zeitabschnitt
 				.getBgCalculationResultGemeinde();
 			BGCalculationResult currentResultAsiv = zeitabschnitt
 				.getBgCalculationResultAsiv();
-			Assert.assertTrue(lastResultGemeinde.isSame(currentResultGemeinde));
-			Assert.assertTrue(lastResultAsiv.isSame(currentResultAsiv));
+			assertTrue(
+				lastResultGemeinde.isSame(currentResultGemeinde)
+			);
+			assertTrue(lastResultAsiv.isSame(currentResultAsiv));
 		}
 	}
 }

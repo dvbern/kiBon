@@ -39,11 +39,11 @@ import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.easymock.EasyMock.expect;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(EasyMockExtension.class)
 class MandantAuthorizerTest extends EasyMockSupport {
@@ -65,7 +65,7 @@ class MandantAuthorizerTest extends EasyMockSupport {
 	public void readFallNotAllowedForMandant() {
 		var fall = createFallLuzern();
 		addMocksForFallAndReplay(TestDataUtil.getMandantKantonBern());
-		Assertions.assertThrows(
+		assertThrows(
 			EJBAccessException.class,
 			() -> authorizer.checkMandantMatches(fall)
 		);
@@ -82,7 +82,7 @@ class MandantAuthorizerTest extends EasyMockSupport {
 	public void writeFallNotAllowedForMandant() {
 		var fall = createFallLuzern();
 		addMocksForFallAndReplay(TestDataUtil.getMandantKantonBern());
-		Assertions.assertThrows(
+		assertThrows(
 			EJBAccessException.class,
 			() -> authorizer.checkMandantMatches(fall)
 		);
@@ -173,7 +173,7 @@ class MandantAuthorizerTest extends EasyMockSupport {
 			getMandantBenutzer()
 		);
 		Zahlungsauftrag zahlungsauftragLuzern = createZahlungsauftragLuzern();
-		Assertions.assertThrows(
+		assertThrows(
 			EJBAccessException.class,
 			() -> authorizer.checkMandantMatches(
 				zahlungsauftragLuzern
@@ -200,7 +200,7 @@ class MandantAuthorizerTest extends EasyMockSupport {
 		);
 		Zahlungsauftrag zahlungsauftrag = createZahlungLuzern()
 			.getZahlungsauftrag();
-		Assertions.assertThrows(
+		assertThrows(
 			EJBAccessException.class,
 			() -> authorizer.checkMandantMatches(
 				zahlungsauftrag

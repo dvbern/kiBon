@@ -36,8 +36,8 @@ import ch.dvbern.ebegu.testfaelle.Testfall05_LuethiMeret;
 import ch.dvbern.ebegu.testfaelle.Testfall06_BeckerNora;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test der die vom JA gemeldeten Testfaelle ueberprueft.
@@ -51,7 +51,7 @@ public class TestfaelleTest extends AbstractBGRechnerTest {
 	private final KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter =
 		TestDataUtil.geKitaxUebergangsloesungParameter();
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() {
 		INSTITUTIONS_STAMMDATEN_LIST.add(
 			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()

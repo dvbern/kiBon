@@ -24,11 +24,12 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import org.apache.commons.lang3.Validate;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.rules.EbeguRuleTestsHelper.calculate;
 import static ch.dvbern.ebegu.rules.EbeguRuleTestsHelper.calculateWithRemainingRestanspruch;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests für {@link RestanspruchLimitCalcRule}
@@ -46,12 +47,12 @@ public class RestanspruchLimitRuleTest {
 				BetreuungsangebotTyp.KITA
 			);
 
-		Assert.assertNotNull(restansprchZeitabschnittList);
-		Assert.assertEquals(1, restansprchZeitabschnittList.size());
+		assertNotNull(restansprchZeitabschnittList);
+		assertEquals(1, restansprchZeitabschnittList.size());
 		VerfuegungZeitabschnitt nextInitialabschnitt =
 			restansprchZeitabschnittList.get(0);
 		//hat anspruch 100, braucht 30, fuer die naechste betreuung bleibt 70
-		Assert.assertEquals(
+		assertEquals(
 			70,
 			nextInitialabschnitt.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
@@ -68,11 +69,11 @@ public class RestanspruchLimitRuleTest {
 				80,
 				BetreuungsangebotTyp.KITA
 			);
-		Assert.assertNotNull(restansprchZeitabschnittList);
-		Assert.assertEquals(1, restansprchZeitabschnittList.size());
+		assertNotNull(restansprchZeitabschnittList);
+		assertEquals(1, restansprchZeitabschnittList.size());
 		VerfuegungZeitabschnitt nextInitialabschnitt =
 			restansprchZeitabschnittList.get(0);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			nextInitialabschnitt.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
@@ -89,12 +90,12 @@ public class RestanspruchLimitRuleTest {
 				30,
 				BetreuungsangebotTyp.KITA
 			);
-		Assert.assertNotNull(restansprchZeitabschnittList);
-		Assert.assertEquals(1, restansprchZeitabschnittList.size());
+		assertNotNull(restansprchZeitabschnittList);
+		assertEquals(1, restansprchZeitabschnittList.size());
 		VerfuegungZeitabschnitt nextInitialabschnitt =
 			restansprchZeitabschnittList.get(0);
 		// hat von seinen 100% anspruch 50 verbraucht, nun hat er 30 prozent betreuung in kita, der Restanspruch fuer die nachste Betreuung ist also 20
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			nextInitialabschnitt.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
@@ -113,12 +114,12 @@ public class RestanspruchLimitRuleTest {
 				BetreuungsangebotTyp.KITA
 			);
 
-		Assert.assertNotNull(restansprchZeitabschnittList);
-		Assert.assertEquals(1, restansprchZeitabschnittList.size());
+		assertNotNull(restansprchZeitabschnittList);
+		assertEquals(1, restansprchZeitabschnittList.size());
 		VerfuegungZeitabschnitt nextInitialabschnitt =
 			restansprchZeitabschnittList.get(0);
 		//hat in der "1." betreuung von seinen 70 prozent anspruch 70 verbraucht, nun macht er eine neue Betreuung Kita fuer 30% -> Restanspruch bleibt 0
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			nextInitialabschnitt.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()

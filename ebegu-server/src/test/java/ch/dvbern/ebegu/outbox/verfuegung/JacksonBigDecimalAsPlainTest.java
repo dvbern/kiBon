@@ -22,8 +22,8 @@ import java.math.BigDecimal;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static com.spotify.hamcrest.jackson.JsonMatchers.jsonBigDecimal;
 import static com.spotify.hamcrest.jackson.JsonMatchers.jsonObject;
@@ -39,7 +39,7 @@ public class JacksonBigDecimalAsPlainTest {
 	 * <a
 	 * href="https://github.com/FasterXML/jackson-databind/issues/2230">https://github.com/FasterXML/jackson-databind/issues/2230</a>
 	 */
-	@Ignore
+	@Disabled
 	@Test
 	public void testBigDecimal() {
 		// should use BigDecimal::toPlainString

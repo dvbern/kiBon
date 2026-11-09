@@ -3,6 +3,7 @@ import {Injectable, inject} from '@angular/core';
 import {CONSTANTS} from '@models/constants';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
+import {TSApplicationPropertyWithMetadata} from '../../admin/einstellungen/TSApplicationPropertyWithMetadata';
 import {TSApplicationProperty} from '../../models/einstellung/TSApplicationProperty';
 import {TSApplicationPropertyKey} from '../../models/einstellung/TSApplicationPropertyKey';
 import {TSPublicAppConfig} from '../../models/einstellung/TSPublicAppConfig';
@@ -73,12 +74,16 @@ export class ApplicationPropertyRsService {
         );
     }
 
-    public getAllApplicationProperties(): Observable<TSApplicationProperty[]> {
+    public getAllApplicationProperties(): Observable<
+        TSApplicationPropertyWithMetadata[]
+    > {
         return this.http
-            .get<TSApplicationProperty[]>(`${this.serviceUrl}/`)
+            .get<TSApplicationPropertyWithMetadata[]>(`${this.serviceUrl}/`)
             .pipe(
-                map((response: TSApplicationProperty[]) =>
-                    this.ebeguRestUtil.parseApplicationProperties(response)
+                map((response: TSApplicationPropertyWithMetadata[]) =>
+                    this.ebeguRestUtil.parseApplicationPropertiesWithMetadata(
+                        response
+                    )
                 )
             );
     }

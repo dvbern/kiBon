@@ -138,6 +138,7 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
         // just once
         this.einzeln = !this.is2GSRequired();
         this.gesuchModelManager.setGesuchstellerNumber(1);
+        this.loadCheckIsZPVSet();
     }
 
     public showSteuerveranlagung(): boolean {

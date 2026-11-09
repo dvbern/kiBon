@@ -36,11 +36,11 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.test.TestDataUtil.PERIODE_JAHR_0;
 import static ch.dvbern.ebegu.test.TestDataUtil.START_PERIODE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MutationsMergerFinanzielleSituationBernFKJVTest {
 
@@ -88,11 +88,11 @@ public class MutationsMergerFinanzielleSituationBernFKJVTest {
 			),
 			EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			TWO,
 			bgCalculationInput.getFamGroesseTotal()
 		);
@@ -117,11 +117,11 @@ public class MutationsMergerFinanzielleSituationBernFKJVTest {
 			),
 			EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			TWO,
 			bgCalculationInput.getFamGroesseTotal()
 		);

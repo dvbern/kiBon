@@ -40,10 +40,11 @@ import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.rules.EbeguRuleTestsHelper.calculateInklAllgemeineRegeln;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Folgende Tatbestände beeinflussen den Anspruch
@@ -84,8 +85,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(13, result.size());
+		assertNotNull(result);
+		assertEquals(13, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -204,8 +205,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(13, result.size());
+		assertNotNull(result);
+		assertEquals(13, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -318,8 +319,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(12, result.size());
+		assertNotNull(result);
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -431,8 +432,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(13, result.size());
+		assertNotNull(result);
+		assertEquals(13, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -545,8 +546,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(12, result.size());
+		assertNotNull(result);
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -652,8 +653,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(12, result.size());
+		assertNotNull(result);
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -763,8 +764,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(13, result.size());
+		assertNotNull(result);
+		assertEquals(13, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -881,8 +882,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(13, result.size());
+		assertNotNull(result);
+		assertEquals(13, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -999,8 +1000,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(12, result.size());
+		assertNotNull(result);
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -1110,8 +1111,8 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(12, result.size());
+		assertNotNull(result);
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -1211,13 +1212,13 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		betreuung.setBetreuungsstatus(Betreuungsstatus.VERFUEGT);
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		Gesuch gesuch = betreuung.extractGesuch();
 		GesuchstellerContainer gs1 = gesuch.getGesuchsteller1();
-		Assert.assertNotNull(gs1);
-		Assert.assertNotNull(gs1.getFinanzielleSituationContainer());
+		assertNotNull(gs1);
+		assertNotNull(gs1.getFinanzielleSituationContainer());
 		gs1.addErwerbspensumContainer(
 			TestDataUtil.createErwerbspensum(
 				TestDataUtil.START_PERIODE,
@@ -1258,19 +1259,19 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 		int neuesPensum
 	) {
 		// Das alte beenden
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		ErwerbspensumContainer altesEWP = gesuch.getGesuchsteller1()
 			.getErwerbspensenContainers()
 			.iterator()
 			.next();
-		Assert.assertNotNull(altesEWP.getErwerbspensumJA());
+		assertNotNull(altesEWP.getErwerbspensumJA());
 		altesEWP.getErwerbspensumJA()
 			.getGueltigkeit()
 			.setGueltigBis(stichtag.minusDays(1));
 		// Une ein neues mit dem neuen Pensum erstellen
 		ErwerbspensumContainer neuesEWP = new ErwerbspensumContainer();
 		neuesEWP.setErwerbspensumJA(new Erwerbspensum());
-		Assert.assertNotNull(neuesEWP.getErwerbspensumJA());
+		assertNotNull(neuesEWP.getErwerbspensumJA());
 		neuesEWP.getErwerbspensumJA().setPensum(neuesPensum);
 		neuesEWP.getErwerbspensumJA().setTaetigkeit(Taetigkeit.ANGESTELLT);
 		neuesEWP.getErwerbspensumJA().getGueltigkeit().setGueltigAb(stichtag);

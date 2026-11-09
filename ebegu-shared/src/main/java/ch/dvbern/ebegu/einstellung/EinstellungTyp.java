@@ -18,11 +18,19 @@
 package ch.dvbern.ebegu.einstellung;
 
 /**
- * Typ für die Einstellungen
+ * <p>Determines on which lowest level a {@link Einstellung} can be configured.
+ * Order is MANDANT -> GEMEINDE.
+ * </p>
+ * <p>
+ * An Einstellung of EinstellungTyp GEMEINDE can be configured on the level of MANDANT
+ * as well as on the leve of GEMEINDE.
+ * </p>
+ * <p>
+ * An Einstellung of EinstellungTyp MANDANT can only be configured on
+ * the level of MANDANT
+ * </p>
+ *
  */
 public enum EinstellungTyp {
-
-	GEMEINDE,	// Kann durch Gemeinde ueberschrieben werden, d.h. wird an Client uebergeben
-	MANDANT,	// Kann durch Mandant ueberschrieben werden, d.h. wird an Client uebergeben
-	SYSTEM		// Kann nicht ueberschrieben werden.
+	MANDANT, GEMEINDE
 }

@@ -62,6 +62,27 @@ public class MutationsMergerFinanzielleSituationBernFKJVFristen extends
 			resultVorgaenger,
 			platz
 		);
+		// Die Familiengroesse wird unabhaengig von der FinSit nur rueckwirkend angepasst, wenn sich die
+		// Familiensituation geaendert hat (ab Folgemonat des "Aenderung per"-Datums, die Abschnitte werden in der
+		// GesuchstellerAbzugAbschnittRule entsprechend gesplittet). Ansonsten zaehlt z.B. ein neues Kind erst ab
+		// Folgemonat der Mutation (bzw. der Geburt, falls spaeter).
+		if (!hasAnzahlGesuchstellerChanged(inputAktuel, resultVorgaenger)) {
+			handleFamiliengroesse(inputAktuel, resultVorgaenger);
+		}
+	}
+
+	private boolean hasAnzahlGesuchstellerChanged(
+		BGCalculationInput inputData,
+		BGCalculationResult resultVorgaenger
+	) {
+		Integer anzahlGesuchsteller = inputData.getFamilienCalculationInput()
+			.getAnzahlGesuchsteller();
+		if (anzahlGesuchsteller == null) {
+			return false;
+		}
+		return BigDecimal.valueOf(anzahlGesuchsteller)
+			.compareTo(resultVorgaenger.getAnzahlGesuchsteller())
+			!= 0;
 	}
 
 	private boolean isZeitabschnittVorAenderungPerDatum(
@@ -120,8 +141,6 @@ public class MutationsMergerFinanzielleSituationBernFKJVFristen extends
 				massgebendesEinkommenFinSit,
 				platz
 			);
-		} else {
-			handleFamiliengroesse(inputData, resultVorgaenger);
 		}
 
 		if (massgebendesEinkommenFinSit.compareTo(

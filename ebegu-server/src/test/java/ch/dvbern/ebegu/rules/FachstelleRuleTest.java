@@ -31,12 +31,13 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.util.Constants.ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests für Fachstellen-Regel
@@ -62,7 +63,7 @@ public class FachstelleRuleTest {
 			IntegrationTyp.SPRACHLICHE_INTEGRATION,
 			betreuung
 		);
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -79,25 +80,25 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(60),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -108,7 +109,7 @@ public class FachstelleRuleTest {
 				betreuung,
 				result
 			);
-		Assert.assertEquals(
+		assertEquals(
 			0 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			nextZeitabschn.get(0)
 				.getBgCalculationInputAsiv()
@@ -135,7 +136,7 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -152,22 +153,25 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(60),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			100,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -178,7 +182,7 @@ public class FachstelleRuleTest {
 				betreuung,
 				result
 			);
-		Assert.assertEquals(
+		assertEquals(
 			40,
 			nextZeitabschn.get(0)
 				.getBgCalculationInputAsiv()
@@ -216,7 +220,7 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -233,38 +237,44 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(2, result.size());
+		assertNotNull(result);
+		assertEquals(2, result.size());
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			100,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(1).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(80, result.get(1).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			80,
+			result.get(1).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(1).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -275,13 +285,13 @@ public class FachstelleRuleTest {
 				betreuung,
 				result
 			);
-		Assert.assertEquals(
+		assertEquals(
 			40,
 			nextZeitabschn.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			nextZeitabschn.get(1)
 				.getBgCalculationInputAsiv()
@@ -319,7 +329,7 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -336,52 +346,61 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(3, result.size());
+		assertNotNull(result);
+		assertEquals(3, result.size());
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			100,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(1).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(60, result.get(1).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			60,
+			result.get(1).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(1).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(2).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(80, result.get(2).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			80,
+			result.get(2).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(2).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -392,19 +411,19 @@ public class FachstelleRuleTest {
 				betreuung,
 				result
 			);
-		Assert.assertEquals(
+		assertEquals(
 			40,
 			nextZeitabschn.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			nextZeitabschn.get(1)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			nextZeitabschn.get(2)
 				.getBgCalculationInputAsiv()
@@ -443,7 +462,7 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -460,38 +479,44 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(2, result.size());
+		assertNotNull(result);
+		assertEquals(2, result.size());
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			100,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(1).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(60, result.get(1).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			60,
+			result.get(1).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(1).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -502,13 +527,13 @@ public class FachstelleRuleTest {
 				betreuung,
 				result
 			);
-		Assert.assertEquals(
+		assertEquals(
 			40,
 			nextZeitabschn.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			nextZeitabschn.get(1)
 				.getBgCalculationInputAsiv()
@@ -547,7 +572,7 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -564,66 +589,78 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(4, result.size());
+		assertNotNull(result);
+		assertEquals(4, result.size());
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(80, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			80,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(1).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(80, result.get(1).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			80,
+			result.get(1).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(1).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(2).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(100, result.get(2).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			100,
+			result.get(2).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(2).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(3).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(3).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(60, result.get(3).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			60,
+			result.get(3).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(3).getBgPensum()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -634,25 +671,25 @@ public class FachstelleRuleTest {
 				betreuung,
 				result
 			);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			nextZeitabschn.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			nextZeitabschn.get(1)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			40,
 			nextZeitabschn.get(2)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			nextZeitabschn.get(3)
 				.getBgCalculationInputAsiv()
@@ -685,7 +722,7 @@ public class FachstelleRuleTest {
 			betreuung.getKind().getKindJA().getPensumFachstelle().size(),
 			is(1)
 		);
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -702,18 +739,21 @@ public class FachstelleRuleTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(40),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(80, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			80,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -724,7 +764,7 @@ public class FachstelleRuleTest {
 				betreuung,
 				result
 			);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			nextZeitabschn.get(0)
 				.getBgCalculationInputAsiv()
@@ -736,7 +776,7 @@ public class FachstelleRuleTest {
 	public void testKitaMitSpracheIntegrationUndSparchfoerderungNichtBestaetigt() {
 		List<VerfuegungZeitabschnitt> result =
 			calculateZeitabschnittFuerSprachfoerderungTest(false);
-		Assert.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		assertThat(
 			result.get(0)
 				.getVerfuegungZeitabschnittBemerkungList()
@@ -756,7 +796,7 @@ public class FachstelleRuleTest {
 	public void testKitaMitSpracheIntegrationUndSparchfoerderungBestaetigt() {
 		List<VerfuegungZeitabschnitt> result =
 			calculateZeitabschnittFuerSprachfoerderungTest(true);
-		Assert.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		assertThat(
 			result.get(0)
 				.getVerfuegungZeitabschnittBemerkungList()

@@ -25,8 +25,10 @@ import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DocxDocumentTest {
 
@@ -78,22 +80,22 @@ public class DocxDocumentTest {
 		docxDocument.replacePlaceholder("{placeholder}", "replaced");
 		XWPFDocument xwpfDocument = docxDocument.getXwpfDocument();
 
-		Assert.assertEquals(
+		assertEquals(
 			"The first text with a placeholder: replaced",
 			xwpfDocument.getParagraphs().get(0).getRuns().get(0).getText(0)
 		);
 		// not replaced yet
-		Assert.assertEquals(
+		assertEquals(
 			"the second text ({placeholder2}) placeholder in brackets",
 			xwpfDocument.getParagraphs().get(0).getRuns().get(1).getText(0)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			"replaced",
 			xwpfDocument.getParagraphs().get(1).getRuns().get(0).getText(0)
 		);
 
 		docxDocument.replacePlaceholder("{placeholder2}", "replaced");
-		Assert.assertEquals(
+		assertEquals(
 			"the second text (replaced) placeholder in brackets",
 			xwpfDocument.getParagraphs().get(0).getRuns().get(1).getText(0)
 		);
@@ -105,8 +107,8 @@ public class DocxDocumentTest {
 		List<XWPFRun> paragraph3Runs = xwpfDocument.getParagraphs()
 			.get(2)
 			.getRuns();
-		Assert.assertEquals("replaced", paragraph3Runs.get(0).getText(0));
-		Assert.assertEquals("", paragraph3Runs.get(1).getText(0));
+		assertEquals("replaced", paragraph3Runs.get(0).getText(0));
+		assertEquals("", paragraph3Runs.get(1).getText(0));
 
 		/* test following:
 		 * run1: "{"
@@ -115,8 +117,8 @@ public class DocxDocumentTest {
 		List<XWPFRun> paragraph4Runs = xwpfDocument.getParagraphs()
 			.get(3)
 			.getRuns();
-		Assert.assertEquals("replaced", paragraph4Runs.get(0).getText(0));
-		Assert.assertEquals(
+		assertEquals("replaced", paragraph4Runs.get(0).getText(0));
+		assertEquals(
 			" some other text",
 			paragraph4Runs.get(1).getText(0)
 		);
@@ -129,18 +131,23 @@ public class DocxDocumentTest {
 		List<XWPFRun> paragraph5Runs = xwpfDocument.getParagraphs()
 			.get(4)
 			.getRuns();
-		Assert.assertEquals("abcd replaced", paragraph5Runs.get(0).getText(0));
-		Assert.assertEquals("", paragraph5Runs.get(1).getText(0));
-		Assert.assertEquals(
+		assertEquals(
+			"abcd replaced",
+			paragraph5Runs.get(0).getText(0)
+		);
+		assertEquals("", paragraph5Runs.get(1).getText(0));
+		assertEquals(
 			" some other text",
 			paragraph5Runs.get(2).getText(0)
 		);
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void testPlaceholderNotFound() throws IOException {
-		DocxDocument docxDocument = new DocxDocument(createWordTemplate());
-		docxDocument.replacePlaceholder("{placeholder3}", "replaced");
+		assertThrows(EbeguRuntimeException.class, () -> {
+			DocxDocument docxDocument = new DocxDocument(createWordTemplate());
+			docxDocument.replacePlaceholder("{placeholder3}", "replaced");
+		});
 	}
 
 }

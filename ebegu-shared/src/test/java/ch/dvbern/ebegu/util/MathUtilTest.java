@@ -21,12 +21,13 @@ import java.math.RoundingMode;
 
 import javax.annotation.Nullable;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests für MathUtil
@@ -41,9 +42,9 @@ public class MathUtilTest {
 		@Nullable BigDecimal other
 	) {
 		String msg = "ref != other: " + ref + " != " + other;
-		assertTrue(msg, ref == null ? other == null : other != null);
+		assertTrue(ref == null ? other == null : other != null, msg);
 		if (ref != null) {
-			assertEquals(msg, 0, ref.compareTo(other));
+			assertEquals(0, ref.compareTo(other), msg);
 		}
 	}
 
@@ -104,9 +105,12 @@ public class MathUtilTest {
 		);
 	}
 
-	@Test(expected = PrecisionTooLargeException.class)
+	@Test
 	public void test_LargeMathUtil1() {
-		MathUtil.DEFAULT.from(new BigDecimal("12345678901234567890"));
+		assertThrows(
+			PrecisionTooLargeException.class,
+			() -> MathUtil.DEFAULT.from(new BigDecimal("12345678901234567890"))
+		);
 	}
 
 	@Test

@@ -295,39 +295,81 @@ public enum ApplicationPropertyKey {
 	 * False => old version
 	 */
 	@BooleanEinstellung ABGELOESTE_VIEW_ANTRAGSTELLER(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW)
+		KeyGrouping.of(ApplicationPropertyKeyGroup.ABGELOESTE_VIEW)
 	), @BooleanEinstellung ABGELOESTE_VIEW_FAMILIENSITUATION(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW)
+		KeyGrouping.of(ApplicationPropertyKeyGroup.ABGELOESTE_VIEW)
 	), @BooleanEinstellung ABGELOESTE_VIEW_KINDER_LIST(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.KINDER)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.KINDER
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_KINDER_SINGLE(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.KINDER)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.KINDER
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_BETREUUNG_LIST(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.BETREUUNG)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.BETREUUNG
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_BETREUUNG_SINGLE(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.BETREUUNG)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.BETREUUNG
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_ERWERBSPENSUM_LIST(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.ERWERBSPENSUM)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.ERWERBSPENSUM
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_ERWERBSPENSUM_SINGLE(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.ERWERBSPENSUM)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.ERWERBSPENSUM
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_FINSIT_START(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.FINSIT)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.FINSIT
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_FINSIT_GS(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.FINSIT)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.FINSIT
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_FINSIT_RESULTATE(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.FINSIT)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.FINSIT
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_EKV_START(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.EKV)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.EKV
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_EKV_GS(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.EKV)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.EKV
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_EKV_RESULTATE(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.EKV)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.EKV
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_FREIGABE(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW)
+		KeyGrouping.of(ApplicationPropertyKeyGroup.ABGELOESTE_VIEW)
 	), @BooleanEinstellung ABGELOESTE_VIEW_VERFUEGUNG_LIST(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.VERFUEGUNG)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.VERFUEGUNG
+		)
 	), @BooleanEinstellung ABGELOESTE_VIEW_VERFUEGUNG_SINGLE(
-		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.VERFUEGUNG)
+		KeyGrouping.of(
+			ApplicationPropertyKeyGroup.ABGELOESTE_VIEW,
+			SubKeyGroup.VERFUEGUNG
+		)
 	),
 
 	/**
@@ -336,11 +378,11 @@ public enum ApplicationPropertyKey {
 	 * False => old = wildfly statistik
 	 */
 	@BooleanEinstellung QUARKUS_STATISTIK_BETREUUNGSGUTSCHEINE_KINDER(
-		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
+		KeyGrouping.of(ApplicationPropertyKeyGroup.QUARKUS_STATISTIK)
 	), @BooleanEinstellung QUARKUS_STATISTIK_MITARBEITENDE(
-		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
+		KeyGrouping.of(ApplicationPropertyKeyGroup.QUARKUS_STATISTIK)
 	), @BooleanEinstellung QUARKUS_STATISTIK_LASTENAUSGLEICH_BG(
-		KeyGrouping.of(KeyGroup.QUARKUS_STATISTIK)
+		KeyGrouping.of(ApplicationPropertyKeyGroup.QUARKUS_STATISTIK)
 	),
 
 	/**

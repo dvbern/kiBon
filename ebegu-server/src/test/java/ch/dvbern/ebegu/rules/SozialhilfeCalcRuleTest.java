@@ -38,9 +38,13 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SozialhilfeCalcRuleTest {
 
@@ -99,13 +103,13 @@ class SozialhilfeCalcRuleTest {
 	@Test
 	void ruleNotApplicableIfEinstellungNotActive() {
 		setHasSozialhilfeEmpfaengerAnspruchKonfig(false);
-		Assertions.assertFalse(ruleToTest.isRelevantForGemeinde(einstellungen));
+		assertFalse(ruleToTest.isRelevantForGemeinde(einstellungen));
 	}
 
 	@Test
 	void ruleApplicableIfEinstellungActive() {
 		setHasSozialhilfeEmpfaengerAnspruchKonfig(true);
-		Assertions.assertTrue(ruleToTest.isRelevantForGemeinde(einstellungen));
+		assertTrue(ruleToTest.isRelevantForGemeinde(einstellungen));
 	}
 
 	@Test
@@ -118,8 +122,8 @@ class SozialhilfeCalcRuleTest {
 			RuleValidity.GEMEINDE
 		);
 		ruleToTest.executeRule(defaultBetreuungForTest, input);
-		Assertions.assertEquals(0, input.getAnspruchspensumProzent());
-		Assertions.assertTrue(
+		assertEquals(0, input.getAnspruchspensumProzent());
+		assertTrue(
 			input.getParent()
 				.getBemerkungenDTOList()
 				.containsMsgKey(
@@ -138,7 +142,7 @@ class SozialhilfeCalcRuleTest {
 			RuleValidity.GEMEINDE
 		);
 		ruleToTest.executeRule(defaultBetreuungForTest, input);
-		Assertions.assertFalse(
+		assertFalse(
 			input.getParent()
 				.getBemerkungenDTOList()
 				.containsMsgKey(
@@ -156,14 +160,14 @@ class SozialhilfeCalcRuleTest {
 			defaultBetreuungForTest,
 			einstellungen
 		);
-		Assertions.assertNotNull(result);
+		assertNotNull(result);
 
 		result.forEach(zeitabschnitt -> {
 			BGCalculationInput input = zeitabschnitt
 				.getRelevantBgCalculationInput();
-			Assertions.assertTrue(input.isSozialhilfeempfaenger());
-			Assertions.assertEquals(0, input.getAnspruchspensumProzent());
-			Assertions.assertTrue(
+			assertTrue(input.isSozialhilfeempfaenger());
+			assertEquals(0, input.getAnspruchspensumProzent());
+			assertTrue(
 				input.getParent()
 					.getBemerkungenDTOList()
 					.containsMsgKey(
@@ -182,17 +186,17 @@ class SozialhilfeCalcRuleTest {
 			defaultBetreuungForTest,
 			einstellungen
 		);
-		Assertions.assertNotNull(result);
+		assertNotNull(result);
 
 		result.forEach(zeitabschnitt -> {
 			BGCalculationInput input = zeitabschnitt
 				.getRelevantBgCalculationInput();
-			Assertions.assertFalse(input.isSozialhilfeempfaenger());
-			Assertions.assertEquals(
+			assertFalse(input.isSozialhilfeempfaenger());
+			assertEquals(
 				DEFAULT_ERWERBSPENSUM,
 				input.getAnspruchspensumProzent()
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				input.getParent()
 					.getBemerkungenDTOList()
 					.containsMsgKey(

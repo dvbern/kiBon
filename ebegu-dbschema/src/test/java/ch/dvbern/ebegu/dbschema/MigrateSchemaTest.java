@@ -23,10 +23,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class MigrateSchemaTest {
 
@@ -48,7 +49,7 @@ public class MigrateSchemaTest {
 							file.getName()
 						);
 						if (usedNumbers.contains(revNbr)) {
-							Assertions.fail(
+							fail(
 								"Fehler in Flyway-Skripts: Die Nummer "
 									+ revNbr
 									+

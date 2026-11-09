@@ -2235,10 +2235,7 @@
                     </div>
                 }
                 <!--                betreuungsgutscheine: zahlungen-->
-                @if (
-                    (hasBgInstitutionen$ | async) &&
-                    showZahlungenStatistikAllowedForRoles()
-                ) {
+                @if (showZahlungenStatistik()) {
                     <div [dvDemoFeature]="demoFeature">
                         <div>
                             <dv-accordion-tab [tabid]="'zahlungen'">
@@ -2490,7 +2487,7 @@
                                                                     }}
                                                                 </mat-option>
                                                                 @for (
-                                                                    institution of bgInstitutionen;
+                                                                    institution of bgInstitutionen();
                                                                     track institution
                                                                 ) {
                                                                     <mat-option
@@ -2533,8 +2530,9 @@
                                                         width: 13rem;
                                                     "
                                                     [buttonDisabled]="
+                                                        bgInstitutionenLoading() ||
                                                         bgZahlungenStatistikGemeindeAndInstitutionAlleSelected() ||
-                                                        isZeitspanneMoreThanOneJahr()
+                                                        zahlungenRef.invalid
                                                     "
                                                 >
                                                     <span

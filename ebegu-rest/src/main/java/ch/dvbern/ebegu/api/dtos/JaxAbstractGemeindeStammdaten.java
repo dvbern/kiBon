@@ -26,6 +26,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 
+import ch.dvbern.ebegu.api.einstellung.dto.JaxGemeindeKonfiguration;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JaxAbstractGemeindeStammdaten extends JaxAbstractDTO {
 

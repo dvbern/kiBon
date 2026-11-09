@@ -16,7 +16,7 @@ import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.PensumFachstelle;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.util.Constants.END_OF_TIME;
 import static org.hamcrest.MatcherAssert.assertThat;

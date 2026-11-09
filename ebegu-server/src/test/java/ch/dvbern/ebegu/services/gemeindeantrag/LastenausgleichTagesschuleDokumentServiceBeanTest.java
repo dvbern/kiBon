@@ -44,13 +44,13 @@ import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.easymock.EasyMock.expect;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(EasyMockExtension.class)
 class LastenausgleichTagesschuleDokumentServiceBeanTest extends
@@ -97,29 +97,29 @@ class LastenausgleichTagesschuleDokumentServiceBeanTest extends
 			Sprache.DEUTSCH
 		);
 
-		Assertions.assertEquals(
+		assertEquals(
 			new BigDecimal("1000"),
 			dto.getElterngebuehrenProg().setScale(0, RoundingMode.CEILING)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			new BigDecimal("20700"),
 			dto.getNormlohnkostenTotalProg()
 				.setScale(0, RoundingMode.CEILING)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			new BigDecimal("19700"),
 			dto.getLastenausgleichsberechtigterBetragProg()
 				.setScale(0, RoundingMode.CEILING)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			new BigDecimal("9850"),
 			dto.getErsteRateProg().setScale(0, RoundingMode.CEILING)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			new BigDecimal("7000"),
 			dto.getZweiteRate().setScale(0, RoundingMode.CEILING)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			new BigDecimal("16850"),
 			dto.getAuszahlungTotal().setScale(0, RoundingMode.CEILING)
 		);

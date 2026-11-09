@@ -26,8 +26,12 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.test.TestDataUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SchulstufeCalcRuleTest {
 
@@ -158,30 +162,30 @@ public class SchulstufeCalcRuleTest {
 	}
 
 	private void assertBerechtigt(List<VerfuegungZeitabschnitt> result) {
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
+		assertNotNull(result);
+		assertEquals(1, result.size());
 		VerfuegungZeitabschnitt verfuegungZeitabschnitt = result.get(0);
-		Assert.assertEquals(
+		assertEquals(
 			100,
 			verfuegungZeitabschnitt.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertNotNull(
+		assertNotNull(
 			verfuegungZeitabschnitt
 				.getVerfuegungZeitabschnittBemerkungList()
 		);
-		Assert.assertFalse(
+		assertFalse(
 			verfuegungZeitabschnitt.getBemerkungenDTOList().isEmpty()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			2,
 			result.get(0).getBemerkungenDTOList().uniqueSize()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
@@ -213,28 +217,28 @@ public class SchulstufeCalcRuleTest {
 		List<VerfuegungZeitabschnitt> result,
 		MsgKey msgKey
 	) {
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
+		assertNotNull(result);
+		assertEquals(1, result.size());
 		VerfuegungZeitabschnitt verfuegungZeitabschnitt = result.get(0);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			verfuegungZeitabschnitt.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertNotNull(
+		assertNotNull(
 			verfuegungZeitabschnitt
 				.getVerfuegungZeitabschnittBemerkungList()
 		);
-		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertEquals(
+		assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
+		assertEquals(
 			2,
 			result.get(0).getBemerkungenDTOList().uniqueSize()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0).getBemerkungenDTOList().containsMsgKey(msgKey)
 		);
 	}
@@ -249,7 +253,7 @@ public class SchulstufeCalcRuleTest {
 		betreuung.getKind().getKindJA().setEinschulungTyp(schulstufe);
 		GesuchstellerContainer gesuchsteller1 = betreuung.extractGesuch()
 			.getGesuchsteller1();
-		Assert.assertNotNull(gesuchsteller1);
+		assertNotNull(gesuchsteller1);
 		gesuchsteller1.addErwerbspensumContainer(
 			TestDataUtil.createErwerbspensum(
 				TestDataUtil.START_PERIODE,

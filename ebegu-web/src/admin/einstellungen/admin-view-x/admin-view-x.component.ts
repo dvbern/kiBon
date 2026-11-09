@@ -2,11 +2,14 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    DestroyRef,
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    inject
+    inject,
+    signal
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NgForm} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSort} from '@angular/material/sort';
@@ -16,18 +19,17 @@ import {ApplicationPropertyRsService} from '@utils/application-property-rs';
 import {combineLatest} from 'rxjs';
 import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {ErrorServiceX} from '../../../app/core/errors/service/ErrorServiceX';
+import {PagePasswordService} from '../../../authentication/password-dialog/page-password.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {SearchRS} from '../../../legacy-gesuch/service/searchRS.rest';
 import {TSApplicationProperty} from '../../../models/einstellung/TSApplicationProperty';
 import {TSApplicationPropertyKey} from '../../../models/einstellung/TSApplicationPropertyKey';
 import {AbstractAdminViewX} from '../../abstractAdminViewX';
 import {ReindexRS} from '../../service/reindexRS.rest';
-import {ConfigurableEinstellung} from '@admin/einstellungen';
-export interface DisplayedGroup {
-    groupName: string;
-    applicationProperties: TSApplicationProperty[];
-}
-
+import {TSApplicationPropertyWithMetadata} from '../TSApplicationPropertyWithMetadata';
+import {
+    ConfigurableEinstellung,
+    KibonConfiguration
+} from '@admin/einstellungen';
 @Component({
     selector: 'dv-admin-view-x',
     templateUrl: './admin-view-x.component.html',
@@ -41,26 +43,29 @@ export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
         ApplicationPropertyRsService
     );
     private readonly reindexRS = inject(ReindexRS);
-    private readonly searchRS = inject(SearchRS);
     private readonly dvDialog = inject(MatDialog);
     private readonly cd = inject(ChangeDetectorRef);
     private readonly errorService = inject(ErrorServiceX);
     private readonly adminUtilKeycloakAdminService = inject(
         KeycloakAdminRsService
     );
+    private readonly pagePassword = inject(PagePasswordService);
+    private readonly destroyRef = inject(DestroyRef);
     public authServiceRS = inject(AuthServiceRS);
+
+    public readonly unlocked = signal(false);
 
     @ViewChild(NgForm) public form: NgForm;
 
     @ViewChild(MatSort, {static: true}) public sort: MatSort;
 
     protected readonly Date = Date;
-    public displayedCollection: MatTableDataSource<TSApplicationProperty>;
-    public displayedGroupedCollection: DisplayedGroup[] = [];
+    public displayedCollection: MatTableDataSource<TSApplicationPropertyWithMetadata>;
+    public displayedGroupedCollection: Map<string, KibonConfiguration[]> =
+        new Map();
     public displayedColumns: string[] = ['name', 'value', 'timestampErstellt'];
     public reindexInProgress: boolean = false;
     public mitarbeiterRechteErstellenInProgress: boolean = false;
-    public recreateAlleFaelleInProgress: boolean = false;
     public changedApplicationProperties: ConfigurableEinstellung[] = [];
 
     public constructor() {
@@ -68,10 +73,19 @@ export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.resetForm();
+        this.pagePassword
+            .unlock$('faelle.list')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.unlocked.set(true);
+                this.resetForm();
+            });
     }
 
     public submit(): void {
+        if (!this.unlocked()) {
+            return;
+        }
         if (this.form.invalid) {
             return;
         }
@@ -103,6 +117,7 @@ export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
             )
         ).subscribe(() => {
             this.errorService.addMesageAsInfo('SPEICHERN_ERFOLGREICH');
+            this.resetForm();
         });
 
         this.changedApplicationProperties = [];
@@ -113,40 +128,32 @@ export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
         this.applicationPropertyRS
             .getAllApplicationProperties()
             .subscribe(response => {
-                const grouped = response.reduce(
-                    (groups, prop) => {
-                        if (!prop.keyGroup) {
-                            groups.ungrouped.push(prop);
-                            return groups;
-                        }
-
-                        if (!groups.groupMap.has(prop.keyGroup)) {
-                            groups.groupMap.set(prop.keyGroup, []);
-                        }
-
-                        groups.groupMap.get(prop.keyGroup)!.push(prop);
-
-                        return groups;
-                    },
-                    {
-                        ungrouped: [] as TSApplicationProperty[],
-                        groupMap: new Map<string, TSApplicationProperty[]>()
+                const ungrouped: TSApplicationPropertyWithMetadata[] = [];
+                this.displayedGroupedCollection.clear();
+                response.forEach((prop: TSApplicationPropertyWithMetadata) => {
+                    if (prop.metadata.keyGroup) {
+                        const list =
+                            this.displayedGroupedCollection.get(
+                                prop.metadata.keyGroup
+                            ) ?? [];
+                        list.push({
+                            ...prop,
+                            key: prop.name
+                        });
+                        this.displayedGroupedCollection.set(
+                            prop.metadata.keyGroup,
+                            list
+                        );
+                    } else {
+                        ungrouped.push(prop);
                     }
-                );
-
+                });
                 this.displayedCollection =
-                    new MatTableDataSource<TSApplicationProperty>(
-                        grouped.ungrouped
+                    new MatTableDataSource<TSApplicationPropertyWithMetadata>(
+                        ungrouped
                     );
 
                 this.displayedCollection.sort = this.sort;
-
-                this.displayedGroupedCollection = Array.from(
-                    grouped.groupMap.entries()
-                ).map(([groupName, applicationProperties]) => ({
-                    groupName,
-                    applicationProperties
-                }));
                 this.cd.markForCheck();
             });
     }

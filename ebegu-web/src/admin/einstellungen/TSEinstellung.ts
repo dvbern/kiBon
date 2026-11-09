@@ -15,11 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractDateRangedEntity} from '../../models/entity/TSAbstractDateRangedEntity';
-import {TSDateRange} from '../../models/entity/TSDateRange';
+import {TSAbstractMutableEntity} from '../../models/entity/TSAbstractMutableEntity';
 import {TSEinstellungKey} from './TSEinstellungKey';
 
-export class TSEinstellung extends TSAbstractDateRangedEntity {
+export class TSEinstellung extends TSAbstractMutableEntity {
     private _key: TSEinstellungKey;
     private _value: string;
     private _gemeindeId: string = null;
@@ -27,14 +26,13 @@ export class TSEinstellung extends TSAbstractDateRangedEntity {
     private _erklaerung: string = null;
 
     public constructor(
-        gueltigkeit?: TSDateRange,
         key?: TSEinstellungKey,
         value?: string,
         gemeindeId?: string,
         gesuchsperiodeId?: string,
         erklaerung?: string
     ) {
-        super(gueltigkeit);
+        super();
         this._key = key;
         this._value = value;
         this._gemeindeId = gemeindeId;

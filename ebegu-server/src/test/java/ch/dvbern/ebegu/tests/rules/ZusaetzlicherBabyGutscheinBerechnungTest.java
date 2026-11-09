@@ -44,12 +44,14 @@ import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 	AbstractBGRechnerTest {
@@ -61,7 +63,7 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 	private BGRechnerParameterDTO rechnerParameterDTO;
 	private VerfuegungZeitabschnitt abschnittToTest;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.rechnerParameterDTO = prepareBgRechnerParameterDTO();
 		this.rechner = prepareRechner();
@@ -100,12 +102,12 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 			MATH.from(30000)
 		);
 		rechner.calculate(abschnitt, rechnerParameterDTO);
-		Assert.assertNotNull(abschnitt.getBgCalculationResultGemeinde());
+		assertNotNull(abschnitt.getBgCalculationResultGemeinde());
 		BigDecimal babyGutscheinMax = MATH.subtract(
 			abschnitt.getBgCalculationResultGemeinde().getVerguenstigung(),
 			abschnitt.getBgCalculationResultAsiv().getVerguenstigung()
 		);
-		Assert.assertEquals(MATH.from(316.20), babyGutscheinMax);
+		assertEquals(MATH.from(316.20), babyGutscheinMax);
 
 		// Wir setzen die Monatlichen Betreuungskosten auf einen Wert, der knapp ueber dem berechneten Gemeindegutschein liegt
 		// so dass der minimale Elternbeitrag zum Zug kommt:
@@ -118,29 +120,29 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 			.getBgCalculationResultAsiv();
 		final BGCalculationResult resultGmde = abschnitt
 			.getBgCalculationResultGemeinde();
-		Assert.assertNotNull(resultAsiv);
-		Assert.assertNotNull(resultGmde);
+		assertNotNull(resultAsiv);
+		assertNotNull(resultGmde);
 
 		// Die Vollkosten betragen immer 2400
-		Assert.assertEquals(MATH.from(2400), resultAsiv.getVollkosten());
-		Assert.assertEquals(MATH.from(2400), resultGmde.getVollkosten());
+		assertEquals(MATH.from(2400), resultAsiv.getVollkosten());
+		assertEquals(MATH.from(2400), resultGmde.getVollkosten());
 
 		// Verguenstigung vor Kuerzungen
-		Assert.assertEquals(
+		assertEquals(
 			MATH.from(2051.30),
 			resultAsiv.getVerguenstigungOhneBeruecksichtigungVollkosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MATH.from(2051.30),
 			resultAsiv
 				.getVerguenstigungOhneBeruecksichtigungMinimalbeitrag()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			MATH.from(2367.50),
 			resultGmde.getVerguenstigungOhneBeruecksichtigungVollkosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MATH.from(2367.50),
 			resultGmde
 				.getVerguenstigungOhneBeruecksichtigungMinimalbeitrag()
@@ -155,7 +157,7 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 				resultAsiv
 					.getVerguenstigungOhneBeruecksichtigungVollkosten()
 			);
-		Assert.assertEquals(
+		assertEquals(
 			babyGutscheinMax,
 			differenzVerguenstigungOhneBeruecksichtigungVollkosten
 		);
@@ -167,15 +169,21 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 				resultAsiv
 					.getVerguenstigungOhneBeruecksichtigungMinimalbeitrag()
 			);
-		Assert.assertEquals(
+		assertEquals(
 			babyGutscheinMax,
 			differenzVerguenstigungOhneBeruecksichtigungMinimalbeitrag
 		);
 
 		// Die Verguenstigung entspricht bei ASIV dem ungekuerzten Wert
-		Assert.assertEquals(MATH.from(2051.30), resultAsiv.getVerguenstigung());
+		assertEquals(
+			MATH.from(2051.30),
+			resultAsiv.getVerguenstigung()
+		);
 		// Bei der Gemeinde wurde sie auf die Vollkosten begrenzt (minus 140.- minimaler Elternbeitrag)
-		Assert.assertEquals(MATH.from(2260.00), resultGmde.getVerguenstigung());
+		assertEquals(
+			MATH.from(2260.00),
+			resultGmde.getVerguenstigung()
+		);
 
 		final BigDecimal babyGutschein = MATH.subtract(
 			resultGmde.getVerguenstigung(),
@@ -183,34 +191,37 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 		);
 
 		// Der Minimale Elternbeitrag ist bei beiden gleich und entspricht den CHF 7 * 20 Tage
-		Assert.assertEquals(
+		assertEquals(
 			MATH.from(140),
 			resultAsiv.getMinimalerElternbeitrag()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MATH.from(140),
 			resultGmde.getMinimalerElternbeitrag()
 		);
 
 		// Der "effektive" Elternbeitrag ist bei ASIV hoeher als das Minimum (da kein Baby-Gutschein)
-		Assert.assertEquals(MATH.from(348.70), resultAsiv.getElternbeitrag());
+		assertEquals(
+			MATH.from(348.70),
+			resultAsiv.getElternbeitrag()
+		);
 		// Entsprechend ist der gekuerzte Minimale Elternbeitrag bei ASIV 0 (da der gesamte Minimale Elternbeitrag im
 		// Effektiven Elternbeitrag "Platz hat"
-		Assert.assertEquals(
+		assertEquals(
 			MATH.from(0),
 			resultAsiv.getMinimalerElternbeitragGekuerzt()
 		);
 
 		// Bei der Gemeinde entspricht der Effektive Elternbeitrag genau dem Minimalen Elternbeitrag
-		Assert.assertEquals(MATH.from(140), resultGmde.getElternbeitrag());
+		assertEquals(MATH.from(140), resultGmde.getElternbeitrag());
 		// Der gekuerzte Minimale Elternbeitrag entspricht wiederum der Differenz, welche vom Baby-Gutschein her kommt
-		Assert.assertEquals(
+		assertEquals(
 			MATH.from(107.50),
 			resultGmde.getMinimalerElternbeitragGekuerzt()
 		);
 
 		// Also: der ASIV-Elternbeitrag entspricht dem Gmde-gekuerztenElternbeitrag + Baby-Gutschein
-		Assert.assertEquals(
+		assertEquals(
 			resultAsiv.getElternbeitrag(),
 			MATH.add(resultGmde.getElternbeitrag(), babyGutschein)
 		);
@@ -225,10 +236,10 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 			prepareVerfuegungZeitabschnitt(bgPensum, massgebendesEinkommen);
 		rechner.calculate(abschnitt, rechnerParameterDTO);
 
-		Assert.assertNotNull(abschnitt);
-		Assert.assertTrue(abschnitt.isHasGemeindeSpezifischeBerechnung());
-		Assert.assertNotNull(abschnitt.getBgCalculationResultAsiv());
-		Assert.assertNotNull(abschnitt.getBgCalculationResultGemeinde());
+		assertNotNull(abschnitt);
+		assertTrue(abschnitt.isHasGemeindeSpezifischeBerechnung());
+		assertNotNull(abschnitt.getBgCalculationResultAsiv());
+		assertNotNull(abschnitt.getBgCalculationResultGemeinde());
 
 		final BigDecimal verguenstigungAsiv = abschnitt
 			.getBgCalculationResultAsiv()
@@ -236,15 +247,15 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 		final BigDecimal verguenstigungGemeinde = abschnitt
 			.getBgCalculationResultGemeinde()
 			.getVerguenstigung();
-		Assert.assertNotNull(verguenstigungAsiv);
-		Assert.assertNotNull(verguenstigungGemeinde);
+		assertNotNull(verguenstigungAsiv);
+		assertNotNull(verguenstigungGemeinde);
 
 		// Da alle anderen Einstellungen ASIV entsprechen, entspricht die Differenz von ASIV und Gemeinde dem Babygutschein
 		BigDecimal babyGutschein = MATH.subtract(
 			verguenstigungGemeinde,
 			verguenstigungAsiv
 		);
-		Assert.assertEquals(expectedBabygutscheinMonat, babyGutschein);
+		assertEquals(expectedBabygutscheinMonat, babyGutschein);
 	}
 
 	@Nonnull
@@ -306,7 +317,7 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 			rechnerRules,
 			mandant
 		);
-		Assert.assertNotNull(rechner);
+		assertNotNull(rechner);
 		return rechner;
 	}
 

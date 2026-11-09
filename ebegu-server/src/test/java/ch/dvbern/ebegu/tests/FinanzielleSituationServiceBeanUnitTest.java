@@ -23,8 +23,10 @@ import ch.dvbern.ebegu.dto.JaxFinanzielleSituationAufteilungDTO;
 import ch.dvbern.ebegu.entities.FinanzielleSituation;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.services.FinanzielleSituationServiceBean;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FinanzielleSituationServiceBeanUnitTest {
 
@@ -53,76 +55,78 @@ public class FinanzielleSituationServiceBeanUnitTest {
 			dto
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1000),
 			finSitGS1.getBruttoertraegeVermoegen()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(2000),
 			finSitGS2.getBruttoertraegeVermoegen()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(500),
 			finSitGS1.getGeleisteteAlimente()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(700),
 			finSitGS2.getGeleisteteAlimente()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1),
 			finSitGS1.getAbzugSchuldzinsen()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1),
 			finSitGS1.getGewinnungskosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1),
 			finSitGS1.getNettoertraegeErbengemeinschaft()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1),
 			finSitGS1.getNettoVermoegen()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1),
 			finSitGS2.getAbzugSchuldzinsen()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1),
 			finSitGS2.getGewinnungskosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1),
 			finSitGS2.getNettoertraegeErbengemeinschaft()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1),
 			finSitGS2.getNettoVermoegen()
 		);
 
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void testAufteilungWrongSum() {
-		var dto = new JaxFinanzielleSituationAufteilungDTO();
-		dto.setBruttoertraegeVermoegenGS1(BigDecimal.valueOf(1000));
-		dto.setBruttoertraegeVermoegenGS2(BigDecimal.valueOf(2000));
+		assertThrows(EbeguRuntimeException.class, () -> {
+			var dto = new JaxFinanzielleSituationAufteilungDTO();
+			dto.setBruttoertraegeVermoegenGS1(BigDecimal.valueOf(1000));
+			dto.setBruttoertraegeVermoegenGS2(BigDecimal.valueOf(2000));
 
-		var finSitGS1 = new FinanzielleSituation();
-		var finSitGS2 = new FinanzielleSituation();
+			var finSitGS1 = new FinanzielleSituation();
+			var finSitGS2 = new FinanzielleSituation();
 
-		finSitGS1.setBruttoertraegeVermoegen(BigDecimal.valueOf(1500));
-		finSitGS2.setBruttoertraegeVermoegen(BigDecimal.valueOf(1499));
+			finSitGS1.setBruttoertraegeVermoegen(BigDecimal.valueOf(1500));
+			finSitGS2.setBruttoertraegeVermoegen(BigDecimal.valueOf(1499));
 
-		finanzielleSituationService.setValuesFromAufteilungDTO(
-			finSitGS1,
-			finSitGS2,
-			dto
-		);
+			finanzielleSituationService.setValuesFromAufteilungDTO(
+				finSitGS1,
+				finSitGS2,
+				dto
+			);
+		});
 	}
 
 	@Test
@@ -143,33 +147,35 @@ public class FinanzielleSituationServiceBeanUnitTest {
 			dto
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(-1000),
 			finSitGS1.getNettoertraegeErbengemeinschaft()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(-2000),
 			finSitGS2.getNettoertraegeErbengemeinschaft()
 		);
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void testAufteilungWrongNegSum() {
-		var dto = createAufteilungDTO();
-		dto.setNettoertraegeErbengemeinschaftGS1(BigDecimal.valueOf(-1000));
-		dto.setNettoertraegeErbengemeinschaftGS2(BigDecimal.valueOf(-2000));
+		assertThrows(EbeguRuntimeException.class, () -> {
+			var dto = createAufteilungDTO();
+			dto.setNettoertraegeErbengemeinschaftGS1(BigDecimal.valueOf(-1000));
+			dto.setNettoertraegeErbengemeinschaftGS2(BigDecimal.valueOf(-2000));
 
-		var finSitGS1 = createFinSit();
-		var finSitGS2 = createFinSit();
+			var finSitGS1 = createFinSit();
+			var finSitGS2 = createFinSit();
 
-		finSitGS1.setBruttoertraegeVermoegen(BigDecimal.valueOf(-1500));
-		finSitGS2.setBruttoertraegeVermoegen(BigDecimal.valueOf(-1499));
+			finSitGS1.setBruttoertraegeVermoegen(BigDecimal.valueOf(-1500));
+			finSitGS2.setBruttoertraegeVermoegen(BigDecimal.valueOf(-1499));
 
-		finanzielleSituationService.setValuesFromAufteilungDTO(
-			finSitGS1,
-			finSitGS2,
-			dto
-		);
+			finanzielleSituationService.setValuesFromAufteilungDTO(
+				finSitGS1,
+				finSitGS2,
+				dto
+			);
+		});
 	}
 
 	private JaxFinanzielleSituationAufteilungDTO createAufteilungDTO() {

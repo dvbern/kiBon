@@ -25,8 +25,9 @@ import ch.dvbern.ebegu.entities.FinanzielleSituationContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FinanzielleSituationSolothurnRechnerTest {
 
@@ -45,11 +46,11 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, false);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
@@ -68,11 +69,11 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, false);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
@@ -94,11 +95,11 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, false);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
@@ -120,16 +121,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, true);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -158,16 +159,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, true);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -204,16 +205,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, true);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -252,16 +253,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, false);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -290,16 +291,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, false);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -328,16 +329,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, false);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -366,16 +367,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, false);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -404,16 +405,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, false);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -467,16 +468,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, true);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -507,16 +508,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, true);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -580,16 +581,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, true);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()
@@ -643,16 +644,16 @@ public class FinanzielleSituationSolothurnRechnerTest {
 		FinanzielleSituationResultateDTO resultat = finSitSoRechner
 			.calculateResultateFinanzielleSituation(gesuch, true);
 
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommen.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGr().stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS1.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS1()
 				.stripTrailingZeros()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedMassgebendesEinkommenGS2.stripTrailingZeros(),
 			resultat.getMassgebendesEinkVorAbzFamGrGS2()
 				.stripTrailingZeros()

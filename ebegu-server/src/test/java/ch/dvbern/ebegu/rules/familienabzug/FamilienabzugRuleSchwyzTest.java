@@ -40,8 +40,9 @@ import ch.dvbern.ebegu.enums.Kinderabzug;
 import ch.dvbern.ebegu.enums.KinderabzugTyp;
 import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
 import ch.dvbern.ebegu.test.TestDataUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FamilienabzugRuleSchwyzTest {
 	private static final BigDecimal SOZIALABZUG_PRO_KIND = BigDecimal.valueOf(
@@ -62,9 +63,9 @@ class FamilienabzugRuleSchwyzTest {
 			getEinstellungMapForSchwyz()
 		);
 
-		Assertions.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
-		Assertions.assertEquals(
+		assertEquals(
 			SOZIALABZUG_PRO_KIND,
 			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
@@ -81,9 +82,9 @@ class FamilienabzugRuleSchwyzTest {
 			getEinstellungMapForSchwyz()
 		);
 
-		Assertions.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
-		Assertions.assertEquals(
+		assertEquals(
 			HALBER_SOZIALABZUG_PRO_KIND,
 			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
@@ -101,9 +102,9 @@ class FamilienabzugRuleSchwyzTest {
 			getEinstellungMapForSchwyz()
 		);
 
-		Assertions.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
-		Assertions.assertEquals(
+		assertEquals(
 			SOZIALABZUG_PRO_KIND,
 			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
@@ -120,9 +121,9 @@ class FamilienabzugRuleSchwyzTest {
 			getEinstellungMapForSchwyz()
 		);
 
-		Assertions.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
-		Assertions.assertEquals(
+		assertEquals(
 			HALBER_SOZIALABZUG_PRO_KIND,
 			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
@@ -144,13 +145,13 @@ class FamilienabzugRuleSchwyzTest {
 			getEinstellungMapForSchwyz()
 		);
 
-		Assertions.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
 
 		BigDecimal expectedResult = BigDecimal.valueOf(0)
 			.add(HALBER_SOZIALABZUG_PRO_KIND)
 			.add(SOZIALABZUG_PRO_KIND);
-		Assertions.assertEquals(
+		assertEquals(
 			expectedResult,
 			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
@@ -172,13 +173,13 @@ class FamilienabzugRuleSchwyzTest {
 			getEinstellungMapForSchwyz()
 		);
 
-		Assertions.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
 
 		BigDecimal expectedResult = BigDecimal.valueOf(0)
 			.add(SOZIALABZUG_PRO_KIND)
 			.add(SOZIALABZUG_PRO_KIND);
-		Assertions.assertEquals(
+		assertEquals(
 			expectedResult,
 			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
@@ -200,13 +201,13 @@ class FamilienabzugRuleSchwyzTest {
 			getEinstellungMapForSchwyz()
 		);
 
-		Assertions.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
 
 		BigDecimal expectedResult = BigDecimal.valueOf(0)
 			.add(HALBER_SOZIALABZUG_PRO_KIND)
 			.add(SOZIALABZUG_PRO_KIND);
-		Assertions.assertEquals(
+		assertEquals(
 			expectedResult,
 			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);

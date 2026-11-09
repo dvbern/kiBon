@@ -1,4 +1,4 @@
-<div class="tw:mb-10">
+@if (filteredGroups().size > 0) {
     <mat-accordion>
         <mat-expansion-panel>
             <mat-expansion-panel-header>
@@ -10,17 +10,30 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <mat-accordion displayMode="flat">
-                @for (group of groups; track group) {
-                    @let typsOfGroup = GS_DOKUMENT_ZU_UEBERNEHMEN_GROUPS[group];
-                    @if (typsOfGroup.length > 0) {
+                <div class="tw:flex tw:gap-2 tw:flex-col tw:mb-4">
+                    <b>{{ 'ZULETZT_BEARBEITET' | translate }}: </b>
+                    <span>{{ einstellung().userMutiert }}</span>
+                    <span>{{
+                        einstellung().timestampMutiert.format('DD.MM.YYYY')
+                    }}</span>
+                </div>
+
+                @for (
+                    mapEntry of filteredGroups() | keyvalue;
+                    track mapEntry.key
+                ) {
+                    @let groupName = mapEntry.key;
+                    @let dokumentTyps = mapEntry.value;
+                    @if (dokumentTyps.length > 0) {
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
                                 <mat-panel-title>{{
-                                    'DOKUMENT_GRUND_TYP_' + group | translate
+                                    'DOKUMENT_GRUND_TYP_' + groupName
+                                        | translate
                                 }}</mat-panel-title>
                             </mat-expansion-panel-header>
                             @for (
-                                dokumentTyp of typsOfGroup;
+                                dokumentTyp of dokumentTyps;
                                 track dokumentTyp
                             ) {
                                 <mat-checkbox
@@ -29,7 +42,8 @@
                                     "
                                     (ngModelChange)="emitSelection()"
                                     >{{ dokumentTyp }}: ({{
-                                        group + '_' + dokumentTyp | translate
+                                        groupName + '_' + dokumentTyp
+                                            | translate
                                     }})
                                 </mat-checkbox>
                             }
@@ -39,4 +53,4 @@
             </mat-accordion>
         </mat-expansion-panel>
     </mat-accordion>
-</div>
+}

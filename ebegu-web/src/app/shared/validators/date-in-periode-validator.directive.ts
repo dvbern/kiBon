@@ -1,4 +1,4 @@
-import {Directive, input} from '@angular/core';
+import {Directive, effect, input, untracked} from '@angular/core';
 import {
     AbstractControl,
     NG_VALIDATORS,
@@ -21,6 +21,19 @@ import {TSGesuchsperiode} from '../../../models/entity/TSGesuchsperiode';
 })
 export class DateInPeriodeValidatorDirective implements Validator {
     gesuchsperiode = input<TSGesuchsperiode>();
+
+    private onValidatorChange?: () => void;
+
+    public constructor() {
+        effect(() => {
+            this.gesuchsperiode();
+            untracked(() => this.onValidatorChange?.());
+        });
+    }
+
+    registerOnValidatorChange(fn: () => void): void {
+        this.onValidatorChange = fn;
+    }
 
     private getInputAsMoment(viewValue: any): moment.Moment {
         const value = this.stringToMoment(viewValue);

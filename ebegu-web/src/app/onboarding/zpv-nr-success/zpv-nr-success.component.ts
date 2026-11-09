@@ -1,6 +1,6 @@
 import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {UIRouterGlobals} from '@uirouter/core';
-import {ZPVUpdateResult} from './ZPVUpdateResult';
+import {STEKUpdateResult} from './STEKUpdateResult';
 
 @Component({
     selector: 'dv-zpv-nr-success',
@@ -12,8 +12,8 @@ import {ZPVUpdateResult} from './ZPVUpdateResult';
 export class ZpvNrSuccessComponent {
     private readonly uiRouterGlobals = inject(UIRouterGlobals);
 
-    protected readonly ZPVUpdateResult = ZPVUpdateResult;
+    protected readonly STEKUpdateResult = STEKUpdateResult;
 
-    public result: ZPVUpdateResult =
+    public result: STEKUpdateResult =
         this.uiRouterGlobals.params.zpvUpdateResult;
 }

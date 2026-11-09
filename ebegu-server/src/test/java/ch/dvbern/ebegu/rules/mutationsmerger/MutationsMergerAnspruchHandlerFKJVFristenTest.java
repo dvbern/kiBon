@@ -23,8 +23,9 @@ import java.util.Locale;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.BGCalculationResult;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MutationsMergerAnspruchHandlerFKJVFristenTest extends
 	AbstractDefaultMutationsMergerAnspruchHandlerTest {
@@ -54,7 +55,7 @@ public class MutationsMergerAnspruchHandlerFKJVFristenTest extends
 			resultVorgaenger,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_PERCENT,
 			bgCalculationInput.getAnspruchspensumProzent()
 		);
@@ -72,7 +73,7 @@ public class MutationsMergerAnspruchHandlerFKJVFristenTest extends
 			resultVorgaenger,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZEHN_PERCENT,
 			bgCalculationInput.getAnspruchspensumProzent()
 		);
@@ -93,7 +94,7 @@ public class MutationsMergerAnspruchHandlerFKJVFristenTest extends
 			resultVorgaenger,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_PERCENT,
 			bgCalculationInput.getAnspruchspensumProzent()
 		);
@@ -111,7 +112,7 @@ public class MutationsMergerAnspruchHandlerFKJVFristenTest extends
 			resultVorgaenger,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ZEHN_PERCENT,
 			bgCalculationInput.getAnspruchspensumProzent()
 		);

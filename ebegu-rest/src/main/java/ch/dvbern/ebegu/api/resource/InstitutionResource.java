@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -674,21 +675,21 @@ public class InstitutionResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public List<JaxInstitution> getAllBgInstitutionenReadableForCurrentBenutzer() {
+		// BG Institution-IDs mit einer einzigen Query laden, statt die Stammdaten pro Institution einzeln abzufragen
+		Set<String> bgInstitutionIds = institutionService
+			.getAllInstitutionenByType(
+				requireNonNull(principalBean.getMandant()),
+				BetreuungsangebotTyp.getBetreuungsgutscheinTypes()
+			)
+			.stream()
+			.map(Institution::getId)
+			.collect(Collectors.toSet());
+
 		return institutionService.getInstitutionenReadableForCurrentBenutzer(
 			false
 		)
 			.stream()
-			.filter(
-				i -> BetreuungsangebotTyp.getBetreuungsgutscheinTypes()
-					.contains(
-						institutionStammdatenService
-							.fetchInstitutionStammdatenByInstitution(
-								i.getId(),
-								false
-							)
-							.getBetreuungsangebotTyp()
-					)
-			)
+			.filter(i -> bgInstitutionIds.contains(i.getId()))
 			.map(inst -> institutionStammdatenConverter.institutionToJAX(inst))
 			.collect(Collectors.toList());
 	}

@@ -17,9 +17,11 @@ package ch.dvbern.ebegu.tests.validations;
 
 import ch.dvbern.ebegu.validators.iban.CheckIBANNotQRValidator;
 import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer CheckDateRangeValidator
@@ -36,13 +38,13 @@ class CheckIBANNotQRValidatorTest {
 	@Test
 	void test_shouldBeInvalidIfQRIBAN() {
 		IBAN iban = new IBAN("CH4431999123000889012");
-		Assertions.assertFalse(validator.isValid(iban, null));
+		assertFalse(validator.isValid(iban, null));
 	}
 
 	@Test
 	void test_shouldBeValidIfNormalIBAN() {
 		IBAN iban = new IBAN("CH9300762011623852957");
-		Assertions.assertTrue(validator.isValid(iban, null));
+		assertTrue(validator.isValid(iban, null));
 	}
 
 }

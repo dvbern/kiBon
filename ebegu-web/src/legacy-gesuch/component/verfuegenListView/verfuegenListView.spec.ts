@@ -124,7 +124,7 @@ xdescribe('verfuegenListViewTest', () => {
                 $q.resolve(new TSFinanzielleSituationResultateDTO())
             );
             spyOn(einstellungRS, 'findEinstellung').and.returnValue(
-                of(new TSEinstellung(null, null, 'true'))
+                of(new TSEinstellung(null, 'true'))
             );
 
             TestDataUtil.mockDefaultGesuchModelManagerHttpCalls($httpBackend);

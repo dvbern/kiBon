@@ -20,8 +20,10 @@ package ch.dvbern.ebegu.tests;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.gesuch.validators.CheckGesuchGesuchstellerContainerValidator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CheckGesuchGesuchstellerContainerValidatorTest {
 
@@ -32,7 +34,7 @@ class CheckGesuchGesuchstellerContainerValidatorTest {
 	void checkGesuchGesuchstellerContainerValidator_GS1Container_null() {
 		var gesuch = new Gesuch();
 		gesuch.setGesuchsteller1(new GesuchstellerContainer());
-		Assertions.assertTrue(
+		assertTrue(
 			checkGesuchGesuchstellerContainerValidator.isValid(gesuch, null)
 		);
 	}
@@ -41,7 +43,7 @@ class CheckGesuchGesuchstellerContainerValidatorTest {
 	void checkGesuchGesuchstellerContainerValidator_GS2Container_null() {
 		var gesuch = new Gesuch();
 		gesuch.setGesuchsteller2(new GesuchstellerContainer());
-		Assertions.assertTrue(
+		assertTrue(
 			checkGesuchGesuchstellerContainerValidator.isValid(gesuch, null)
 		);
 	}
@@ -49,7 +51,7 @@ class CheckGesuchGesuchstellerContainerValidatorTest {
 	@Test
 	void checkGesuchGesuchstellerContainerValidator_GS1Container_GS2Container_null() {
 		var gesuch = new Gesuch();
-		Assertions.assertTrue(
+		assertTrue(
 			checkGesuchGesuchstellerContainerValidator.isValid(gesuch, null)
 		);
 	}
@@ -59,7 +61,7 @@ class CheckGesuchGesuchstellerContainerValidatorTest {
 		var gesuch = new Gesuch();
 		gesuch.setGesuchsteller1(new GesuchstellerContainer());
 		gesuch.setGesuchsteller2(new GesuchstellerContainer());
-		Assertions.assertTrue(
+		assertTrue(
 			checkGesuchGesuchstellerContainerValidator.isValid(gesuch, null)
 		);
 	}
@@ -70,7 +72,7 @@ class CheckGesuchGesuchstellerContainerValidatorTest {
 		var gesuchsteller = new GesuchstellerContainer();
 		gesuch.setGesuchsteller1(gesuchsteller);
 		gesuch.setGesuchsteller2(gesuchsteller);
-		Assertions.assertFalse(
+		assertFalse(
 			checkGesuchGesuchstellerContainerValidator.isValid(gesuch, null)
 		);
 	}

@@ -32,9 +32,11 @@ import ch.dvbern.ebegu.rechner.RechnerRuleParameterDTO;
 import ch.dvbern.ebegu.rules.util.MahlzeitenverguenstigungParameter;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class MahlzeitenverguenstigungBGRechnerRuleTest {
 
@@ -47,11 +49,11 @@ public class MahlzeitenverguenstigungBGRechnerRuleTest {
 	private MahlzeitenverguenstigungBGRechnerRule rule = null;
 	private MahlzeitenverguenstigungParameter parameter;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		final Familiensituation familiensituation = platz.extractGesuch()
 			.extractFamiliensituation();
-		Assert.assertNotNull(familiensituation);
+		assertNotNull(familiensituation);
 		familiensituation.setKeineMahlzeitenverguenstigungBeantragt(false);
 		this.parameter = new MahlzeitenverguenstigungParameter(
 			true,
@@ -195,8 +197,8 @@ public class MahlzeitenverguenstigungBGRechnerRuleTest {
 		);
 		final BigDecimal verguenstigungMahlzeitenTotal = rechnerRuleParameterDTO
 			.getVerguenstigungMahlzeitenTotal();
-		Assert.assertNotNull(verguenstigungMahlzeitenTotal);
-		Assert.assertEquals(
+		assertNotNull(verguenstigungMahlzeitenTotal);
+		assertEquals(
 			expectedVerguenstigungMahlzeitenTotal,
 			verguenstigungMahlzeitenTotal.intValue()
 		);

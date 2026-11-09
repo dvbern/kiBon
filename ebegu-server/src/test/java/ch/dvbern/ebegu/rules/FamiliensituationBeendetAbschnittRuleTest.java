@@ -13,7 +13,6 @@ import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.test.TestDataUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +53,7 @@ class FamiliensituationBeendetAbschnittRuleTest {
 			zeitAbschnitteErstgesuch,
 			"ZeitAbschnitte erstgesuch müssen gesetzt sein."
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			1,
 			zeitAbschnitteErstgesuch.size(),
 			"Es darf nur einen geben"
@@ -97,7 +96,7 @@ class FamiliensituationBeendetAbschnittRuleTest {
 			zeitAbschnitteErstgesuch,
 			"ZeitAbschnitte erstgesuch müssen gesetzt sein."
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			1,
 			zeitAbschnitteErstgesuch.size(),
 			"Es darf nur einen geben"
@@ -149,7 +148,7 @@ class FamiliensituationBeendetAbschnittRuleTest {
 			zeitAbschnitteErstgesuch,
 			"ZeitAbschnitte erstgesuch müssen gesetzt sein."
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			1,
 			zeitAbschnitteErstgesuch.size(),
 			"Es darf nur einen geben"
@@ -190,7 +189,7 @@ class FamiliensituationBeendetAbschnittRuleTest {
 			zeitAbschnitteErstgesuch,
 			"ZeitAbschnitte erstgesuch müssen gesetzt sein."
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			1,
 			zeitAbschnitteErstgesuch.size(),
 			"Es darf nur einen geben"

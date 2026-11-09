@@ -32,7 +32,7 @@ import ch.dvbern.ebegu.util.MathUtil;
 import com.spotify.hamcrest.pojo.IsPojo;
 import org.hamcrest.Matcher;
 import org.hamcrest.number.BigDecimalCloseTo;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
 import static org.hamcrest.MatcherAssert.assertThat;

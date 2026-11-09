@@ -1,4 +1,4 @@
-import {Directive, input} from '@angular/core';
+import {Directive, effect, input, untracked} from '@angular/core';
 import {
     AbstractControl,
     NG_VALIDATORS,
@@ -21,6 +21,20 @@ import moment from 'moment';
 export class MaxZeitspanneValidatorDirective implements Validator {
     referenceDate = input<moment.Moment>();
     maxZeitspanne = input<number>();
+
+    private onValidatorChange?: () => void;
+
+    public constructor() {
+        effect(() => {
+            this.referenceDate();
+            this.maxZeitspanne();
+            untracked(() => this.onValidatorChange?.());
+        });
+    }
+
+    registerOnValidatorChange(fn: () => void): void {
+        this.onValidatorChange = fn;
+    }
 
     validate(control: AbstractControl): ValidationErrors | null {
         const reference = this.referenceDate();

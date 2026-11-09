@@ -35,7 +35,7 @@ import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import ch.dvbern.lib.invoicegenerator.errors.InvoiceGeneratorException;
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class VollmachtPdfGeneratorTest {
 

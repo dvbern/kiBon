@@ -31,7 +31,7 @@ import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.kibon.exchange.commons.institutionclient.InstitutionClientEventDTO;
 import ch.dvbern.kibon.exchange.commons.util.AvroConverter;
 import org.hamcrest.Matcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
 import static org.hamcrest.MatcherAssert.assertThat;

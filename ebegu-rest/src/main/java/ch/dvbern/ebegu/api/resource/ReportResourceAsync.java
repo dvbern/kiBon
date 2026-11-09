@@ -54,6 +54,7 @@ import ch.dvbern.ebegu.dto.statistik.MitarbeitendeStatistikParameterDto;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
 import ch.dvbern.ebegu.entities.Workjob;
@@ -69,9 +70,11 @@ import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
 import ch.dvbern.ebegu.outbox.statistik.KafkaStatistikProducer;
 import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import ch.dvbern.ebegu.services.InstitutionService;
 import ch.dvbern.ebegu.services.InstitutionStammdatenService;
 import ch.dvbern.ebegu.services.WorkjobReportService;
+import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -106,6 +109,7 @@ public class ReportResourceAsync {
 		"Das von-Datum muss vor dem bis-Datum sein.";
 	public static final String URL_PART_EXCEL = "excel/";
 	private static final int EXCEL_LIMITER = 50;
+	public static final String FEHLER_BEIM_ERSTELLEN_REPORT_ZAHLUNGEN = "Fehler beim Erstellen Report Zahlungen";
 
 	@Inject
 	private PrincipalBean principalBean;
@@ -124,6 +128,9 @@ public class ReportResourceAsync {
 
 	@Inject
 	private InstitutionService institutionService;
+
+	@Inject
+	private GesuchsperiodeService gesuchsperiodeService;
 
 	@Inject
 	private ApplicationPropertyService applicationPropertyService;
@@ -1097,6 +1104,7 @@ public class ReportResourceAsync {
 		@Context UriInfo uriInfo
 	) {
 
+		final String methodName = "getZahlungenExcelReport";
 		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		Gemeinde gemeinde = null;
@@ -1108,7 +1116,7 @@ public class ReportResourceAsync {
 			gemeinde = gemeindeService.findGemeinde(gemeindeId)
 				.orElseThrow(
 					() -> new EbeguEntityNotFoundException(
-						"getZahlungenExcelReport",
+						methodName,
 						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
 					)
 				);
@@ -1120,10 +1128,19 @@ public class ReportResourceAsync {
 			)
 				.orElseThrow(
 					() -> new EbeguEntityNotFoundException(
-						"getZahlungenExcelReport",
+						methodName,
 						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
 					)
 				);
+		}
+
+		if (institution == null && gemeinde == null) {
+			throw new EbeguRuntimeException(
+				KibonLogLevel.NONE,
+				methodName,
+				FEHLER_BEIM_ERSTELLEN_REPORT_ZAHLUNGEN,
+				ErrorCodeEnum.ERROR_ZAHLUNGEN_STAT_GEMEINDE_INSTITUTION_REQUIRED
+			);
 		}
 
 		if (von != null) {
@@ -1132,6 +1149,46 @@ public class ReportResourceAsync {
 
 		if (bis != null) {
 			dateBis = DateUtil.parseStringToDateOrReturnNow(bis);
+		}
+
+		if (gesuchsperiodeId == null && dateVon != null && dateBis != null) {
+			if (dateBis.isBefore(dateVon)) {
+				throw new EbeguRuntimeException(
+					KibonLogLevel.NONE,
+					methodName,
+					FEHLER_BEIM_ERSTELLEN_REPORT_ZAHLUNGEN,
+					DAS_VON_DATUM_MUSS_VOR_DEM_BIS_DATUM_SEIN
+				);
+			}
+			if (dateVon.plusYears(1).isBefore(dateBis)) {
+				throw new EbeguRuntimeException(
+					KibonLogLevel.NONE,
+					methodName,
+					FEHLER_BEIM_ERSTELLEN_REPORT_ZAHLUNGEN,
+					ErrorCodeEnum.ERROR_ZAHLUNGEN_STAT_ZEITSPANNE_MAX_1_JAHR
+				);
+			}
+		}
+
+		if (gesuchsperiodeId != null) {
+			Gesuchsperiode gesuchsperiode = gesuchsperiodeService
+				.findGesuchsperiode(gesuchsperiodeId)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						methodName,
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
+					)
+				);
+			DateRange gueltigkeit = gesuchsperiode.getGueltigkeit();
+			if ((dateVon != null && !gueltigkeit.contains(dateVon))
+				|| (dateBis != null && !gueltigkeit.contains(dateBis))) {
+				throw new EbeguRuntimeException(
+					KibonLogLevel.NONE,
+					methodName,
+					FEHLER_BEIM_ERSTELLEN_REPORT_ZAHLUNGEN,
+					ErrorCodeEnum.ERROR_ZAHLUNGEN_STAT_DATUM_AUSSERHALB_PERIODE
+				);
+			}
 		}
 
 		final ReportVorlage reportVorlage = LocaleThreadLocal.get()

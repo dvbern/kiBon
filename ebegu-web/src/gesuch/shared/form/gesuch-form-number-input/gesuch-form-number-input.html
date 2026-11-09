@@ -37,6 +37,11 @@
             [class.ng-invalid]="invalid()"
             [class.ng-valid]="!invalid()"
         />
-        <mat-error>{{ errors()?.[0]?.message }}</mat-error>
+        <mat-error>
+            <kib-gesuch-form-error
+                [errors]="errors() ?? []"
+                [messageOverrides]="errorMessageOverrides()"
+            />
+        </mat-error>
     </mat-form-field>
 </kib-gesuch-shared-form-style-material-input-wrapper>

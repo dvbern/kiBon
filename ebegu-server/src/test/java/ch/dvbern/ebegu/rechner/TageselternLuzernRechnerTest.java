@@ -25,8 +25,9 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.TestUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TageselternLuzernRechnerTest extends AbstractLuzernRechnerTest {
 
@@ -287,6 +288,6 @@ public class TageselternLuzernRechnerTest extends AbstractLuzernRechnerTest {
 		TestValues testValues
 	) {
 		super.assertCalculationResultResult(result, testValues);
-		Assert.assertEquals(PensumUnits.HOURS, result.getZeiteinheit());
+		assertEquals(PensumUnits.HOURS, result.getZeiteinheit());
 	}
 }

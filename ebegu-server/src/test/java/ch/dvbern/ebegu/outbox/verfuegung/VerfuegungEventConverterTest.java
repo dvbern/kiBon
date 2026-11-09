@@ -50,8 +50,7 @@ import ch.dvbern.kibon.exchange.commons.verfuegung.KindDTO;
 import ch.dvbern.kibon.exchange.commons.verfuegung.VerfuegungEventDTO;
 import ch.dvbern.kibon.exchange.commons.verfuegung.ZeitabschnittDTO;
 import com.spotify.hamcrest.pojo.IsPojo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,6 +61,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class VerfuegungEventConverterTest {
 
@@ -113,7 +113,7 @@ public class VerfuegungEventConverterTest {
 			);
 
 		Betreuung betreuung = verfuegung.getBetreuung();
-		Assert.assertNotNull(betreuung);
+		assertNotNull(betreuung);
 		Gesuchsperiode gesuchsperiode = verfuegung.getBetreuung()
 			.extractGesuchsperiode();
 		String institutionId = betreuung.getInstitutionStammdaten()

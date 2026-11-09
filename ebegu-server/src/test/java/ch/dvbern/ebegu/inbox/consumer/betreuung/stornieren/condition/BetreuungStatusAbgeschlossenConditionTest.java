@@ -24,8 +24,10 @@ import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.util.EnumTestSupport;
 import org.easymock.EasyMock;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Prüft die Bedingung ob eine Betreuung in einem abgeschlossenen Zustand ist. Dieser Zustant um fasst mehrere
@@ -85,9 +87,9 @@ class BetreuungStatusAbgeschlossenConditionTest extends
 
 		// Assert true, wenn der aktuelle Status für die hier zu testende Bedingung mit "wahr" evalUiert, sonst assert false.
 		if (STATES_EVALUATING_TO_TRUE.contains(state)) {
-			Assertions.assertTrue(testResult);
+			assertTrue(testResult);
 		} else {
-			Assertions.assertFalse(testResult);
+			assertFalse(testResult);
 		}
 	}
 

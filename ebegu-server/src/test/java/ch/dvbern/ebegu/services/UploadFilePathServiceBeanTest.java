@@ -4,19 +4,20 @@ import java.nio.file.Path;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class UploadFilePathServiceBeanTest {
 
 	@TestSubject
@@ -29,7 +30,7 @@ public class UploadFilePathServiceBeanTest {
 
 	private static final String FILE_PATH_CONFIG = "/kibon/data";
 
-	@Before
+	@BeforeEach
 	public void init() {
 		expect(ebeguConfiguration.getDocumentFilePath()).andReturn(
 			FILE_PATH_CONFIG
@@ -46,12 +47,14 @@ public class UploadFilePathServiceBeanTest {
 		assertThat(validatedFilePath, is(filePath));
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void noEbeguFilePath() {
-		Path filePath = Path.of("hello", "test");
-		Path validatedFilePath = filePathValidator.getValidatedFilePath(
-			filePath
-		);
+		assertThrows(EbeguRuntimeException.class, () -> {
+			Path filePath = Path.of("hello", "test");
+			Path validatedFilePath = filePathValidator.getValidatedFilePath(
+				filePath
+			);
+		});
 	}
 
 	@Test
@@ -73,10 +76,12 @@ public class UploadFilePathServiceBeanTest {
 		);
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void filePathWithDoubleDotPathStep() {
-		Path validatedFilePath = filePathValidator
-			.getValidatedFilePathWithDirectoryPrefix(Path.of("/../test"));
+		assertThrows(EbeguRuntimeException.class, () -> {
+			Path validatedFilePath = filePathValidator
+				.getValidatedFilePathWithDirectoryPrefix(Path.of("/../test"));
+		});
 	}
 
 }

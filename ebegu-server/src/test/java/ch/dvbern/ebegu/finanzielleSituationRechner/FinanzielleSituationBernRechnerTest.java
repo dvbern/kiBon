@@ -28,11 +28,15 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.util.ObjectRequiredNonNullUtils.getFinanzielleSituationJA;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer FinanzielleSituationBernRechner
@@ -53,7 +57,7 @@ public class FinanzielleSituationBernRechnerTest {
 
 	protected AbstractFinanzielleSituationRechner finSitRechner;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		finSitRechner = new FinanzielleSituationBernRechner();
 	}
@@ -76,14 +80,14 @@ public class FinanzielleSituationBernRechnerTest {
 		getFinanzielleSituationJA(gesuch.getGesuchsteller1())
 			.setGeschaeftsgewinnBasisjahrMinus2(BigDecimal.valueOf(300));
 		Familiensituation familiensituation = gesuch.extractFamiliensituation();
-		Assert.assertNotNull(familiensituation);
+		assertNotNull(familiensituation);
 		FinanzielleSituationResultateDTO finSitResultateDTO1 = finSitRechner
 			.calculateResultateFinanzielleSituation(
 				gesuch,
 				familiensituation.hasSecondGesuchsteller(bis)
 			);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(100),
 			finSitResultateDTO1
 				.getGeschaeftsgewinnDurchschnittGesuchsteller1()
@@ -108,14 +112,14 @@ public class FinanzielleSituationBernRechnerTest {
 		getFinanzielleSituationJA(gesuch.getGesuchsteller1())
 			.setGeschaeftsgewinnBasisjahrMinus2(BigDecimal.valueOf(-300));
 		Familiensituation familiensituation = gesuch.extractFamiliensituation();
-		Assert.assertNotNull(familiensituation);
+		assertNotNull(familiensituation);
 		FinanzielleSituationResultateDTO finSitResultateDTO2 = finSitRechner
 			.calculateResultateFinanzielleSituation(
 				gesuch,
 				familiensituation.hasSecondGesuchsteller(bis)
 			);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			finSitResultateDTO2
 				.getGeschaeftsgewinnDurchschnittGesuchsteller1()
@@ -134,22 +138,22 @@ public class FinanzielleSituationBernRechnerTest {
 		);
 		TestDataUtil.calculateFinanzDaten(gesuch, finSitRechner);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjVorAbzFamGr()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr()
 		);
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr()
 		);
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
 	}
 
 	@Test
@@ -162,7 +166,7 @@ public class FinanzielleSituationBernRechnerTest {
 			gesuch,
 			EINKOMMEN_FINANZIELLE_SITUATION
 		);
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		TestDataUtil.setEinkommensverschlechterung(
 			gesuch,
 			gesuch.getGesuchsteller1(),
@@ -177,25 +181,25 @@ public class FinanzielleSituationBernRechnerTest {
 				EINKOMMEN_EKV_ABGELEHNT
 			);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjVorAbzFamGr()
 		);
 
-		Assert.assertEquals(
-			"EKV abgelehnt, Differenz " + differenzJahr1,
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
-			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr()
+			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr(),
+			"EKV abgelehnt, Differenz " + differenzJahr1
 		); // Abgelehnt
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv1Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv1Accepted());
 
-		Assert.assertEquals(
-			"Keine EVK 2 erfasst",
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
-			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr()
+			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr(),
+			"Keine EVK 2 erfasst"
 		);
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
 	}
 
 	@Test
@@ -204,7 +208,7 @@ public class FinanzielleSituationBernRechnerTest {
 			false
 		);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		TestDataUtil.setFinanzielleSituation(
 			gesuch,
 			EINKOMMEN_FINANZIELLE_SITUATION
@@ -217,23 +221,23 @@ public class FinanzielleSituationBernRechnerTest {
 		);
 		TestDataUtil.calculateFinanzDaten(gesuch, finSitRechner);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjVorAbzFamGr()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_EKV_ANGENOMMEN,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr()
 		);
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Accepted());
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_EKV_ANGENOMMEN,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr()
 		);
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
 	}
 
 	@Test
@@ -242,7 +246,7 @@ public class FinanzielleSituationBernRechnerTest {
 			false
 		);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		TestDataUtil.setFinanzielleSituation(
 			gesuch,
 			EINKOMMEN_FINANZIELLE_SITUATION
@@ -272,25 +276,25 @@ public class FinanzielleSituationBernRechnerTest {
 				EINKOMMEN_EKV_ANGENOMMEN
 			);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjVorAbzFamGr()
 		);
 
-		Assert.assertEquals(
-			"Differenz: " + differenzJahr1,
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
-			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr()
+			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr(),
+			"Differenz: " + differenzJahr1
 		); // Abgelehnt
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv1Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv1Accepted());
 
-		Assert.assertEquals(
-			"Differenz: " + differenzJahr2,
+		assertEquals(
 			EINKOMMEN_EKV_ANGENOMMEN,
-			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr()
+			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr(),
+			"Differenz: " + differenzJahr2
 		);
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
 	}
 
 	@Test
@@ -299,7 +303,7 @@ public class FinanzielleSituationBernRechnerTest {
 			false
 		);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		TestDataUtil.setFinanzielleSituation(
 			gesuch,
 			EINKOMMEN_FINANZIELLE_SITUATION
@@ -318,24 +322,24 @@ public class FinanzielleSituationBernRechnerTest {
 		);
 		TestDataUtil.calculateFinanzDaten(gesuch, finSitRechner);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjVorAbzFamGr()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_EKV_ANGENOMMEN,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr()
 		);
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Accepted());
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr()
 		);
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv2Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv2Accepted());
 	}
 
 	@Test
@@ -344,7 +348,7 @@ public class FinanzielleSituationBernRechnerTest {
 			false
 		);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		TestDataUtil.setFinanzielleSituation(
 			gesuch,
 			EINKOMMEN_FINANZIELLE_SITUATION
@@ -363,24 +367,24 @@ public class FinanzielleSituationBernRechnerTest {
 		);
 		TestDataUtil.calculateFinanzDaten(gesuch, finSitRechner);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjVorAbzFamGr()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_EKV_ANGENOMMEN,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr()
 		);
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Accepted());
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_EKV_ANGENOMMEN_2,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr()
 		);
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv2Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv2Accepted());
 	}
 
 	@Test
@@ -389,7 +393,7 @@ public class FinanzielleSituationBernRechnerTest {
 			false
 		);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		TestDataUtil.setFinanzielleSituation(
 			gesuch,
 			EINKOMMEN_FINANZIELLE_SITUATION
@@ -408,24 +412,24 @@ public class FinanzielleSituationBernRechnerTest {
 		);
 		TestDataUtil.calculateFinanzDaten(gesuch, finSitRechner);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjVorAbzFamGr()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr()
 		); // Abgelehnt
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv1Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv1Accepted());
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr()
 		); // Abgelehnt
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv2Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv2Accepted());
 	}
 
 	@Test
@@ -434,7 +438,7 @@ public class FinanzielleSituationBernRechnerTest {
 			false
 		);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		TestDataUtil.setFinanzielleSituation(
 			gesuch,
 			EINKOMMEN_FINANZIELLE_SITUATION
@@ -445,28 +449,28 @@ public class FinanzielleSituationBernRechnerTest {
 			EINKOMMEN_EKV_ANGENOMMEN,
 			true
 		);
-		Assert.assertNotNull(
+		assertNotNull(
 			gesuch.getEinkommensverschlechterungInfoContainer()
 		);
 		TestDataUtil.calculateFinanzDaten(gesuch, finSitRechner);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjVorAbzFamGr()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_EKV_ANGENOMMEN,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr()
 		);
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
-		Assert.assertTrue(gesuch.getFinanzDatenDTO().isEkv1Accepted());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
+		assertTrue(gesuch.getFinanzDatenDTO().isEkv1Accepted());
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_EKV_ANGENOMMEN,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr()
 		);
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
 	}
 
 	@Test
@@ -475,7 +479,7 @@ public class FinanzielleSituationBernRechnerTest {
 			false
 		);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		TestDataUtil.setFinanzielleSituation(
 			gesuch,
 			EINKOMMEN_FINANZIELLE_SITUATION
@@ -488,33 +492,35 @@ public class FinanzielleSituationBernRechnerTest {
 		);
 
 		gesuch.setEinkommensverschlechterungInfoContainer(null);
-		Assert.assertNull(gesuch.getEinkommensverschlechterungInfoContainer());
+		assertNull(
+			gesuch.getEinkommensverschlechterungInfoContainer()
+		);
 
 		TestDataUtil.calculateFinanzDaten(gesuch, finSitRechner);
 
-		Assert.assertEquals(
+		assertEquals(
 			EINKOMMEN_FINANZIELLE_SITUATION,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjVorAbzFamGr()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP1VorAbzFamGr()
 		);
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv1Accepted());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv1Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv1Accepted());
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			gesuch.getFinanzDatenDTO().getMassgebendesEinkBjP2VorAbzFamGr()
 		);
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
-		Assert.assertFalse(gesuch.getFinanzDatenDTO().isEkv2Accepted());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv2Erfasst());
+		assertFalse(gesuch.getFinanzDatenDTO().isEkv2Accepted());
 	}
 
 	@Test
 	public void getCalculatedProzentualeDifferenzRounded() {
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.GANZZAHL.from(-19),
 			FinanzielleSituationBernRechner
 				.getCalculatedProzentualeDifferenzRounded(
@@ -522,7 +528,7 @@ public class FinanzielleSituationBernRechnerTest {
 					BigDecimal.valueOf(146874)
 				)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.GANZZAHL.from(-22),
 			FinanzielleSituationBernRechner
 				.getCalculatedProzentualeDifferenzRounded(
@@ -530,7 +536,7 @@ public class FinanzielleSituationBernRechnerTest {
 					BigDecimal.valueOf(140668)
 				)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.GANZZAHL.from(-20),
 			FinanzielleSituationBernRechner
 				.getCalculatedProzentualeDifferenzRounded(
@@ -542,7 +548,7 @@ public class FinanzielleSituationBernRechnerTest {
 
 	@Test
 	public void calculateProzentualeDifferenz() {
-		Assert.assertEquals(
+		assertEquals(
 			-19.193d,
 			FinanzielleSituationBernRechner.calculateProzentualeDifferenz(
 				BigDecimal.valueOf(181760),
@@ -550,7 +556,7 @@ public class FinanzielleSituationBernRechnerTest {
 			).doubleValue(),
 			0.01d
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-22.6d,
 			FinanzielleSituationBernRechner.calculateProzentualeDifferenz(
 				BigDecimal.valueOf(181760),
@@ -558,7 +564,7 @@ public class FinanzielleSituationBernRechnerTest {
 			).doubleValue(),
 			0.01d
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-20.58d,
 			FinanzielleSituationBernRechner.calculateProzentualeDifferenz(
 				BigDecimal.valueOf(181760),
@@ -573,7 +579,7 @@ public class FinanzielleSituationBernRechnerTest {
 		// beide FinSit null
 		BigDecimal total = AbstractFinanzielleSituationRechner
 			.calcVermoegen5Prozent(null, null);
-		Assert.assertEquals(BigDecimal.ZERO, total);
+		assertEquals(BigDecimal.ZERO, total);
 
 		// FinSit GS1 Normal GS2 null
 		FinanzielleSituation finSitGS1 = new FinanzielleSituation();
@@ -583,7 +589,7 @@ public class FinanzielleSituationBernRechnerTest {
 			finSitGS1,
 			null
 		);
-		Assert.assertEquals(new BigDecimal(50), total);
+		assertEquals(new BigDecimal(50), total);
 
 		// FinSit GS1 Normal GS2 null Nettovermoegen Neg
 		finSitGS1.setNettoVermoegen(new BigDecimal(-2000));
@@ -594,7 +600,7 @@ public class FinanzielleSituationBernRechnerTest {
 			finSitGS1,
 			null
 		);
-		Assert.assertEquals(new BigDecimal(50), total);
+		assertEquals(new BigDecimal(50), total);
 
 		// FinSit GS1 Steuerzugriff GS2 Null Nettovermoegen Neg
 		finSitGS1.setSteuerdatenZugriff(true);
@@ -605,7 +611,7 @@ public class FinanzielleSituationBernRechnerTest {
 			finSitGS1,
 			null
 		);
-		Assert.assertEquals(new BigDecimal(0), total);
+		assertEquals(new BigDecimal(0), total);
 
 		// FinSit GS1 Steuerzugriff GS2 null
 		finSitGS1.setNettoVermoegen(new BigDecimal(2000));
@@ -617,7 +623,7 @@ public class FinanzielleSituationBernRechnerTest {
 			finSitGS1,
 			null
 		);
-		Assert.assertEquals(new BigDecimal(100), total);
+		assertEquals(new BigDecimal(100), total);
 
 		// FinSit GS1 Normal, GS2 Normal
 		finSitGS1.setSteuerdatenZugriff(false);
@@ -628,7 +634,7 @@ public class FinanzielleSituationBernRechnerTest {
 			finSitGS1,
 			finSitGS2
 		);
-		Assert.assertEquals(new BigDecimal(150), total);
+		assertEquals(new BigDecimal(150), total);
 
 		// FinSit GS1 Normal, GS2 Steuerzugriff
 		finSitGS2.setNettoVermoegen(new BigDecimal(4000));
@@ -640,7 +646,7 @@ public class FinanzielleSituationBernRechnerTest {
 			finSitGS1,
 			finSitGS2
 		);
-		Assert.assertEquals(new BigDecimal(250), total);
+		assertEquals(new BigDecimal(250), total);
 
 		// FinSit GS1 Steuerzugriff, GS2 Normal
 		finSitGS1.setSteuerdatenZugriff(true);
@@ -649,7 +655,7 @@ public class FinanzielleSituationBernRechnerTest {
 			finSitGS1,
 			finSitGS2
 		);
-		Assert.assertEquals(new BigDecimal(200), total);
+		assertEquals(new BigDecimal(200), total);
 
 		// FinSit GS1 SteuerZugriff, GS2 Steuerzugriff
 		finSitGS2.setSteuerdatenZugriff(true);
@@ -657,7 +663,7 @@ public class FinanzielleSituationBernRechnerTest {
 			finSitGS1,
 			finSitGS2
 		);
-		Assert.assertEquals(new BigDecimal(300), total);
+		assertEquals(new BigDecimal(300), total);
 
 		// FinSit GS1 SteuerZugriff, GS2 Steuerzugriff Nettovermoegen neg und pos
 		finSitGS1.setNettoVermoegen(new BigDecimal(-500));
@@ -667,6 +673,6 @@ public class FinanzielleSituationBernRechnerTest {
 			finSitGS1,
 			finSitGS2
 		);
-		Assert.assertEquals(new BigDecimal(100), total);
+		assertEquals(new BigDecimal(100), total);
 	}
 }

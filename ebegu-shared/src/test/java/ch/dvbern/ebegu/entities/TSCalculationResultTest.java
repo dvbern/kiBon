@@ -20,8 +20,9 @@ package ch.dvbern.ebegu.entities;
 
 import java.math.BigDecimal;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test fuer Methoden von TSCalculationResultTest
@@ -34,41 +35,41 @@ public class TSCalculationResultTest {
 			new TSCalculationResult();
 		tsCalculationResult.setGebuehrProStunde(BigDecimal.valueOf(15.5));
 		tsCalculationResult.setBetreuungszeitProWoche(118);
-		Assert.assertEquals(
+		assertEquals(
 			"01:58",
 			tsCalculationResult.getBetreuungszeitProWocheFormatted()
 		);
 
 		tsCalculationResult.setBetreuungszeitProWoche(20);
-		Assert.assertEquals(
+		assertEquals(
 			"00:20",
 			tsCalculationResult.getBetreuungszeitProWocheFormatted()
 		);
 
 		tsCalculationResult.setBetreuungszeitProWoche(480);
 		tsCalculationResult.setVerpflegungskosten(new BigDecimal(25));
-		Assert.assertEquals(
+		assertEquals(
 			"08:00",
 			tsCalculationResult.getBetreuungszeitProWocheFormatted()
 		);
 
 		tsCalculationResult.setBetreuungszeitProWoche(40 * 60);
 		tsCalculationResult.setVerpflegungskosten(new BigDecimal(0));
-		Assert.assertEquals(
+		assertEquals(
 			"40:00",
 			tsCalculationResult.getBetreuungszeitProWocheFormatted()
 		);
 
 		tsCalculationResult.setBetreuungszeitProWoche(0);
 		tsCalculationResult.setVerpflegungskosten(new BigDecimal(0));
-		Assert.assertEquals(
+		assertEquals(
 			"00:00",
 			tsCalculationResult.getBetreuungszeitProWocheFormatted()
 		);
 
 		tsCalculationResult.setBetreuungszeitProWoche(0);
 		tsCalculationResult.setVerpflegungskosten(new BigDecimal(78.935));
-		Assert.assertEquals(
+		assertEquals(
 			"00:00",
 			tsCalculationResult.getBetreuungszeitProWocheFormatted()
 		);

@@ -445,12 +445,6 @@
 
             <!-- region testing -->
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <scope>test</scope>
-                <version>4.13.2</version>
-            </dependency>
-            <dependency>
                 <groupId>org.easymock</groupId>
                 <artifactId>easymock</artifactId>
                 <version>5.2.0</version>
@@ -484,12 +478,6 @@
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-core</artifactId>
                 <version>${version.hamcrest}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>eu.codearte.catch-exception</groupId>
-                <artifactId>catch-exception</artifactId>
-                <version>2.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -556,16 +544,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
@@ -587,16 +565,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.npathai</groupId>
             <artifactId>hamcrest-optional</artifactId>
             <version>2.0.0</version>
@@ -612,11 +580,6 @@
             <groupId>com.spotify</groupId>
             <artifactId>hamcrest-pojo</artifactId>
             <version>1.2.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>eu.codearte.catch-exception</groupId>
-            <artifactId>catch-exception</artifactId>
             <scope>test</scope>
         </dependency>
         <!-- endregion -->

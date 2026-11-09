@@ -41,6 +41,8 @@ import {
     MaskitoNumberParams,
     maskitoParseNumber
 } from '@maskito/kit';
+import {GesuchFormError} from '../gesuch-form-error/gesuch-form-error';
+import {GesuchFormErrorMessageOverrides} from '../gesuch-form-error/gesuch-form-error.util';
 import {GesuchSharedFormLabel} from '../style/gesuch-shared-form-label';
 import {GesuchSharedFormStyleMaterialInputWrapper} from '../style/gesuch-shared-form-style-material-input-wrapper/gesuch-shared-form-style-material-input-wrapper';
 
@@ -53,6 +55,7 @@ import {GesuchSharedFormStyleMaterialInputWrapper} from '../style/gesuch-shared-
         MatFormField,
         MatInput,
         MatError,
+        GesuchFormError,
         GesuchSharedFormLabel
     ],
     templateUrl: './gesuch-form-number-input.html',
@@ -67,6 +70,8 @@ export class GesuchFormNumberInput implements FormValueControl<number | null> {
     invalid = input<boolean>();
     touched = input<boolean>(false);
     touch = output<void>();
+    /** translation keys per error kind, see {@link GesuchFormError} */
+    errorMessageOverrides = input<GesuchFormErrorMessageOverrides>({});
 
     matcher: ErrorStateMatcher = {
         isErrorState: () => (this.errors()?.length ?? 0) > 0 && this.touched()

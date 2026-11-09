@@ -52,13 +52,15 @@ import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.hamcrest.core.Is;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(EasyMockExtension.class)
 public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
@@ -102,7 +104,7 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 			.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
 				benutzer
 			);
-		Assertions.assertNull(fallId);
+		assertNull(fallId);
 	}
 
 	@Test
@@ -114,7 +116,7 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 			.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
 				benutzer
 			);
-		Assertions.assertNull(fallId);
+		assertNull(fallId);
 	}
 
 	@Test
@@ -132,7 +134,7 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 			.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
 				benutzer
 			);
-		Assertions.assertEquals(fall.getId(), fallId);
+		assertEquals(fall.getId(), fallId);
 	}
 
 	@Test()
@@ -146,7 +148,7 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 		gesuch.setStatus(AntragStatus.VERFUEGT);
 		createGesuchServiceMock(fall, gesuchIds, gesuch);
 		replayAll();
-		Assertions.assertThrows(BenutzerExistException.class, () -> {
+		assertThrows(BenutzerExistException.class, () -> {
 			benutzerServiceBean
 				.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
 					benutzer

@@ -28,8 +28,10 @@ import ch.dvbern.ebegu.enums.ModulTagesschuleName;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.errors.ScolarisException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Dieser Test ueberprueft, dass alle Enums aus kiBon eine Entsprechung in Scolaris haben, bzw.
@@ -47,7 +49,7 @@ public class ScolarisConverterTest {
 				antragStatus -> {
 					JaxExternalAntragstatus converted = converter
 						.antragstatusToScolaris(antragStatus);
-					Assert.assertNotNull(converted);
+					assertNotNull(converted);
 				}
 			);
 	}
@@ -63,14 +65,14 @@ public class ScolarisConverterTest {
 						.betreuungsangebotTypToScolaris(
 							betreuungsangebotTyp
 						);
-					Assert.assertNotNull(converted);
+					assertNotNull(converted);
 				} else {
 					// In allen anderen Faellen erwarten wir eine Exception
 					try {
 						converter.betreuungsangebotTypToScolaris(
 							betreuungsangebotTyp
 						);
-						Assert.fail("SchulamtException expected");
+						fail("SchulamtException expected");
 					} catch (ScolarisException e) {
 						// Exception expected
 					}
@@ -97,7 +99,7 @@ public class ScolarisConverterTest {
 				// In allen anderen Faellen erwarten wir eine Exception
 				try {
 					converter.betreuungsstatusToScolaris(betreuungsstatus);
-					Assert.fail("SchulamtException expected");
+					fail("SchulamtException expected");
 				} catch (ScolarisException e) {
 					// Exception expected
 				}
@@ -112,7 +114,7 @@ public class ScolarisConverterTest {
 			JaxExternalFerienName converted = converter.feriennameToScolaris(
 				ferienname
 			);
-			Assert.assertNotNull(converted);
+			assertNotNull(converted);
 		});
 	}
 
@@ -125,7 +127,7 @@ public class ScolarisConverterTest {
 					== modulTagesschuleName) {
 					try {
 						converter.modulnameToScolaris(modulTagesschuleName);
-						Assert.fail("SchulamtException expected");
+						fail("SchulamtException expected");
 					} catch (ScolarisException e) {
 						// Exception expected
 					}

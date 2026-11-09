@@ -36,8 +36,6 @@ import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.api.converter.AbstractBaseConverter;
 import ch.dvbern.ebegu.api.dtos.JaxAbstractInstitutionStammdaten;
-import ch.dvbern.ebegu.api.dtos.JaxEinstellungenFerieninsel;
-import ch.dvbern.ebegu.api.dtos.JaxEinstellungenTagesschule;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionExternalClient;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdaten;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdatenBetreuungsgutscheine;
@@ -45,6 +43,8 @@ import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdatenFerieninsel;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdatenTagesschule;
 import ch.dvbern.ebegu.api.dtos.JaxModulTagesschule;
 import ch.dvbern.ebegu.api.dtos.JaxModulTagesschuleGroup;
+import ch.dvbern.ebegu.api.einstellung.dto.JaxEinstellungenFerieninsel;
+import ch.dvbern.ebegu.api.einstellung.dto.JaxEinstellungenTagesschule;
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.entities.Auszahlungsdaten;
 import ch.dvbern.ebegu.entities.Benutzer;

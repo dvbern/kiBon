@@ -24,8 +24,9 @@ import ch.dvbern.ebegu.enums.GesuchBetreuungenStatus;
 import ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationBernRechner;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.AntragStatusConverterUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests der die Konvertierung vom AntragStatus
@@ -39,7 +40,7 @@ public class AntragStatusConverterUtilTest {
 		); // by default
 		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil
 			.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
-		Assert.assertEquals(AntragStatusDTO.GEPRUEFT, antragStatusDTO);
+		assertEquals(AntragStatusDTO.GEPRUEFT, antragStatusDTO);
 	}
 
 	@Test
@@ -50,7 +51,7 @@ public class AntragStatusConverterUtilTest {
 
 		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil
 			.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
-		Assert.assertEquals(AntragStatusDTO.GEPRUEFT, antragStatusDTO);
+		assertEquals(AntragStatusDTO.GEPRUEFT, antragStatusDTO);
 	}
 
 	@Test
@@ -61,7 +62,7 @@ public class AntragStatusConverterUtilTest {
 
 		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil
 			.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
-		Assert.assertEquals(
+		assertEquals(
 			AntragStatusDTO.PLATZBESTAETIGUNG_ABGEWIESEN,
 			antragStatusDTO
 		);
@@ -75,7 +76,7 @@ public class AntragStatusConverterUtilTest {
 
 		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil
 			.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
-		Assert.assertEquals(
+		assertEquals(
 			AntragStatusDTO.PLATZBESTAETIGUNG_WARTEN,
 			antragStatusDTO
 		);
@@ -83,19 +84,19 @@ public class AntragStatusConverterUtilTest {
 
 	@Test
 	public void convertStatusToEntityGEPRUEFTTest() {
-		Assert.assertEquals(
+		assertEquals(
 			AntragStatus.GEPRUEFT,
 			AntragStatusConverterUtil.convertStatusToEntity(
 				AntragStatusDTO.PLATZBESTAETIGUNG_WARTEN
 			)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			AntragStatus.GEPRUEFT,
 			AntragStatusConverterUtil.convertStatusToEntity(
 				AntragStatusDTO.PLATZBESTAETIGUNG_ABGEWIESEN
 			)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			AntragStatus.GEPRUEFT,
 			AntragStatusConverterUtil.convertStatusToEntity(
 				AntragStatusDTO.GEPRUEFT

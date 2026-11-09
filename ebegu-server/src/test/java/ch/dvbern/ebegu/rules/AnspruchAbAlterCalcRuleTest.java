@@ -30,11 +30,14 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.enums.MsgKey.ANSPRUCH_AB_ALTER_NICHT_ERFUELLT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AnspruchAbAlterCalcRuleTest {
 
@@ -75,8 +78,8 @@ class AnspruchAbAlterCalcRuleTest {
 	void testRequiredAgeForAnspruchReached() {
 		inputData.setRequiredAgeForAnspruchNotReached(false);
 		ruleToTest.executeRule(betreuung, inputData);
-		Assertions.assertNotEquals(0, inputData.getAnspruchspensumProzent());
-		Assertions.assertFalse(
+		assertNotEquals(0, inputData.getAnspruchspensumProzent());
+		assertFalse(
 			inputData.getParent()
 				.getBemerkungenDTOList()
 				.containsMsgKey(ANSPRUCH_AB_ALTER_NICHT_ERFUELLT)
@@ -87,8 +90,8 @@ class AnspruchAbAlterCalcRuleTest {
 	void testRequiredAgeForAnspruchNotReached() {
 		inputData.setRequiredAgeForAnspruchNotReached(true);
 		ruleToTest.executeRule(betreuung, inputData);
-		Assertions.assertEquals(0, inputData.getAnspruchspensumProzent());
-		Assertions.assertTrue(
+		assertEquals(0, inputData.getAnspruchspensumProzent());
+		assertTrue(
 			inputData.getParent()
 				.getBemerkungenDTOList()
 				.containsMsgKey(ANSPRUCH_AB_ALTER_NICHT_ERFUELLT)

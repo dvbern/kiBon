@@ -37,8 +37,10 @@ import ch.dvbern.ebegu.util.EasyMockTestSupport;
 import org.easymock.EasyMock;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BetreuungStornierenActionTest extends EasyMockTestSupport {
 
@@ -125,17 +127,17 @@ class BetreuungStornierenActionTest extends EasyMockTestSupport {
 		verifyAll();
 
 		// sicherstellen, dass die Betreuung richtig parametriert wurde
-		Assertions.assertEquals(
+		assertEquals(
 			LocalDate.now(),
 			betreuung.getDatumBestaetigung()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			Betreuungsstatus.STORNIERT,
 			betreuung.getBetreuungsstatus()
 		);
-		Assertions.assertTrue(bp1.getNichtEingetreten());
-		Assertions.assertEquals(BigDecimal.ZERO, bp1.getPensum());
-		Assertions.assertTrue(bp2.getNichtEingetreten());
-		Assertions.assertEquals(BigDecimal.ZERO, bp2.getPensum());
+		assertTrue(bp1.getNichtEingetreten());
+		assertEquals(BigDecimal.ZERO, bp1.getPensum());
+		assertTrue(bp2.getNichtEingetreten());
+		assertEquals(BigDecimal.ZERO, bp2.getPensum());
 	}
 }

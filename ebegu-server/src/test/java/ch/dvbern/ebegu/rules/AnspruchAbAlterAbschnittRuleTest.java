@@ -28,9 +28,11 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AnspruchAbAlterAbschnittRuleTest {
 
@@ -80,7 +82,7 @@ class AnspruchAbAlterAbschnittRuleTest {
 		setChildBirthDate(GP_PERIODE_START);
 		List<VerfuegungZeitabschnitt> createdAbschnitte = ruleToTest
 			.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertTrue(createdAbschnitte.isEmpty());
+		assertTrue(createdAbschnitte.isEmpty());
 	}
 
 	@Test
@@ -89,7 +91,7 @@ class AnspruchAbAlterAbschnittRuleTest {
 		setChildBirthDate(GP_PERIODE_START.minusMonths(2));
 		List<VerfuegungZeitabschnitt> createdAbschnitte = ruleToTest
 			.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertTrue(createdAbschnitte.isEmpty());
+		assertTrue(createdAbschnitte.isEmpty());
 	}
 
 	@Test
@@ -98,7 +100,7 @@ class AnspruchAbAlterAbschnittRuleTest {
 		setChildBirthDate(GP_PERIODE_START.plusMonths(2));
 		List<VerfuegungZeitabschnitt> createdAbschnitte = ruleToTest
 			.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertTrue(createdAbschnitte.isEmpty());
+		assertTrue(createdAbschnitte.isEmpty());
 	}
 
 	@Test
@@ -110,13 +112,13 @@ class AnspruchAbAlterAbschnittRuleTest {
 		setChildBirthDate(geburtsdatum);
 		List<VerfuegungZeitabschnitt> createdAbschnitte = ruleToTest
 			.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertEquals(1, createdAbschnitte.size());
+		assertEquals(1, createdAbschnitte.size());
 		assertAnspruchZero(createdAbschnitte.get(0));
-		Assertions.assertEquals(
+		assertEquals(
 			GP_PERIODE_START,
 			createdAbschnitte.get(0).getGueltigkeit().getGueltigAb()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			firstDayOfAnspruch.minusDays(1),
 			createdAbschnitte.get(0).getGueltigkeit().getGueltigBis()
 		);
@@ -130,7 +132,7 @@ class AnspruchAbAlterAbschnittRuleTest {
 		setChildBirthDate(geburtsdatum);
 		List<VerfuegungZeitabschnitt> createdAbschnitte = ruleToTest
 			.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertTrue(createdAbschnitte.isEmpty());
+		assertTrue(createdAbschnitte.isEmpty());
 	}
 
 	@Test
@@ -142,12 +144,12 @@ class AnspruchAbAlterAbschnittRuleTest {
 		setChildBirthDate(geburtsdatum);
 		List<VerfuegungZeitabschnitt> createdAbschnitte = ruleToTest
 			.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertEquals(1, createdAbschnitte.size());
-		Assertions.assertEquals(
+		assertEquals(1, createdAbschnitte.size());
+		assertEquals(
 			GP_PERIODE_START,
 			createdAbschnitte.get(0).getGueltigkeit().getGueltigAb()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			geburtsdatum.plusMonths(3).minusDays(1),
 			createdAbschnitte.get(0).getGueltigkeit().getGueltigBis()
 		);
@@ -161,13 +163,13 @@ class AnspruchAbAlterAbschnittRuleTest {
 		setChildBirthDate(geburtsdatum);
 		List<VerfuegungZeitabschnitt> createdAbschnitte = ruleToTest
 			.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertEquals(1, createdAbschnitte.size());
+		assertEquals(1, createdAbschnitte.size());
 		assertAnspruchZero(createdAbschnitte.get(0));
-		Assertions.assertEquals(
+		assertEquals(
 			GP_PERIODE_START,
 			createdAbschnitte.get(0).getGueltigkeit().getGueltigAb()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			firstDayOfAnspruch.minusDays(1),
 			createdAbschnitte.get(0).getGueltigkeit().getGueltigBis()
 		);
@@ -179,7 +181,7 @@ class AnspruchAbAlterAbschnittRuleTest {
 		setChildBirthDate(GP_PERIODE_START.minusYears(1));
 		List<VerfuegungZeitabschnitt> createdAbschnitte = ruleToTest
 			.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertTrue(createdAbschnitte.isEmpty());
+		assertTrue(createdAbschnitte.isEmpty());
 	}
 
 	@Test
@@ -188,7 +190,7 @@ class AnspruchAbAlterAbschnittRuleTest {
 		setChildBirthDate(GP_PERIODE_START.plusYears(1));
 		List<VerfuegungZeitabschnitt> createdAbschnitte = ruleToTest
 			.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertTrue(createdAbschnitte.isEmpty());
+		assertTrue(createdAbschnitte.isEmpty());
 	}
 
 	private void setChildBirthDate(LocalDate geburtsdatum) {
@@ -198,7 +200,7 @@ class AnspruchAbAlterAbschnittRuleTest {
 	private static void assertAnspruchZero(
 		VerfuegungZeitabschnitt verfuegungZeitabschnitt
 	) {
-		Assertions.assertEquals(
+		assertEquals(
 			0,
 			verfuegungZeitabschnitt.getBgCalculationInputAsiv()
 				.getAnspruchspensumProzent()

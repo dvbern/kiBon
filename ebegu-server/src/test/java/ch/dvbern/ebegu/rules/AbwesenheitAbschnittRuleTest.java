@@ -24,11 +24,11 @@ import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer AbwesenheitAbschnittRule
@@ -140,9 +140,9 @@ public class AbwesenheitAbschnittRuleTest {
 
 		assertNotNull(zeitabschnitte);
 		assertEquals(
-			"Es werden beide Abwesenheiten beruecksichtigt",
 			2,
-			zeitabschnitte.size()
+			zeitabschnitte.size(),
+			"Es werden beide Abwesenheiten beruecksichtigt"
 		);
 
 		checkAbwesenheitAbschnitte(
@@ -195,9 +195,9 @@ public class AbwesenheitAbschnittRuleTest {
 
 		assertNotNull(zeitabschnitte);
 		assertEquals(
-			"Die erste Abwesenheit wird nicht beruecksichtigt da sie kurz ist. Nur die 2 erstellt die Zeitabschnitte",
 			1,
-			zeitabschnitte.size()
+			zeitabschnitte.size(),
+			"Die erste Abwesenheit wird nicht beruecksichtigt da sie kurz ist. Nur die 2 erstellt die Zeitabschnitte"
 		);
 
 		checkAbwesenheitAbschnitte(lateAbwesenheit, null, zeitabschnitte);

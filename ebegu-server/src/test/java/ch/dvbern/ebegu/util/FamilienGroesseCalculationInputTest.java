@@ -2,7 +2,6 @@ package ch.dvbern.ebegu.util;
 
 import ch.dvbern.ebegu.dto.FamilienGroesseCalculationInput;
 import ch.dvbern.ebegu.enums.Kinderabzug;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -10,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FamilienGroesseCalculationInputTest {
 
@@ -70,7 +70,7 @@ class FamilienGroesseCalculationInputTest {
 			new FamilienGroesseCalculationInput()
 				.setAnzahlGesuchsteller(2);
 
-		Assertions.assertThrows(
+		assertThrows(
 			IllegalArgumentException.class,
 			() -> input.add(inputOther)
 		);
@@ -203,7 +203,7 @@ class FamilienGroesseCalculationInputTest {
 			new FamilienGroesseCalculationInput();
 		inputOther.addKindToAbzugList(0, Kinderabzug.GANZER_ABZUG);
 
-		Assertions.assertThrows(
+		assertThrows(
 			IllegalArgumentException.class,
 			() -> input.add(inputOther)
 		);

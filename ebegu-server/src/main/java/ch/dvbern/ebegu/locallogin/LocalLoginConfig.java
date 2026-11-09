@@ -18,10 +18,15 @@
 
 package ch.dvbern.ebegu.locallogin;
 
+import java.util.Optional;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
+import lombok.AccessLevel;
 import lombok.Getter;
+import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
@@ -49,4 +54,24 @@ public class LocalLoginConfig {
 	@ConfigProperty(name = "ebegu.dummy.login.delete-keycloak-users",
 		defaultValue = "false")
 	private boolean deleteKeycloakUsers;
+
+	@Inject
+	@Getter(AccessLevel.NONE)
+	private Config config;
+
+	/**
+	 * Password to unlock the local login page, configured per mandant with
+	 * {@code ebegu.dummy.login.page.password.<mandantUrlCode>}.
+	 * Not to be confused with {@link #password}, the keycloak password of the persona users.
+	 * Empty if not configured, in which case the local login page has no password protection (e.g. local dev).
+	 */
+	public Optional<String> getPagePassword(
+		MandantIdentifier mandantIdentifier
+	) {
+		return config.getOptionalValue(
+			"ebegu.dummy.login.page.password." + mandantIdentifier.getUrlCode(),
+			String.class
+		)
+			.filter(pagePassword -> !pagePassword.isBlank());
+	}
 }

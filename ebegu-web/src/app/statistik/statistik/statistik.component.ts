@@ -19,10 +19,12 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    computed,
     inject,
     OnDestroy,
     OnInit
 } from '@angular/core';
+import {rxResource} from '@angular/core/rxjs-interop';
 import {NgForm, NgModel} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
@@ -34,7 +36,6 @@ import {LogFactory} from '@utils/log';
 import {MomentUtil} from '@utils/moment';
 import moment from 'moment';
 import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../legacy-gesuch/service/gemeindeRS.rest';
 import {InstitutionNameStammdatenIdDto} from '../../../models/dto/InstitutionNameStammdatenIdDto.interface';
@@ -117,8 +118,19 @@ export class StatistikComponent implements OnInit, OnDestroy {
     public years: number[];
     public tagesschulenStammdatenFilterList: InstitutionNameStammdatenIdDto[] =
         [];
-    public bgInstitutionen: TSInstitution[];
-    public hasBgInstitutionen$: Observable<boolean>;
+    // load in background, so zahlung statistik can be shown instantly
+    private readonly bgInstitutionenResource = rxResource({
+        stream: () => this.getInstitutionen()
+    });
+    public readonly bgInstitutionenLoading =
+        this.bgInstitutionenResource.isLoading;
+    public readonly bgInstitutionen = computed(() =>
+        this.bgInstitutionenResource.hasValue()
+            ? StatistikComponent.sortByName([
+                  ...this.bgInstitutionenResource.value()
+              ])
+            : []
+    );
     public gemeinden: TSGemeinde[];
     public gemeindenMahlzeitenverguenstigungen: TSGemeinde[];
     public flagShowErrorNoGesuchSelected: boolean = false;
@@ -163,7 +175,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
             });
 
         this.gemeindeRS.getGemeindenForPrincipal$().subscribe(gemeinden => {
-            this.gemeinden = gemeinden;
+            this.gemeinden = StatistikComponent.sortByName([...gemeinden]);
             this.cd.markForCheck();
         });
 
@@ -201,17 +213,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
                 this.updateShowKinderStatistik();
                 this.tagesschulenActive = res.angebotTSActivated;
             });
-
-        // observable is prefered here over signal
-        // for auto unsubscribe + async pipe in template call
-        this.hasBgInstitutionen$ = this.getInstitutionen().pipe(
-            map(institutionen => {
-                this.bgInstitutionen =
-                    StatistikComponent.sortByName(institutionen);
-                return this.bgInstitutionen.length > 0;
-            }),
-            startWith(false) // renders immediately as false to show in template
-        );
     }
 
     public ngOnDestroy(): void {
@@ -508,7 +509,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
                     )
                 ) {
                     this.statistikParameter.institution =
-                        this.bgInstitutionen[0];
+                        this.bgInstitutionen()[0];
                 }
                 this.reportAsyncRS
                     .getZahlungenReportExcel(
@@ -949,6 +950,28 @@ export class StatistikComponent implements OnInit, OnDestroy {
         );
     }
 
+    public showZahlungenStatistik(): boolean {
+        if (!this.showZahlungenStatistikAllowedForRoles()) {
+            return false;
+        }
+        // Traegerschaft/Institution: erst nach dem Laden anzeigen (schneller Endpunkt), damit
+        // reine TS-Institutionen die Statistik nicht kurz aufblitzen sehen
+        if (
+            this.authServiceRS.isOneOfRoles(
+                TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
+            )
+        ) {
+            return (
+                !this.bgInstitutionenLoading() &&
+                this.bgInstitutionen().length > 0
+            );
+        }
+        // all other roles: show immediately, only hide if there a no BG Institutionen
+        return (
+            this.bgInstitutionenLoading() || this.bgInstitutionen().length > 0
+        );
+    }
+
     public gemeindenVisibleZahlungenStatistik(): boolean {
         return !this.authServiceRS.isOneOfRoles(
             TSRoleUtil.getInstitutionOnlyRoles()
@@ -1031,7 +1054,11 @@ export class StatistikComponent implements OnInit, OnDestroy {
     protected readonly ApplicationPropertyRsService =
         ApplicationPropertyRsService;
 
-    public bgZahlungenStatistikGemeindeAndInstitutionAlleSelected(): any {
+    public bgZahlungenStatistikGemeindeAndInstitutionAlleSelected(): boolean {
+        // Institution-User sehen keine Dropdowns, ihre Institution wird beim Generieren gesetzt
+        if (!this.institutionenVisibleZahlungenStatistik()) {
+            return false;
+        }
         return (
             (EbeguUtil.isNullOrUndefined(this.statistikParameter.gemeinde) ||
                 this.statistikParameter.gemeinde === ('ALLE' as any)) &&
@@ -1042,21 +1069,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
 
     public isPeriodeKeineSelected(): boolean {
         return this.statistikParameter.gesuchsperiode === this.PERIODE_KEINE;
-    }
-
-    public isZeitspanneMoreThanOneJahr(): boolean {
-        if (!this.isPeriodeKeineSelected()) {
-            return false;
-        }
-        const von = this.statistikParameter.von;
-        const bis = this.statistikParameter.bis;
-        if (
-            EbeguUtil.isNullOrUndefined(von) ||
-            EbeguUtil.isNullOrUndefined(bis)
-        ) {
-            return false;
-        }
-        return von.clone().add(1, 'year').isBefore(bis);
     }
 
     public getSelectedPeriode(): TSGesuchsperiode | undefined {

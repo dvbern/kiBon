@@ -26,8 +26,7 @@ import javax.annotation.Nonnull;
 import ch.dvbern.ebegu.entities.AntragStatusHistory;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.enums.AntragStatus.BESCHWERDE_HAENGIG;
 import static ch.dvbern.ebegu.enums.AntragStatus.GEPRUEFT;
@@ -36,6 +35,9 @@ import static ch.dvbern.ebegu.enums.AntragStatus.IN_BEARBEITUNG_JA;
 import static ch.dvbern.ebegu.enums.AntragStatus.PRUEFUNG_STV;
 import static ch.dvbern.ebegu.enums.AntragStatus.VERFUEGEN;
 import static ch.dvbern.ebegu.enums.AntragStatus.VERFUEGT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AntragStatusHistoryUtilTest {
 
@@ -50,51 +52,57 @@ public class AntragStatusHistoryUtilTest {
 		);
 		final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
 			.findLastStatusChangeBeforeBeschwerde(allStatus, "Normalfall");
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(VERFUEGT, lastStatus.getStatus());
+		assertNotNull(lastStatus);
+		assertEquals(VERFUEGT, lastStatus.getStatus());
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void findLastStatusChangeBeforeBeschwerde_falscherStartStatus() {
-		final List<AntragStatusHistory> allStatus = prepareStatusListDesc(
-			IN_BEARBEITUNG_JA,
-			GEPRUEFT,
-			VERFUEGEN,
-			VERFUEGT
-		);
-		final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
-			.findLastStatusChangeBeforeBeschwerde(
-				allStatus,
-				"Aktuell nicht Beschwerde"
+		assertThrows(EbeguRuntimeException.class, () -> {
+			final List<AntragStatusHistory> allStatus = prepareStatusListDesc(
+				IN_BEARBEITUNG_JA,
+				GEPRUEFT,
+				VERFUEGEN,
+				VERFUEGT
 			);
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(VERFUEGT, lastStatus.getStatus());
+			final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
+				.findLastStatusChangeBeforeBeschwerde(
+					allStatus,
+					"Aktuell nicht Beschwerde"
+				);
+			assertNotNull(lastStatus);
+			assertEquals(VERFUEGT, lastStatus.getStatus());
+		});
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void findLastStatusChangeBeforeBeschwerde_keineHistory() {
-		final List<AntragStatusHistory> allStatus = prepareStatusListDesc();
-		final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
-			.findLastStatusChangeBeforeBeschwerde(
-				allStatus,
-				"KeineHistory"
-			);
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(VERFUEGT, lastStatus.getStatus());
+		assertThrows(EbeguRuntimeException.class, () -> {
+			final List<AntragStatusHistory> allStatus = prepareStatusListDesc();
+			final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
+				.findLastStatusChangeBeforeBeschwerde(
+					allStatus,
+					"KeineHistory"
+				);
+			assertNotNull(lastStatus);
+			assertEquals(VERFUEGT, lastStatus.getStatus());
+		});
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void findLastStatusChangeBeforeBeschwerde_keinVorgaengerStatusGefunden() {
-		final List<AntragStatusHistory> allStatus = prepareStatusListDesc(
-			BESCHWERDE_HAENGIG
-		);
-		final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
-			.findLastStatusChangeBeforeBeschwerde(
-				allStatus,
-				"KeineHistory"
+		assertThrows(EbeguRuntimeException.class, () -> {
+			final List<AntragStatusHistory> allStatus = prepareStatusListDesc(
+				BESCHWERDE_HAENGIG
 			);
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(VERFUEGT, lastStatus.getStatus());
+			final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
+				.findLastStatusChangeBeforeBeschwerde(
+					allStatus,
+					"KeineHistory"
+				);
+			assertNotNull(lastStatus);
+			assertEquals(VERFUEGT, lastStatus.getStatus());
+		});
 	}
 
 	@Test
@@ -108,8 +116,8 @@ public class AntragStatusHistoryUtilTest {
 		);
 		final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
 			.findLastStatusChangeBeforePruefungSTV(allStatus, "Normalfall");
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(VERFUEGT, lastStatus.getStatus());
+		assertNotNull(lastStatus);
+		assertEquals(VERFUEGT, lastStatus.getStatus());
 	}
 
 	@Test
@@ -128,8 +136,8 @@ public class AntragStatusHistoryUtilTest {
 				allStatus,
 				"Zwischendurch Beschwerde"
 			);
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(VERFUEGT, lastStatus.getStatus());
+		assertNotNull(lastStatus);
+		assertEquals(VERFUEGT, lastStatus.getStatus());
 	}
 
 	@Test
@@ -149,51 +157,57 @@ public class AntragStatusHistoryUtilTest {
 				allStatus,
 				"Mehrfache Pruefung STV"
 			);
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(BESCHWERDE_HAENGIG, lastStatus.getStatus());
+		assertNotNull(lastStatus);
+		assertEquals(BESCHWERDE_HAENGIG, lastStatus.getStatus());
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void findLastStatusChangeBeforePruefungSTV_falscherStartStatus() {
-		final List<AntragStatusHistory> allStatus = prepareStatusListDesc(
-			IN_BEARBEITUNG_JA,
-			GEPRUEFT,
-			VERFUEGEN,
-			VERFUEGT
-		);
-		final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
-			.findLastStatusChangeBeforePruefungSTV(
-				allStatus,
-				"AktuellNichtInPruefungSTV"
+		assertThrows(EbeguRuntimeException.class, () -> {
+			final List<AntragStatusHistory> allStatus = prepareStatusListDesc(
+				IN_BEARBEITUNG_JA,
+				GEPRUEFT,
+				VERFUEGEN,
+				VERFUEGT
 			);
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(VERFUEGT, lastStatus.getStatus());
+			final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
+				.findLastStatusChangeBeforePruefungSTV(
+					allStatus,
+					"AktuellNichtInPruefungSTV"
+				);
+			assertNotNull(lastStatus);
+			assertEquals(VERFUEGT, lastStatus.getStatus());
+		});
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void findLastStatusChangeBeforePruefungSTV_keineHistory() {
-		final List<AntragStatusHistory> allStatus = prepareStatusListDesc();
-		final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
-			.findLastStatusChangeBeforePruefungSTV(
-				allStatus,
-				"KeineHistory"
-			);
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(VERFUEGT, lastStatus.getStatus());
+		assertThrows(EbeguRuntimeException.class, () -> {
+			final List<AntragStatusHistory> allStatus = prepareStatusListDesc();
+			final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
+				.findLastStatusChangeBeforePruefungSTV(
+					allStatus,
+					"KeineHistory"
+				);
+			assertNotNull(lastStatus);
+			assertEquals(VERFUEGT, lastStatus.getStatus());
+		});
 	}
 
-	@Test(expected = EbeguRuntimeException.class)
+	@Test
 	public void findLastStatusChangeBeforePruefungSTV_keinVorgaengerStatusGefunden() {
-		final List<AntragStatusHistory> allStatus = prepareStatusListDesc(
-			PRUEFUNG_STV
-		);
-		final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
-			.findLastStatusChangeBeforePruefungSTV(
-				allStatus,
-				"KeineHistory"
+		assertThrows(EbeguRuntimeException.class, () -> {
+			final List<AntragStatusHistory> allStatus = prepareStatusListDesc(
+				PRUEFUNG_STV
 			);
-		Assert.assertNotNull(lastStatus);
-		Assert.assertEquals(VERFUEGT, lastStatus.getStatus());
+			final AntragStatusHistory lastStatus = AntragStatusHistoryUtil
+				.findLastStatusChangeBeforePruefungSTV(
+					allStatus,
+					"KeineHistory"
+				);
+			assertNotNull(lastStatus);
+			assertEquals(VERFUEGT, lastStatus.getStatus());
+		});
 	}
 
 	private List<AntragStatusHistory> prepareStatusListDesc(

@@ -26,8 +26,9 @@ import javax.annotation.Nonnull;
 import ch.dvbern.ebegu.reporting.lastenausgleich.LastenausgleichBerechnungCSVConverter;
 import ch.dvbern.ebegu.reporting.lastenausgleich.LastenausgleichBerechnungDataRow;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LastenausgleichBerechnungCSVConverterTest {
 
@@ -134,7 +135,7 @@ public class LastenausgleichBerechnungCSVConverterTest {
 				+ "351;1000;16376470.59;13341176.47;3035294.12\n"
 				+ "546;100;1417647.06;214370.59;303529.41\n";
 
-		Assert.assertEquals(csvExpected, lastenausgleichCSV);
+		assertEquals(csvExpected, lastenausgleichCSV);
 	}
 
 	@Test
@@ -230,7 +231,7 @@ public class LastenausgleichBerechnungCSVConverterTest {
 				+ "351;33.33;7256.50;6256.50;1000.00\n"
 				+ "546;0;0.00;-6256.50;0\n";
 
-		Assert.assertEquals(csvExpected, lastenausgleichCSV);
+		assertEquals(csvExpected, lastenausgleichCSV);
 	}
 
 	@Test
@@ -335,6 +336,6 @@ public class LastenausgleichBerechnungCSVConverterTest {
 				+ "351;2000.00;16382971.00;13347676.88;3035294.12\n"
 				+ "546;200.00;1424147.50;220871.03;303529.41\n";
 
-		Assert.assertEquals(csvExpected, lastenausgleichCSV);
+		assertEquals(csvExpected, lastenausgleichCSV);
 	}
 }

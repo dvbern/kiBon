@@ -45,8 +45,12 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.einstellung.ConfigurableKeyGroup;
 import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungKeyGroup;
 import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.einstellung.Einstellung_;
 import ch.dvbern.ebegu.entities.Gemeinde;
@@ -84,6 +88,9 @@ public class EinstellungServiceBean extends AbstractBaseService implements
 
 	@Inject
 	private EinstellungCachedServiceBean einstellungCachedServiceBean;
+
+	@Inject
+	private ApplicationPropertyService applicationPropertiesService;
 
 	@Override
 	@Nonnull
@@ -421,10 +428,93 @@ public class EinstellungServiceBean extends AbstractBaseService implements
 		);
 		query.select(root);
 		List<Einstellung> einstellungen = persistence.getCriteriaResults(query);
-		List<Einstellung> sorted = einstellungen.stream()
+		return einstellungen.stream()
 			.sorted(Comparator.comparing(Einstellung::getKey))
 			.collect(Collectors.toCollection(ArrayList::new));
-		return sorted;
+	}
+
+	@Override
+	@Nonnull
+	public Collection<Einstellung> getAllEinstellungenBySystemApplicableByApplicationPropertiesAndMandant(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
+		var listForGP = getAllEinstellungenBySystem(gesuchsperiode);
+		Mandant mandant = gesuchsperiode.getMandant();
+		boolean tfoEnabled = Boolean.TRUE.equals(
+			applicationPropertiesService
+				.findApplicationPropertyAsBoolean(
+					ApplicationPropertyKey.ANGEBOT_TFO_ENABLED,
+					mandant
+				)
+		);
+		boolean tsEnabled = Boolean.TRUE.equals(
+			applicationPropertiesService
+				.findApplicationPropertyAsBoolean(
+					ApplicationPropertyKey.ANGEBOT_TS_ENABLED,
+					mandant
+				)
+		);
+		boolean ferienbetreuungOrFerieninselEnabled =
+			Boolean.TRUE.equals(
+				applicationPropertiesService
+					.findApplicationPropertyAsBoolean(
+						ApplicationPropertyKey.ANGEBOT_FI_ENABLED,
+						mandant
+					)
+			)
+				|| Boolean.TRUE.equals(
+					applicationPropertiesService
+						.findApplicationPropertyAsBoolean(
+							ApplicationPropertyKey.FERIENBETREUUNG_AKTIV,
+							mandant
+						)
+				);
+
+		boolean mittagstischEnabled = Boolean.TRUE.equals(
+			applicationPropertiesService
+				.findApplicationPropertyAsBoolean(
+					ApplicationPropertyKey.ANGEBOT_MITTAGSTISCH_ENABLED,
+					mandant
+				)
+		);
+
+		return listForGP.stream()
+			.filter(
+				einstellung -> einstellung.getKey()
+					.isEinstellungActivForMandant(
+						mandant
+							.getMandantIdentifier()
+					)
+			)
+			.filter(
+				einstellung -> {
+					ConfigurableKeyGroup keyGroup = einstellung.getKey()
+						.getKeyGrouping()
+						.keyGroup();
+					if (keyGroup == null) {
+						return true;
+					}
+					if (keyGroup
+						.equals(EinstellungKeyGroup.TFO_BETREUUNG)) {
+						return tfoEnabled;
+					}
+					if (keyGroup
+						.equals(EinstellungKeyGroup.TAGESSCHULE)) {
+						return tsEnabled;
+					}
+					if (keyGroup.equals(EinstellungKeyGroup.MITTAGSTISCH)) {
+						return mittagstischEnabled;
+					}
+					if (keyGroup
+						.equals(
+							EinstellungKeyGroup.FERIENBETREUUNG_FERIENINSELN
+						)) {
+						return ferienbetreuungOrFerieninselEnabled;
+					}
+					return true;
+				}
+			)
+			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override

@@ -18,9 +18,11 @@ package ch.dvbern.ebegu.tests.validations;
 import ch.dvbern.ebegu.entities.Mitteilung;
 import ch.dvbern.ebegu.enums.MitteilungStatus;
 import ch.dvbern.ebegu.validators.CheckMitteilungCompletenessValidator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer {@link CheckMitteilungCompletenessValidator}
@@ -38,7 +40,7 @@ class CheckMitteilungCompletenessValidatorTest {
 	void testNeuNoMessageNoSubject() {
 		Mitteilung mitteilung = new Mitteilung();
 		mitteilung.setMitteilungStatus(MitteilungStatus.NEU);
-		Assertions.assertFalse(validator.isValid(mitteilung, null));
+		assertFalse(validator.isValid(mitteilung, null));
 	}
 
 	@Test
@@ -46,7 +48,7 @@ class CheckMitteilungCompletenessValidatorTest {
 		Mitteilung mitteilung = new Mitteilung();
 		mitteilung.setMitteilungStatus(MitteilungStatus.NEU);
 		mitteilung.setSubject("subject");
-		Assertions.assertFalse(validator.isValid(mitteilung, null));
+		assertFalse(validator.isValid(mitteilung, null));
 	}
 
 	@Test
@@ -54,7 +56,7 @@ class CheckMitteilungCompletenessValidatorTest {
 		Mitteilung mitteilung = new Mitteilung();
 		mitteilung.setMitteilungStatus(MitteilungStatus.NEU);
 		mitteilung.setMessage("message");
-		Assertions.assertFalse(validator.isValid(mitteilung, null));
+		assertFalse(validator.isValid(mitteilung, null));
 	}
 
 	@Test
@@ -63,7 +65,7 @@ class CheckMitteilungCompletenessValidatorTest {
 		mitteilung.setMitteilungStatus(MitteilungStatus.NEU);
 		mitteilung.setSubject("subject");
 		mitteilung.setMessage("message");
-		Assertions.assertTrue(validator.isValid(mitteilung, null));
+		assertTrue(validator.isValid(mitteilung, null));
 	}
 
 }

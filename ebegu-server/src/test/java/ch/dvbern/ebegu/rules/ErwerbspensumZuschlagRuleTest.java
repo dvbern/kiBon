@@ -32,12 +32,12 @@ import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.util.Constants.ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests für den (fixen) Zuschlag zum Erwerbspensum
@@ -48,7 +48,7 @@ public class ErwerbspensumZuschlagRuleTest extends AbstractEbeguRuleTest {
 	private LocalDate GP_START;
 	private LocalDate GP_END;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		betreuung = createGesuchWithBetreuung();
 		GP_START = betreuung.extractGesuchsperiode()

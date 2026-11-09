@@ -50,7 +50,6 @@ xdescribe('einkommensverschlechterungView', () => {
             const $rootScope = $injector.get('$rootScope');
             scope = $rootScope.$new();
             const zusaetzlicheFelderEinkommenEinstellung = new TSEinstellung(
-                null,
                 TSEinstellungKey.ZUSATZLICHE_FELDER_ERSATZEINKOMMEN,
                 'false'
             );

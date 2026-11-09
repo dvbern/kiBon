@@ -29,12 +29,15 @@ import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterGemeindeDTO;
 import ch.dvbern.ebegu.rechner.RechnerRuleParameterDTO;
 import ch.dvbern.ebegu.rules.RuleValidity;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.KITA;
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESSCHULE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MinimalPauschalbetragGemeindeRechnerRuleTest {
 
@@ -43,7 +46,7 @@ public class MinimalPauschalbetragGemeindeRechnerRuleTest {
 	private BGRechnerParameterDTO unaktivRule = new BGRechnerParameterDTO();
 	private BGRechnerParameterDTO aktivRule = new BGRechnerParameterDTO();
 
-	@Before
+	@BeforeEach
 	public void init() {
 		BGRechnerParameterGemeindeDTO unaktivRuleGemeinde =
 			new BGRechnerParameterGemeindeDTO();
@@ -64,19 +67,19 @@ public class MinimalPauschalbetragGemeindeRechnerRuleTest {
 
 	@Test
 	public void isConfigueredForGemeinde() {
-		Assert.assertFalse(rule.isConfigueredForGemeinde(unaktivRule));
-		Assert.assertTrue(rule.isConfigueredForGemeinde(aktivRule));
+		assertFalse(rule.isConfigueredForGemeinde(unaktivRule));
+		assertTrue(rule.isConfigueredForGemeinde(aktivRule));
 	}
 
 	@Test
 	public void isRelevantForVerfuegung() {
-		Assert.assertFalse(
+		assertFalse(
 			rule.isRelevantForVerfuegung(
 				prepareInput(KITA, new BigDecimal(260000), 0),
 				aktivRule
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			rule.isRelevantForVerfuegung(
 				prepareInput(KITA, new BigDecimal(100000), 50),
 				aktivRule
@@ -92,12 +95,12 @@ public class MinimalPauschalbetragGemeindeRechnerRuleTest {
 			80
 		);
 		input.setBetreuungspensumProzent(BigDecimal.ZERO);
-		Assert.assertFalse(rule.isRelevantForVerfuegung(input, aktivRule));
+		assertFalse(rule.isRelevantForVerfuegung(input, aktivRule));
 	}
 
 	@Test
 	public void isRelevantForVerfuegungUngueltigesAngebot() {
-		Assert.assertFalse(
+		assertFalse(
 			rule.isRelevantForVerfuegung(
 				prepareInput(TAGESSCHULE, BigDecimal.ZERO, 80),
 				aktivRule
@@ -114,14 +117,17 @@ public class MinimalPauschalbetragGemeindeRechnerRuleTest {
 			unaktivRule,
 			result
 		);
-		Assert.assertNull(result.getMinimalPauschalBetrag());
+		assertNull(result.getMinimalPauschalBetrag());
 		// Rule Aktiv: 10
 		rule.prepareParameter(
 			prepareInput(KITA, BigDecimal.ZERO, 10),
 			aktivRule,
 			result
 		);
-		Assert.assertEquals(BigDecimal.TEN, result.getMinimalPauschalBetrag());
+		assertEquals(
+			BigDecimal.TEN,
+			result.getMinimalPauschalBetrag()
+		);
 	}
 
 	private BGCalculationInput prepareInput(

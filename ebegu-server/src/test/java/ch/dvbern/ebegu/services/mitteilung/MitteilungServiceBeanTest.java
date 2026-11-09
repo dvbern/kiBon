@@ -25,7 +25,6 @@ import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -33,6 +32,7 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(EasyMockExtension.class)
 public class MitteilungServiceBeanTest extends EasyMockSupport {
@@ -125,7 +125,7 @@ public class MitteilungServiceBeanTest extends EasyMockSupport {
 			betreuungsmitteilung
 		);
 		verifyAll();
-		Assertions.assertEquals(
+		assertEquals(
 			AntragStatus.IN_BEARBEITUNG_JA,
 			mutation.getStatus()
 		);
@@ -173,7 +173,7 @@ public class MitteilungServiceBeanTest extends EasyMockSupport {
 			betreuungsmitteilung
 		);
 		verifyAll();
-		Assertions.assertEquals(
+		assertEquals(
 			AntragStatus.IN_BEARBEITUNG_JA,
 			mutation.getStatus()
 		);

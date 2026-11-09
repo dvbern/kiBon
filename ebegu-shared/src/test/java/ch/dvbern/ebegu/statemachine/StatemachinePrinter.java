@@ -18,7 +18,7 @@ package ch.dvbern.ebegu.statemachine;
 import ch.dvbern.ebegu.enums.AntragEvents;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import com.github.oxo42.stateless4j.StateMachineConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class StatemachinePrinter {
 

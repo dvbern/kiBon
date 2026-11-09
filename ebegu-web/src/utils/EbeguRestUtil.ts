@@ -18,6 +18,8 @@
 import {Injectable} from '@angular/core';
 import moment from 'moment';
 import {BenutzerListFilter} from '../admin/component/benutzerListView/dv-benutzer-list/BenutzerListFilter';
+import {TSApplicationPropertyWithMetadata} from '../admin/einstellungen/TSApplicationPropertyWithMetadata';
+import {TSEinstellungWithMetadata} from '../admin/einstellungen/TSEinstellungWithMetadata';
 import {TSFerienbetreuungBerechnung} from '../app/gemeinde-antraege/ferienbetreuung/ferienbetreuung-kosten-einnahmen/TSFerienbetreuungBerechnung';
 import {TSAnmeldungDTO} from '../models/dto/TSAnmeldungDTO';
 import {TSBenutzerTableFilterDTO} from '../models/dto/TSBenutzerTableFilterDTO';
@@ -188,22 +190,24 @@ import {TSVersendeteMail} from 'src/models/TSVersendeteMail';
 })
 export class EbeguRestUtil {
     /**
-     * Wandelt Data in einen TSApplicationProperty Array um, welches danach zurueckgeliefert wird
+     * Wandelt Data in einen TSApplicationPropertyWithMetadata Array um, welches danach zurueckgeliefert wird
      */
-    public parseApplicationProperties(data: any): TSApplicationProperty[] {
+    public parseApplicationPropertiesWithMetadata(
+        data: any
+    ): TSApplicationPropertyWithMetadata[] {
         if (!data) {
             return [];
         }
         return Array.isArray(data)
             ? data.map(item =>
-                  this.parseApplicationProperty(
-                      new TSApplicationProperty(),
+                  this.parseApplicationPropertyWithMetadata(
+                      new TSApplicationPropertyWithMetadata(),
                       item
                   )
               )
             : [
-                  this.parseApplicationProperty(
-                      new TSApplicationProperty(),
+                  this.parseApplicationPropertyWithMetadata(
+                      new TSApplicationPropertyWithMetadata(),
                       data
                   )
               ];
@@ -220,8 +224,16 @@ export class EbeguRestUtil {
         parsedAppProperty.name = receivedAppProperty.name;
         parsedAppProperty.value = receivedAppProperty.value;
         parsedAppProperty.erklaerung = receivedAppProperty.erklaerung;
-        parsedAppProperty.keyGroup = receivedAppProperty.keyGroup;
-        parsedAppProperty.subKeyGroup = receivedAppProperty.subKeyGroup;
+        return parsedAppProperty;
+    }
+
+    public parseApplicationPropertyWithMetadata(
+        parsedAppProperty: TSApplicationPropertyWithMetadata,
+        receivedAppProperty: any
+    ): TSApplicationPropertyWithMetadata {
+        this.parseApplicationProperty(parsedAppProperty, receivedAppProperty);
+        parsedAppProperty.metadata = receivedAppProperty.metadata;
+        parsedAppProperty.userMutiert = receivedAppProperty.userMutiert;
         return parsedAppProperty;
     }
 
@@ -239,13 +251,48 @@ export class EbeguRestUtil {
         receivedEinstellung: any
     ): TSEinstellung {
         if (receivedEinstellung) {
-            this.parseDateRangeEntity(tsEinstellung, receivedEinstellung);
+            this.parseAbstractMutableEntity(tsEinstellung, receivedEinstellung);
             tsEinstellung.key = receivedEinstellung.key;
             tsEinstellung.value = receivedEinstellung.value;
             tsEinstellung.erklaerung = receivedEinstellung.erklaerung;
             tsEinstellung.gemeindeId = receivedEinstellung.gemeindeId;
             tsEinstellung.gesuchsperiodeId =
                 receivedEinstellung.gesuchsperiodeId;
+            // Mandant wird aktuell nicht gemappt
+            return tsEinstellung;
+        }
+        return undefined;
+    }
+
+    public parseEinstellungWithMetadataList(
+        data: any
+    ): TSEinstellungWithMetadata[] {
+        if (!data) {
+            return [];
+        }
+        return Array.isArray(data)
+            ? data.map(item =>
+                  this.parseEinstellungWithMetadata(
+                      new TSEinstellungWithMetadata(),
+                      item
+                  )
+              )
+            : [
+                  this.parseEinstellungWithMetadata(
+                      new TSEinstellungWithMetadata(),
+                      data
+                  )
+              ];
+    }
+
+    public parseEinstellungWithMetadata(
+        tsEinstellung: TSEinstellungWithMetadata,
+        receivedEinstellung: any
+    ): TSEinstellungWithMetadata {
+        if (receivedEinstellung) {
+            this.parseEinstellung(tsEinstellung, receivedEinstellung);
+            tsEinstellung.metadata = receivedEinstellung.metadata;
+            tsEinstellung.userMutiert = receivedEinstellung.userMutiert;
             // Mandant wird aktuell nicht gemappt
             return tsEinstellung;
         }
@@ -267,7 +314,7 @@ export class EbeguRestUtil {
         tsEinstellung: TSEinstellung
     ): TSEinstellung {
         if (tsEinstellung) {
-            this.abstractDateRangeEntityToRestObject(
+            this.abstractMutableEntityToRestObject(
                 restEinstellung,
                 tsEinstellung
             );

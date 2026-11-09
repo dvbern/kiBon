@@ -29,10 +29,13 @@ import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.util.Constants.ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Testet die BetreuungsangebotTyp Regel
@@ -45,23 +48,23 @@ public class BetreuungsangebotTypCalcRuleTest {
 			prepareData(BetreuungsangebotTyp.KITA)
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertEquals(
+		assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
+		assertEquals(
 			2,
 			result.get(0).getBemerkungenDTOList().uniqueSize()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
@@ -74,23 +77,23 @@ public class BetreuungsangebotTypCalcRuleTest {
 			prepareData(BetreuungsangebotTyp.TAGESFAMILIEN)
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertEquals(
+		assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
+		assertEquals(
 			2,
 			result.get(0).getBemerkungenDTOList().uniqueSize()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
@@ -103,15 +106,18 @@ public class BetreuungsangebotTypCalcRuleTest {
 			prepareData(BetreuungsangebotTyp.TAGESSCHULE)
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
+			100,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
+		assertEquals(
 			1,
 			result.get(0).getBemerkungenDTOList().uniqueSize()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			result.get(0)
 				.getBemerkungenDTOList()
 				.containsMsgKey(MsgKey.BETREUUNGSANGEBOT_MSG)
@@ -129,7 +135,7 @@ public class BetreuungsangebotTypCalcRuleTest {
 		Gesuch gesuch = betreuung.extractGesuch();
 		betreuung.getInstitutionStammdaten()
 			.setBetreuungsangebotTyp(betreuungsangebotTyp);
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(

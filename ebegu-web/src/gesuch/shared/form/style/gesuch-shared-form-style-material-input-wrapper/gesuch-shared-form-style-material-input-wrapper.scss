@@ -36,15 +36,27 @@
                 filled-container-color: #ffffff,
                 filled-error-focus-active-indicator-color: transparent,
                 filled-input-text-color: #000000,
+                filled-error-caret-color: $primary,
                 filled-active-indicator-color: transparent,
                 filled-hover-active-indicator-color: transparent,
                 filled-focus-active-indicator-color: transparent,
                 filled-active-indicator-height: 0,
                 state-layer-color: transparent,
                 hover-state-layer-opacity: 0,
-                focus-state-layer-opacity: 0
+                focus-state-layer-opacity: 0,
+                // error messages in the kiBon look (see legacy dv-error-messages)
+                error-text-color: rgb(221, 44, 0),
+                subscript-text-font: "'Open Sans', Arial, Helvetica, sans-serif",
+                subscript-text-size: 1.4rem,
+                subscript-text-line-height: 3rem,
+                subscript-text-weight: 400,
+                subscript-text-tracking: normal
             )
         );
+    }
+
+    .mat-mdc-form-field-error-wrapper {
+        padding: 0;
     }
 
     .mdc-text-field {
@@ -64,6 +76,19 @@
     */
     .mat-mdc-input-element {
         padding-left: 1rem;
+        /*
+         reset the global legacy input styles (style/atoms/input.scss) for
+         input[type=text|number|email], which would override Material:
+         white background, 4rem height and an own focus outline
+        */
+        background: transparent;
+        height: 2rem; // container-text-line-height
+        transition: none;
+
+        &:focus {
+            // the container already gets the focus outline (.mdc-text-field--focused)
+            outline: none;
+        }
     }
 
     .mat-form-field-invalid .mat-mdc-form-field-infix {

@@ -22,8 +22,10 @@ import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungAngabenStatus;
 import ch.dvbern.ebegu.wizardx.ferienbetreuung.FerienbetreuungWizard;
 import ch.dvbern.ebegu.wizardx.ferienbetreuung.FerienbetreuungWizardStepsEnum;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FerienbetreuungWizardTest {
 
@@ -41,35 +43,35 @@ public class FerienbetreuungWizardTest {
 			container
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			FerienbetreuungWizardStepsEnum.STAMMDATEN_GEMEINDE.name(),
 			wizard.getStep().getWizardStepName()
 		);
 		wizard.nextState();
-		Assert.assertEquals(
+		assertEquals(
 			FerienbetreuungWizardStepsEnum.ANGEBOT.name(),
 			wizard.getStep().getWizardStepName()
 		);
 		wizard.nextState();
-		Assert.assertEquals(
+		assertEquals(
 			FerienbetreuungWizardStepsEnum.NUTZUNG.name(),
 			wizard.getStep().getWizardStepName()
 		);
 		wizard.nextState();
-		Assert.assertEquals(
+		assertEquals(
 			FerienbetreuungWizardStepsEnum.KOSTEN_EINNAHMEN.name(),
 			wizard.getStep().getWizardStepName()
 		);
 		wizard.nextState();
-		Assert.assertEquals(
+		assertEquals(
 			FerienbetreuungWizardStepsEnum.UPLOAD.name(),
 			wizard.getStep().getWizardStepName()
 		);
 		wizard.nextState();
-		Assert.assertEquals(
+		assertEquals(
 			FerienbetreuungWizardStepsEnum.ABSCHLUSS.name(),
 			wizard.getStep().getWizardStepName()
 		);
-		Assert.assertTrue(wizard.getStep().isDisabled(wizard));
+		assertTrue(wizard.getStep().isDisabled(wizard));
 	}
 }

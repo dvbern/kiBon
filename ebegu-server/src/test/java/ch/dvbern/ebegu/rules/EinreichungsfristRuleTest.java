@@ -33,11 +33,15 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.rules.EbeguRuleTestsHelper.calculate;
 import static ch.dvbern.ebegu.util.Constants.ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests für Einreichungsfrist-Regel
@@ -60,7 +64,7 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		final Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -76,32 +80,32 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		List<VerfuegungZeitabschnitt> nextRestanspruch = EbeguRuleTestsHelper
 			.initializeRestanspruchForNextBetreuung(betreuung, result);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(60),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			nextRestanspruch.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(result.get(0).isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(result.get(0).isZuSpaetEingereicht());
+		assertFalse(
 			result.get(0)
 				.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
@@ -129,7 +133,7 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 			.setMandant(mandant);
 		final Gesuch gesuch = betreuung.extractGesuch();
 		gesuch.getFall().setMandant(mandant);
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -145,32 +149,32 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		List<VerfuegungZeitabschnitt> nextRestanspruch = EbeguRuleTestsHelper
 			.initializeRestanspruchForNextBetreuung(betreuung, result);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(60),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			nextRestanspruch.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(result.get(0).isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(result.get(0).isZuSpaetEingereicht());
+		assertFalse(
 			result.get(0)
 				.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
@@ -191,7 +195,7 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		final Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -206,67 +210,70 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
 		List<VerfuegungZeitabschnitt> nextRestanspruch = EbeguRuleTestsHelper
 			.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertNotNull(result);
-		Assert.assertEquals(2, result.size());
+		assertNotNull(result);
+		assertEquals(2, result.size());
 
 		VerfuegungZeitabschnitt abschnitt1 = result.get(0);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnitt1.getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt1.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(0, abschnitt1.getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(0), abschnitt1.getBgPensum());
-		Assert.assertEquals(
+		assertEquals(0, abschnitt1.getAnspruchberechtigtesPensum());
+		assertEquals(
+			MathUtil.DEFAULT.from(0),
+			abschnitt1.getBgPensum()
+		);
+		assertEquals(
 			80,
 			result.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			80,
 			nextRestanspruch.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertTrue(abschnitt1.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertTrue(abschnitt1.isZuSpaetEingereicht());
+		assertFalse(
 			abschnitt1.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
 
 		VerfuegungZeitabschnitt abschnitt2 = result.get(1);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnitt2.getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt2.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnitt2.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt2.getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			abschnitt2.getBgCalculationInputAsiv().getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			nextRestanspruch.get(1)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnitt2.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnitt2.isZuSpaetEingereicht());
+		assertFalse(
 			abschnitt2.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
@@ -293,7 +300,7 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 			.setMandant(mandant);
 		final Gesuch gesuch = betreuung.extractGesuch();
 		gesuch.getFall().setMandant(mandant);
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -308,39 +315,39 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
 		List<VerfuegungZeitabschnitt> nextRestanspruch = EbeguRuleTestsHelper
 			.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertNotNull(result);
-		Assert.assertEquals(2, result.size());
+		assertNotNull(result);
+		assertEquals(2, result.size());
 
 		// 6.9-30.9.
 		VerfuegungZeitabschnitt abschnitt3 = result.get(1);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnitt3.getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt3.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnitt3.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt3.getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			abschnitt3.getBgCalculationInputAsiv().getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			nextRestanspruch.get(1)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnitt3.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnitt3.isZuSpaetEingereicht());
+		assertFalse(
 			abschnitt3.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
@@ -368,7 +375,7 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 
 		final Gesuch gesuch = betreuung.extractGesuch();
 		gesuch.getFall().setMandant(mandant);
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -391,32 +398,35 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		);
 		List<VerfuegungZeitabschnitt> nextRestanspruch = EbeguRuleTestsHelper
 			.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
+		assertNotNull(result);
+		assertEquals(1, result.size());
 
 		VerfuegungZeitabschnitt abschnitt = result.get(0);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnitt.getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(60, abschnitt.getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), abschnitt.getBgPensum());
-		Assert.assertEquals(
+		assertEquals(60, abschnitt.getAnspruchberechtigtesPensum());
+		assertEquals(
+			MathUtil.DEFAULT.from(60),
+			abschnitt.getBgPensum()
+		);
+		assertEquals(
 			-1,
 			abschnitt.getBgCalculationInputAsiv().getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			nextRestanspruch.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnitt.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnitt.isZuSpaetEingereicht());
+		assertFalse(
 			abschnitt.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
@@ -437,7 +447,7 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		final Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -453,59 +463,59 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		List<VerfuegungZeitabschnitt> nextRestanspruch = EbeguRuleTestsHelper
 			.initializeRestanspruchForNextBetreuung(betreuung, result);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(2, result.size());
+		assertNotNull(result);
+		assertEquals(2, result.size());
 		VerfuegungZeitabschnitt abschnittVorAnspruch = result.get(0);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnittVorAnspruch.getBgCalculationInputAsiv()
 				.getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnittVorAnspruch.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			abschnittVorAnspruch.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(0),
 			abschnittVorAnspruch.getBgPensum()
 		);
-		Assert.assertTrue(abschnittVorAnspruch.isZuSpaetEingereicht());
+		assertTrue(abschnittVorAnspruch.isZuSpaetEingereicht());
 
 		VerfuegungZeitabschnitt abschnittMitAnspruch = result.get(1);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnittMitAnspruch.getBgCalculationInputAsiv()
 				.getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnittMitAnspruch.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnittMitAnspruch.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnittMitAnspruch.getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			abschnittMitAnspruch.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			nextRestanspruch.get(1)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnittMitAnspruch.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnittMitAnspruch.isZuSpaetEingereicht());
+		assertFalse(
 			abschnittMitAnspruch.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
@@ -531,7 +541,7 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		final Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -548,38 +558,38 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		List<VerfuegungZeitabschnitt> nextRestanspruch = EbeguRuleTestsHelper
 			.initializeRestanspruchForNextBetreuung(betreuung, result);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(3, result.size());
+		assertNotNull(result);
+		assertEquals(3, result.size());
 
 		VerfuegungZeitabschnitt abschnitt3 = result.get(2);
-		Assert.assertEquals(
+		assertEquals(
 			betreuungsStart.plusMonths(1).withDayOfMonth(1),
 			abschnitt3.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnitt3.getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt3.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnitt3.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt3.getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			nextRestanspruch.get(2)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnitt3.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnitt3.isZuSpaetEingereicht());
+		assertFalse(
 			abschnitt3.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
@@ -621,7 +631,7 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 			.minusDays(1);
 		LocalDate pensumBStart = pensumAEnd.plusDays(1);
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -650,80 +660,80 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
 		List<VerfuegungZeitabschnitt> nextRestanspruch = EbeguRuleTestsHelper
 			.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertNotNull(result);
-		Assert.assertEquals(6, result.size());
+		assertNotNull(result);
+		assertEquals(6, result.size());
 
 		int abschnittNr = 0;
 		VerfuegungZeitabschnitt abschnitt0 = result.get(abschnittNr);
-		Assert.assertEquals(
+		assertEquals(
 			TestDataUtil.START_PERIODE,
 			abschnitt0.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			stichtagAnspruch.minusDays(1),
 			abschnitt0.getGueltigkeit().getGueltigBis()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(50),
 			abschnitt0.getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertNull(
+		assertNull(
 			abschnitt0.getBgCalculationInputAsiv().getErwerbspensumGS2()
 		);
-		Assert.assertEquals(ZERO, abschnitt0.getBetreuungspensumProzent());
-		Assert.assertEquals(0, abschnitt0.getAnspruchberechtigtesPensum());
-		Assert.assertEquals(ZERO, abschnitt0.getBgPensum());
-		Assert.assertEquals(
+		assertEquals(ZERO, abschnitt0.getBetreuungspensumProzent());
+		assertEquals(0, abschnitt0.getAnspruchberechtigtesPensum());
+		assertEquals(ZERO, abschnitt0.getBgPensum());
+		assertEquals(
 			70,
 			abschnitt0.getBgCalculationInputAsiv().getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			70,
 			nextRestanspruch.get(abschnittNr)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertTrue(abschnitt0.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertTrue(abschnitt0.isZuSpaetEingereicht());
+		assertFalse(
 			abschnitt0.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
 
 		abschnittNr++;
 		VerfuegungZeitabschnitt abschnitt1 = result.get(abschnittNr);
-		Assert.assertEquals(
+		assertEquals(
 			stichtagAnspruch,
 			abschnitt1.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			betreuungStart.minusDays(1),
 			abschnitt1.getGueltigkeit().getGueltigBis()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnitt1.getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertNull(
+		assertNull(
 			abschnitt1.getBgCalculationInputAsiv().getErwerbspensumGS2()
 		);
-		Assert.assertEquals(ZERO, abschnitt1.getBetreuungspensumProzent());
-		Assert.assertEquals(
+		assertEquals(ZERO, abschnitt1.getBetreuungspensumProzent());
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnitt1.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(ZERO, abschnitt1.getBgPensum());
-		Assert.assertEquals(
+		assertEquals(ZERO, abschnitt1.getBgPensum());
+		assertEquals(
 			-1,
 			abschnitt1.getBgCalculationInputAsiv().getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			nextRestanspruch.get(abschnittNr)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnitt1.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnitt1.isZuSpaetEingereicht());
+		assertFalse(
 			abschnitt1.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
@@ -733,84 +743,84 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		abschnittNr++;
 		abschnittNr++;
 		VerfuegungZeitabschnitt abschnitt2c = result.get(abschnittNr);
-		Assert.assertEquals(
+		assertEquals(
 			betreuungStart,
 			abschnitt2a.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			betreuungEnde,
 			abschnitt2c.getGueltigkeit().getGueltigBis()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnitt2a.getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertNull(
+		assertNull(
 			abschnitt2a.getBgCalculationInputAsiv().getErwerbspensumGS2()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt2a.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnitt2a.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnitt2a.getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			abschnitt2a.getBgCalculationInputAsiv().getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			nextRestanspruch.get(abschnittNr)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnitt2a.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnitt2a.isZuSpaetEingereicht());
+		assertFalse(
 			abschnitt2a.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
 
 		abschnittNr++;
 		VerfuegungZeitabschnitt abschnitt3 = result.get(abschnittNr);
-		Assert.assertEquals(
+		assertEquals(
 			betreuungEnde.plusDays(1),
 			abschnitt3.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			TestDataUtil.ENDE_PERIODE,
 			abschnitt3.getGueltigkeit().getGueltigBis()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnitt3.getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertNull(
+		assertNull(
 			abschnitt3.getBgCalculationInputAsiv().getErwerbspensumGS2()
 		);
-		Assert.assertEquals(ZERO, abschnitt3.getBetreuungspensumProzent());
-		Assert.assertEquals(
+		assertEquals(ZERO, abschnitt3.getBetreuungspensumProzent());
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnitt3.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(ZERO, abschnitt3.getBgPensum());
-		Assert.assertEquals(
+		assertEquals(ZERO, abschnitt3.getBgPensum());
+		assertEquals(
 			-1,
 			abschnitt3.getBgCalculationInputAsiv().getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			nextRestanspruch.get(abschnittNr)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnitt3.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnitt3.isZuSpaetEingereicht());
+		assertFalse(
 			abschnitt3.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
@@ -869,7 +879,7 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		);
 
 		Gesuch gesuch = betreuung.extractGesuch();
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.getGesuchsteller1()
 			.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -891,8 +901,8 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
 		List<VerfuegungZeitabschnitt> nextRestanspruch = EbeguRuleTestsHelper
 			.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertNotNull(result);
-		Assert.assertEquals(6, result.size());
+		assertNotNull(result);
+		assertEquals(6, result.size());
 
 		// Neu werden die Rules in den Tests gleich ausgefuehrt wie im echten Evaluator.
 		// Der Normalizer vergleicht alle sichtbaren Daten, also auch "betreuungspensumZeiteinheit"
@@ -901,45 +911,45 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 
 		int abschnittNr = 0;
 		VerfuegungZeitabschnitt abschnittVorKita = result.get(abschnittNr);
-		Assert.assertEquals(
+		assertEquals(
 			ewpRange1.getGueltigAb(),
 			abschnittVorKita.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			betreuungRange.getGueltigAb().minusDays(1),
 			abschnittVorKita.getGueltigkeit().getGueltigBis()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(50),
 			abschnittVorKita.getBgCalculationInputAsiv()
 				.getErwerbspensumGS1()
 		);
-		Assert.assertNull(
+		assertNull(
 			abschnittVorKita.getBgCalculationInputAsiv()
 				.getErwerbspensumGS2()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(0),
 			abschnittVorKita.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			abschnittVorKita.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(ZERO, abschnittVorKita.getBgPensum());
-		Assert.assertEquals(
+		assertEquals(ZERO, abschnittVorKita.getBgPensum());
+		assertEquals(
 			70,
 			abschnittVorKita.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			70,
 			nextRestanspruch.get(abschnittNr)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertTrue(abschnittVorKita.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertTrue(abschnittVorKita.isZuSpaetEingereicht());
+		assertFalse(
 			abschnittVorKita.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
@@ -952,51 +962,51 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		VerfuegungZeitabschnitt abschnittKitaZuSpaetEingereicht2 = result.get(
 			abschnittNr
 		);
-		Assert.assertEquals(
+		assertEquals(
 			betreuungRange.getGueltigAb(),
 			abschnittKitaZuSpaetEingereicht1.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			startAnspruch.minusDays(1),
 			abschnittKitaZuSpaetEingereicht2.getGueltigkeit()
 				.getGueltigBis()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnittKitaZuSpaetEingereicht1.getBgCalculationInputAsiv()
 				.getErwerbspensumGS1()
 		);
-		Assert.assertNull(
+		assertNull(
 			abschnittKitaZuSpaetEingereicht1.getBgCalculationInputAsiv()
 				.getErwerbspensumGS2()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnittKitaZuSpaetEingereicht1.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			abschnittKitaZuSpaetEingereicht1.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(0),
 			abschnittKitaZuSpaetEingereicht1.getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			80,
 			abschnittKitaZuSpaetEingereicht1.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			80,
 			nextRestanspruch.get(abschnittNr)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			abschnittKitaZuSpaetEingereicht1.isZuSpaetEingereicht()
 		);
-		Assert.assertFalse(
+		assertFalse(
 			abschnittKitaZuSpaetEingereicht1.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
@@ -1005,93 +1015,93 @@ public class EinreichungsfristRuleTest extends AbstractBGRechnerTest {
 		VerfuegungZeitabschnitt abschnittAnspruch1 = result.get(abschnittNr);
 		abschnittNr++;
 		VerfuegungZeitabschnitt abschnittAnspruch2 = result.get(abschnittNr);
-		Assert.assertEquals(
+		assertEquals(
 			startAnspruch,
 			abschnittAnspruch1.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			betreuungRange.getGueltigBis(),
 			abschnittAnspruch2.getGueltigkeit().getGueltigBis()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnittAnspruch1.getBgCalculationInputAsiv()
 				.getErwerbspensumGS1()
 		);
-		Assert.assertNull(
+		assertNull(
 			abschnittAnspruch1.getBgCalculationInputAsiv()
 				.getErwerbspensumGS2()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnittAnspruch1.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnittAnspruch1.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			abschnittAnspruch1.getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			abschnittAnspruch1.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			nextRestanspruch.get(abschnittNr)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnittAnspruch1.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnittAnspruch1.isZuSpaetEingereicht());
+		assertFalse(
 			abschnittAnspruch1.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
 
 		abschnittNr++;
 		VerfuegungZeitabschnitt abschnittNachKita = result.get(abschnittNr);
-		Assert.assertEquals(
+		assertEquals(
 			betreuungRange.getGueltigBis().plusDays(1),
 			abschnittNachKita.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			TestDataUtil.ENDE_PERIODE,
 			abschnittNachKita.getGueltigkeit().getGueltigBis()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			Integer.valueOf(60),
 			abschnittNachKita.getBgCalculationInputAsiv()
 				.getErwerbspensumGS1()
 		);
-		Assert.assertNull(
+		assertNull(
 			abschnittNachKita.getBgCalculationInputAsiv()
 				.getErwerbspensumGS2()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			ZERO,
 			abschnittNachKita.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnittNachKita.getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(ZERO, abschnittNachKita.getBgPensum());
-		Assert.assertEquals(
+		assertEquals(ZERO, abschnittNachKita.getBgPensum());
+		assertEquals(
 			-1,
 			abschnittNachKita.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			nextRestanspruch.get(abschnittNr)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertFalse(abschnittNachKita.isZuSpaetEingereicht());
-		Assert.assertFalse(
+		assertFalse(abschnittNachKita.isZuSpaetEingereicht());
+		assertFalse(
 			abschnittNachKita.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);

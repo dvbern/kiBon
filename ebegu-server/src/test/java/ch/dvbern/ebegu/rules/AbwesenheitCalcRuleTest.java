@@ -29,9 +29,12 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer AbwesenheitCalcRule
@@ -48,7 +51,7 @@ public class AbwesenheitCalcRuleTest {
 
 	private Mandant mandant;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		mandant = new Mandant();
 		mandant.setMandantIdentifier(MandantIdentifier.BERN);
@@ -69,11 +72,11 @@ public class AbwesenheitCalcRuleTest {
 		rule.executeRuleIfApplicable(betreuung, zeitAbschnitt);
 		BemerkungsMerger.prepareGeneratedBemerkungen(zeitAbschnitt, mandant);
 
-		Assert.assertFalse(
+		assertFalse(
 			zeitAbschnitt.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList()
 				.isEmpty()
 		);
@@ -94,15 +97,15 @@ public class AbwesenheitCalcRuleTest {
 		rule.executeRuleIfApplicable(betreuung, zeitAbschnitt);
 		BemerkungsMerger.prepareGeneratedBemerkungen(zeitAbschnitt, mandant);
 
-		Assert.assertTrue(
+		assertTrue(
 			zeitAbschnitt.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			1,
 			zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList().size()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			"Das Kind wird länger als 30 aufeinanderfolgende Kalendertage nicht familienergänzend betreut"
 				+ " (z.B. aufgrund einer längeren Reise). Deshalb wird kein Betreuungsgutschein mehr ausbezahlt (Art. 34u Abs. 1).",
 			zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList()
@@ -129,11 +132,11 @@ public class AbwesenheitCalcRuleTest {
 		rule.executeRuleIfApplicable(betreuung, zeitAbschnitt);
 		BemerkungsMerger.prepareGeneratedBemerkungen(zeitAbschnitt, mandant);
 
-		Assert.assertFalse(
+		assertFalse(
 			zeitAbschnitt.getBgCalculationInputAsiv()
 				.isBezahltKompletteVollkosten()
 		);
-		Assert.assertTrue(
+		assertTrue(
 			zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList()
 				.isEmpty()
 		);

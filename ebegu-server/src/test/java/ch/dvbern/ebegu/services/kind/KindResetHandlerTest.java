@@ -48,7 +48,6 @@ import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,6 +55,10 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
 
 import static org.easymock.EasyMock.expect;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(EasyMockExtension.class)
 class KindResetHandlerTest extends EasyMockSupport {
@@ -113,7 +116,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 			kindContainer,
 			createKindContainerEinschulungsTyp(EinschulungTyp.VORSCHULALTER)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			kindContainer.getBetreuungen()
 				.stream()
 				.filter(
@@ -179,7 +182,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 			kindContainer,
 			createKindContainerEinschulungsTyp(einschulungTyp)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			kindContainer.getBetreuungen()
 				.stream()
 				.filter(
@@ -238,7 +241,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 			kindContainer,
 			createKindContainerEinschulungsTyp(EinschulungTyp.VORSCHULALTER)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			kindContainer.getBetreuungen()
 				.stream()
 				.filter(
@@ -298,7 +301,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 				)
 			)
 			.collect(Collectors.toList());
-		Assertions.assertEquals(
+		assertEquals(
 			bestaetigteBetreuungen.size(),
 			kindContainer.getBetreuungen().size()
 		);
@@ -339,7 +342,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 			kindContainer,
 			createKindContainerEinschulungsTyp(EinschulungTyp.VORSCHULALTER)
 		);
-		Assertions.assertNotNull(
+		assertNotNull(
 			kindContainer.getBetreuungen()
 				.stream()
 				.findFirst()
@@ -384,7 +387,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 			createKindContainerEinschulungsTyp(EinschulungTyp.PRIMARSTUFE)
 		);
 		verifyAll();
-		Assertions.assertNull(
+		assertNull(
 			kindContainer.getBetreuungen()
 				.stream()
 				.findFirst()
@@ -428,7 +431,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 			createKindContainerEinschulungsTyp(EinschulungTyp.VORSCHULALTER)
 		);
 		verifyAll();
-		Assertions.assertNotNull(
+		assertNotNull(
 			kindContainer.getBetreuungen()
 				.stream()
 				.findFirst()
@@ -464,7 +467,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 		replayAll();
 		kindResetHandler.resetGesuchDataOnKindSave(kindContainer);
 		verifyAll();
-		Assertions.assertEquals(
+		assertEquals(
 			1,
 			kindContainer.getGesuch()
 				.getGesuchsteller2()
@@ -505,7 +508,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 		replayAll();
 		kindResetHandler.resetGesuchDataOnKindSave(kindContainer);
 		verifyAll();
-		Assertions.assertEquals(
+		assertEquals(
 			0,
 			kindContainer.getGesuch()
 				.getGesuchsteller2()
@@ -557,7 +560,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 		);
 		kindContainer.getBetreuungen()
 			.forEach(
-				betreuung -> Assertions.assertNull(
+				betreuung -> assertNull(
 					betreuung.getBedarfsstufe()
 				)
 			);
@@ -608,7 +611,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 		verifyAll();
 		kindContainer.getBetreuungen()
 			.forEach(
-				betreuung -> Assertions.assertNull(
+				betreuung -> assertNull(
 					betreuung.getBedarfsstufe()
 				)
 			);
@@ -677,7 +680,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 					)
 				)
 				.collect(Collectors.toList());
-		Assertions.assertNotEquals(
+		assertNotEquals(
 			bestaetigteBetreuungen.size(),
 			kindContainer.getBetreuungen().size()
 		);
@@ -747,7 +750,7 @@ class KindResetHandlerTest extends EasyMockSupport {
 					)
 				)
 				.collect(Collectors.toList());
-		Assertions.assertNotEquals(
+		assertNotEquals(
 			bestaetigteBetreuungen.size(),
 			kindContainer.getBetreuungen().size()
 		);

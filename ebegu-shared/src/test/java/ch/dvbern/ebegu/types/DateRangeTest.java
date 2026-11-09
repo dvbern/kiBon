@@ -20,12 +20,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DateRangeTest {
 
@@ -501,7 +500,7 @@ public class DateRangeTest {
 			LocalDate.of(2016, 8, 1),
 			LocalDate.of(2017, 7, 31)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(2015, 12, 31),
 			range.calculateEndOfPreviousYear()
 		);
@@ -513,7 +512,7 @@ public class DateRangeTest {
 			LocalDate.of(2016, 1, 1),
 			LocalDate.of(2017, 7, 31)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(2015, 12, 31),
 			range.calculateEndOfPreviousYear()
 		);
@@ -525,7 +524,7 @@ public class DateRangeTest {
 			LocalDate.of(2016, 12, 31),
 			LocalDate.of(2017, 7, 31)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(2015, 12, 31),
 			range.calculateEndOfPreviousYear()
 		);
@@ -537,7 +536,7 @@ public class DateRangeTest {
 			LocalDate.of(0, 12, 31),
 			LocalDate.of(2017, 7, 31)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(-1, 12, 31),
 			range.calculateEndOfPreviousYear()
 		);

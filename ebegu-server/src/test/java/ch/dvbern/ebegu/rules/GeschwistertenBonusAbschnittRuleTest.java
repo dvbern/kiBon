@@ -40,11 +40,13 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GeschwistertenBonusAbschnittRuleTest {
 
@@ -241,13 +243,13 @@ class GeschwistertenBonusAbschnittRuleTest {
 
 		List<VerfuegungZeitabschnitt> verfuegungZeitabschnittThirdOldestList =
 			ruleToTest.createVerfuegungsZeitabschnitte(thirdOldest);
-		Assertions.assertFalse(
+		assertFalse(
 			verfuegungZeitabschnittThirdOldestList.isEmpty()
 		);
 
 		List<VerfuegungZeitabschnitt> verfuegungZeitabschnittSecondOldestList =
 			ruleToTest.createVerfuegungsZeitabschnitte(secondOldest);
-		Assertions.assertFalse(
+		assertFalse(
 			verfuegungZeitabschnittSecondOldestList.isEmpty()
 		);
 
@@ -296,13 +298,13 @@ class GeschwistertenBonusAbschnittRuleTest {
 
 		List<VerfuegungZeitabschnitt> verfuegungZeitabschnittThirdOldestList =
 			ruleToTest.createVerfuegungsZeitabschnitte(thirdOldest);
-		Assertions.assertFalse(
+		assertFalse(
 			verfuegungZeitabschnittThirdOldestList.isEmpty()
 		);
 
 		List<VerfuegungZeitabschnitt> verfuegungZeitabschnittSecondOldestList =
 			ruleToTest.createVerfuegungsZeitabschnitte(secondOldest);
-		Assertions.assertFalse(
+		assertFalse(
 			verfuegungZeitabschnittSecondOldestList.isEmpty()
 		);
 
@@ -344,13 +346,13 @@ class GeschwistertenBonusAbschnittRuleTest {
 
 		List<VerfuegungZeitabschnitt> verfuegungZeitabschnittYoungest =
 			ruleToTest.createVerfuegungsZeitabschnitte(youngest);
-		Assertions.assertFalse(
+		assertFalse(
 			verfuegungZeitabschnittYoungest.isEmpty()
 		);
 
 		List<VerfuegungZeitabschnitt> verfuegungZeitabschnittSecondOldestList =
 			ruleToTest.createVerfuegungsZeitabschnitte(secondOldest);
-		Assertions.assertFalse(
+		assertFalse(
 			verfuegungZeitabschnittSecondOldestList.isEmpty()
 		);
 
@@ -394,7 +396,7 @@ class GeschwistertenBonusAbschnittRuleTest {
 		List<VerfuegungZeitabschnitt> verfuegungZeitabschnittList =
 			ruleToTest.createVerfuegungsZeitabschnitte(betreuung);
 
-		Assertions.assertFalse(verfuegungZeitabschnittList.isEmpty());
+		assertFalse(verfuegungZeitabschnittList.isEmpty());
 		verfuegungZeitabschnittList.forEach(verfuegungZeitabschnitt -> {
 			if (verfuegungZeitabschnitt.getGueltigkeit()
 				.getGueltigAb()
@@ -435,7 +437,7 @@ class GeschwistertenBonusAbschnittRuleTest {
 		List<VerfuegungZeitabschnitt> verfuegungZeitabschnittList =
 			ruleToTest.createVerfuegungsZeitabschnitte(betreuung);
 
-		Assertions.assertFalse(verfuegungZeitabschnittList.isEmpty());
+		assertFalse(verfuegungZeitabschnittList.isEmpty());
 		verfuegungZeitabschnittList.forEach(verfuegungZeitabschnitt -> {
 			if (verfuegungZeitabschnitt.getGueltigkeit()
 				.getGueltigAb()
@@ -467,7 +469,7 @@ class GeschwistertenBonusAbschnittRuleTest {
 		// Younger Kind
 		List<VerfuegungZeitabschnitt> verfuegungZeitabschnittList =
 			ruleToTest.createVerfuegungsZeitabschnitte(betreuung);
-		Assertions.assertFalse(verfuegungZeitabschnittList.isEmpty());
+		assertFalse(verfuegungZeitabschnittList.isEmpty());
 		verfuegungZeitabschnittList.forEach(verfuegungZeitabschnitt -> {
 			if (verfuegungZeitabschnitt.getGueltigkeit()
 				.getGueltigAb()
@@ -566,21 +568,21 @@ class GeschwistertenBonusAbschnittRuleTest {
 	private void assertNoZeitabschnitteCreatedInRule(
 		@Nonnull List<VerfuegungZeitabschnitt> verfuegungZeitabschnittList
 	) {
-		Assertions.assertTrue(verfuegungZeitabschnittList.isEmpty());
+		assertTrue(verfuegungZeitabschnittList.isEmpty());
 	}
 
 	private void assertNoGeschwisternBonus(
 		@Nonnull List<VerfuegungZeitabschnitt> verfuegungZeitabschnittList
 	) {
-		Assertions.assertFalse(verfuegungZeitabschnittList.isEmpty());
+		assertFalse(verfuegungZeitabschnittList.isEmpty());
 		verfuegungZeitabschnittList.forEach(verfuegungZeitabschnitt -> {
-			Assertions.assertFalse(
+			assertFalse(
 				verfuegungZeitabschnitt
 					.getRelevantBgCalculationInput()
 					.isGeschwisternBonusKind2(),
 				"GeschwisternBonus 2 gewährt, obwohl kein Geschwisternbonus erwartet"
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				verfuegungZeitabschnitt
 					.getRelevantBgCalculationInput()
 					.isGeschwisternBonusKind3(),
@@ -592,15 +594,15 @@ class GeschwistertenBonusAbschnittRuleTest {
 	private void assertGeschwisternBonus2(
 		@Nonnull List<VerfuegungZeitabschnitt> verfuegungZeitabschnittList
 	) {
-		Assertions.assertFalse(verfuegungZeitabschnittList.isEmpty());
+		assertFalse(verfuegungZeitabschnittList.isEmpty());
 		verfuegungZeitabschnittList.forEach(verfuegungZeitabschnitt -> {
-			Assertions.assertTrue(
+			assertTrue(
 				verfuegungZeitabschnitt
 					.getRelevantBgCalculationInput()
 					.isGeschwisternBonusKind2(),
 				"GeschwisternBonus 2 nicht gewährt, obwohl erwartet"
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				verfuegungZeitabschnitt
 					.getRelevantBgCalculationInput()
 					.isGeschwisternBonusKind3(),
@@ -612,15 +614,15 @@ class GeschwistertenBonusAbschnittRuleTest {
 	private void assertGeschwisternBonus3(
 		@Nonnull List<VerfuegungZeitabschnitt> verfuegungZeitabschnittList
 	) {
-		Assertions.assertFalse(verfuegungZeitabschnittList.isEmpty());
+		assertFalse(verfuegungZeitabschnittList.isEmpty());
 		verfuegungZeitabschnittList.forEach(verfuegungZeitabschnitt -> {
-			Assertions.assertFalse(
+			assertFalse(
 				verfuegungZeitabschnitt
 					.getRelevantBgCalculationInput()
 					.isGeschwisternBonusKind2(),
 				"GeschwisternBonus 2 gewährt, obwohl Geschwisternbonus 3 erwartet"
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				verfuegungZeitabschnitt
 					.getRelevantBgCalculationInput()
 					.isGeschwisternBonusKind3(),

@@ -28,8 +28,9 @@ import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.TestUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class KitaLuzernRechnerTest extends AbstractLuzernRechnerTest {
 
@@ -462,7 +463,7 @@ public class KitaLuzernRechnerTest extends AbstractLuzernRechnerTest {
 		TestValues testValues
 	) {
 		super.assertCalculationResultResult(result, testValues);
-		Assert.assertEquals(PensumUnits.DAYS, result.getZeiteinheit());
+		assertEquals(PensumUnits.DAYS, result.getZeiteinheit());
 	}
 
 }

@@ -38,70 +38,72 @@ import ch.dvbern.ebegu.enums.BelegungTagesschuleModulIntervall;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(EasyMockExtension.class)
 public class CalculationUnitTest extends EasyMockSupport {
 
-	@Test()
+	@Test
 	public void testIsFruebetreuung() {
 		ModulTagesschuleGroup group = new ModulTagesschuleGroup();
 
 		group.setZeitVon(LocalTime.of(8, 0));
-		Assert.assertTrue(group.isFruehbetreuung());
+		assertTrue(group.isFruehbetreuung());
 
 		group.setZeitVon(LocalTime.of(11, 29));
-		Assert.assertTrue(group.isFruehbetreuung());
+		assertTrue(group.isFruehbetreuung());
 
 		group.setZeitVon(LocalTime.of(11, 30));
-		Assert.assertFalse(group.isFruehbetreuung());
+		assertFalse(group.isFruehbetreuung());
 	}
 
-	@Test()
+	@Test
 	public void testIsMittagsbetreuung() {
 		ModulTagesschuleGroup group = new ModulTagesschuleGroup();
 
 		group.setZeitVon(LocalTime.of(11, 30));
-		Assert.assertTrue(group.isMittagsbetreuung());
+		assertTrue(group.isMittagsbetreuung());
 
 		group.setZeitVon(LocalTime.of(13, 14));
-		Assert.assertTrue(group.isMittagsbetreuung());
+		assertTrue(group.isMittagsbetreuung());
 
 		group.setZeitVon(LocalTime.of(13, 15));
-		Assert.assertFalse(group.isMittagsbetreuung());
+		assertFalse(group.isMittagsbetreuung());
 	}
 
-	@Test()
+	@Test
 	public void testNachmittagsbetreuung1() {
 		ModulTagesschuleGroup group = new ModulTagesschuleGroup();
 
 		group.setZeitVon(LocalTime.of(13, 15));
-		Assert.assertTrue(group.isNachmittagbetreuung1());
+		assertTrue(group.isNachmittagbetreuung1());
 
 		group.setZeitVon(LocalTime.of(14, 59));
-		Assert.assertTrue(group.isNachmittagbetreuung1());
+		assertTrue(group.isNachmittagbetreuung1());
 
 		group.setZeitVon(LocalTime.of(15, 0));
-		Assert.assertFalse(group.isNachmittagbetreuung1());
+		assertFalse(group.isNachmittagbetreuung1());
 	}
 
-	@Test()
+	@Test
 	public void testNachmittagsbetreuung2() {
 		ModulTagesschuleGroup group = new ModulTagesschuleGroup();
 
 		group.setZeitVon(LocalTime.of(15, 0));
-		Assert.assertTrue(group.isNachmittagbetreuung2());
+		assertTrue(group.isNachmittagbetreuung2());
 
 		group.setZeitVon(LocalTime.of(20, 0));
-		Assert.assertTrue(group.isNachmittagbetreuung2());
+		assertTrue(group.isNachmittagbetreuung2());
 	}
 
-	@Test()
+	@Test
 	public void testCountAnzahlKinder() {
 		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsService =
 			new LastenausgleichTagesschuleAngabenInstitutionServiceBean();
@@ -151,10 +153,10 @@ public class CalculationUnitTest extends EasyMockSupport {
 		Map<String, Integer> result = latsService.countAnzahlKinder(
 			anmeldungen
 		);
-		Assert.assertEquals((int) result.get("vorschulalter"), 1);
-		Assert.assertEquals((int) result.get("kindergarten"), 2);
-		Assert.assertEquals((int) result.get("primarstufe"), 2);
-		Assert.assertEquals((int) result.get("sekundarstufe"), 0);
+		assertEquals((int) result.get("vorschulalter"), 1);
+		assertEquals((int) result.get("kindergarten"), 2);
+		assertEquals((int) result.get("primarstufe"), 2);
+		assertEquals((int) result.get("sekundarstufe"), 0);
 
 	}
 
@@ -168,18 +170,21 @@ public class CalculationUnitTest extends EasyMockSupport {
 		Map<String, BigDecimal> result = latsService
 			.calculateDurchschnittKinderProTag(anmeldungen);
 		// keine Mittagsbetreuung und keine Nachmittagsbetreuung2
-		Assert.assertEquals(BigDecimal.ZERO, result.get("mittagsbetreuung"));
-		Assert.assertEquals(
+		assertEquals(
+			BigDecimal.ZERO,
+			result.get("mittagsbetreuung")
+		);
+		assertEquals(
 			BigDecimal.ZERO,
 			result.get("nachmittagsbetreuung2")
 		);
 		// 8 Module in Kategorie Frühbetreuung in 5 Tagen
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("1.60"),
 			(BigDecimal) result.get("fruehbetreuung")
 		);
 		// 2 Wöchentliche Module und 3 zweiwöchentliche Module in Kategorie Nachmittagsbetreuung1 in 5 Tagen
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("0.70"),
 			(BigDecimal) result.get("nachmittagsbetreuung1")
 		);
@@ -213,7 +218,7 @@ public class CalculationUnitTest extends EasyMockSupport {
 				stammdaten,
 				gesuchsperiode
 			);
-		Assert.assertEquals(new BigDecimal("1452.75"), betreuungsstunden);
+		assertEquals(new BigDecimal("1452.75"), betreuungsstunden);
 	}
 
 	private List<AnmeldungTagesschule> getTestAnmeldungTagesschulen() {
@@ -373,21 +378,21 @@ public class CalculationUnitTest extends EasyMockSupport {
 		Map<String, BigDecimal> result = latsService
 			.calculateDurchschnittKinderProTag(anmeldungen);
 		// keine Mittagsbetreuung und keine Nachmittagsbetreuung2
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			(BigDecimal) result.get("mittagsbetreuung")
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			(BigDecimal) result.get("nachmittagsbetreuung2")
 		);
 		// 8 Module in Kategorie Frühbetreuung in 5 Tagen
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("1.60"),
 			(BigDecimal) result.get("fruehbetreuung")
 		);
 		// 2 Wöchentliche Module und 3 zweiwöchentliche Module in Kategorie Nachmittagsbetreuung1 in 5 Tagen
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("0.70"),
 			(BigDecimal) result.get("nachmittagsbetreuung1")
 		);
@@ -528,21 +533,21 @@ public class CalculationUnitTest extends EasyMockSupport {
 		Map<String, BigDecimal> result = latsService
 			.calculateDurchschnittKinderProTag(anmeldungen);
 		// keine Mittagsbetreuung und keine Nachmittagsbetreuung2
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			(BigDecimal) result.get("mittagsbetreuung")
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			(BigDecimal) result.get("nachmittagsbetreuung2")
 		);
 		// 6 Module in Kategorie Frühbetreuung in 4 Tagen
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("1.50"),
 			(BigDecimal) result.get("fruehbetreuung")
 		);
 		// 1 Wöchentliche Module und 3 zweiwöchentliche Module in Kategorie Nachmittagsbetreuung1 in 4 Tagen
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("0.63"),
 			(BigDecimal) result.get("nachmittagsbetreuung1")
 		);

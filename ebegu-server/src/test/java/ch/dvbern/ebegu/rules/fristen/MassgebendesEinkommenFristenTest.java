@@ -45,10 +45,11 @@ import ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationBernRechn
 import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.rules.EbeguRuleTestsHelper.calculateInklAllgemeineRegeln;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Folgende Tatbestände beeinflussen das MassgebendeEinkommen oder die Familiengrösse
@@ -89,8 +90,8 @@ public class MassgebendesEinkommenFristenTest {
 			betreuung
 		);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(12, result.size());
+		assertNotNull(result);
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -199,7 +200,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -308,7 +309,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -416,7 +417,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -524,7 +525,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -633,7 +634,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -741,7 +742,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -846,7 +847,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -950,7 +951,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -1066,7 +1067,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -1182,7 +1183,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutationBetreuung
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -1303,7 +1304,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			erstgesuch
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -1425,7 +1426,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			erstgesuch
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -1547,7 +1548,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutation
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -1666,7 +1667,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutation
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		assertZeitabschnitt(
@@ -1794,7 +1795,7 @@ public class MassgebendesEinkommenFristenTest {
 		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
 			mutation
 		);
-		Assert.assertEquals(12, result.size());
+		assertEquals(12, result.size());
 		int i = 0;
 
 		// EKV 1
@@ -1894,19 +1895,19 @@ public class MassgebendesEinkommenFristenTest {
 		int massgEinkVorAbzug,
 		int massgEink
 	) {
-		Assert.assertEquals(
+		assertEquals(
 			gueltigAb,
 			abschnitt.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			familiengroesse,
 			abschnitt.getFamGroesse().intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			massgEinkVorAbzug,
 			abschnitt.getMassgebendesEinkommenVorAbzFamgr().intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			massgEink,
 			abschnitt.getMassgebendesEinkommen().intValue()
 		);
@@ -1920,23 +1921,23 @@ public class MassgebendesEinkommenFristenTest {
 		int massgEink,
 		boolean hasAnspruch
 	) {
-		Assert.assertEquals(
+		assertEquals(
 			gueltigAb,
 			abschnitt.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			familiengroesse,
 			abschnitt.getFamGroesse().intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			massgEinkVorAbzug,
 			abschnitt.getMassgebendesEinkommenVorAbzFamgr().intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			massgEink,
 			abschnitt.getMassgebendesEinkommen().intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			hasAnspruch,
 			abschnitt.getAnspruchberechtigtesPensum() > 0
 		);
@@ -1949,19 +1950,19 @@ public class MassgebendesEinkommenFristenTest {
 		int massgEinkVorAbzug,
 		int einkommensjahr
 	) {
-		Assert.assertEquals(
+		assertEquals(
 			gueltigAb,
 			abschnitt.getGueltigkeit().getGueltigAb()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			familiengroesse,
 			abschnitt.getFamGroesse().intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			massgEinkVorAbzug,
 			abschnitt.getMassgebendesEinkommenVorAbzFamgr().intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			einkommensjahr,
 			abschnitt.getEinkommensjahr().intValue()
 		);
@@ -1983,8 +1984,8 @@ public class MassgebendesEinkommenFristenTest {
 		betreuung.setBetreuungsstatus(Betreuungsstatus.VERFUEGT);
 		Gesuch gesuch = betreuung.extractGesuch();
 		GesuchstellerContainer gs1 = gesuch.getGesuchsteller1();
-		Assert.assertNotNull(gs1);
-		Assert.assertNotNull(gs1.getFinanzielleSituationContainer());
+		assertNotNull(gs1);
+		assertNotNull(gs1.getFinanzielleSituationContainer());
 		gs1.addErwerbspensumContainer(
 			TestDataUtil.createErwerbspensum(
 				TestDataUtil.START_PERIODE,
@@ -1999,10 +2000,10 @@ public class MassgebendesEinkommenFristenTest {
 		if (zuZweit) {
 			Familiensituation familiensituation = gesuch
 				.extractFamiliensituation();
-			Assert.assertNotNull(familiensituation);
+			assertNotNull(familiensituation);
 			familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
 			GesuchstellerContainer gs2 = new GesuchstellerContainer();
-			Assert.assertNotNull(gs2);
+			assertNotNull(gs2);
 			gesuch.setGesuchsteller2(gs2);
 			gs2.addErwerbspensumContainer(
 				TestDataUtil.createErwerbspensum(
@@ -2014,7 +2015,7 @@ public class MassgebendesEinkommenFristenTest {
 			gs2.setFinanzielleSituationContainer(
 				new FinanzielleSituationContainer()
 			);
-			Assert.assertNotNull(gs2.getFinanzielleSituationContainer());
+			assertNotNull(gs2.getFinanzielleSituationContainer());
 			gs2.getFinanzielleSituationContainer()
 				.setFinanzielleSituationJA(new FinanzielleSituation());
 			gs2.getFinanzielleSituationContainer()
@@ -2090,18 +2091,18 @@ public class MassgebendesEinkommenFristenTest {
 		Familiensituation verheiratet = new Familiensituation();
 		verheiratet.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
 		verheiratet.setAenderungPer(heiratsdatum);
-		Assert.assertNotNull(mutation);
-		Assert.assertNotNull(mutation.getFamiliensituationContainer());
+		assertNotNull(mutation);
+		assertNotNull(mutation.getFamiliensituationContainer());
 		mutation.getFamiliensituationContainer()
 			.setFamiliensituationJA(verheiratet);
 		if (einkommenPartner > 0) {
 			mutation.setGesuchsteller2(new GesuchstellerContainer());
-			Assert.assertNotNull(mutation.getGesuchsteller2());
+			assertNotNull(mutation.getGesuchsteller2());
 			mutation.getGesuchsteller2()
 				.setFinanzielleSituationContainer(
 					new FinanzielleSituationContainer()
 				);
-			Assert.assertNotNull(
+			assertNotNull(
 				mutation.getGesuchsteller2()
 					.getFinanzielleSituationContainer()
 			);
@@ -2133,8 +2134,8 @@ public class MassgebendesEinkommenFristenTest {
 		Familiensituation alleinerziehend = new Familiensituation();
 		alleinerziehend.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
 		alleinerziehend.setAenderungPer(scheidungsdatum);
-		Assert.assertNotNull(mutation);
-		Assert.assertNotNull(mutation.getFamiliensituationContainer());
+		assertNotNull(mutation);
+		assertNotNull(mutation.getFamiliensituationContainer());
 		mutation.getFamiliensituationContainer()
 			.setFamiliensituationJA(alleinerziehend);
 		createEinkommensverschlechterung(mutation, einkommenGS1, einkommenGS2);
@@ -2147,8 +2148,8 @@ public class MassgebendesEinkommenFristenTest {
 	) {
 		Betreuung mutationBetreuung = createMutationAlleine(eingangsdatum);
 		Gesuch mutation = mutationBetreuung.extractGesuch();
-		Assert.assertNotNull(mutation.getGesuchsteller1());
-		Assert.assertNotNull(
+		assertNotNull(mutation.getGesuchsteller1());
+		assertNotNull(
 			mutation.getGesuchsteller1().getFinanzielleSituationContainer()
 		);
 		mutation.getGesuchsteller1()
@@ -2190,7 +2191,7 @@ public class MassgebendesEinkommenFristenTest {
 		gesuch.setEinkommensverschlechterungInfoContainer(
 			new EinkommensverschlechterungInfoContainer()
 		);
-		Assert.assertNotNull(
+		assertNotNull(
 			gesuch.getEinkommensverschlechterungInfoContainer()
 		);
 		gesuch.getEinkommensverschlechterungInfoContainer()
@@ -2206,11 +2207,11 @@ public class MassgebendesEinkommenFristenTest {
 		@Nonnull GesuchstellerContainer gesuchsteller,
 		int neuesEinkommen
 	) {
-		Assert.assertNotNull(gesuchsteller);
+		assertNotNull(gesuchsteller);
 		gesuchsteller.setEinkommensverschlechterungContainer(
 			new EinkommensverschlechterungContainer()
 		);
-		Assert.assertNotNull(
+		assertNotNull(
 			gesuchsteller.getEinkommensverschlechterungContainer()
 		);
 		gesuchsteller.getEinkommensverschlechterungContainer()

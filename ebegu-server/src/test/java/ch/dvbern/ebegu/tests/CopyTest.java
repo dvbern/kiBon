@@ -40,15 +40,15 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.test.util.TestDataInstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.testfaelle.Testfall01_WaeltiDagmar;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Test copy entities for Mutation, Erneuerung, neues Dossier
@@ -62,7 +62,7 @@ public class CopyTest {
 	private Gesuch mutationNeuesDossier;
 	private Gesuch erneuerungNeuesDossier;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		// Komplettes Gesuch aufsetzen
 		Collection<InstitutionStammdaten> instStammdaten = new ArrayList<>();

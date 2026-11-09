@@ -26,6 +26,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.identitystore.openid.OpenIdContext;
 
+import ch.dvbern.ebegu.nesko.StekUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,7 @@ public class KibonJwt {
 	static final String MANDANT_CLAIM = "mandant";
 	static final String MANDANT_UUID_CLAIM = "mandant_uuid";
 	static final String ZPV_CLAIM = "zpv";
+	static final String AHV_CLAIM = "ahv";
 
 	public String getEmail() {
 		return openIdContext.getClaims().getEmail().orElseThrow();
@@ -153,5 +155,16 @@ public class KibonJwt {
 	@Nullable
 	public String getZpvNummer() {
 		return getClaimAsString(ZPV_CLAIM).orElse(null);
+	}
+
+	/**
+	 * @return the AHV-Nummer claim reduced to its digits, or null if the claim is missing or blank
+	 */
+	@Nullable
+	public String getAhvNummer() {
+		return getClaimAsString(AHV_CLAIM)
+			.map(StekUtil::normalizeStekIdentifier)
+			.filter(ahv -> !ahv.isEmpty())
+			.orElse(null);
 	}
 }

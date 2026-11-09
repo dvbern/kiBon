@@ -47,9 +47,12 @@ import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import ch.dvbern.ebegu.util.KitaxUtil;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * In Faellen mit mehreren Betreuungen fuer dasselbe Kind, wovon in einer Betreuung der Anspruch
@@ -72,7 +75,7 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends
 
 	private Gesuch gesuch;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		kitaxUebergangsloesungParameter.setStadtBernAsivStartDate(
 			LocalDate.of(
@@ -109,10 +112,10 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends
 			.get();
 		gesuch.setKindContainers(new HashSet<>());
 		gesuch.getKindContainers().add(kind);
-		Assert.assertEquals(
-			"Vor dem Test ist nur noch 1 Kind vorhanden",
+		assertEquals(
 			1,
-			gesuch.getKindContainers().size()
+			gesuch.getKindContainers().size(),
+			"Vor dem Test ist nur noch 1 Kind vorhanden"
 		);
 		// Und alle Betreuungen des ersten Kindes
 		gesuch.getKindContainers()
@@ -120,9 +123,9 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends
 			.iterator()
 			.next()
 			.setBetreuungen(new HashSet<>());
-		Assert.assertTrue(
-			"Vor dem Test sollen keine Betreuungen vorhanden sein",
-			gesuch.extractAllBetreuungen().isEmpty()
+		assertTrue(
+			gesuch.extractAllBetreuungen().isEmpty(),
+			"Vor dem Test sollen keine Betreuungen vorhanden sein"
 		);
 	}
 
@@ -415,9 +418,9 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends
 		for (KindContainer kindContainer : gesuch.getKindContainers()) {
 			for (Betreuung betreuung : kindContainer.getBetreuungen()) {
 				Verfuegung verfuegung = betreuung.getVerfuegungPreview();
-				Assert.assertNotNull(verfuegung);
+				assertNotNull(verfuegung);
 				if (betreuung.getInstitutionStammdaten().equals(kita)) {
-					Assert.assertEquals(
+					assertEquals(
 						12,
 						verfuegung.getZeitabschnitte().size()
 					);
@@ -432,7 +435,7 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends
 								expectedBgPEnsum,
 								expectedRestFromPreviousBetreuung
 							);
-							Assert.assertEquals(
+							assertEquals(
 								msgRestanspruchExpected,
 								verfuegungZeitabschnitt
 									.getBemerkungenDTOList()
@@ -453,7 +456,7 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends
 				betreuung.setBetreuungsstatus(Betreuungsstatus.VERFUEGT);
 				final Verfuegung verfuegungPreview = betreuung
 					.getVerfuegungPreview();
-				Assert.assertNotNull(verfuegungPreview);
+				assertNotNull(verfuegungPreview);
 				betreuung.setVerfuegung(verfuegungPreview);
 				verfuegungPreview.setBetreuung(betreuung);
 			}

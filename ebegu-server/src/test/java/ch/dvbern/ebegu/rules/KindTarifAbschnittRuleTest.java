@@ -27,11 +27,11 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class KindTarifAbschnittRuleTest {
 
@@ -39,7 +39,7 @@ public class KindTarifAbschnittRuleTest {
 	private LocalDate GP_START;
 	private LocalDate GP_END;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		betreuung = createKindWithBetreuung();
 		GP_START = betreuung.extractGesuchsperiode()

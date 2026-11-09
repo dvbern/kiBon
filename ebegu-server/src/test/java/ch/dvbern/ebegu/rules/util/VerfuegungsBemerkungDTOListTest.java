@@ -30,12 +30,12 @@ import ch.dvbern.ebegu.dto.VerfuegungsBemerkungDTOList;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.types.DateRange;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class VerfuegungsBemerkungDTOListTest {
 
@@ -84,12 +84,12 @@ public class VerfuegungsBemerkungDTOListTest {
 		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(
 			false
 		);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertEquals(1, result.size());
+		assertEquals(
 			RuleValidity.GEMEINDE,
 			result.get(0).getRuleValidity()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			dateRangeFullAugust,
 			result.get(0).getGueltigkeit()
 		);
@@ -115,8 +115,8 @@ public class VerfuegungsBemerkungDTOListTest {
 		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(
 			false
 		);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertEquals(1, result.size());
+		assertEquals(
 			MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG,
 			result.get(0).getMsgKey()
 		);
@@ -137,8 +137,11 @@ public class VerfuegungsBemerkungDTOListTest {
 		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(
 			false
 		);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(MsgKey.FACHSTELLE_MSG, result.get(0).getMsgKey());
+		assertEquals(1, result.size());
+		assertEquals(
+			MsgKey.FACHSTELLE_MSG,
+			result.get(0).getMsgKey()
+		);
 	}
 
 	@Test
@@ -156,8 +159,8 @@ public class VerfuegungsBemerkungDTOListTest {
 		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(
 			true
 		);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertEquals(1, result.size());
+		assertEquals(
 			MsgKey.FACHSTELLE_MSG_FKJV,
 			result.get(0).getMsgKey()
 		);
@@ -175,8 +178,8 @@ public class VerfuegungsBemerkungDTOListTest {
 
 		List<VerfuegungsBemerkungDTO> result = bemerkungList
 			.getRequiredBemerkungen(false);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertEquals(1, result.size());
+		assertEquals(
 			dateRangeFirstHalfAugust,
 			result.get(0).getGueltigkeit()
 		);
@@ -206,13 +209,13 @@ public class VerfuegungsBemerkungDTOListTest {
 				)
 			)
 			.collect(Collectors.toList());
-		Assert.assertEquals(2, result.size());
+		assertEquals(2, result.size());
 
-		Assert.assertEquals(
+		assertEquals(
 			dateRangeFirstHalfAugust,
 			result.get(0).getGueltigkeit()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			dateRangeLastHalfAugust,
 			result.get(1).getGueltigkeit()
 		);
@@ -248,12 +251,12 @@ public class VerfuegungsBemerkungDTOListTest {
 
 		List<VerfuegungsBemerkungDTO> result = bemerkungList
 			.getRequiredBemerkungen(false);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertEquals(1, result.size());
+		assertEquals(
 			MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG,
 			result.get(0).getMsgKey()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			dateRangeFullAugust,
 			result.get(0).getGueltigkeit()
 		);
@@ -285,29 +288,29 @@ public class VerfuegungsBemerkungDTOListTest {
 
 		List<VerfuegungsBemerkungDTO> result = bemerkungList
 			.getRequiredBemerkungen(false);
-		Assert.assertEquals(2, result.size());
+		assertEquals(2, result.size());
 
 		Map<MsgKey, List<VerfuegungsBemerkungDTO>> bemerkungenByMessageKey =
 			mapVerfuegungsBemerkungByMsgKey(result);
 
-		Assert.assertEquals(
+		assertEquals(
 			1,
 			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG).size()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			dateRangeFirstHalfAugust,
 			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG)
 				.get(0)
 				.getGueltigkeit()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			1,
 			bemerkungenByMessageKey.get(
 				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
 			).size()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			dateRangeLastHalfAugust,
 			bemerkungenByMessageKey.get(
 				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
@@ -339,7 +342,7 @@ public class VerfuegungsBemerkungDTOListTest {
 
 		List<VerfuegungsBemerkungDTO> result = bemerkungList
 			.getRequiredBemerkungen(false);
-		Assert.assertEquals(3, result.size());
+		assertEquals(3, result.size());
 
 		DateRange expectedFachstellenGueltigkeitPart1 =
 			new DateRange(
@@ -355,30 +358,30 @@ public class VerfuegungsBemerkungDTOListTest {
 		Map<MsgKey, List<VerfuegungsBemerkungDTO>> bemerkungenByMessageKey =
 			mapVerfuegungsBemerkungByMsgKey(result);
 
-		Assert.assertEquals(
+		assertEquals(
 			2,
 			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG).size()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedFachstellenGueltigkeitPart1,
 			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG)
 				.get(0)
 				.getGueltigkeit()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			expectedFachstellenGueltigkeitPart2,
 			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG)
 				.get(1)
 				.getGueltigkeit()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			1,
 			bemerkungenByMessageKey.get(
 				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
 			).size()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			dateRangePartAugust,
 			bemerkungenByMessageKey.get(
 				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG

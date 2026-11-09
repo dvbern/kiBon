@@ -26,10 +26,11 @@ import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.types.DateRange;
-import org.junit.Assert;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class AbstractLuzernRechnerTest extends AbstractBGRechnerTest {
 
@@ -92,87 +93,87 @@ public class AbstractLuzernRechnerTest extends AbstractBGRechnerTest {
 		BGCalculationResult result,
 		TestValues testValues
 	) {
-		Assert.assertEquals(
-			"Vollkosten not equal",
+		assertEquals(
 			testValues.expectedVollkosten.stripTrailingZeros(),
-			result.getVollkosten().stripTrailingZeros()
+			result.getVollkosten().stripTrailingZeros(),
+			"Vollkosten not equal"
 		);
-		Assert.assertEquals(
-			"Betreuungspensum not equal",
+		assertEquals(
 			testValues.betreuungsPensum.stripTrailingZeros(),
-			result.getBetreuungspensumProzent().stripTrailingZeros()
+			result.getBetreuungspensumProzent().stripTrailingZeros(),
+			"Betreuungspensum not equal"
 		);
-		Assert.assertEquals(
-			"Anspruchspensum not equal",
+		assertEquals(
 			testValues.anspruchsPensum,
-			result.getAnspruchspensumProzent()
+			result.getAnspruchspensumProzent(),
+			"Anspruchspensum not equal"
 		);
-		Assert.assertEquals(
-			"Elternebeitrag not equal",
+		assertEquals(
 			testValues.expectedElternbeitrag.stripTrailingZeros(),
-			result.getElternbeitrag().stripTrailingZeros()
+			result.getElternbeitrag().stripTrailingZeros(),
+			"Elternebeitrag not equal"
 		);
-		Assert.assertEquals(
-			"Minimaler Elternbeitrag not equal",
+		assertEquals(
 			testValues.expectedMinimalerElternbeitrag.stripTrailingZeros(),
-			result.getMinimalerElternbeitrag().stripTrailingZeros()
+			result.getMinimalerElternbeitrag().stripTrailingZeros(),
+			"Minimaler Elternbeitrag not equal"
 		);
-		Assert.assertEquals(
-			"VerguenstigungOhneBeruckesichtigungMinimalbetrag not equal",
+		assertEquals(
 			testValues.expectedVerguenstigungOhneBeruecksichtigungMinimalbetrag
 				.stripTrailingZeros(),
 			result.getVerguenstigungOhneBeruecksichtigungMinimalbeitrag()
-				.stripTrailingZeros()
+				.stripTrailingZeros(),
+			"VerguenstigungOhneBeruckesichtigungMinimalbetrag not equal"
 		);
-		Assert.assertEquals(
-			"VerguenstigungOhneBeruecksichtigungVollkosten not equal",
+		assertEquals(
 			testValues.expectedVerguenstigungOhneBeruecksichtigungVollkosten
 				.stripTrailingZeros(),
 			result.getVerguenstigungOhneBeruecksichtigungVollkosten()
-				.stripTrailingZeros()
+				.stripTrailingZeros(),
+			"VerguenstigungOhneBeruecksichtigungVollkosten not equal"
 		);
-		Assert.assertEquals(
-			"Verguenstigung not equal",
+		assertEquals(
 			testValues.expectedVerguenstigung.stripTrailingZeros(),
-			result.getVerguenstigung().stripTrailingZeros()
+			result.getVerguenstigung().stripTrailingZeros(),
+			"Verguenstigung not equal"
 		);
 
 		if (testValues.expectedVerguenstigungProZeiteinheit != null) {
-			Assert.assertNotNull(
-				"Verguentstigung pro Zeiteinheit is null",
-				result.getVerguenstigungProZeiteinheit()
+			assertNotNull(
+				result.getVerguenstigungProZeiteinheit(),
+				"Verguentstigung pro Zeiteinheit is null"
 			);
-			Assert.assertEquals(
-				"Verguentstigung pro Zeiteinheit not equal",
+			assertEquals(
 				testValues.expectedVerguenstigungProZeiteinheit
 					.stripTrailingZeros(),
 				result.getVerguenstigungProZeiteinheit()
-					.stripTrailingZeros()
+					.stripTrailingZeros(),
+				"Verguentstigung pro Zeiteinheit not equal"
 			);
 		}
 
-		Assert.assertEquals(
-			"Betreuungszeiteinheit not equal",
+		assertEquals(
 			testValues.expectedBetreuungsZeiteinheit.stripTrailingZeros(),
-			result.getBetreuungspensumZeiteinheit().stripTrailingZeros()
+			result.getBetreuungspensumZeiteinheit().stripTrailingZeros(),
+			"Betreuungszeiteinheit not equal"
 		);
-		Assert.assertEquals(
-			"Anspruchszeiteinheit not equal",
+		assertEquals(
 			testValues.expectedAnspruchsZeiteinheit.stripTrailingZeros(),
-			result.getAnspruchspensumZeiteinheit().stripTrailingZeros()
+			result.getAnspruchspensumZeiteinheit().stripTrailingZeros(),
+			"Anspruchszeiteinheit not equal"
 		);
-		Assert.assertEquals(
-			"BGZeiteinheit not equal",
+		assertEquals(
 			testValues.expectedBgZeiteinheit.stripTrailingZeros(),
-			result.getBgPensumZeiteinheit().stripTrailingZeros()
+			result.getBgPensumZeiteinheit().stripTrailingZeros(),
+			"BGZeiteinheit not equal"
 		);
 		BigDecimal bgPensum = testValues.betreuungsPensum.min(
 			BigDecimal.valueOf(testValues.anspruchsPensum)
 		);
-		Assert.assertEquals(
-			"BGPensum not equal",
+		assertEquals(
 			bgPensum.stripTrailingZeros(),
-			result.getBgPensumProzent().stripTrailingZeros()
+			result.getBgPensumProzent().stripTrailingZeros(),
+			"BGPensum not equal"
 		);
 
 		if (result.getGutscheinEingewoehnung() == null) {

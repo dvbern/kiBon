@@ -29,15 +29,14 @@ import ch.dvbern.ebegu.enums.AnspruchBeschaeftigungAbhaengigkeitTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.rechner.AbstractBGRechnerTest;
 import ch.dvbern.ebegu.test.TestDataUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests für ErwerbspensumMinimumRule
@@ -46,7 +45,7 @@ public class ErwerbspensumMinimumRuleTest extends AbstractBGRechnerTest {
 
 	private Map<EinstellungKey, Einstellung> einstellungenMap;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		einstellungenMap = EbeguRuleTestsHelper.getAllEinstellungen(
 			TestDataUtil.createGesuchsperiode1718()
@@ -208,7 +207,7 @@ public class ErwerbspensumMinimumRuleTest extends AbstractBGRechnerTest {
 			.createGesuchWithBetreuungspensum(gs2);
 		Gesuch gesuch = betreuung.extractGesuch();
 
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
+		assertNotNull(gesuch.getGesuchsteller1());
 
 		ErwerbspensumContainer ewpGS1 =
 			TestDataUtil.createErwerbspensum(
@@ -225,7 +224,7 @@ public class ErwerbspensumMinimumRuleTest extends AbstractBGRechnerTest {
 					TestDataUtil.ENDE_PERIODE,
 					pensumGS2
 				);
-			Assert.assertNotNull(gesuch.getGesuchsteller2());
+			assertNotNull(gesuch.getGesuchsteller2());
 			gesuch.getGesuchsteller2()
 				.setErwerbspensenContainers(Set.of(ewpGS2));
 		}

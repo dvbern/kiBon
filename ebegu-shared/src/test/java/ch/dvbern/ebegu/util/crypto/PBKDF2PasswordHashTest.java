@@ -18,13 +18,14 @@ package ch.dvbern.ebegu.util.crypto;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static ch.dvbern.ebegu.util.crypto.PBKDF2PasswordHash.createHash;
 import static ch.dvbern.ebegu.util.crypto.PBKDF2PasswordHash.validatePassword;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class PBKDF2PasswordHashTest {
 	private static final Logger LOG = LoggerFactory.getLogger(
@@ -37,7 +38,7 @@ public class PBKDF2PasswordHashTest {
 		// Print out 10 hashes
 		for (int i = 0; i < 10; i++) {
 			String hash = createHash("p\r\nassw0Rd!");
-			Assert.assertNotNull(hash);
+			assertNotNull(hash);
 			//			LOG.info("generated hash: "+ hash);
 		}
 
@@ -47,14 +48,14 @@ public class PBKDF2PasswordHashTest {
 			String hash = createHash(password);
 			String secondHash = createHash(password);
 			if (hash.equals(secondHash)) {
-				Assert.fail("FAILURE: TWO HASHES ARE EQUAL!");
+				fail("FAILURE: TWO HASHES ARE EQUAL!");
 			}
 			String wrongPassword = "" + (i + 1);
 			if (validatePassword(wrongPassword, hash)) {
-				Assert.fail("FAILURE: WRONG PASSWORD ACCEPTED!");
+				fail("FAILURE: WRONG PASSWORD ACCEPTED!");
 			}
 			if (!validatePassword(password, hash)) {
-				Assert.fail("FAILURE: GOOD PASSWORD NOT ACCEPTED!");
+				fail("FAILURE: GOOD PASSWORD NOT ACCEPTED!");
 			}
 		}
 	}
@@ -63,7 +64,7 @@ public class PBKDF2PasswordHashTest {
 	public void testCreate() throws InvalidKeySpecException,
 		NoSuchAlgorithmException {
 		String hash = createHash("password10");
-		Assert.assertNotNull(hash);
+		assertNotNull(hash);
 		//		System.out.println(hash);
 	}
 }

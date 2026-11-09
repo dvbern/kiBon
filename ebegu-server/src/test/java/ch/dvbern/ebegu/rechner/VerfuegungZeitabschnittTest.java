@@ -29,8 +29,9 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 
@@ -49,7 +50,10 @@ public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 			.withFullMonths();
 
 		BGCalculationResult result = calculate(gueltigkeit);
-		Assert.assertEquals(MAX_STUNDEN_MONTH, result.getBgPensumZeiteinheit());
+		assertEquals(
+			MAX_STUNDEN_MONTH,
+			result.getBgPensumZeiteinheit()
+		);
 	}
 
 	@Test
@@ -58,7 +62,10 @@ public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 			.withFullMonths();
 
 		BGCalculationResult result = calculate(gueltigkeit);
-		Assert.assertEquals(MAX_STUNDEN_MONTH, result.getBgPensumZeiteinheit());
+		assertEquals(
+			MAX_STUNDEN_MONTH,
+			result.getBgPensumZeiteinheit()
+		);
 	}
 
 	@Test
@@ -67,7 +74,10 @@ public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 			.withFullMonths();
 
 		BGCalculationResult result = calculate(gueltigkeit);
-		Assert.assertEquals(MAX_STUNDEN_MONTH, result.getBgPensumZeiteinheit());
+		assertEquals(
+			MAX_STUNDEN_MONTH,
+			result.getBgPensumZeiteinheit()
+		);
 	}
 
 	@Test
@@ -78,7 +88,7 @@ public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 		);
 
 		BGCalculationResult result = calculate(gueltigkeit);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.divide(
 				MAX_STUNDEN_MONTH,
 				BigDecimal.valueOf(2)
@@ -99,7 +109,7 @@ public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 			MAX_STUNDEN_MONTH,
 			BigDecimal.valueOf(30)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.roundToNearestQuarter(ungerundeterWert),
 			result.getBgPensumZeiteinheit()
 		);

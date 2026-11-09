@@ -52,8 +52,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(EasyMockExtension.class)
 class AuthResourceTest extends EasyMockSupport {
@@ -460,6 +460,7 @@ class AuthResourceTest extends EasyMockSupport {
 			expect(kibonJwt.getVorname()).andReturn("Jean");
 			expect(kibonJwt.getNachname()).andReturn("Room");
 			expect(kibonJwt.getZpvNummer()).andReturn(null);
+			expect(kibonJwt.getAhvNummer()).andReturn(null);
 
 			expect(request.getRequestURL()).andReturn(
 				new StringBuffer(
@@ -503,6 +504,7 @@ class AuthResourceTest extends EasyMockSupport {
 			expect(kibonJwt.getVorname()).andReturn("Jean");
 			expect(kibonJwt.getNachname()).andReturn("Room");
 			expect(kibonJwt.getZpvNummer()).andReturn(null);
+			expect(kibonJwt.getAhvNummer()).andReturn(null);
 
 			expect(request.getRequestURL()).andReturn(
 				new StringBuffer(
@@ -549,6 +551,7 @@ class AuthResourceTest extends EasyMockSupport {
 			expect(kibonJwt.getVorname()).andReturn("Jean");
 			expect(kibonJwt.getNachname()).andReturn("Room");
 			expect(kibonJwt.getZpvNummer()).andReturn(null);
+			expect(kibonJwt.getAhvNummer()).andReturn(null);
 
 			expect(request.getRequestURL()).andReturn(
 				new StringBuffer(
@@ -595,6 +598,7 @@ class AuthResourceTest extends EasyMockSupport {
 			expect(kibonJwt.getVorname()).andReturn("Jean");
 			expect(kibonJwt.getNachname()).andReturn("Room");
 			expect(kibonJwt.getZpvNummer()).andReturn(null);
+			expect(kibonJwt.getAhvNummer()).andReturn(null);
 
 			expect(request.getRequestURL()).andReturn(
 				new StringBuffer(
@@ -768,7 +772,9 @@ class AuthResourceTest extends EasyMockSupport {
 				Mandant mandant = new Mandant();
 				mandant.setMandantIdentifier(MandantIdentifier.BERN);
 				benutzer.setMandant(mandant);
-				expect(kibonJwt.getZpvNummer()).andReturn("123123");
+				String zpvNummer = "123123";
+				expect(kibonJwt.getZpvNummer()).andReturn(zpvNummer);
+				expect(kibonJwt.getAhvNummer()).andReturn(null);
 				expect(kibonJwt.getEmail()).andReturn("email");
 				expect(kibonJwt.getNachname()).andReturn("nachname");
 				expect(kibonJwt.getVorname()).andReturn("nachname");
@@ -818,6 +824,123 @@ class AuthResourceTest extends EasyMockSupport {
 
 				// then
 				assertThat(benutzer.getExternalUUID(), Is.is(KEYCLOAK_UUID));
+			}
+		}
+
+		@Nested
+		class StekIdentifierUpdate {
+			Benutzer benutzer;
+
+			@BeforeEach
+			void setup() {
+				benutzer = new Benutzer();
+				Mandant mandant = new Mandant();
+				mandant.setMandantIdentifier(MandantIdentifier.BERN);
+				benutzer.setMandant(mandant);
+				benutzer.setExternalUUID(KEYCLOAK_UUID);
+				benutzer.setZpvNummer("111");
+				benutzer.setAhvNummer("7561234567897");
+				expect(kibonJwt.getEmail()).andReturn("email");
+				expect(kibonJwt.getNachname()).andReturn("nachname");
+				expect(kibonJwt.getVorname()).andReturn("vorname");
+				expect(kibonJwt.getBeLoginPrimaryId()).andReturn(
+					Optional.empty()
+				);
+				expect(kibonJwt.getExternalUUID()).andReturn(KEYCLOAK_UUID)
+					.anyTimes();
+				expect(kibonJwt.hasInvalidMandantClaims()).andReturn(false);
+				expect(benutzerService.findUserWithInvitation(KEYCLOAK_UUID))
+					.andReturn(Optional.empty());
+				expect(benutzerService.findBenutzer(kibonJwt)).andReturn(
+					Optional.of(benutzer)
+				);
+				expect(request.getRequestURL()).andReturn(
+					new StringBuffer("https://be.kibon.ch/")
+				);
+			}
+
+			@Test
+			void mustNotResetExistingNumbersWhenTokenHasNone() {
+				String existingAHVNr = "7561234567897";
+				// given
+				benutzer.setAhvNummer(existingAHVNr);
+				expect(kibonJwt.getZpvNummer()).andReturn(null);
+				expect(kibonJwt.getAhvNummer()).andReturn(null);
+				replayAll();
+
+				// when
+				testee.callback(request, "/irrelevant");
+
+				// then
+				assertThat(benutzer.getZpvNummer(), Is.is("111"));
+				assertThat(benutzer.getAhvNummer(), Is.is(existingAHVNr));
+			}
+
+			@Test
+			void mustNotResetExistingAHVStekOIdentifiersWhenTokenHasNone() {
+				String existingAHVNr = "7561234567897";
+				// given
+				benutzer.setAhvNummer(existingAHVNr);
+				expect(kibonJwt.getZpvNummer()).andReturn(null);
+				expect(kibonJwt.getAhvNummer()).andReturn(null);
+				replayAll();
+
+				// when
+				testee.callback(request, "/irrelevant");
+
+				// then
+				assertThat(benutzer.getAhvNummer(), Is.is(existingAHVNr));
+			}
+
+			@Test
+			void mustOverwriteExistingAHVStekIdentifierWhenTokenHasValue() {
+				String oldAHVNr = "7561234567897";
+				String newAHVNr = "7569999999994";
+				// given
+				benutzer.setAhvNummer(oldAHVNr);
+				expect(kibonJwt.getZpvNummer()).andReturn(null);
+				expect(kibonJwt.getAhvNummer()).andReturn(newAHVNr);
+				expectLastCall();
+				replayAll();
+
+				// when
+				testee.callback(request, "/irrelevant");
+
+				// then
+				assertThat(benutzer.getAhvNummer(), Is.is(newAHVNr));
+			}
+
+			@Test
+			void mustNotResetExistingZPVVStekOIdentifiersWhenTokenHasNone() {
+				String existingZPVNr = "222";
+				// given
+				benutzer.setZpvNummer(existingZPVNr);
+				expect(kibonJwt.getAhvNummer()).andReturn(null);
+				expect(kibonJwt.getZpvNummer()).andReturn(null);
+				replayAll();
+
+				// when
+				testee.callback(request, "/irrelevant");
+
+				// then
+				assertThat(benutzer.getZpvNummer(), Is.is(existingZPVNr));
+			}
+
+			@Test
+			void mustOverwriteExistingZPVStekIdentifierWhenTokenHasValue() {
+				String oldZPVNr = "222";
+				String newZPVNr = "333";
+				// given
+				benutzer.setZpvNummer(oldZPVNr);
+				expect(kibonJwt.getAhvNummer()).andReturn(null);
+				expect(kibonJwt.getZpvNummer()).andReturn(newZPVNr);
+				replayAll();
+
+				// when
+				testee.callback(request, "/irrelevant");
+
+				// then
+				assertThat(benutzer.getZpvNummer(), Is.is(newZPVNr));
 			}
 		}
 	}

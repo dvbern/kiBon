@@ -38,11 +38,11 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.test.TestDataUtil.PERIODE_JAHR_0;
 import static ch.dvbern.ebegu.test.TestDataUtil.START_PERIODE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MutationsMergerFinanzielleSituationBernFKJVFristenTest {
 
@@ -72,13 +72,15 @@ public class MutationsMergerFinanzielleSituationBernFKJVFristenTest {
 	private static final BigDecimal TWO = BigDecimal.valueOf(2);
 
 	@Test
-	void test_kleinereMassgegebeneseinkommens_Familiengroesse_aendert() {
+	void test_kleinereMassgegebeneseinkommens_neuesKind_FamiliengroesseNichtRueckwirkend() {
 		BGCalculationInput bgCalculationInput = initInputData(
 			HUNDERT_TAUSEND,
-			THREE
+			THREE,
+			2
 		);
 		BGCalculationResult resultVorgaenger = initResultData(
 			ZWEI_HUNDERT_TAUSEND,
+			TWO,
 			TWO
 		);
 		MUTATIONS_MERGER_FINANZIELLE_SITUATION_BERN_FKJV_FRISTEN
@@ -91,24 +93,26 @@ public class MutationsMergerFinanzielleSituationBernFKJVFristenTest {
 				),
 				EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
 			);
-		Assertions.assertEquals(
+		assertEquals(
 			HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
-		Assertions.assertEquals(
-			THREE,
+		assertEquals(
+			TWO,
 			bgCalculationInput.getFamGroesseTotal()
 		);
 	}
 
 	@Test
-	void test_hoereMassgegebeneseinkommens_Familiengroesse_aendert() {
+	void test_hoereMassgegebeneseinkommens_neuesKind_FamiliengroesseNichtRueckwirkend() {
 		BGCalculationInput bgCalculationInput = initInputData(
 			ZWEI_HUNDERT_TAUSEND,
-			THREE
+			THREE,
+			2
 		);
 		BGCalculationResult resultVorgaenger = initResultData(
 			HUNDERT_TAUSEND,
+			TWO,
 			TWO
 		);
 		MUTATIONS_MERGER_FINANZIELLE_SITUATION_BERN_FKJV_FRISTEN
@@ -121,19 +125,166 @@ public class MutationsMergerFinanzielleSituationBernFKJVFristenTest {
 				),
 				EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
 			);
-		Assertions.assertEquals(
+		assertEquals(
 			ZWEI_HUNDERT_TAUSEND,
 			bgCalculationInput.getMassgebendesEinkommen()
 		);
-		Assertions.assertEquals(
+		assertEquals(
+			TWO,
+			bgCalculationInput.getFamGroesseTotal()
+		);
+	}
+
+	@Test
+	void test_kleinereMassgegebeneseinkommens_FamSitGeaendert_FamiliengroesseRueckwirkend() {
+		BGCalculationInput bgCalculationInput = initInputData(
+			HUNDERT_TAUSEND,
 			THREE,
+			2
+		);
+		BGCalculationResult resultVorgaenger = initResultData(
+			ZWEI_HUNDERT_TAUSEND,
+			TWO,
+			BigDecimal.ONE
+		);
+		MUTATIONS_MERGER_FINANZIELLE_SITUATION_BERN_FKJV_FRISTEN
+			.handleEinkommen(
+				bgCalculationInput,
+				resultVorgaenger,
+				prepareBetreuung(
+					HUNDERT_TAUSEND,
+					EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+				),
+				EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+			);
+		assertEquals(
+			HUNDERT_TAUSEND,
+			bgCalculationInput.getMassgebendesEinkommen()
+		);
+		assertEquals(
+			THREE,
+			bgCalculationInput.getFamGroesseTotal()
+		);
+	}
+
+	@Test
+	void test_gleichesMassgegebeneseinkommens_FamSitGeaendert_FamiliengroesseRueckwirkend() {
+		BGCalculationInput bgCalculationInput = initInputData(
+			HUNDERT_TAUSEND,
+			THREE,
+			2
+		);
+		BGCalculationResult resultVorgaenger = initResultData(
+			HUNDERT_TAUSEND,
+			TWO,
+			BigDecimal.ONE
+		);
+		MUTATIONS_MERGER_FINANZIELLE_SITUATION_BERN_FKJV_FRISTEN
+			.handleEinkommen(
+				bgCalculationInput,
+				resultVorgaenger,
+				prepareBetreuung(
+					HUNDERT_TAUSEND,
+					EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+				),
+				EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+			);
+		assertEquals(
+			THREE,
+			bgCalculationInput.getFamGroesseTotal()
+		);
+	}
+
+	@Test
+	void test_hoeheresMassgegebeneseinkommens_FamSitGeaendert_FamiliengroesseRueckwirkend() {
+		BGCalculationInput bgCalculationInput = initInputData(
+			ZWEI_HUNDERT_TAUSEND,
+			THREE,
+			2
+		);
+		BGCalculationResult resultVorgaenger = initResultData(
+			HUNDERT_TAUSEND,
+			TWO,
+			BigDecimal.ONE
+		);
+		MUTATIONS_MERGER_FINANZIELLE_SITUATION_BERN_FKJV_FRISTEN
+			.handleEinkommen(
+				bgCalculationInput,
+				resultVorgaenger,
+				prepareBetreuung(
+					ZWEI_HUNDERT_TAUSEND,
+					EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+				),
+				EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+			);
+		assertEquals(
+			THREE,
+			bgCalculationInput.getFamGroesseTotal()
+		);
+	}
+
+	@Test
+	void test_einkommensverschlechterung_FamSitGeaendert_FamiliengroesseRueckwirkend() {
+		BGCalculationInput bgCalculationInput = initInputData(
+			HUNDERT_TAUSEND,
+			THREE,
+			2
+		);
+		bgCalculationInput.setEinkommensjahr(PERIODE_JAHR_0 + 1);
+		BGCalculationResult resultVorgaenger = initResultData(
+			ZWEI_HUNDERT_TAUSEND,
+			TWO,
+			BigDecimal.ONE
+		);
+		MUTATIONS_MERGER_FINANZIELLE_SITUATION_BERN_FKJV_FRISTEN
+			.handleEinkommen(
+				bgCalculationInput,
+				resultVorgaenger,
+				prepareBetreuung(
+					HUNDERT_TAUSEND,
+					EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+				),
+				EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+			);
+		assertEquals(
+			THREE,
+			bgCalculationInput.getFamGroesseTotal()
+		);
+	}
+
+	@Test
+	void test_einkommensverschlechterung_neuesKind_FamiliengroesseNichtRueckwirkend() {
+		BGCalculationInput bgCalculationInput = initInputData(
+			HUNDERT_TAUSEND,
+			THREE,
+			2
+		);
+		bgCalculationInput.setEinkommensjahr(PERIODE_JAHR_0 + 1);
+		BGCalculationResult resultVorgaenger = initResultData(
+			ZWEI_HUNDERT_TAUSEND,
+			TWO,
+			TWO
+		);
+		MUTATIONS_MERGER_FINANZIELLE_SITUATION_BERN_FKJV_FRISTEN
+			.handleEinkommen(
+				bgCalculationInput,
+				resultVorgaenger,
+				prepareBetreuung(
+					HUNDERT_TAUSEND,
+					EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+				),
+				EINREICHEDATUM_NACH_ABSCHNITT_ERSTGESUCH
+			);
+		assertEquals(
+			TWO,
 			bgCalculationInput.getFamGroesseTotal()
 		);
 	}
 
 	private BGCalculationInput initInputData(
 		BigDecimal massgegebendeseinkommen,
-		BigDecimal famgroesse
+		BigDecimal famgroesse,
+		int anzahlGesuchsteller
 	) {
 		VerfuegungZeitabschnitt verfuegungZeitabschnitt =
 			new VerfuegungZeitabschnitt();
@@ -153,12 +304,15 @@ public class MutationsMergerFinanzielleSituationBernFKJVFristenTest {
 		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setSozialhilfeempfaenger(false);
 		input.setVerguenstigungGewuenscht(true);
+		input.getFamilienCalculationInput()
+			.setAnzahlGesuchsteller(anzahlGesuchsteller);
 		return input;
 	}
 
 	private BGCalculationResult initResultData(
 		BigDecimal massgegebendeseinkommen,
-		BigDecimal famgroesse
+		BigDecimal famgroesse,
+		BigDecimal anzahlGesuchsteller
 	) {
 		BGCalculationResult result = new BGCalculationResult();
 		result.setMassgebendesEinkommenVorAbzugFamgr(massgegebendeseinkommen);
@@ -167,6 +321,7 @@ public class MutationsMergerFinanzielleSituationBernFKJVFristenTest {
 		result.setAbzugFamGroesse(BigDecimal.ZERO);
 		result.setSozialhilfeAkzeptiert(true);
 		result.setVerguenstigungGewuenscht(true);
+		result.setAnzahlGesuchsteller(anzahlGesuchsteller);
 		return result;
 	}
 

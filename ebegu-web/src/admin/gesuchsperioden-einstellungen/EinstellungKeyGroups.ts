@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2026 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+export enum EinstellungKeyGroups {
+    FREIGABE_VERFUEGUNG_GLOBALERE_EINSTELLUNGEN = 'FREIGABE_VERFUEGUNG_GLOBALERE_EINSTELLUNGEN',
+    ANTRAGSTELLENDE_NACHWEISE_FORMALITAETEN = 'ANTRAGSTELLENDE_NACHWEISE_FORMALITAETEN',
+    FAMILIENSITUATION = 'FAMILIENSITUATION',
+    ANSPRUCHSBERECHTIGUNG_PENSUM_REGELN = 'ANSPRUCHSBERECHTIGUNG_PENSUM_REGELN',
+    PLATZBESTAETIGUNG = 'PLATZBESTAETIGUNG',
+    BESONDERE_BEDUERFNISSE_AUSSERORDENTLICHER_BETREUUNGSAUFWAND = 'BESONDERE_BEDUERFNISSE_AUSSERORDENTLICHER_BETREUUNGSAUFWAND',
+    FACHSTELLEN_INTEGRATION = 'FACHSTELLEN_INTEGRATION',
+    KITA_BETREUUNG = 'KITA_BETREUUNG',
+    TFO_BETREUUNG = 'TFO_BETREUUNG',
+    MITTAGSTISCH = 'MITTAGSTISCH',
+    TAGESSCHULE = 'TAGESSCHULE',
+    FERIENBETREUUNG_FERIENINSELN = 'FERIENBETREUUNG_FERIENINSELN',
+    KINDERABZUG_PAUSCHALABZUG = 'KINDERABZUG_PAUSCHALABZUG',
+    FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN = 'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN',
+    EINKOMMENSAENDERUNG = 'EINKOMMENSAENDERUNG'
+}

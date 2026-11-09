@@ -232,6 +232,7 @@ public class CreateBenutzerService {
 		berechtigung.setBenutzer(benutzer);
 		benutzer.getBerechtigungen().add(berechtigung);
 		benutzer.setZpvNummer(kibonJwt.getZpvNummer());
+		benutzer.setAhvNummer(kibonJwt.getAhvNummer());
 		persistence.persist(benutzer);
 	}
 

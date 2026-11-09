@@ -33,7 +33,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +42,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(MockitoExtension.class)
 class LogoutEventConsumerTest {
@@ -129,6 +130,6 @@ class LogoutEventConsumerTest {
 		eventConsumer.consumeAndHandleLogoutEvent();
 		eventConsumer.cleanup();
 		Mockito.verify(kafkaConsumer).close();
-		Assertions.assertFalse(eventConsumer.isRunning());
+		assertFalse(eventConsumer.isRunning());
 	}
 }

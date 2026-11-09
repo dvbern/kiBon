@@ -6,8 +6,8 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.VerfuegungZeitabschnittComparator;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -19,7 +19,7 @@ public class VerfuegungZeitabschnittComparatorTest {
 	private VerfuegungZeitabschnitt verfuegungZeitabschnittAprJun;
 	private VerfuegungZeitabschnitt verfuegungZeitabschnittJanJun;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		DateRange januarBisApril = new DateRange(
 			LocalDate.of(2023, 1, 1),

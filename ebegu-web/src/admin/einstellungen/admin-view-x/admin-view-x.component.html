@@ -32,17 +32,16 @@
 
                         <!-- Grouped-Parameter-Lists -->
                         @for (
-                            group of displayedGroupedCollection;
-                            track group
+                            group of displayedGroupedCollection | keyvalue;
+                            track group.key
                         ) {
-                            <dv-application-property-group
-                                [groupName]="group.groupName"
-                                [applicationProperties]="
-                                    group.applicationProperties
-                                "
-                                (applicationPropertyChange)="
+                            <kib-kibon-configuration-group
+                                [groupName]="group.key"
+                                [configurations]="group.value"
+                                (configurationChange)="
                                     updateApplicationProperty($event)
                                 "
+                                class="tw:block tw:mb-10"
                             />
                         }
 

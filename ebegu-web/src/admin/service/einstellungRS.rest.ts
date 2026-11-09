@@ -25,6 +25,7 @@ import {TSEinstellungKey} from '../einstellungen/TSEinstellungKey';
 import {TSFerienbetreuungAngabenContainer} from '../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {TSEinstellung} from '../einstellungen/TSEinstellung';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
+import {TSEinstellungWithMetadata} from '../einstellungen/TSEinstellungWithMetadata';
 
 @Injectable({
     providedIn: 'root'
@@ -86,16 +87,16 @@ export class EinstellungRS {
             );
     }
 
-    public getAllEinstellungenActiveForMandantBySystem(
+    public getAllEinstellungenActiveForMandantWithMetadata(
         gesuchsperiodeId: string
-    ): Observable<TSEinstellung[]> {
+    ): Observable<TSEinstellungWithMetadata[]> {
         return this.http
             .get(
-                `${this.serviceURL}/gesuchsperiode/${gesuchsperiodeId}/mandant-active`
+                `${this.serviceURL}/gesuchsperiode/${gesuchsperiodeId}/applicable`
             )
             .pipe(
-                map((response: any) =>
-                    this.ebeguRestUtil.parseEinstellungList(response)
+                map(list =>
+                    this.ebeguRestUtil.parseEinstellungWithMetadataList(list)
                 )
             );
     }

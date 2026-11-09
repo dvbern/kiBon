@@ -19,8 +19,10 @@ import java.time.LocalDate;
 
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.validators.dateranges.CheckDateRangeValidator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer CheckDateRangeValidator
@@ -36,7 +38,7 @@ class CheckDateRangeValidatorTest {
 			LocalDate.of(2015, 10, 9),
 			LocalDate.of(2015, 10, 10)
 		);
-		Assertions.assertTrue(validator.isValid(dateRange, null));
+		assertTrue(validator.isValid(dateRange, null));
 	}
 
 	@Test
@@ -45,7 +47,7 @@ class CheckDateRangeValidatorTest {
 			LocalDate.of(2015, 10, 9),
 			LocalDate.of(2015, 10, 9)
 		);
-		Assertions.assertTrue(validator.isValid(dateRange, null));
+		assertTrue(validator.isValid(dateRange, null));
 	}
 
 	@Test
@@ -54,6 +56,6 @@ class CheckDateRangeValidatorTest {
 			LocalDate.of(2015, 10, 9),
 			LocalDate.of(2015, 10, 8)
 		);
-		Assertions.assertFalse(validator.isValid(dateRange, null));
+		assertFalse(validator.isValid(dateRange, null));
 	}
 }

@@ -56,49 +56,34 @@ function createEinstellungen(
     hoehereBeitraegeBeeintraechtigung = 'false'
 ): TSEinstellung[] {
     return [
-        new TSEinstellung(null, TSEinstellungKey.ZEMIS_DISABLED, zemisDisabled),
+        new TSEinstellung(TSEinstellungKey.ZEMIS_DISABLED, zemisDisabled),
         new TSEinstellung(
-            null,
             TSEinstellungKey.SPRACHE_AMTSPRACHE_DISABLED,
             spracheAmtspracheDisabled
         ),
         new TSEinstellung(
-            null,
             TSEinstellungKey.FKJV_MAX_PENSUM_AUSSERORDENTLICHER_ANSPRUCH,
             maxPensumAusserordentlicherAnspruch
         ),
+        new TSEinstellung(TSEinstellungKey.KINDERABZUG_TYP, kinderabzugTyp),
         new TSEinstellung(
-            null,
-            TSEinstellungKey.KINDERABZUG_TYP,
-            kinderabzugTyp
-        ),
-        new TSEinstellung(
-            null,
             TSEinstellungKey.ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM,
             anspruchUnabhaengigBeschaeftigungspensum
         ),
+        new TSEinstellung(TSEinstellungKey.FACHSTELLEN_TYP, fachstellenTyp),
         new TSEinstellung(
-            null,
-            TSEinstellungKey.FACHSTELLEN_TYP,
-            fachstellenTyp
-        ),
-        new TSEinstellung(
-            null,
             TSEinstellungKey.FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
             sozialeIntegrationBis
         ),
         new TSEinstellung(
-            null,
             TSEinstellungKey.SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,
             sprachlicheIntegrationBis
         ),
         new TSEinstellung(
-            null,
             TSEinstellungKey.AUSSERORDENTLICHER_ANSPRUCH_RULE,
             ausserordentlicherAnspruchTyp
         ),
         new TSEinstellung(
-            null,
             TSEinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
             hoehereBeitraegeBeeintraechtigung
         )

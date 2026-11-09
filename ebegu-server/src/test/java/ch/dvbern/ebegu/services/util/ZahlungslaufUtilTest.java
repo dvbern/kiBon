@@ -7,8 +7,11 @@ import ch.dvbern.ebegu.entities.Zahlungsauftrag;
 import ch.dvbern.ebegu.test.ZahlungsauftragBuilder;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ZahlungslaufUtilTest {
 
@@ -26,12 +29,12 @@ public class ZahlungslaufUtilTest {
 					)
 				)
 		);
-		Assert.assertFalse(
-			"Dies ist der erste Zahlungslauf ueberhaupt. Darf keine Repetition sein",
+		assertFalse(
 			ZahlungslaufUtil.isZahlunglaufRepetition(
 				first.getGueltigkeit().getGueltigBis(),
 				null
-			)
+			),
+			"Dies ist der erste Zahlungslauf ueberhaupt. Darf keine Repetition sein"
 		);
 
 		Zahlungsauftrag secondInAugust = ZahlungsauftragBuilder.create(
@@ -46,12 +49,12 @@ public class ZahlungslaufUtilTest {
 					)
 				)
 		);
-		Assert.assertTrue(
-			"Repetition, gleicher Monat",
+		assertTrue(
 			ZahlungslaufUtil.isZahlunglaufRepetition(
 				secondInAugust.getGueltigkeit().getGueltigBis(),
 				first
-			)
+			),
+			"Repetition, gleicher Monat"
 		);
 
 		Zahlungsauftrag firstInSeptember = ZahlungsauftragBuilder.create(
@@ -66,12 +69,12 @@ public class ZahlungslaufUtilTest {
 					)
 				)
 		);
-		Assert.assertFalse(
-			"Neuer Monat, erster Zahlungslauf",
+		assertFalse(
 			ZahlungslaufUtil.isZahlunglaufRepetition(
 				firstInSeptember.getGueltigkeit().getGueltigBis(),
 				secondInAugust
-			)
+			),
+			"Neuer Monat, erster Zahlungslauf"
 		);
 	}
 
@@ -93,42 +96,42 @@ public class ZahlungslaufUtilTest {
 					LocalDate.of(2022, Month.AUGUST, 31)
 				)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(2022, Month.AUGUST, 31),
 			ZahlungslaufUtil.ermittleZahlungslaufGueltigBis(
 				auftragAnfangMonat,
 				0
 			)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(2022, Month.AUGUST, 31),
 			ZahlungslaufUtil.ermittleZahlungslaufGueltigBis(
 				auftragMitteMonat,
 				0
 			)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(2022, Month.AUGUST, 31),
 			ZahlungslaufUtil.ermittleZahlungslaufGueltigBis(
 				auftragEndeMonat,
 				0
 			)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(2022, Month.SEPTEMBER, 30),
 			ZahlungslaufUtil.ermittleZahlungslaufGueltigBis(
 				auftragAnfangMonat,
 				1
 			)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(2022, Month.SEPTEMBER, 30),
 			ZahlungslaufUtil.ermittleZahlungslaufGueltigBis(
 				auftragMitteMonat,
 				1
 			)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			LocalDate.of(2022, Month.SEPTEMBER, 30),
 			ZahlungslaufUtil.ermittleZahlungslaufGueltigBis(
 				auftragEndeMonat,
@@ -142,13 +145,13 @@ public class ZahlungslaufUtilTest {
 		LocalDate gueltigBisFirst = LocalDate.of(2022, Month.AUGUST, 31);
 		LocalDate expectedGueltigVonFirst = Constants.START_OF_DATETIME
 			.toLocalDate();
-		Assert.assertEquals(
-			"Erster Zahlungslauf ist ab Beginn der Zeit gültig",
+		assertEquals(
 			expectedGueltigVonFirst,
 			ZahlungslaufUtil.ermittleZahlungslaufGueltigVon(
 				gueltigBisFirst,
 				null
-			)
+			),
+			"Erster Zahlungslauf ist ab Beginn der Zeit gültig"
 		);
 		Zahlungsauftrag first = ZahlungsauftragBuilder.create(
 			builder -> builder
@@ -173,13 +176,13 @@ public class ZahlungslaufUtilTest {
 			Month.AUGUST,
 			1
 		);
-		Assert.assertEquals(
-			"Repetition, Beginn des (letzter) Monat der Gueltigkeit des letzten Zahlungslaufs",
+		assertEquals(
 			expectedGueltigVonSecondInAugust,
 			ZahlungslaufUtil.ermittleZahlungslaufGueltigVon(
 				gueltigBisSecondInAugust,
 				first
-			)
+			),
+			"Repetition, Beginn des (letzter) Monat der Gueltigkeit des letzten Zahlungslaufs"
 		);
 		Zahlungsauftrag secondInAugust = ZahlungsauftragBuilder.create(
 			builder -> builder
@@ -196,13 +199,13 @@ public class ZahlungslaufUtilTest {
 
 		LocalDate gueltigBis = LocalDate.of(2022, Month.SEPTEMBER, 30);
 		LocalDate expectedGueltigVon = LocalDate.of(2022, Month.SEPTEMBER, 1);
-		Assert.assertEquals(
-			"Repetition, Beginn des (letzter) Monat der Gueltigkeit des letzten Zahlungslaufs",
+		assertEquals(
 			expectedGueltigVon,
 			ZahlungslaufUtil.ermittleZahlungslaufGueltigVon(
 				gueltigBis,
 				secondInAugust
-			)
+			),
+			"Repetition, Beginn des (letzter) Monat der Gueltigkeit des letzten Zahlungslaufs"
 		);
 	}
 }

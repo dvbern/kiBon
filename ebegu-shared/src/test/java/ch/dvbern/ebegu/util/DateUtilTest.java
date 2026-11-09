@@ -17,11 +17,15 @@ package ch.dvbern.ebegu.util;
 
 import java.time.LocalDate;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer DateUtil
@@ -34,8 +38,8 @@ class DateUtilTest {
 		final LocalDate returnedDate = DateUtil.parseStringToDateOrReturnNow(
 			null
 		);
-		Assertions.assertNotNull(returnedDate);
-		Assertions.assertTrue(now.isEqual(returnedDate));
+		assertNotNull(returnedDate);
+		assertTrue(now.isEqual(returnedDate));
 	}
 
 	@Test
@@ -44,8 +48,8 @@ class DateUtilTest {
 		final LocalDate returnedDate = DateUtil.parseStringToDateOrReturnNow(
 			""
 		);
-		Assertions.assertNotNull(returnedDate);
-		Assertions.assertTrue(now.isEqual(returnedDate));
+		assertNotNull(returnedDate);
+		assertTrue(now.isEqual(returnedDate));
 	}
 
 	@Test
@@ -53,17 +57,17 @@ class DateUtilTest {
 		final LocalDate returnedDate = DateUtil.parseStringToDateOrReturnNow(
 			"2015-12-31"
 		);
-		Assertions.assertNotNull(returnedDate);
-		Assertions.assertEquals(2015, returnedDate.getYear());
-		Assertions.assertEquals(12, returnedDate.getMonthValue());
-		Assertions.assertEquals(31, returnedDate.getDayOfMonth());
+		assertNotNull(returnedDate);
+		assertEquals(2015, returnedDate.getYear());
+		assertEquals(12, returnedDate.getMonthValue());
+		assertEquals(31, returnedDate.getDayOfMonth());
 	}
 
 	@Test
 	void testIncrementYear() {
 		final String oldDate = "2020-05-17";
 		final String newDate = DateUtil.incrementYear(oldDate);
-		Assertions.assertEquals("2021-05-17", newDate);
+		assertEquals("2021-05-17", newDate);
 	}
 
 	@Nested
@@ -74,7 +78,7 @@ class DateUtilTest {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = LocalDate.from(date);
 
-			Assertions.assertTrue(DateUtil.isSameDateOrBefore(date, compareTo));
+			assertTrue(DateUtil.isSameDateOrBefore(date, compareTo));
 		}
 
 		@ParameterizedTest
@@ -83,7 +87,7 @@ class DateUtilTest {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = date.minusDays(minusDays);
 
-			Assertions.assertFalse(
+			assertFalse(
 				DateUtil.isSameDateOrBefore(date, compareTo)
 			);
 		}
@@ -94,7 +98,7 @@ class DateUtilTest {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = date.plusDays(plusDays);
 
-			Assertions.assertTrue(DateUtil.isSameDateOrBefore(date, compareTo));
+			assertTrue(DateUtil.isSameDateOrBefore(date, compareTo));
 		}
 	}
 
@@ -106,7 +110,7 @@ class DateUtilTest {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = LocalDate.from(date);
 
-			Assertions.assertTrue(DateUtil.isSameDateOrAfter(date, compareTo));
+			assertTrue(DateUtil.isSameDateOrAfter(date, compareTo));
 		}
 
 		@ParameterizedTest
@@ -115,7 +119,7 @@ class DateUtilTest {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = date.plusDays(days);
 
-			Assertions.assertFalse(DateUtil.isSameDateOrAfter(date, compareTo));
+			assertFalse(DateUtil.isSameDateOrAfter(date, compareTo));
 		}
 
 		@ParameterizedTest
@@ -124,7 +128,7 @@ class DateUtilTest {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = date.minusDays(days);
 
-			Assertions.assertTrue(DateUtil.isSameDateOrAfter(date, compareTo));
+			assertTrue(DateUtil.isSameDateOrAfter(date, compareTo));
 		}
 	}
 
@@ -136,7 +140,7 @@ class DateUtilTest {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final String formattedDate = DateUtil.toFormattedDate(date);
 
-			Assertions.assertEquals("01.01.2017", formattedDate);
+			assertEquals("01.01.2017", formattedDate);
 		}
 	}
 }

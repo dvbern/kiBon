@@ -18,19 +18,19 @@
 package ch.dvbern.ebegu.mailing;
 
 import ch.dvbern.ebegu.persistence.Persistence;
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MEDIUMTEXT_LENGTH_IN_CHARS;
 import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class OutboxMailServiceTest extends EasyMockSupport {
 
 	@TestSubject

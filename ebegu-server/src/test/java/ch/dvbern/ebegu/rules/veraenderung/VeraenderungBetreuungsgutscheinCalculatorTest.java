@@ -15,8 +15,12 @@ import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class VeraenderungBetreuungsgutscheinCalculatorTest {
 
@@ -43,7 +47,7 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 	public void useCorrectImplementation() {
 		VeraenderungCalculator veraenderungCalculator = VeraenderungCalculator
 			.getVeranderungCalculator(false);
-		Assert.assertTrue(
+		assertTrue(
 			veraenderungCalculator instanceof VeraenderungBetreuungsgutscheinCalculator
 		);
 	}
@@ -79,7 +83,7 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 			.getVeranderungCalculator(false)
 			.calculateVeraenderung(zeitaschnitteAktuell, verfuegung);
 
-		Assert.assertEquals(BigDecimal.valueOf(-10), veraenderung);
+		assertEquals(BigDecimal.valueOf(-10), veraenderung);
 	}
 
 	@Test
@@ -113,8 +117,8 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 			.getVeranderungCalculator(false)
 			.calculateVeraenderung(zeitaschnitteAktuell, verfuegung);
 
-		Assert.assertEquals(BigDecimal.valueOf(-10), veraenderung);
-		Assert.assertTrue(
+		assertEquals(BigDecimal.valueOf(-10), veraenderung);
+		assertTrue(
 			VeraenderungCalculator.getVeranderungCalculator(false)
 				.calculateIgnorable(
 					zeitaschnitteAktuell,
@@ -155,8 +159,8 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 			.getVeranderungCalculator(false)
 			.calculateVeraenderung(zeitaschnitteAktuell, verfuegung);
 
-		Assert.assertEquals(BigDecimal.valueOf(10), veraenderung);
-		Assert.assertFalse(
+		assertEquals(BigDecimal.valueOf(10), veraenderung);
+		assertFalse(
 			VeraenderungCalculator.getVeranderungCalculator(false)
 				.calculateIgnorable(
 					zeitaschnitteAktuell,
@@ -201,8 +205,8 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 			.getVeranderungCalculator(false)
 			.calculateVeraenderung(zeitaschnitteAktuell, verfuegung);
 
-		Assert.assertEquals(BigDecimal.valueOf(10), veraenderung);
-		Assert.assertFalse(
+		assertEquals(BigDecimal.valueOf(10), veraenderung);
+		assertFalse(
 			VeraenderungCalculator.getVeranderungCalculator(false)
 				.calculateIgnorable(
 					zeitaschnitteAktuell,
@@ -247,8 +251,8 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 			.getVeranderungCalculator(false)
 			.calculateVeraenderung(zeitaschnitteAktuell, verfuegung);
 
-		Assert.assertEquals(BigDecimal.valueOf(-10), veraenderung);
-		Assert.assertFalse(
+		assertEquals(BigDecimal.valueOf(-10), veraenderung);
+		assertFalse(
 			VeraenderungCalculator.getVeranderungCalculator(false)
 				.calculateIgnorable(
 					zeitaschnitteAktuell,
@@ -294,8 +298,8 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 			.getVeranderungCalculator(false)
 			.calculateVeraenderung(zeitaschnitteAktuell, verfuegung);
 
-		Assert.assertEquals(BigDecimal.valueOf(10), veraenderung);
-		Assert.assertFalse(
+		assertEquals(BigDecimal.valueOf(10), veraenderung);
+		assertFalse(
 			VeraenderungCalculator.getVeranderungCalculator(false)
 				.calculateIgnorable(
 					zeitaschnitteAktuell,
@@ -336,8 +340,8 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 			.getVeranderungCalculator(false)
 			.calculateVeraenderung(zeitaschnitteAktuell, verfuegung);
 
-		Assert.assertEquals(BigDecimal.valueOf(0), veraenderung);
-		Assert.assertTrue(
+		assertEquals(BigDecimal.valueOf(0), veraenderung);
+		assertTrue(
 			VeraenderungCalculator.getVeranderungCalculator(false)
 				.calculateIgnorable(
 					zeitaschnitteAktuell,
@@ -382,8 +386,8 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 			.getVeranderungCalculator(false)
 			.calculateVeraenderung(zeitaschnitteAktuell, verfuegung);
 
-		Assert.assertEquals(BigDecimal.valueOf(-1), veraenderung);
-		Assert.assertFalse(
+		assertEquals(BigDecimal.valueOf(-1), veraenderung);
+		assertFalse(
 			VeraenderungCalculator.getVeranderungCalculator(false)
 				.calculateIgnorable(
 					zeitaschnitteAktuell,
@@ -429,8 +433,8 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 			.getVeranderungCalculator(false)
 			.calculateVeraenderung(zeitaschnitteAktuell, verfuegung);
 
-		Assert.assertEquals(BigDecimal.valueOf(0), veraenderung);
-		Assert.assertFalse(
+		assertEquals(BigDecimal.valueOf(0), veraenderung);
+		assertFalse(
 			VeraenderungCalculator.getVeranderungCalculator(false)
 				.calculateIgnorable(
 					zeitaschnitteAktuell,
@@ -484,11 +488,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -522,8 +526,8 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		Assert.assertNull(verfuegung.getKorrekturAusbezahltInstitution());
-		Assert.assertNull(verfuegung.getKorrekturAusbezahltEltern());
+		assertNull(verfuegung.getKorrekturAusbezahltInstitution());
+		assertNull(verfuegung.getKorrekturAusbezahltEltern());
 	}
 
 	@Test
@@ -571,11 +575,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(-20),
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -641,11 +645,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 		// Vorgaenger ausbezahlt: 5 + 5 = 10 (hoehererBeitrag because auszahlungAnEltern=true and beitraegeTyp=AKTIVIERT_AUSZAHLUNG_INSTITUTION)
 		// Aktuell: 12 + 12 = 24
 		// Korrektur: 10 - 24 = -14
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(-14),
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -696,11 +700,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(30),
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -751,11 +755,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(20),
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -812,11 +816,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(10),
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -873,11 +877,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(-10),
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -936,11 +940,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(30),
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -999,11 +1003,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(-70),
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(30),
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -1066,11 +1070,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.ZERO,
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(-20),
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -1133,11 +1137,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 				HoehereBeitraegeTyp.DEAKTIVIERT
 			);
 
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(-40),
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
-		assertEquals(
+		stripTrailingZerosAndAssertEquals(
 			BigDecimal.valueOf(25),
 			verfuegung.getKorrekturAusbezahltEltern()
 		);
@@ -1207,8 +1211,11 @@ public class VeraenderungBetreuungsgutscheinCalculatorTest {
 		return bgCalculationResult;
 	}
 
-	private void assertEquals(BigDecimal expected, BigDecimal actual) {
-		Assert.assertEquals(
+	private void stripTrailingZerosAndAssertEquals(
+		BigDecimal expected,
+		BigDecimal actual
+	) {
+		assertEquals(
 			expected.stripTrailingZeros(),
 			actual.stripTrailingZeros()
 		);

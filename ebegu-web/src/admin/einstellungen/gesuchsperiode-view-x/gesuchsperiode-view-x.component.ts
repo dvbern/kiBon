@@ -2,13 +2,15 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    DestroyRef,
     OnInit,
     ViewChild,
-    inject
+    inject,
+    signal
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NgForm} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {MatTableDataSource} from '@angular/material/table';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
 import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
@@ -17,6 +19,7 @@ import {MAX_FILE_SIZE} from '@models/constants';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
+import {PagePasswordService} from '../../../authentication/password-dialog/page-password.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GlobalCacheService} from '../../../legacy-gesuch/service/globalCacheService';
 import {TSDateRange} from '../../../models/entity/TSDateRange';
@@ -31,7 +34,6 @@ import {
 import {TSSprache} from '../../../models/enums/TSSprache';
 import {FileUtil} from '../../../utils/file/file';
 import {LogFactory} from '../../../utils/log-factory/LogFactory';
-import {TSEinstellung} from '../TSEinstellung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {AbstractAdminViewX} from '../../abstractAdminViewX';
 import {EinstellungRS} from '../../service/einstellungRS.rest';
@@ -61,7 +63,11 @@ export class GesuchsperiodeViewXComponent
     private readonly globalCacheService = inject(GlobalCacheService);
     private readonly cd = inject(ChangeDetectorRef);
     private readonly errorService = inject(ErrorServiceX);
+    private readonly pagePassword = inject(PagePasswordService);
+    private readonly destroyRef = inject(DestroyRef);
     public authServiceRS = inject(AuthServiceRS);
+
+    public readonly unlocked = signal(false);
 
     private static readonly DOKUMENT_TYP_NOT_DEFINED =
         'DokumentTyp not defined';
@@ -69,7 +75,6 @@ export class GesuchsperiodeViewXComponent
     @ViewChild(NgForm) public form: NgForm;
 
     public gesuchsperiode: TSGesuchsperiode;
-    public einstellungenGesuchsperiode: MatTableDataSource<TSEinstellung>;
 
     public initialStatus: TSGesuchsperiodeStatus;
 
@@ -104,6 +109,19 @@ export class GesuchsperiodeViewXComponent
     }
 
     public ngOnInit(): void {
+        this.pagePassword
+            .unlock$('admin.gesuchsperioden')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.unlock());
+    }
+
+    private unlock(): void {
+        this.unlocked.set(true);
+        this.initGesuchsperiode();
+        this.cd.markForCheck();
+    }
+
+    private initGesuchsperiode(): void {
         if (!this.$stateParams.params.gesuchsperiodeId) {
             this.createGesuchsperiode();
 
@@ -127,27 +145,6 @@ export class GesuchsperiodeViewXComponent
 
     private setSelectedGesuchsperiode(gesuchsperiode: any): void {
         this.gesuchsperiode = gesuchsperiode;
-        this.readEinstellungenByGesuchsperiode();
-    }
-
-    private readEinstellungenByGesuchsperiode(): void {
-        this.einstellungenRS
-            .getAllEinstellungenActiveForMandantBySystem(this.gesuchsperiode.id)
-            .subscribe({
-                next: (response: TSEinstellung[]) => {
-                    response.sort((a, b) =>
-                        this.$translate
-                            .instant(a.key.toString())
-                            .localeCompare(
-                                this.$translate.instant(b.key.toString())
-                            )
-                    );
-                    this.einstellungenGesuchsperiode =
-                        new MatTableDataSource<TSEinstellung>(response);
-                    this.cd.markForCheck();
-                },
-                error: error => LOG.error(error)
-            });
     }
 
     public cancelGesuchsperiode(): void {
@@ -155,6 +152,9 @@ export class GesuchsperiodeViewXComponent
     }
 
     public saveGesuchsperiode(): void {
+        if (!this.unlocked()) {
+            return;
+        }
         if (this.form.invalid || !this.statusHaveChanged()) {
             return;
         }
@@ -198,7 +198,6 @@ export class GesuchsperiodeViewXComponent
                     .getCache(TSCacheTyp.EBEGU_EINSTELLUNGEN)
                     .removeAll();
                 // Die E-BEGU-Parameter für die neue Periode lesen bzw. erstellen, wenn noch nicht vorhanden
-                this.readEinstellungenByGesuchsperiode();
                 this.gesuchsperiodeRS.updateActiveGesuchsperiodenList(); // reset gesuchperioden in manager
                 this.gesuchsperiodeRS.updateNichtAbgeschlosseneGesuchsperiodenList();
                 this.initialStatus = this.gesuchsperiode.status;

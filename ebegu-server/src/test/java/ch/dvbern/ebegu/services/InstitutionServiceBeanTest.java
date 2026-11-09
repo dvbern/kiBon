@@ -41,18 +41,18 @@ import ch.dvbern.kibon.exchange.commons.institutionclient.InstitutionClientEvent
 import com.google.common.collect.Sets;
 import org.apache.avro.Schema;
 import org.easymock.EasyMock;
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class InstitutionServiceBeanTest {
 
 	private static final byte[] MOCK_BYTES = new byte[0];

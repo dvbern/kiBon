@@ -89,6 +89,63 @@
             <span kibGesuchSharedFormLabelContent>Zweites Pensum</span>
         </kib-gesuch-form-number-input>
     </fieldset>
+    <fieldset class="tw:mt-4">
+        <h2>Fehleranzeige (kib-gesuch-form-error):</h2>
+        <kib-gesuch-shared-form-style-material-input-wrapper
+            class="tw:block tw:mt-4"
+        >
+            <label
+                [for]="fehlerDemoPensumInput.id"
+                kibGesuchSharedFormLabel
+                [required]="form.fehlerDemoPensum().required()"
+                [invalid]="form.fehlerDemoPensum().invalid()"
+            >
+                Pensum (10 - 100)
+            </label>
+            <mat-form-field appearance="fill" subscriptSizing="fixed">
+                <input
+                    #fehlerDemoPensumInput="matInput"
+                    matInput
+                    type="number"
+                    [formField]="form.fehlerDemoPensum"
+                />
+                <mat-error>
+                    <kib-gesuch-form-error
+                        [errors]="form.fehlerDemoPensum().errors()"
+                    />
+                </mat-error>
+            </mat-form-field>
+        </kib-gesuch-shared-form-style-material-input-wrapper>
+
+        <kib-gesuch-shared-form-style-material-input-wrapper
+            class="tw:block tw:mt-4"
+        >
+            <label
+                [for]="fehlerDemoEmailInput.id"
+                kibGesuchSharedFormLabel
+                [required]="form.fehlerDemoEmail().required()"
+                [invalid]="form.fehlerDemoEmail().invalid()"
+            >
+                E-Mail (Demo für Fehler)
+            </label>
+            <mat-form-field appearance="fill" subscriptSizing="fixed">
+                <input
+                    #fehlerDemoEmailInput="matInput"
+                    matInput
+                    type="email"
+                    [formField]="form.fehlerDemoEmail"
+                />
+                <mat-error>
+                    <kib-gesuch-form-error
+                        [errors]="form.fehlerDemoEmail().errors()"
+                        [messageOverrides]="{
+                            required: 'ERROR_EMAIL'
+                        }"
+                    />
+                </mat-error>
+            </mat-form-field>
+        </kib-gesuch-shared-form-style-material-input-wrapper>
+    </fieldset>
     <p>
         KibTooltip Text example erweitere Bedürfnisse:
         <kib-tooltip>

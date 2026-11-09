@@ -22,9 +22,11 @@ import java.util.stream.Stream;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.enums.MsgKey;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MutationsMergerAnspruchHandlerSchwyzTest extends
 	AbstractMutationsMergerAnspruchVorgaengerHandlerTest {
@@ -49,7 +51,7 @@ class MutationsMergerAnspruchHandlerSchwyzTest extends
 			null,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT.minusMonths(1)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			bgCalculationInput.getParent()
 				.getBemerkungenDTOList()
 				.containsMsgKey(bemerkung)
@@ -66,7 +68,7 @@ class MutationsMergerAnspruchHandlerSchwyzTest extends
 			null,
 			EINREICHEDATUM_INNERHALB_ERSTGESUCH_ABSCHNITT
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bgCalculationInput.getParent()
 				.getBemerkungenDTOList()
 				.containsMsgKey(bemerkung)

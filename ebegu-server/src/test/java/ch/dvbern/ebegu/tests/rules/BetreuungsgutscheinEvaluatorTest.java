@@ -52,16 +52,16 @@ import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static ch.dvbern.ebegu.test.TestDataUtil.createDefaultInstitutionStammdaten;
 import static ch.dvbern.ebegu.test.TestDataUtil.initVorgaengerVerfuegungenWithNULL;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test der als Proof of Concept dienen soll fuer das Regelsystem
@@ -173,13 +173,13 @@ public class BetreuungsgutscheinEvaluatorTest extends AbstractBGRechnerTest {
 		);
 
 		assertNotNull(verfuegung);
-		Assert.assertEquals(12, verfuegung.getZeitabschnitte().size());
+		assertEquals(12, verfuegung.getZeitabschnitte().size());
 
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.EINE_NACHKOMMASTELLE.from(3.0d),
 			verfuegung.getZeitabschnitte().get(0).getFamGroesse()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			new BigDecimal("20000").compareTo(
 				verfuegung.getZeitabschnitte()
@@ -187,7 +187,7 @@ public class BetreuungsgutscheinEvaluatorTest extends AbstractBGRechnerTest {
 					.getMassgebendesEinkommenVorAbzFamgr()
 			)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			new BigDecimal("11400").compareTo(
 				verfuegung.getZeitabschnitte()
@@ -195,7 +195,7 @@ public class BetreuungsgutscheinEvaluatorTest extends AbstractBGRechnerTest {
 					.getAbzugFamGroesse()
 			)
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			new BigDecimal("8600").compareTo(
 				verfuegung.getZeitabschnitte()

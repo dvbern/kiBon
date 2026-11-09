@@ -24,13 +24,15 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.Taetigkeit;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import org.easymock.EasyMock;
-import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BGCalculationInputTest {
 
@@ -40,7 +42,7 @@ class BGCalculationInputTest {
 	@Test
 	void test_calcualtePercentage_null() {
 		bgCalculationInput1.calculateInputValuesProportionaly(50);
-		Assert.assertNull(bgCalculationInput1.getErwerbspensumGS1());
+		assertNull(bgCalculationInput1.getErwerbspensumGS1());
 	}
 
 	@Test
@@ -48,14 +50,17 @@ class BGCalculationInputTest {
 		Integer ewpGS1 = 0;
 		bgCalculationInput1.setErwerbspensumGS1(ewpGS1);
 		bgCalculationInput1.calculateInputValuesProportionaly(50);
-		Assert.assertEquals(ewpGS1, bgCalculationInput1.getErwerbspensumGS1());
+		assertEquals(
+			ewpGS1,
+			bgCalculationInput1.getErwerbspensumGS1()
+		);
 	}
 
 	@Test
 	void test_calcualtePercentage_ewp1() {
 		bgCalculationInput1.setErwerbspensumGS1(29);
 		bgCalculationInput1.calculateInputValuesProportionaly(13.3);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 4,
 			bgCalculationInput1.getErwerbspensumGS1()
 		);
@@ -69,11 +74,11 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(15.43);
 		bgCalculationInput2.calculateInputValuesProportionaly(94.4);
 
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 10,
 			bgCalculationInput1.getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 39,
 			bgCalculationInput2.getErwerbspensumGS1()
 		);
@@ -81,7 +86,7 @@ class BGCalculationInputTest {
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
 
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 49,
 			bgCalculationInput1.getErwerbspensumGS1()
 		);
@@ -95,18 +100,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(23.75);
 		bgCalculationInput2.calculateInputValuesProportionaly(62.48);
 
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 18,
 			bgCalculationInput1.getErwerbspensumGS2()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 37,
 			bgCalculationInput2.getErwerbspensumGS2()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 55,
 			bgCalculationInput1.getErwerbspensumGS2()
 		);
@@ -120,18 +125,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(8.235);
 		bgCalculationInput2.calculateInputValuesProportionaly(42.12);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(4.6116),
 			bgCalculationInput1.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(32.4324),
 			bgCalculationInput2.getBetreuungspensumProzent()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(37.0440),
 			BigDecimal.valueOf(
 				bgCalculationInput1.getBetreuungspensumProzent()
@@ -148,15 +153,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(43.58);
 		bgCalculationInput2.calculateInputValuesProportionaly(32.19);
 
-		Assert.assertEquals(7, bgCalculationInput1.getAnspruchspensumProzent());
-		Assert.assertEquals(
+		assertEquals(
+			7,
+			bgCalculationInput1.getAnspruchspensumProzent()
+		);
+		assertEquals(
 			19,
 			bgCalculationInput2.getAnspruchspensumProzent()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			26,
 			bgCalculationInput1.getAnspruchspensumProzent()
 		);
@@ -170,12 +178,21 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(55.1);
 		bgCalculationInput2.calculateInputValuesProportionaly(59.62);
 
-		Assert.assertEquals(16, bgCalculationInput1.getAnspruchspensumRest());
-		Assert.assertEquals(44, bgCalculationInput2.getAnspruchspensumRest());
+		assertEquals(
+			16,
+			bgCalculationInput1.getAnspruchspensumRest()
+		);
+		assertEquals(
+			44,
+			bgCalculationInput2.getAnspruchspensumRest()
+		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(60, bgCalculationInput1.getAnspruchspensumRest());
+		assertEquals(
+			60,
+			bgCalculationInput1.getAnspruchspensumRest()
+		);
 	}
 
 	@Test
@@ -186,12 +203,12 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(31.54);
 		bgCalculationInput2.calculateInputValuesProportionaly(46.58);
 
-		Assert.assertEquals(14, bgCalculationInput1.getFachstellenpensum());
-		Assert.assertEquals(40, bgCalculationInput2.getFachstellenpensum());
+		assertEquals(14, bgCalculationInput1.getFachstellenpensum());
+		assertEquals(40, bgCalculationInput2.getFachstellenpensum());
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(54, bgCalculationInput1.getFachstellenpensum());
+		assertEquals(54, bgCalculationInput1.getFachstellenpensum());
 	}
 
 	@Test
@@ -202,18 +219,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(84.1);
 		bgCalculationInput2.calculateInputValuesProportionaly(22.85);
 
-		Assert.assertEquals(
+		assertEquals(
 			43,
 			bgCalculationInput1.getAusserordentlicherAnspruch()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			8,
 			bgCalculationInput2.getAusserordentlicherAnspruch()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			51,
 			bgCalculationInput1.getAusserordentlicherAnspruch()
 		);
@@ -231,18 +248,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(7.135);
 		bgCalculationInput2.calculateInputValuesProportionaly(90.2);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(4.4237),
 			bgCalculationInput1.getMonatlicheBetreuungskosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(29.766000000000002),
 			bgCalculationInput2.getMonatlicheBetreuungskosten()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("34.189700000000002"),
 			bgCalculationInput1.getMonatlicheBetreuungskosten()
 		);
@@ -256,18 +273,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(54.87);
 		bgCalculationInput2.calculateInputValuesProportionaly(32.12);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(6.035699999999999),
 			bgCalculationInput1.getTarifHauptmahlzeit()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(2.8907999999999996),
 			bgCalculationInput2.getTarifHauptmahlzeit()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("8.9264999999999986"),
 			bgCalculationInput1.getTarifHauptmahlzeit()
 		);
@@ -281,18 +298,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(72.45);
 		bgCalculationInput2.calculateInputValuesProportionaly(33.66);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(2.898),
 			bgCalculationInput1.getTarifNebenmahlzeit()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(2.0195999999999996),
 			bgCalculationInput2.getTarifNebenmahlzeit()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("4.9175999999999996"),
 			bgCalculationInput1.getTarifNebenmahlzeit()
 		);
@@ -310,18 +327,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(41.53);
 		bgCalculationInput2.calculateInputValuesProportionaly(36.42);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(5919.2709),
 			bgCalculationInput1.getMassgebendesEinkommenVorAbzugFamgr()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(3361.9302000000002),
 			bgCalculationInput2.getMassgebendesEinkommenVorAbzugFamgr()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			new BigDecimal("9281.2011000000002"),
 			bgCalculationInput1.getMassgebendesEinkommenVorAbzugFamgr()
 		);
@@ -335,18 +352,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(13);
 		bgCalculationInput2.calculateInputValuesProportionaly(62.1);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(2.6),
 			bgCalculationInput1.getAnzahlHauptmahlzeiten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(26.703),
 			bgCalculationInput2.getAnzahlHauptmahlzeiten()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(29.303),
 			bgCalculationInput1.getAnzahlHauptmahlzeiten()
 		);
@@ -360,18 +377,18 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(52.78);
 		bgCalculationInput2.calculateInputValuesProportionaly(46);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(49.08540000000001),
 			bgCalculationInput1.getAnzahlNebenmahlzeiten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(20.7),
 			bgCalculationInput2.getAnzahlNebenmahlzeiten()
 		);
 
 		//Merge
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(69.78540000000001),
 			bgCalculationInput1.getAnzahlNebenmahlzeiten()
 		);
@@ -412,99 +429,99 @@ class BGCalculationInputTest {
 		bgCalculationInput1.calculateInputValuesProportionaly(71.7);
 		bgCalculationInput2.calculateInputValuesProportionaly(11.4);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(16),
 			bgCalculationInput1.getTsInputMitBetreuung()
 				.getVerpflegungskosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(49),
 			bgCalculationInput1.getTsInputMitBetreuung()
 				.getVerpflegungskostenVerguenstigt()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 14,
 			bgCalculationInput1.getTsInputMitBetreuung()
 				.getBetreuungszeitProWoche()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(34),
 			bgCalculationInput1.getTsInputOhneBetreuung()
 				.getVerpflegungskosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(54),
 			bgCalculationInput1.getTsInputOhneBetreuung()
 				.getVerpflegungskostenVerguenstigt()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 24,
 			bgCalculationInput1.getTsInputOhneBetreuung()
 				.getBetreuungszeitProWoche()
 		);
 
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(9),
 			bgCalculationInput2.getTsInputMitBetreuung()
 				.getVerpflegungskosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(0),
 			bgCalculationInput2.getTsInputMitBetreuung()
 				.getVerpflegungskostenVerguenstigt()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 2,
 			bgCalculationInput2.getTsInputMitBetreuung()
 				.getBetreuungszeitProWoche()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(5),
 			bgCalculationInput2.getTsInputOhneBetreuung()
 				.getVerpflegungskosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(11),
 			bgCalculationInput2.getTsInputOhneBetreuung()
 				.getVerpflegungskostenVerguenstigt()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 1,
 			bgCalculationInput2.getTsInputOhneBetreuung()
 				.getBetreuungszeitProWoche()
 		);
 
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertEquals(
+		assertEquals(
 			25,
 			bgCalculationInput1.getTsInputMitBetreuung()
 				.getVerpflegungskosten()
 				.intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			49,
 			bgCalculationInput1.getTsInputMitBetreuung()
 				.getVerpflegungskostenVerguenstigt()
 				.intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 16,
 			bgCalculationInput1.getTsInputMitBetreuung()
 				.getBetreuungszeitProWoche()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			39,
 			bgCalculationInput1.getTsInputOhneBetreuung()
 				.getVerpflegungskosten()
 				.intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			65,
 			bgCalculationInput1.getTsInputOhneBetreuung()
 				.getVerpflegungskostenVerguenstigt()
 				.intValue()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			(Integer) 25,
 			bgCalculationInput1.getTsInputOhneBetreuung()
 				.getBetreuungszeitProWoche()
@@ -527,15 +544,17 @@ class BGCalculationInputTest {
 
 		bgCalculationInput1.add(bgCalculationInput2);
 
-		Assert.assertEquals(
+		assertEquals(
 			40,
 			bgCalculationInput1.getAnspruchspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			bgCalculationInput1.getMinimalErforderlichesPensum()
 		);
-		Assert.assertFalse(bgCalculationInput1.isMinimalesEwpUnterschritten());
+		assertFalse(
+			bgCalculationInput1.isMinimalesEwpUnterschritten()
+		);
 	}
 
 	@Test
@@ -553,15 +572,17 @@ class BGCalculationInputTest {
 
 		bgCalculationInput1.add(bgCalculationInput2);
 
-		Assert.assertEquals(
+		assertEquals(
 			70,
 			bgCalculationInput1.getAnspruchspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			bgCalculationInput1.getMinimalErforderlichesPensum()
 		);
-		Assert.assertFalse(bgCalculationInput1.isMinimalesEwpUnterschritten());
+		assertFalse(
+			bgCalculationInput1.isMinimalesEwpUnterschritten()
+		);
 	}
 
 	@Test
@@ -579,12 +600,17 @@ class BGCalculationInputTest {
 
 		bgCalculationInput1.add(bgCalculationInput2);
 
-		Assert.assertEquals(5, bgCalculationInput1.getAnspruchspensumProzent());
-		Assert.assertEquals(
+		assertEquals(
+			5,
+			bgCalculationInput1.getAnspruchspensumProzent()
+		);
+		assertEquals(
 			20,
 			bgCalculationInput1.getMinimalErforderlichesPensum()
 		);
-		Assert.assertTrue(bgCalculationInput1.isMinimalesEwpUnterschritten());
+		assertTrue(
+			bgCalculationInput1.isMinimalesEwpUnterschritten()
+		);
 	}
 
 	@Test
@@ -602,15 +628,17 @@ class BGCalculationInputTest {
 
 		bgCalculationInput1.add(bgCalculationInput2);
 
-		Assert.assertEquals(
+		assertEquals(
 			10,
 			bgCalculationInput1.getAnspruchspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			bgCalculationInput1.getMinimalErforderlichesPensum()
 		);
-		Assert.assertTrue(bgCalculationInput1.isMinimalesEwpUnterschritten());
+		assertTrue(
+			bgCalculationInput1.isMinimalesEwpUnterschritten()
+		);
 	}
 
 	@Test
@@ -646,7 +674,7 @@ class BGCalculationInputTest {
 		bgCalculationInput1.add(bgCalculationInput3);
 		bgCalculationInput1.add(bgCalculationInput4);
 
-		Assert.assertEquals(
+		assertEquals(
 			61,
 			bgCalculationInput1.getAnspruchspensumProzent()
 		);
@@ -657,7 +685,7 @@ class BGCalculationInputTest {
 		bgCalculationInput1.setBetreuungInFerienzeit(true);
 		bgCalculationInput2.setBetreuungInFerienzeit(false);
 		bgCalculationInput1.add(bgCalculationInput2);
-		Assert.assertTrue(bgCalculationInput1.isBetreuungInFerienzeit());
+		assertTrue(bgCalculationInput1.isBetreuungInFerienzeit());
 	}
 
 	@Test
@@ -677,7 +705,7 @@ class BGCalculationInputTest {
 			ruleValidity
 		);
 
-		Assertions.assertTrue(oneInput.isSame(anotherInput));
+		assertTrue(oneInput.isSame(anotherInput));
 	}
 
 	@Test
@@ -705,7 +733,7 @@ class BGCalculationInputTest {
 		anotherInput.getTaetigkeiten().add(taetigkeit1);
 		anotherInput.getTaetigkeiten().add(taetigkeit2);
 
-		Assertions.assertTrue(oneInput.isSame(anotherInput));
+		assertTrue(oneInput.isSame(anotherInput));
 	}
 
 	@Test
@@ -733,7 +761,7 @@ class BGCalculationInputTest {
 		anotherInput.getTaetigkeiten().add(taetigkeit1);
 		// taetigkeit2 wird ausgeschlossen -> not same
 
-		Assertions.assertFalse(oneInput.isSame(anotherInput));
+		assertFalse(oneInput.isSame(anotherInput));
 	}
 
 	@Test
@@ -757,7 +785,7 @@ class BGCalculationInputTest {
 		calculationInput1.setAnzahlGeschwister(4);
 		calculationInput2.setAnzahlGeschwister(2);
 		calculationInput1.add(calculationInput2);
-		Assert.assertEquals(4, calculationInput1.getAnzahlGeschwister());
+		assertEquals(4, calculationInput1.getAnzahlGeschwister());
 	}
 
 	@Test
@@ -781,7 +809,7 @@ class BGCalculationInputTest {
 		calculationInput1.setAnzahlGeschwister(2);
 		calculationInput2.setAnzahlGeschwister(4);
 		calculationInput1.add(calculationInput2);
-		Assert.assertEquals(4, calculationInput1.getAnzahlGeschwister());
+		assertEquals(4, calculationInput1.getAnzahlGeschwister());
 	}
 
 	@org.junit.jupiter.api.Test

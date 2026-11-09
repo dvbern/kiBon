@@ -25,7 +25,6 @@ import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -52,6 +51,7 @@ import static ch.dvbern.ebegu.test.TestDataUtil.START_PERIODE;
 import static java.time.temporal.TemporalAdjusters.firstDayOfNextMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FamilienabzugAbschnittRuleFKJVTest {
@@ -572,8 +572,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 
 			List<VerfuegungZeitabschnitt> zeitabschnitte =
 				calculateAllAbzugRules(betreuung, FKJV_2);
-			Assertions.assertNotNull(zeitabschnitte);
-			Assertions.assertEquals(2, zeitabschnitte.size());
+			assertNotNull(zeitabschnitte);
+			assertEquals(2, zeitabschnitte.size());
 			// Kind zählt noch zu Familiengroesse
 			final VerfuegungZeitabschnitt bisVolljaehrig = zeitabschnitte.get(
 				0

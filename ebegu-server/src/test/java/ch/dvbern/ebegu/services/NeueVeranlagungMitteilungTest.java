@@ -52,7 +52,6 @@ import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,6 +64,8 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Es gibt schon eine MitteilungServiceBeanTest
@@ -356,14 +357,14 @@ public class NeueVeranlagungMitteilungTest extends EasyMockSupport {
 				neueVeranlagungsMitteilung
 			);
 
-		Assertions.assertEquals(
+		assertEquals(
 			nettoLohnGS1Partner,
 			gesuchMitVerandlagungsmitteilung.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 				.getFinanzielleSituationJA()
 				.getNettolohn()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			nettoLohnGS2Dossiertraeger,
 			gesuchMitVerandlagungsmitteilung.getGesuchsteller2()
 				.getFinanzielleSituationContainer()
@@ -412,14 +413,14 @@ public class NeueVeranlagungMitteilungTest extends EasyMockSupport {
 				neueVeranlagungsMitteilung
 			);
 
-		Assertions.assertEquals(
+		assertEquals(
 			nettoLohnGS1Dossiertraeger,
 			gesuchMitVerandlagungsmitteilung.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 				.getFinanzielleSituationJA()
 				.getNettolohn()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			nettoLohnGS2Partner,
 			gesuchMitVerandlagungsmitteilung.getGesuchsteller2()
 				.getFinanzielleSituationContainer()
@@ -466,7 +467,7 @@ public class NeueVeranlagungMitteilungTest extends EasyMockSupport {
 				neueVeranlagungsMitteilung
 			);
 
-		Assertions.assertEquals(
+		assertEquals(
 			ausgewiesenerGeschaeftsertragVeranlagung,
 			gesuchMitVerandlagungsmitteilung.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
@@ -510,7 +511,7 @@ public class NeueVeranlagungMitteilungTest extends EasyMockSupport {
 				neueVeranlagungsMitteilung
 			);
 
-		Assertions.assertNull(
+		assertNull(
 			gesuchMitVerandlagungsmitteilung.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 				.getFinanzielleSituationJA()
@@ -553,7 +554,7 @@ public class NeueVeranlagungMitteilungTest extends EasyMockSupport {
 				neueVeranlagungsMitteilung
 			);
 
-		Assertions.assertEquals(
+		assertEquals(
 			ausgewiesenerGeschaeftsertrag,
 			gesuchMitVerandlagungsmitteilung.getGesuchsteller1()
 				.getFinanzielleSituationContainer()

@@ -43,7 +43,8 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
  */
 @Audited
 @Entity
-public class Gesuchsteller extends AbstractPersonEntity {
+public class Gesuchsteller extends AbstractPersonEntity implements
+	HasStekIdentifier {
 
 	private static final long serialVersionUID = -9032257320578372570L;
 

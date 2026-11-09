@@ -21,12 +21,14 @@ import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.validators.CheckGrundAblehnungValidator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests fuer CheckGrundAblehnungValidator
@@ -47,7 +49,7 @@ class CheckGrundAblehnungValidatorTest {
 	@NullSource
 	void testNichtAbgewiesen(@Nullable String grund) {
 		betreuung.setGrundAblehnung(grund);
-		Assertions.assertTrue(validator.isValid(betreuung, null));
+		assertTrue(validator.isValid(betreuung, null));
 	}
 
 	@ParameterizedTest(name = "#{index} - with args=<{0}>")
@@ -56,13 +58,13 @@ class CheckGrundAblehnungValidatorTest {
 	void testAbgewiesen(@Nullable String grund) {
 		betreuung.setBetreuungsstatus(Betreuungsstatus.ABGEWIESEN);
 		betreuung.setGrundAblehnung(grund);
-		Assertions.assertFalse(validator.isValid(betreuung, null));
+		assertFalse(validator.isValid(betreuung, null));
 	}
 
 	@Test
 	void testAbgewiesenWithGrund() {
 		betreuung.setBetreuungsstatus(Betreuungsstatus.ABGEWIESEN);
 		betreuung.setGrundAblehnung("mein Grund");
-		Assertions.assertTrue(validator.isValid(betreuung, null));
+		assertTrue(validator.isValid(betreuung, null));
 	}
 }

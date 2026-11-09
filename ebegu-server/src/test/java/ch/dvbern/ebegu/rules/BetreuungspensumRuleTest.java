@@ -27,12 +27,15 @@ import ch.dvbern.ebegu.rules.initalizer.RestanspruchInitializer;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.rules.EbeguRuleTestsHelper.calculate;
 import static ch.dvbern.ebegu.rules.EbeguRuleTestsHelper.calculateWithRemainingRestanspruch;
 import static ch.dvbern.ebegu.util.Constants.ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests für Betreuungspensum-Regel
@@ -53,7 +56,7 @@ public class BetreuungspensumRuleTest {
 			BigDecimal.valueOf(500.50)
 		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -68,27 +71,27 @@ public class BetreuungspensumRuleTest {
 			);
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(60),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(500.50),
 			result.get(0)
 				.getBgCalculationInputAsiv()
 				.getMonatlicheBetreuungskosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -99,7 +102,7 @@ public class BetreuungspensumRuleTest {
 			betreuung,
 			result
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -117,7 +120,7 @@ public class BetreuungspensumRuleTest {
 			BigDecimal.valueOf(200)
 		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -132,27 +135,27 @@ public class BetreuungspensumRuleTest {
 			);
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(60),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(80),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(200),
 			result.get(0)
 				.getBgCalculationInputAsiv()
 				.getMonatlicheBetreuungskosten()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -163,7 +166,7 @@ public class BetreuungspensumRuleTest {
 			betreuung,
 			result
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -181,7 +184,7 @@ public class BetreuungspensumRuleTest {
 			BigDecimal.valueOf(500)
 		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -196,31 +199,31 @@ public class BetreuungspensumRuleTest {
 			);
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(80),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			80 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(500),
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -231,7 +234,7 @@ public class BetreuungspensumRuleTest {
 			betreuung,
 			result
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -257,10 +260,10 @@ public class BetreuungspensumRuleTest {
 			BigDecimal.valueOf(400)
 		);
 		betreuung2.initVorgaengerVerfuegungen(null, null);
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung1.getKind().getGesuch().getGesuchsteller1()
 		);
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung2.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung1.getKind()
@@ -276,25 +279,25 @@ public class BetreuungspensumRuleTest {
 
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung1);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(80),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			80 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60),
 			result.get(0).getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -310,13 +313,13 @@ public class BetreuungspensumRuleTest {
 		//Nach dem Berechnen des Rests ist der Rest im  im Feld AnspruchspensumRest gesetzt, Anspruchsberechtigtes
 		// Pensum ist noch 0 da noch nciht berechnet
 		// fuer 2.Betr.
-		Assert.assertEquals(
+		assertEquals(
 			20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			abschnForNxtBetr.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			abschnForNxtBetr.get(0).getAnspruchberechtigtesPensum()
 		);
@@ -335,58 +338,58 @@ public class BetreuungspensumRuleTest {
 		List<VerfuegungZeitabschnitt> resultBetr2 =
 			calculateWithRemainingRestanspruch(betreuung2, 20);
 
-		Assert.assertNotNull(resultBetr2);
-		Assert.assertEquals(1, resultBetr2.size());
-		Assert.assertEquals(
+		assertNotNull(resultBetr2);
+		assertEquals(1, resultBetr2.size());
+		assertEquals(
 			Integer.valueOf(80),
 			resultBetr2.get(0)
 				.getBgCalculationInputAsiv()
 				.getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(40),
 			resultBetr2.get(0)
 				.getBgCalculationInputAsiv()
 				.getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			resultBetr2.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			resultBetr2.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumProzent()
 		); // Nach der Berechnung des Anspruchs kann der Anspruch nicht hoeher
-																											// sein
-																											// als der Restanspruch (20)
-		Assert.assertEquals(
+																									 // sein
+																									 // als der Restanspruch (20)
+		assertEquals(
 			MathUtil.DEFAULT.from(20),
 			resultBetr2.get(0).getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			20,
 			resultBetr2.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		); //Restanspruch wurde noch nicht neu
-																										 // berechnet fuer naechste betreuung
+																								  // berechnet fuer naechste betreuung
 		resultBetr2 = EbeguRuleTestsHelper.runSingleAbschlussRule(
 			restanspruchInitializer,
 			betreuung2,
 			resultBetr2
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			resultBetr2.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		); // Nach dem initialisieren fuer das
-																										// nachste Betreuungspensum ist der noch
-																										// verbleibende restanspruch 0
+																								 // nachste Betreuungspensum ist der noch
+																								 // verbleibende restanspruch 0
 	}
 
 	@Test
@@ -402,28 +405,31 @@ public class BetreuungspensumRuleTest {
 		betreuung.initVorgaengerVerfuegungen(null, null);
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(0),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(80),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(0, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(
+		assertEquals(
+			0,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		assertEquals(
 			MathUtil.DEFAULT.from(0),
 			result.get(0).getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(800),
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -434,7 +440,7 @@ public class BetreuungspensumRuleTest {
 			betreuung,
 			result
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -453,7 +459,7 @@ public class BetreuungspensumRuleTest {
 			BigDecimal.valueOf(800)
 		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
-		Assert.assertNotNull(
+		assertNotNull(
 			betreuung.getKind().getGesuch().getGesuchsteller1()
 		);
 		betreuung.getKind()
@@ -468,31 +474,31 @@ public class BetreuungspensumRuleTest {
 			);
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
 
-		Assert.assertNotNull(result);
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals(
 			Integer.valueOf(60),
 			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(80),
 			result.get(0).getBetreuungspensumProzent()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
 			result.get(0).getAnspruchberechtigtesPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS),
 			result.get(0).getBgPensum()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			-1,
 			result.get(0)
 				.getBgCalculationInputAsiv()
 				.getAnspruchspensumRest()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(800),
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -503,7 +509,7 @@ public class BetreuungspensumRuleTest {
 			betreuung,
 			result
 		);
-		Assert.assertEquals(
+		assertEquals(
 			0,
 			result.get(0)
 				.getBgCalculationInputAsiv()
@@ -535,14 +541,14 @@ public class BetreuungspensumRuleTest {
 		betreuung.getBetreuungspensumContainers()
 			.add(betreuungspensumContainer);
 		List<VerfuegungZeitabschnitt> result = calculate(betreuung);
-		Assert.assertNotNull(result);
-		Assert.assertEquals(2, result.size());
-		Assert.assertTrue(
+		assertNotNull(result);
+		assertEquals(2, result.size());
+		assertTrue(
 			result.get(0)
 				.getBgCalculationInputAsiv()
 				.isBetreuungInFerienzeit()
 		);
-		Assert.assertFalse(
+		assertFalse(
 			result.get(1)
 				.getBgCalculationInputAsiv()
 				.isBetreuungInFerienzeit()

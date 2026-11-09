@@ -48,8 +48,11 @@ import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import org.easymock.EasyMock;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BetreuungStornierenMitteilungFactoryTest extends EasyMockTestSupport {
 
@@ -219,12 +222,12 @@ class BetreuungStornierenMitteilungFactoryTest extends EasyMockTestSupport {
 		Betreuungsmitteilung mitteilung = factory
 			.createBetreuungsStornierenMitteilung(betreuung);
 
-		Assertions.assertEquals(empfaenger, mitteilung.getEmpfaenger());
-		Assertions.assertEquals(sender, mitteilung.getSender());
-		Assertions.assertEquals(betreuung, mitteilung.getBetreuung());
-		Assertions.assertTrue(mitteilung.isBetreuungStornieren());
-		Assertions.assertFalse(mitteilung.isApplied());
-		Assertions.assertEquals(2, mitteilung.getBetreuungenJA().size());
+		assertEquals(empfaenger, mitteilung.getEmpfaenger());
+		assertEquals(sender, mitteilung.getSender());
+		assertEquals(betreuung, mitteilung.getBetreuung());
+		assertTrue(mitteilung.isBetreuungStornieren());
+		assertFalse(mitteilung.isApplied());
+		assertEquals(2, mitteilung.getBetreuungenJA().size());
 		// TODO KIBON-3569: Müssen wir hier evtl. noch unterscheiden zwischen Ablehnung und Stornierung?
 	}
 

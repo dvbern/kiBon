@@ -53,7 +53,7 @@ async function fetchJson(url) {
 }
 
 async function getEinstellungen(baseUrl, gesuchsperiodeId) {
-    const url = new URL(`/ebegu/api/v1/einstellung/gesuchsperiode/${gesuchsperiodeId}/mandant-active`,
+    const url = new URL(`/ebegu/api/v1/einstellung/gesuchsperiode/${gesuchsperiodeId}/applicable`,
             baseUrl);
     return fetchJson(url);
 }

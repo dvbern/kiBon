@@ -138,6 +138,7 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
             this.gesuchModelManager.getGesuch()
         );
         this.gesuchModelManager.setGesuchstellerNumber(parsedNum);
+        this.loadCheckIsZPVSet();
         this.initViewModel();
         this.calculate();
         this.initFinSitVorMutation();

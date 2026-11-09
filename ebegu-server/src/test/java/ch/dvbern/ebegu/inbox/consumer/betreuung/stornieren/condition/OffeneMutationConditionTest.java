@@ -22,8 +22,10 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.util.EasyMockTestSupport;
 import org.easymock.EasyMock;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OffeneMutationConditionTest extends EasyMockTestSupport {
 
@@ -48,7 +50,7 @@ class OffeneMutationConditionTest extends EasyMockTestSupport {
 
 		verifyAll();
 
-		Assertions.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -69,6 +71,6 @@ class OffeneMutationConditionTest extends EasyMockTestSupport {
 
 		verifyAll();
 
-		Assertions.assertFalse(result);
+		assertFalse(result);
 	}
 }

@@ -1,16 +1,18 @@
 /*
- * Ki-Tax: System for the management of external childcare subsidies
- * Copyright (C) 2018 City of Bern Switzerland
+ * Copyright (C) 2026 DV Bern AG, Switzerland
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
+ *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 import {HttpClient} from '@angular/common/http';
@@ -19,13 +21,21 @@ import {
     Component,
     Input,
     OnInit,
-    inject
+    inject,
+    ChangeDetectorRef,
+    DestroyRef,
+    NgZone
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {MatDialog} from '@angular/material/dialog';
 import {CONSTANTS} from '@models/constants';
-import {TargetState} from '@uirouter/core';
-import {Observable} from 'rxjs';
+import {StateService, TargetState} from '@uirouter/core';
+import {Observable, of} from 'rxjs';
+import {catchError, switchMap} from 'rxjs/operators';
 import {TSRole} from '../../models/enums/TSRole';
+import {PasswordDialog} from '../password-dialog/password-dialog';
 import {AuthServiceRS} from '../service/AuthServiceRS.rest';
+import {LocalLoginLocalStorageUtil} from './LocalLoginLocalStorageUtil';
 
 type LocalLoginUser = {
     group: string;
@@ -46,11 +56,17 @@ type LocalLoginUser = {
 export class LocalLoginComponent implements OnInit {
     private readonly authServiceRS = inject(AuthServiceRS);
     private readonly http = inject(HttpClient);
+    private readonly dialog = inject(MatDialog);
+    private readonly stateService = inject(StateService);
+    private readonly zone = inject(NgZone);
+    private readonly cdr = inject(ChangeDetectorRef);
+    private readonly destroyRef = inject(DestroyRef);
 
     @Input() public returnTo: TargetState;
 
     public users$: Observable<LocalLoginUser[]>;
     public createUserResponse$: Observable<LocalLoginUser[]>;
+    public unlocked = false;
     private groupSortKey: Record<string, number> = {
         MANDANT: 0,
         KANTON: 1,
@@ -96,16 +112,92 @@ export class LocalLoginComponent implements OnInit {
     };
 
     ngOnInit(): void {
+        // password has been entered recently, see LocalLoginLocalStorageUtil
+        if (LocalLoginLocalStorageUtil.isUnlocked()) {
+            this.unlock();
+            return;
+        }
+        this.http
+            .get<boolean>(`${CONSTANTS.REST_API}locallogin/passwordRequired`)
+            .pipe(
+                takeUntilDestroyed(this.destroyRef),
+                // on error, ask for the password rather than leaving the page open
+                catchError(() => of(true))
+            )
+            .subscribe(passwordRequired => {
+                if (passwordRequired) {
+                    this.openPasswordDialog();
+                    return;
+                }
+                this.unlock();
+            });
+    }
+
+    private openPasswordDialog(): void {
+        // zone.run makes this work even if the transition started outside Angular's zone
+        this.zone.run(() => {
+            const dialogRef = this.dialog.open(PasswordDialog, {
+                disableClose: true,
+                width: '50rem',
+                backdropClass: 'blur-backdrop',
+                closeOnNavigation: false
+            });
+
+            dialogRef
+                .afterClosed()
+                .pipe(
+                    takeUntilDestroyed(this.destroyRef),
+                    switchMap(password =>
+                        password ? this.verifyPassword(password) : of(false)
+                    )
+                )
+                .subscribe(valid => {
+                    if (valid) {
+                        LocalLoginLocalStorageUtil.setUnlocked();
+                        this.unlock();
+                        return;
+                    }
+                    this.stateService
+                        .go('onboarding.anmeldung', {}, {location: 'replace'})
+                        .catch(err => {
+                            console.error('Redirect after cancel failed', err);
+                            window.location.assign('/');
+                        });
+                });
+
+            // MatDialog is provided in root and closeOnNavigation is disabled,
+            // so the dialog would outlive this component without this
+            this.destroyRef.onDestroy(() => dialogRef.close());
+        });
+    }
+
+    private verifyPassword(password: string): Observable<boolean> {
+        return this.http
+            .post<boolean>(`${CONSTANTS.REST_API}locallogin/verifyPassword`, {
+                password
+            })
+            .pipe(catchError(() => of(false)));
+    }
+
+    private unlock(): void {
+        this.unlocked = true;
         this.users$ = this.http.get<LocalLoginUser[]>(
             `${CONSTANTS.REST_API}locallogin/listUsers`
         );
+        this.cdr.markForCheck();
     }
 
     public logIn(email: string): void {
+        if (!this.unlocked) {
+            return;
+        }
         this.authServiceRS.initLoginReturnToTargetState(this.returnTo, email);
     }
 
     public createUser(): void {
+        if (!this.unlocked) {
+            return;
+        }
         this.createUserResponse$ = this.http.get<LocalLoginUser[]>(
             `${CONSTANTS.REST_API}locallogin/createUsers`
         );
@@ -131,6 +223,9 @@ export class LocalLoginComponent implements OnInit {
     }
 
     public sortUsersByRole(users: LocalLoginUser[]): LocalLoginUser[] {
+        if (!this.unlocked) {
+            return [];
+        }
         return users.sort((a, b) => {
             return this.roleSortKey[a.role] - this.roleSortKey[b.role];
         });

@@ -6,8 +6,9 @@ import java.util.Collections;
 import ch.dvbern.ebegu.enums.Eingangsart;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.test.GesuchBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GesuchTest {
 
@@ -17,7 +18,7 @@ class GesuchTest {
 			builder -> builder
 				.withGesuchsteller1("Meier", "Thomas")
 		);
-		Assertions.assertEquals("Meier", gesuch.extractFamiliennamenString());
+		assertEquals("Meier", gesuch.extractFamiliennamenString());
 	}
 
 	@Test
@@ -27,7 +28,7 @@ class GesuchTest {
 				.withGesuchsteller1("Meier", "Thomas")
 				.withGesuchsteller2("Müller", "Anna")
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			"Meier, Müller",
 			gesuch.extractFamiliennamenString()
 		);
@@ -41,7 +42,7 @@ class GesuchTest {
 				.withoutGesuchsteller2()
 				.withSozialdienst("Hostettler", "Jonas", null, null)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			"Hostettler",
 			gesuch.extractFamiliennamenString()
 		);
@@ -60,7 +61,7 @@ class GesuchTest {
 					"Katherina"
 				)
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			"Meier, Schmied",
 			gesuch.extractFamiliennamenString()
 		);
@@ -79,7 +80,7 @@ class GesuchTest {
 				.withGesuchsteller1("Muster", "Thomas")
 				.withGesuchsteller2("Müller", "Anna")
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			"Muster, Müller",
 			gesuch.extractFamiliennamenString()
 		);
@@ -117,7 +118,7 @@ class GesuchTest {
 		copy.getKindContainers().forEach(eachKindContainer -> {
 			eachKindContainer.getBetreuungen()
 				.forEach(
-					eachBetreuung -> Assertions.assertEquals(
+					eachBetreuung -> assertEquals(
 						Betreuungsstatus.WARTEN,
 						eachBetreuung.getBetreuungsstatus()
 					)

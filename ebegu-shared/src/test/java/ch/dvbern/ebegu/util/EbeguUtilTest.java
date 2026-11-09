@@ -35,8 +35,12 @@ import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * test fuer Ebeguutil
@@ -54,7 +58,7 @@ class EbeguUtilTest {
 		fsc.setFamiliensituationErstgesuch(oldData);
 		fsc.setFamiliensituationJA(newData);
 
-		Assertions.assertFalse(
+		assertFalse(
 			EbeguUtil.fromOneGSToTwoGS(fsc, LocalDate.now())
 		);
 	}
@@ -70,7 +74,7 @@ class EbeguUtilTest {
 		fsc.setFamiliensituationErstgesuch(oldData);
 		fsc.setFamiliensituationJA(newData);
 
-		Assertions.assertFalse(
+		assertFalse(
 			EbeguUtil.fromOneGSToTwoGS(fsc, LocalDate.now())
 		);
 	}
@@ -88,7 +92,7 @@ class EbeguUtilTest {
 		fsc.setFamiliensituationErstgesuch(oldData);
 		fsc.setFamiliensituationJA(newData);
 
-		Assertions.assertFalse(
+		assertFalse(
 			EbeguUtil.fromOneGSToTwoGS(fsc, LocalDate.now())
 		);
 	}
@@ -104,7 +108,7 @@ class EbeguUtilTest {
 		fsc.setFamiliensituationErstgesuch(oldData);
 		fsc.setFamiliensituationJA(newData);
 
-		Assertions.assertTrue(EbeguUtil.fromOneGSToTwoGS(fsc, LocalDate.now()));
+		assertTrue(EbeguUtil.fromOneGSToTwoGS(fsc, LocalDate.now()));
 	}
 
 	@Test
@@ -116,7 +120,7 @@ class EbeguUtilTest {
 		fsc.setFamiliensituationErstgesuch(oldData);
 		fsc.setFamiliensituationJA(newData);
 
-		Assertions.assertFalse(
+		assertFalse(
 			EbeguUtil.fromOneGSToTwoGS(fsc, LocalDate.now())
 		);
 	}
@@ -126,8 +130,8 @@ class EbeguUtilTest {
 		String filename = EbeguUtil.toFilename(
 			"Kita Beundenweg/Crèche Oeuches.pdf"
 		);
-		Assertions.assertNotNull(filename);
-		Assertions.assertEquals("Kita_Beundenweg_Crèche_Oeuches.pdf", filename);
+		assertNotNull(filename);
+		assertEquals("Kita_Beundenweg_Crèche_Oeuches.pdf", filename);
 	}
 
 	@Test
@@ -137,7 +141,7 @@ class EbeguUtilTest {
 			0
 		);
 		// 0 Anspruch sollte keine Erlaeterung sein:
-		Assertions.assertFalse(
+		assertFalse(
 			EbeguUtil.isErlaeuterungenZurVerfuegungRequired(gesuch)
 		);
 	}
@@ -149,7 +153,7 @@ class EbeguUtilTest {
 			1
 		);
 		// 0 Anspruch sollte keine Erlaeterung sein:
-		Assertions.assertTrue(
+		assertTrue(
 			EbeguUtil.isErlaeuterungenZurVerfuegungRequired(gesuch)
 		);
 	}
@@ -161,7 +165,7 @@ class EbeguUtilTest {
 			0
 		);
 		// 0 Anspruch aber beim Appenzell ist einer Ausnahme so es muss immer sein:
-		Assertions.assertTrue(
+		assertTrue(
 			EbeguUtil.isErlaeuterungenZurVerfuegungRequired(gesuch)
 		);
 	}
@@ -172,7 +176,7 @@ class EbeguUtilTest {
 			MandantIdentifier.APPENZELL_AUSSERRHODEN,
 			1
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			EbeguUtil.isErlaeuterungenZurVerfuegungRequired(gesuch)
 		);
 	}
@@ -184,7 +188,7 @@ class EbeguUtilTest {
 			1
 		);
 		// Beim Schwyz sollte immer false sein
-		Assertions.assertFalse(
+		assertFalse(
 			EbeguUtil.isErlaeuterungenZurVerfuegungRequired(gesuch)
 		);
 	}
@@ -192,7 +196,7 @@ class EbeguUtilTest {
 	@Test
 	void isFinanzielleSituationRequiredTest() {
 		Gesuch gesuch = new Gesuch();
-		Assertions.assertFalse(
+		assertFalse(
 			EbeguUtil.isFinanzielleSituationRequired(gesuch)
 		);
 
@@ -202,7 +206,7 @@ class EbeguUtilTest {
 			new FamiliensituationContainer();
 		familiensituationContainer.setFamiliensituationJA(familiensituation);
 		gesuch.setFamiliensituationContainer(familiensituationContainer);
-		Assertions.assertFalse(
+		assertFalse(
 			EbeguUtil.isFinanzielleSituationRequired(gesuch)
 		);
 
@@ -212,38 +216,38 @@ class EbeguUtilTest {
 		gesuch.getFamiliensituationContainer()
 			.getFamiliensituationJA()
 			.setVerguenstigungGewuenscht(false);
-		Assertions.assertFalse(
+		assertFalse(
 			EbeguUtil.isFinanzielleSituationRequired(gesuch)
 		);
 
 		gesuch.getFamiliensituationContainer()
 			.getFamiliensituationJA()
 			.setVerguenstigungGewuenscht(true);
-		Assertions.assertTrue(EbeguUtil.isFinanzielleSituationRequired(gesuch));
+		assertTrue(EbeguUtil.isFinanzielleSituationRequired(gesuch));
 	}
 
 	@Test
 	void contentEqualsNull() {
-		Assertions.assertTrue(EbeguUtil.contentEquals(null, null));
-		Assertions.assertFalse(EbeguUtil.contentEquals("test", null));
-		Assertions.assertFalse(EbeguUtil.contentEquals(null, "test"));
+		assertTrue(EbeguUtil.contentEquals(null, null));
+		assertFalse(EbeguUtil.contentEquals("test", null));
+		assertFalse(EbeguUtil.contentEquals(null, "test"));
 	}
 
 	@Test
 	void contentEqualsSameContent() {
-		Assertions.assertTrue(EbeguUtil.contentEquals("test", "test"));
-		Assertions.assertTrue(EbeguUtil.contentEquals("test", " test"));
-		Assertions.assertTrue(EbeguUtil.contentEquals("test ", "test"));
-		Assertions.assertTrue(EbeguUtil.contentEquals("Test", "test"));
-		Assertions.assertTrue(EbeguUtil.contentEquals("Test", "TEST"));
-		Assertions.assertTrue(EbeguUtil.contentEquals(" Test ", "TEST"));
+		assertTrue(EbeguUtil.contentEquals("test", "test"));
+		assertTrue(EbeguUtil.contentEquals("test", " test"));
+		assertTrue(EbeguUtil.contentEquals("test ", "test"));
+		assertTrue(EbeguUtil.contentEquals("Test", "test"));
+		assertTrue(EbeguUtil.contentEquals("Test", "TEST"));
+		assertTrue(EbeguUtil.contentEquals(" Test ", "TEST"));
 	}
 
 	@Test
 	void contentEqualsNotSameContent() {
-		Assertions.assertFalse(EbeguUtil.contentEquals("test", "test1"));
-		Assertions.assertFalse(EbeguUtil.contentEquals("test1", "test"));
-		Assertions.assertFalse(EbeguUtil.contentEquals("test", "te st"));
+		assertFalse(EbeguUtil.contentEquals("test", "test1"));
+		assertFalse(EbeguUtil.contentEquals("test1", "test"));
+		assertFalse(EbeguUtil.contentEquals("test", "te st"));
 	}
 
 	private Gesuch prepareGesuchForErlaeuterungenZurVerguegungTests(

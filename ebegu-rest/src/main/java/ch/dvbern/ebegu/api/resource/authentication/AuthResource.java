@@ -57,14 +57,15 @@ import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
+import ch.dvbern.ebegu.nesko.StekUtil;
 import ch.dvbern.ebegu.oidc.AuthConstants;
 import ch.dvbern.ebegu.oidc.CustomAuthenticationController;
 import ch.dvbern.ebegu.services.BenutzerService;
 import ch.dvbern.ebegu.services.CreateBenutzerService;
 import ch.dvbern.ebegu.services.authentication.KeycloakApi;
-import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZPVUpdateResult;
-import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZPVUpdateUtil;
-import ch.dvbern.ebegu.services.steuerabfrage.nesko.ZpvService;
+import ch.dvbern.ebegu.services.steuerabfrage.nesko.STEKIdentifierUpdateUtil;
+import ch.dvbern.ebegu.services.steuerabfrage.nesko.STEKUpdateResult;
+import ch.dvbern.ebegu.services.steuerabfrage.nesko.StekService;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.URLUtil;
@@ -117,7 +118,7 @@ public class AuthResource {
 	private CreateBenutzerService createBenutzerService;
 
 	@Inject
-	private ZpvService zpvService;
+	private StekService stekService;
 
 	private boolean isCookieSecure() {
 		final boolean forceCookieSecureFlag = configuration
@@ -343,7 +344,11 @@ public class AuthResource {
 		if (isRequestZpvLinking(returnPath)) {
 			var result = linkZpvToGesuchsteller(returnPath);
 			invalidateSession(request);
-			return ZPVUpdateUtil.redirectToFrontend(request, returnPath, result)
+			return STEKIdentifierUpdateUtil.redirectToFrontend(
+				request,
+				returnPath,
+				result
+			)
 				.build();
 		}
 
@@ -394,7 +399,11 @@ public class AuthResource {
 					kibonJwt.getVorname()
 				);
 				benutzer.setEmail(email);
-				benutzer.setZpvNummer(kibonJwt.getZpvNummer());
+				StekUtil.setStekIdentifierNullsafe(
+					benutzer,
+					kibonJwt.getZpvNummer(),
+					kibonJwt.getAhvNummer()
+				);
 			}
 		}
 
@@ -437,14 +446,41 @@ public class AuthResource {
 		}
 	}
 
-	private ZPVUpdateResult linkZpvToGesuchsteller(String returnPath) {
+	private STEKUpdateResult linkZpvToGesuchsteller(String returnPath) {
 		var gesuchstellerId = getGeuchstellerIdFromReturnPath(returnPath);
-		var result = zpvService.updateGesuchstellerZPVNr(
+		var zpvNummer = kibonJwt.getZpvNummer();
+		var ahvNummer = kibonJwt.getAhvNummer();
+
+		if (zpvNummer == null && ahvNummer == null) {
+			return STEKUpdateResult.ERROR_NO_STEK_IDENTIFIER;
+		}
+
+		if (zpvNummer != null) {
+			var zpvCheck = stekService.checkZpvNummer(
+				gesuchstellerId,
+				zpvNummer
+			);
+			if (zpvCheck != STEKUpdateResult.SUCCESS) {
+				return zpvCheck;
+			}
+		}
+		if (ahvNummer != null) {
+			var ahvCheck = stekService.checkAhvNummer(
+				gesuchstellerId,
+				ahvNummer
+			);
+			if (ahvCheck != STEKUpdateResult.SUCCESS) {
+				return ahvCheck;
+			}
+		}
+
+		var result = stekService.updateGesuchstellerStekIdentifier(
 			gesuchstellerId,
-			kibonJwt.getZpvNummer()
+			zpvNummer,
+			ahvNummer
 		);
 
-		if (result != ZPVUpdateResult.SUCCESS) {
+		if (result != STEKUpdateResult.SUCCESS) {
 			return result;
 		}
 

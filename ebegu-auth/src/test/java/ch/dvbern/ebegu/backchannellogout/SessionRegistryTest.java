@@ -21,13 +21,14 @@ import java.util.Collection;
 
 import jakarta.servlet.http.HttpSession;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class SessionRegistryTest {
@@ -71,8 +72,8 @@ class SessionRegistryTest {
 		Mockito.verify(session2).invalidate();
 		Mockito.verify(session3).invalidate();
 
-		Assertions.assertEquals(2, sessionsSize1);
-		Assertions.assertEquals(1, sessionsSize2);
+		assertEquals(2, sessionsSize1);
+		assertEquals(1, sessionsSize2);
 	}
 
 	@Test
@@ -103,10 +104,10 @@ class SessionRegistryTest {
 			subject2
 		);
 
-		Assertions.assertEquals(1, sub1Sessions.size());
-		Assertions.assertEquals(session1, sub1Sessions.iterator().next());
+		assertEquals(1, sub1Sessions.size());
+		assertEquals(session1, sub1Sessions.iterator().next());
 
-		Assertions.assertEquals(1, sub2Sessions.size());
-		Assertions.assertEquals(session3, sub2Sessions.iterator().next());
+		assertEquals(1, sub2Sessions.size());
+		assertEquals(session3, sub2Sessions.iterator().next());
 	}
 }

@@ -27,8 +27,6 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
 import ch.dvbern.ebegu.tests.util.validation.ViolationMatchers;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -40,7 +38,6 @@ public abstract class AbstractValidatorTest {
 	private static Validator validator = null;
 
 	@BeforeAll
-	@BeforeClass
 	public static void createValidator() {
 		// see https://docs.jboss.org/hibernate/validator/5.2/reference/en-US/html/chapter-bootstrapping.html#_constraintvalidatorfactory
 		Configuration<?> config = Validation.byDefaultProvider().configure();
@@ -53,7 +50,6 @@ public abstract class AbstractValidatorTest {
 	}
 
 	@AfterAll
-	@AfterClass
 	public static void close() {
 		validatorFactory.close();
 	}

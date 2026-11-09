@@ -51,7 +51,6 @@ import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
 import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,6 +61,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(EasyMockExtension.class)
 class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
@@ -740,13 +741,13 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			final FinanzielleSituationContainer finSitGS1 =
 				new FinanzielleSituationContainer();
 			gesuchsteller1.setFinanzielleSituationContainer(finSitGS1);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungInfo.setEinkommensverschlechterung(true);
 			einkommensverschlechterungInfo.setEkvFuerBasisJahrPlus1(true);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
@@ -758,7 +759,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			einkommensverschlechterungContainer.setEkvJABasisJahrPlus1(
 				initEKVBern()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
@@ -773,32 +774,32 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus1(
 				new Einkommensverschlechterung()
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus1(
 				initEKVBern()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungInfo.setEkvFuerBasisJahrPlus2(true);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 			einkommensverschlechterungContainer.setEkvJABasisJahrPlus2(
 				initEKVBern()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus2(
 				initEKVBern()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 		}
@@ -815,7 +816,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			gesuch.setFamiliensituationContainer(
 				createFamiliensituation(EnumFamilienstatus.VERHEIRATET)
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -826,11 +827,11 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			gesuch.setGesuchsteller1(gesuchsteller1);
 			gesuchsteller1.setFinanzielleSituationContainer(finSitGS1);
 
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 			finSitGS1.setFinanzielleSituationJA(initFinSitBern());
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -840,11 +841,11 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			final FinanzielleSituationContainer finSitGS2 =
 				new FinanzielleSituationContainer();
 			gs2Container.setFinanzielleSituationContainer(finSitGS2);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 			finSitGS2.setFinanzielleSituationJA(initFinSitBern());
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 		}
@@ -943,7 +944,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			FamiliensituationContainer familiensituationContainer =
 				createFamSitAlleine();
 			gesuch.setFamiliensituationContainer(familiensituationContainer);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -955,7 +956,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			gesuchsteller1.setFinanzielleSituationContainer(finSitGS1);
 
 			finSitGS1.setFinanzielleSituationJA(initFinSitLuzern());
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -963,17 +964,17 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			Objects.requireNonNull(
 				familiensituationContainer.getFamiliensituationJA()
 			).setAuszahlungsdaten(auszahlungsdaten);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			auszahlungsdaten.setIban(new IBAN());
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			gesuch.setStatus(AntragStatus.IN_BEARBEITUNG_JA);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 		}
@@ -1008,7 +1009,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			);
 			finSitGS1.setFinanzielleSituationJA(initFinSitLuzern());
 
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 		}
@@ -1022,7 +1023,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			final FamiliensituationContainer familiensituationContainer =
 				createFamSitAlleine();
 			gesuch.setFamiliensituationContainer(familiensituationContainer);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -1034,7 +1035,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			gesuchsteller1.setFinanzielleSituationContainer(finSitGS1);
 
 			finSitGS1.setFinanzielleSituationJA(initFinSitLuzern());
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -1042,27 +1043,27 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			Objects.requireNonNull(
 				familiensituationContainer.getFamiliensituationJA()
 			).setAuszahlungsdaten(auszahlungsdaten);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			auszahlungsdaten.setIban(new IBAN());
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			gesuch.setStatus(AntragStatus.IN_BEARBEITUNG_JA);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			auszahlungsdaten.setInfomaBankcode("test");
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			auszahlungsdaten.setInfomaKreditorennummer("test");
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 		}
@@ -1103,12 +1104,12 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			final FinanzielleSituationContainer finSitGS1 =
 				new FinanzielleSituationContainer();
 			gesuchsteller1.setFinanzielleSituationContainer(finSitGS1);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungInfo.setEinkommensverschlechterung(true);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
@@ -1120,7 +1121,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			einkommensverschlechterungContainerGS1.setEkvJABasisJahrPlus1(
 				initEKVLuzern()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
@@ -1135,32 +1136,32 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus1(
 				new Einkommensverschlechterung()
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus1(
 				initEKVLuzern()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungInfo.setEkvFuerBasisJahrPlus2(true);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 			einkommensverschlechterungContainerGS1.setEkvJABasisJahrPlus2(
 				initEKVLuzern()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus2(
 				initEKVLuzern()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 		}
@@ -1231,7 +1232,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			familiensituationContainer.setFamiliensituationJA(
 				familiensituationJA
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -1241,13 +1242,13 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			final FinanzielleSituationContainer finSitGS1 =
 				new FinanzielleSituationContainer();
 			gesuchsteller1.setFinanzielleSituationContainer(finSitGS1);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			FinanzielleSituation finSit = new FinanzielleSituation();
 			finSitGS1.setFinanzielleSituationJA(finSit);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -1255,21 +1256,21 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 				initFinSitAppenzell();
 			finSitGS1.getFinanzielleSituationJA()
 				.setFinSitZusatzangabenAppenzell(finSitZusatzangabenAppenzell);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			finSitZusatzangabenAppenzell.setSteuerbaresVermoegen(
 				BigDecimal.TEN
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			finSitZusatzangabenAppenzell.setSteuerbaresEinkommen(
 				BigDecimal.TEN
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 		}
@@ -1313,12 +1314,12 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			finSitZusatzangabenAppenzell.setSteuerbaresEinkommen(
 				BigDecimal.TEN
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			familiensituation.setGemeinsameSteuererklaerung(true);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 		}
@@ -1358,12 +1359,12 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			final FinanzielleSituationContainer finSitGS1 =
 				new FinanzielleSituationContainer();
 			gesuchsteller1.setFinanzielleSituationContainer(finSitGS1);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungInfo.setEinkommensverschlechterung(true);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
@@ -1375,7 +1376,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			einkommensverschlechterungContainerGS1.setEkvJABasisJahrPlus1(
 				initEKVAppenzell()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
@@ -1390,12 +1391,12 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus1(
 				new Einkommensverschlechterung()
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			familiensituation.setGemeinsameSteuererklaerung(true);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
@@ -1403,25 +1404,25 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus1(
 				initEKVAppenzell()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungInfo.setEkvFuerBasisJahrPlus2(true);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 			einkommensverschlechterungContainerGS1.setEkvJABasisJahrPlus2(
 				initEKVAppenzell()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus2(
 				initEKVAppenzell()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 		}
@@ -1511,14 +1512,14 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			final FinanzielleSituationContainer finSitGS1 =
 				new FinanzielleSituationContainer();
 			gesuchsteller1.setFinanzielleSituationContainer(finSitGS1);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungInfoContainer
 				.getEinkommensverschlechterungInfoJA()
 				.setEinkommensverschlechterung(true);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 			final EinkommensverschlechterungContainer einkommensverschlechterungContainer =
@@ -1529,37 +1530,37 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			einkommensverschlechterungContainer.setEkvJABasisJahrPlus1(
 				new Einkommensverschlechterung()
 			);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainer.getEkvJABasisJahrPlus1()
 				.setBruttolohnAbrechnung1(BigDecimal.ONE);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainer.getEkvJABasisJahrPlus1()
 				.setBruttolohnAbrechnung2(BigDecimal.ONE);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainer.getEkvJABasisJahrPlus1()
 				.setBruttolohnAbrechnung3(BigDecimal.ONE);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainer.getEkvJABasisJahrPlus1()
 				.setNettoVermoegen(BigDecimal.ONE);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainer.getEkvJABasisJahrPlus1()
 				.setExtraLohn(true);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
@@ -1575,34 +1576,34 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 				new Einkommensverschlechterung()
 			);
 
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus1(
 				createEkvSolothurn()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungInfoContainer
 				.getEinkommensverschlechterungInfoJA()
 				.setEkvFuerBasisJahrPlus2(true);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 			einkommensverschlechterungContainer.setEkvJABasisJahrPlus2(
 				createEkvSolothurn()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 
 			einkommensverschlechterungContainerGS2.setEkvJABasisJahrPlus2(
 				createEkvSolothurn()
 			);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isEKVIntroducedAndComplete(gesuch)
 			);
 		}
@@ -1613,7 +1614,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			final FamiliensituationContainer familiensituationContainer =
 				createFamSitVerheiratet();
 			gesuch.setFamiliensituationContainer(familiensituationContainer);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -1631,7 +1632,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			gesuchsteller2.setFinanzielleSituationContainer(finSitContGS2);
 			gesuch.setGesuchsteller2(gesuchsteller2);
 
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 			FinanzielleSituation finSitGS1 = new FinanzielleSituation();
@@ -1640,19 +1641,19 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			finSitContGS1.setFinanzielleSituationJA(finSitGS1);
 			finSitContGS2.setFinanzielleSituationJA(finSitGS2);
 
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			finSitGS1.setBruttoLohn(BigDecimal.ZERO);
 			finSitGS2.setBruttoLohn(BigDecimal.ZERO);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			finSitGS1.setSteuerbaresVermoegen(BigDecimal.ZERO);
 			finSitGS2.setSteuerbaresVermoegen(BigDecimal.ZERO);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
@@ -1661,19 +1662,19 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 			finSitGS2.setBruttoLohn(null);
 			finSitGS2.setNettolohn(BigDecimal.ZERO);
 
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			finSitGS1.setUnterhaltsBeitraege(BigDecimal.ZERO);
 			finSitGS2.setUnterhaltsBeitraege(BigDecimal.ZERO);
-			Assertions.assertFalse(
+			assertFalse(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 
 			finSitGS1.setAbzuegeKinderAusbildung(BigDecimal.ZERO);
 			finSitGS2.setAbzuegeKinderAusbildung(BigDecimal.ZERO);
-			Assertions.assertTrue(
+			assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 		}

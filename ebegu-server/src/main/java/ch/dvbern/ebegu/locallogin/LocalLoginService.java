@@ -18,6 +18,8 @@
 
 package ch.dvbern.ebegu.locallogin;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -519,5 +521,27 @@ public class LocalLoginService {
 			persistence.getEntityManager(),
 			mandant
 		).stream().map(LocalLoginBenutzer::from).toList();
+	}
+
+	@PermitAll
+	public boolean isPasswordRequired(MandantIdentifier mandantIdentifier) {
+		return localLoginConfig.getPagePassword(mandantIdentifier).isPresent();
+	}
+
+	@PermitAll
+	public boolean verifyPassword(
+		MandantIdentifier mandantIdentifier,
+		String password
+	) {
+		return localLoginConfig.getPagePassword(mandantIdentifier)
+			.map(
+				expected -> password != null
+					&& MessageDigest.isEqual(
+						expected.getBytes(StandardCharsets.UTF_8),
+						password.getBytes(StandardCharsets.UTF_8)
+					)
+			)
+			// no password configured (e.g. local dev) -> no protection
+			.orElse(true);
 	}
 }

@@ -45,7 +45,6 @@ import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -60,6 +59,7 @@ import static ch.dvbern.ebegu.test.TestDataUtil.START_PERIODE;
 import static java.time.temporal.TemporalAdjusters.firstDayOfNextMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests fuer FamilienabzugAbschnittRule und die FamilienCalcRule
@@ -97,8 +97,8 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(1, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(1, zeitabschnitte.size());
 		final VerfuegungZeitabschnitt zeitabschnitt = zeitabschnitte.get(0);
 		assertEqualsNumberValue(0, zeitabschnitt.getAbzugFamGroesse());
 		assertEqualsNumberValue(2, zeitabschnitt.getFamGroesse());
@@ -118,8 +118,8 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(1, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(1, zeitabschnitte.size());
 		final VerfuegungZeitabschnitt zeitabschnitt = zeitabschnitte.get(0);
 		// 3 * pauschale für 3 Personen (3*3800)
 		assertEqualsNumberValue(11400, zeitabschnitt.getAbzugFamGroesse());
@@ -139,8 +139,8 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(1, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(1, zeitabschnitte.size());
 		final VerfuegungZeitabschnitt zeitabschnitt = zeitabschnitte.get(0);
 		// 4 * pauschale für 4 Personen (4*6000)
 		assertEqualsNumberValue(24000, zeitabschnitt.getAbzugFamGroesse());
@@ -167,17 +167,17 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(2, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(2, zeitabschnitte.size());
 
 		// Zeitabschnitt 1 bis Ende-Monat nach Geburtstag
 		// 3 * pauschale für 3 Personen (3*3800)
 		VerfuegungZeitabschnitt zeitabschnitt1 = zeitabschnitte.get(0);
-		Assertions.assertEquals(
+		assertEquals(
 			START_PERIODE,
 			zeitabschnitt1.getGueltigkeit().getGueltigAb()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			geburtsdatum.with(TemporalAdjusters.lastDayOfMonth()),
 			zeitabschnitt1.getGueltigkeit().getGueltigBis()
 		);
@@ -187,11 +187,11 @@ class FamilienabzugRuleBernTest {
 		// Zeitabschnitt 2 ab Monat nach Geburtstag
 		// 4 * pauschale für 4 Personen (4*6000)
 		VerfuegungZeitabschnitt zeitabschnitt2 = zeitabschnitte.get(1);
-		Assertions.assertEquals(
+		assertEquals(
 			geburtsdatum.with(TemporalAdjusters.firstDayOfNextMonth()),
 			zeitabschnitt2.getGueltigkeit().getGueltigAb()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ENDE_PERIODE,
 			zeitabschnitt2.getGueltigkeit().getGueltigBis()
 		);
@@ -222,17 +222,17 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(2, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(2, zeitabschnitte.size());
 
 		// Zeitabschnitt 1 bis Ende-Monat nach Geburtstag
 		// 3 * pauschale für 3 Personen (3*3800)
 		VerfuegungZeitabschnitt zeitabschnitt1 = zeitabschnitte.get(0);
-		Assertions.assertEquals(
+		assertEquals(
 			START_PERIODE,
 			zeitabschnitt1.getGueltigkeit().getGueltigAb()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			geburtsdatum.with(TemporalAdjusters.lastDayOfMonth()),
 			zeitabschnitt1.getGueltigkeit().getGueltigBis()
 		);
@@ -242,11 +242,11 @@ class FamilienabzugRuleBernTest {
 		// Zeitabschnitt 2 ab Monat nach Geburtstag
 		// 5 * pauschale für 5 Personen (5*7000)
 		VerfuegungZeitabschnitt zeitabschnitt2 = zeitabschnitte.get(1);
-		Assertions.assertEquals(
+		assertEquals(
 			geburtsdatum.with(TemporalAdjusters.firstDayOfNextMonth()),
 			zeitabschnitt2.getGueltigkeit().getGueltigAb()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			ENDE_PERIODE,
 			zeitabschnitt2.getGueltigkeit().getGueltigBis()
 		);
@@ -293,7 +293,7 @@ class FamilienabzugRuleBernTest {
 		);
 
 		// RESULT
-		Assertions.assertNotNull(result);
+		assertNotNull(result);
 		assertEquals(2, result.size());
 
 		assertEquals(
@@ -350,7 +350,7 @@ class FamilienabzugRuleBernTest {
 			betreuung
 		);
 
-		Assertions.assertNotNull(result);
+		assertNotNull(result);
 		assertEquals(1, result.size());
 
 		assertEqualsNumberValue(
@@ -382,7 +382,7 @@ class FamilienabzugRuleBernTest {
 			betreuung
 		);
 
-		Assertions.assertNotNull(result);
+		assertNotNull(result);
 		assertEquals(1, result.size());
 
 		assertEqualsNumberValue(
@@ -414,7 +414,7 @@ class FamilienabzugRuleBernTest {
 			betreuung
 		);
 
-		Assertions.assertNotNull(result);
+		assertNotNull(result);
 		assertEquals(2, result.size());
 
 		assertEquals(
@@ -465,8 +465,8 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(1, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(1, zeitabschnitte.size());
 		final VerfuegungZeitabschnitt zeitabschnitt = zeitabschnitte.get(0);
 		// Familiengrösse = 3 => 2 GS + 2 x Halbes Kind
 		// Pauschale von 4 Personen nehmen => 6'000
@@ -488,8 +488,8 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(1, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(1, zeitabschnitte.size());
 		final VerfuegungZeitabschnitt zeitabschnitt = zeitabschnitte.get(0);
 		// Familiengrösse = 3.5 => 2 GS + 1 x Ganzes Kind + 1 x halbes Kind
 		// Pauschale von 5 Personen nehmen => 7'000
@@ -511,8 +511,8 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(1, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(1, zeitabschnitte.size());
 		final VerfuegungZeitabschnitt zeitabschnitt = zeitabschnitte.get(0);
 		// Familiengrösse = 3 => 2 GS + 1 x Ganzes Kind
 		// Pauschale von 3 Personen nehmen => 3800
@@ -540,8 +540,8 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(1, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(1, zeitabschnitte.size());
 		final VerfuegungZeitabschnitt zeitabschnitt = zeitabschnitte.get(0);
 		// Familiengrösse = 3 => 2 GS + 1 x Ganzes Kind
 		// Pauschale von 3 Personen nehmen => 3800
@@ -568,8 +568,8 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(1, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(1, zeitabschnitte.size());
 		final VerfuegungZeitabschnitt zeitabschnitt = zeitabschnitte.get(0);
 		// Familiengrösse = 3 => 2 GS + 1 x Ganzes Kind
 		// Pauschale von 3 Personen nehmen => 3800
@@ -596,8 +596,8 @@ class FamilienabzugRuleBernTest {
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = EbeguRuleTestsHelper
 			.calculate(betreuung);
-		Assertions.assertNotNull(zeitabschnitte);
-		Assertions.assertEquals(2, zeitabschnitte.size());
+		assertNotNull(zeitabschnitte);
+		assertEquals(2, zeitabschnitte.size());
 		// Familiengrösse = 4 => 2 GS + 2 x Ganzes Kind
 		// Pauschale von 4 Personen nehmen => 6000
 		// Familien abzug = 4 * 6000 => 24000

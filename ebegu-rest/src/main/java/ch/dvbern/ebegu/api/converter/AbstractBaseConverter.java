@@ -37,7 +37,6 @@ import ch.dvbern.ebegu.api.dtos.JaxAbstractPersonDTO;
 import ch.dvbern.ebegu.api.dtos.JaxAdresse;
 import ch.dvbern.ebegu.api.dtos.JaxBfsGemeinde;
 import ch.dvbern.ebegu.api.dtos.JaxEingewoehnung;
-import ch.dvbern.ebegu.api.dtos.JaxEinstellung;
 import ch.dvbern.ebegu.api.dtos.JaxExternalClient;
 import ch.dvbern.ebegu.api.dtos.JaxFile;
 import ch.dvbern.ebegu.api.dtos.JaxGemeinde;
@@ -49,7 +48,6 @@ import ch.dvbern.ebegu.api.dtos.JaxModulTagesschule;
 import ch.dvbern.ebegu.api.dtos.JaxTextRessource;
 import ch.dvbern.ebegu.api.dtos.JaxTraegerschaft;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.entities.AbstractDateRangeAccessible;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity;
 import ch.dvbern.ebegu.entities.AbstractEntity;
@@ -589,27 +587,6 @@ public abstract class AbstractBaseConverter {
 		jaxTraegerschaft.setName(persistedTraegerschaft.getName());
 		jaxTraegerschaft.setActive(persistedTraegerschaft.getActive());
 		return jaxTraegerschaft;
-	}
-
-	@Nonnull
-	public JaxEinstellung einstellungToJAX(
-		@Nonnull final Einstellung einstellung
-	) {
-		final JaxEinstellung jaxEinstellung = new JaxEinstellung();
-		convertAbstractFieldsToJAX(einstellung, jaxEinstellung);
-		jaxEinstellung.setKey(einstellung.getKey());
-		jaxEinstellung.setValue(einstellung.getValue());
-		jaxEinstellung.setErklaerung(einstellung.getErklaerung());
-		jaxEinstellung.setGemeindeId(
-			null == einstellung.getGemeinde() ?
-				null :
-				einstellung.getGemeinde().getId()
-		);
-		jaxEinstellung.setGesuchsperiodeId(
-			einstellung.getGesuchsperiode().getId()
-		);
-		// Mandant wird aktuell nicht gemappt
-		return jaxEinstellung;
 	}
 
 	@Nonnull

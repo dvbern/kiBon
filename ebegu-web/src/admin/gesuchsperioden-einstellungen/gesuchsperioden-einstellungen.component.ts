@@ -5,16 +5,23 @@ import {
     effect,
     inject,
     input,
-    model
+    model,
+    Signal
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {EditEinstellungComponent} from '@admin/einstellungen';
+import {
+    ConfigurableEinstellung,
+    EditEinstellungComponent
+} from '@admin/einstellungen';
+import {combineLatest} from 'rxjs';
 import {SharedModule} from '../../app/shared/shared.module';
 import {rxResource} from '@angular/core/rxjs-interop';
 import {TSGesuchsperiode} from '../../models/entity/TSGesuchsperiode';
 import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
 import {TSGesuchsperiodeStatus} from '../../models/enums/TSGesuchsperiodeStatus';
-import {LogFactory} from '../../utils/log-factory/LogFactory';
+import {LogFactory} from '@utils/log';
+import {KibonConfigurationGroup} from '../einstellungen/kibon-configuration-group/kibon-configuration-group.component';
+import {TSEinstellungWithMetadata} from '../einstellungen/TSEinstellungWithMetadata';
 import {EinstellungRS} from '../service/einstellungRS.rest';
 import {MatTableDataSource} from '@angular/material/table';
 import {TSEinstellung} from '../einstellungen/TSEinstellung';
@@ -25,6 +32,8 @@ import {GesuchsperiodeRS} from '../../app/core/service/gesuchsperiodeRS.rest';
 import {GlobalCacheService} from '../../legacy-gesuch/service/globalCacheService';
 import {TSEinstellungKey} from '../einstellungen/TSEinstellungKey';
 import {DokumenteZuUebernehmenEinstellungGroupComponent} from './dokumente-zu-uebernehmen-einstellung-group/dokumente-zu-uebernehmen-einstellung-group.component';
+import {EinstellungGrouper, EinstellungGroup} from './EinstellungGrouper';
+import {sortByKeyOrder} from '../einstellungen/KibonConfigurationOrder';
 
 const LOG = LogFactory.createLog('GesuchsperiodeViewXComponent');
 
@@ -34,7 +43,8 @@ const LOG = LogFactory.createLog('GesuchsperiodeViewXComponent');
         CommonModule,
         SharedModule,
         EditEinstellungComponent,
-        DokumenteZuUebernehmenEinstellungGroupComponent
+        DokumenteZuUebernehmenEinstellungGroupComponent,
+        KibonConfigurationGroup
     ],
     templateUrl: './gesuchsperioden-einstellungen.component.html',
     styleUrl: './gesuchsperioden-einstellungen.component.scss',
@@ -46,42 +56,69 @@ export class GesuchsperiodenEinstellungenComponent {
     private readonly authService = inject(AuthServiceRS);
     private readonly gesuchsperiodenService = inject(GesuchsperiodeRS);
     private readonly globalCacheService = inject(GlobalCacheService);
-    private readonly groupedEinstellungen = [
+    private readonly dokuemenZuUebernehmenEinstellung = [
         TSEinstellungKey.DOKUMENT_ZU_UEBERNEHMEN_TYPS
     ];
+    private readonly changedEinstellungen: Map<
+        TSEinstellungKey,
+        TSEinstellung
+    > = new Map();
 
     gesuchsperiode = input.required<TSGesuchsperiode>();
 
     filter = model<string>('');
 
+    trimmedAndLocalizedFilter = computed(() =>
+        this.filter().trim().toLocaleLowerCase()
+    );
+
     einstellungenRes = rxResource({
+        defaultValue: [],
         params: () => ({id: this.gesuchsperiode().id}),
         stream: ({params}) =>
-            this.einstellungenRS.getAllEinstellungenActiveForMandantBySystem(
+            this.einstellungenRS.getAllEinstellungenActiveForMandantWithMetadata(
                 params.id
             )
     });
 
-    tableData = computed(() => {
-        const value = this.einstellungenRes.value();
-        if (!value) {
-            return new MatTableDataSource<TSEinstellung>([]);
+    filteredAndGroupedEinstellungen = computed(() => {
+        const filter = this.trimmedAndLocalizedFilter();
+        return EinstellungGrouper.groupEinstellungen(
+            filter.length > 0
+                ? this.einstellungenRes
+                      .value()
+                      .filter(einstellung =>
+                          this.doesEinstellungMatchFilter(einstellung, filter)
+                      )
+                : this.einstellungenRes.value()
+        );
+    });
+
+    ungroupedEinstellungen: Signal<TSEinstellungWithMetadata[]> = computed(
+        () => {
+            return this.filteredAndGroupedEinstellungen().ungrouped ?? [];
         }
+    );
+
+    groupedEinstellungen: Signal<EinstellungGroup[]> = computed(() => {
+        return this.filteredAndGroupedEinstellungen().grouped;
+    });
+
+    tableData = computed(() => {
+        const value = this.ungroupedEinstellungen();
         const tableEinstellungen = value.filter(
-            einstellung => !this.groupedEinstellungen.includes(einstellung.key)
+            einstellung =>
+                !this.dokuemenZuUebernehmenEinstellung.includes(einstellung.key)
         );
-        tableEinstellungen.sort((a, b) =>
-            this.translate
-                .instant(a.key.toString())
-                .localeCompare(this.translate.instant(b.key.toString()))
+        return new MatTableDataSource<TSEinstellung>(
+            sortByKeyOrder(tableEinstellungen)
         );
-        return new MatTableDataSource<TSEinstellung>(tableEinstellungen);
     });
 
     dokumenteZuUebernehmenEinstellung = computed(() => {
         return this.einstellungenRes
             .value()
-            ?.find(
+            .find(
                 einstellung =>
                     einstellung.key ===
                     TSEinstellungKey.DOKUMENT_ZU_UEBERNEHMEN_TYPS
@@ -92,7 +129,7 @@ export class GesuchsperiodenEinstellungenComponent {
 
     constructor() {
         effect(() => {
-            const filter = this.filter();
+            const filter = this.trimmedAndLocalizedFilter();
             const dataSource = this.tableData();
             dataSource.filter = filter.trim().toLocaleLowerCase();
         });
@@ -117,27 +154,88 @@ export class GesuchsperiodenEinstellungenComponent {
     }
 
     public saveParameterByGesuchsperiode(): void {
-        const allEinstellungen = this.tableData().data.concat(
-            this.dokumenteZuUebernehmenEinstellung() ?? []
-        );
-        allEinstellungen.forEach((param: TSEinstellung) => {
-            if (param.value != 'null') {
-                this.einstellungenRS.saveEinstellung(param).subscribe({
-                    next: () => {},
-                    error: error => LOG.error(error)
-                });
-            }
+        const possibilityChangeEinstellungen = Array.from(
+            this.changedEinstellungen.values()
+        ).concat(this.dokumenteZuUebernehmenEinstellung() ?? []);
+
+        combineLatest(
+            possibilityChangeEinstellungen
+                .filter(e => e.value != 'null')
+                .map(e => this.einstellungenRS.saveEinstellung(e))
+        ).subscribe({
+            next: () => {
+                this.globalCacheService
+                    .getCache(TSCacheTyp.EBEGU_EINSTELLUNGEN)
+                    .removeAll();
+                this.gesuchsperiodenService.updateActiveGesuchsperiodenList();
+                this.gesuchsperiodenService.updateNichtAbgeschlosseneGesuchsperiodenList();
+                this.changedEinstellungen.clear();
+                this.einstellungenRes.reload();
+            },
+            error: error => LOG.error(error)
         });
-        this.globalCacheService
-            .getCache(TSCacheTyp.EBEGU_EINSTELLUNGEN)
-            .removeAll();
-        this.gesuchsperiodenService.updateActiveGesuchsperiodenList();
-        this.gesuchsperiodenService.updateNichtAbgeschlosseneGesuchsperiodenList();
     }
 
     public isReadonly(): boolean {
         return !this.authService.isOneOfRoles(
             TSRoleUtil.getJAAdministratorRoles()
+        );
+    }
+
+    /**
+     * Updates the specified changed configurable setting in the collection of changed settings. The related
+     * Einstellung is retrieved from the list of grouped and ungrouped entries. If the setting is already present in
+     * the collection, its value is updated with the new value from the changed configurable setting. If the setting
+     * is not present, it is added to the collection. The Einstellung for dokumenteZuUebernehmen is always saved
+     *
+     * @param {ConfigurableEinstellung} changedConfigurable - The configurable setting object that has been updated, containing its key and new value.
+     * @return {void} No return value.
+     */
+    protected updateChangedEinstellung(
+        changedConfigurable: ConfigurableEinstellung
+    ): void {
+        const einstellung =
+            this.changedEinstellungen.get(
+                changedConfigurable.key as TSEinstellungKey
+            ) ??
+            this.getAllEinstellungen().find(
+                groupedEinstellung =>
+                    groupedEinstellung.key === changedConfigurable.key
+            );
+        if (!einstellung) {
+            throw new Error(
+                `Einstellung with key ${changedConfigurable.key} not found`
+            );
+        }
+        einstellung.value = changedConfigurable.value;
+        this.changedEinstellungen.set(
+            changedConfigurable.key as TSEinstellungKey,
+            einstellung
+        );
+    }
+
+    private getAllEinstellungen(): TSEinstellung[] {
+        return (
+            this.groupedEinstellungen().flatMap(
+                entry => entry.configurations
+            ) as TSEinstellung[]
+        ).concat(this.ungroupedEinstellungen());
+    }
+
+    private doesEinstellungMatchFilter(
+        einstellung: TSEinstellungWithMetadata,
+        filter: string
+    ): any {
+        return (
+            einstellung.metadata.keyGroup
+                ?.toLocaleLowerCase()
+                .includes(filter) ||
+            einstellung.erklaerung?.toLocaleLowerCase().includes(filter) ||
+            einstellung.key.toLocaleLowerCase().includes(filter) ||
+            this.translate
+                .instant(einstellung.key)
+                .toLocaleLowerCase()
+                .includes(filter)
         );
     }
 }

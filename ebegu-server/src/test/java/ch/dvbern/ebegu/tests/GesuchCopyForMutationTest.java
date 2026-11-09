@@ -28,8 +28,10 @@ import ch.dvbern.ebegu.enums.Eingangsart;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.test.util.TestDataInstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.testfaelle.Testfall01_WaeltiDagmar;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Test copy for mutation
@@ -55,8 +57,8 @@ public class GesuchCopyForMutationTest {
 			Eingangsart.PAPIER,
 			eingangsdatum
 		);
-		Assert.assertEquals(Eingangsart.PAPIER, mutation.getEingangsart());
-		Assert.assertEquals(
+		assertEquals(Eingangsart.PAPIER, mutation.getEingangsart());
+		assertEquals(
 			AntragStatus.IN_BEARBEITUNG_JA,
 			mutation.getStatus()
 		);
@@ -66,14 +68,14 @@ public class GesuchCopyForMutationTest {
 			Eingangsart.ONLINE,
 			eingangsdatum
 		);
-		Assert.assertEquals(Eingangsart.ONLINE, mutation2.getEingangsart());
-		Assert.assertEquals(
+		assertEquals(Eingangsart.ONLINE, mutation2.getEingangsart());
+		assertEquals(
 			AntragStatus.IN_BEARBEITUNG_GS,
 			mutation2.getStatus()
 		);
 
-		Assert.assertEquals(AntragTyp.MUTATION, mutation2.getTyp());
-		Assert.assertNull(mutation2.getEingangsdatum());
+		assertEquals(AntragTyp.MUTATION, mutation2.getTyp());
+		assertNull(mutation2.getEingangsdatum());
 
 	}
 

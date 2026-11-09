@@ -13,9 +13,10 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants.EinstellungenDefaultWerteAsiv;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import ch.dvbern.ebegu.util.RuleParameterUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 
@@ -29,20 +30,23 @@ public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 
 	private static final int ANZAHL_RULES_ASIV = 42;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		ruleConfigurator = new BetreuungsgutscheinConfigurator();
 		Set<EinstellungKey> keysToLoad = ruleConfigurator
 			.getRequiredParametersForGemeinde();
 		// Sicherstellen, dass wir alle Einstellungen gemaess Configurator haben
-		Assert.assertEquals(keysToLoad.size(), einstellungenGemaessAsiv.size());
+		assertEquals(
+			keysToLoad.size(),
+			einstellungenGemaessAsiv.size()
+		);
 	}
 
 	@Test
 	public void ohneSpezialEinstellungenNurAsivRules() {
 		final List<Rule> rules = configureRuleForMandant(gemeindeOfEvaluator);
 		// Keine zusaetzliche Regel erwartet
-		Assert.assertEquals(ANZAHL_RULES_ASIV, rules.size());
+		assertEquals(ANZAHL_RULES_ASIV, rules.size());
 		assertContainsRule(rules, ErwerbspensumGemeindeAbschnittRule.class, 0);
 		assertContainsRule(rules, ErwerbspensumGemeindeCalcRule.class, 0);
 	}
@@ -59,7 +63,7 @@ public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 			.setValue("0");
 		// Keine zusaetzliche Regel erwartet
 		final List<Rule> rules = configureRuleForMandant(gemeindeOfEvaluator);
-		Assert.assertEquals(ANZAHL_RULES_ASIV, rules.size());
+		assertEquals(ANZAHL_RULES_ASIV, rules.size());
 		assertContainsRule(rules, ErwerbspensumGemeindeAbschnittRule.class, 0);
 		assertContainsRule(rules, ErwerbspensumGemeindeCalcRule.class, 0);
 	}
@@ -76,7 +80,7 @@ public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 			.setValue("15");
 		// Zusaetzliche Regel erwartet, da Wert abweicht
 		final List<Rule> rules = configureRuleForMandant(gemeindeOfEvaluator);
-		Assert.assertEquals(ANZAHL_RULES_ASIV + 1, rules.size());
+		assertEquals(ANZAHL_RULES_ASIV + 1, rules.size());
 		assertContainsRule(rules, ErwerbspensumGemeindeAbschnittRule.class, 1);
 		assertContainsRule(rules, ErwerbspensumGemeindeCalcRule.class, 0);
 	}
@@ -91,7 +95,7 @@ public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 			);
 		// Keine zusaetzliche Regel erwartet
 		final List<Rule> rules = configureRuleForMandant(gemeindeOfEvaluator);
-		Assert.assertEquals(ANZAHL_RULES_ASIV, rules.size());
+		assertEquals(ANZAHL_RULES_ASIV, rules.size());
 		assertContainsRule(rules, ErwerbspensumGemeindeAbschnittRule.class, 0);
 		assertContainsRule(rules, ErwerbspensumGemeindeCalcRule.class, 0);
 	}
@@ -103,7 +107,7 @@ public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 		).setValue("80");
 		// 1 zusaetzliche Regel erwartet
 		final List<Rule> rules = configureRuleForMandant(gemeindeOfEvaluator);
-		Assert.assertEquals(ANZAHL_RULES_ASIV + 1, rules.size());
+		assertEquals(ANZAHL_RULES_ASIV + 1, rules.size());
 		assertContainsRule(rules, ErwerbspensumGemeindeAbschnittRule.class, 0);
 		assertContainsRule(rules, ErwerbspensumGemeindeCalcRule.class, 1);
 	}
@@ -126,7 +130,7 @@ public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 		).setValue("80");
 		// 2 zusaetzliche Regeln erwartet
 		final List<Rule> rules = configureRuleForMandant(gemeindeOfEvaluator);
-		Assert.assertEquals(ANZAHL_RULES_ASIV + 2, rules.size());
+		assertEquals(ANZAHL_RULES_ASIV + 2, rules.size());
 		assertContainsRule(rules, ErwerbspensumGemeindeAbschnittRule.class, 1);
 		assertContainsRule(rules, ErwerbspensumGemeindeCalcRule.class, 1);
 	}
@@ -139,7 +143,7 @@ public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 		final List<Rule> rules = configureRuleForMandant(gemeindeParis);
 		// ErwerbspensumGemeindeCalcRule wird bei Paris/Bern immer hinzugefuegt, wegen dem MinEWP bei FEBR,
 		// welches nicht ueber eine Einstellung geloest ist
-		Assert.assertEquals(ANZAHL_RULES_ASIV + 1, rules.size());
+		assertEquals(ANZAHL_RULES_ASIV + 1, rules.size());
 		assertContainsRule(rules, ErwerbspensumGemeindeAbschnittRule.class, 0);
 		assertContainsRule(rules, ErwerbspensumGemeindeCalcRule.class, 1);
 	}
@@ -156,7 +160,7 @@ public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 		final List<Rule> rules = configureRuleForMandant(gemeindeParis);
 		// Es hat zwar nur eine Einstellunge geaendert, aber wegen der Uebergangsloesung der Gemeinde Paris
 		// kommt die Regel doppelt: Einmal fuer den Zeitraum vor dem Stichtag, einmal nach dem Stichtag
-		Assert.assertEquals(ANZAHL_RULES_ASIV + 2, rules.size());
+		assertEquals(ANZAHL_RULES_ASIV + 2, rules.size());
 		assertContainsRule(rules, ErwerbspensumGemeindeAbschnittRule.class, 0);
 		assertContainsRule(rules, ErwerbspensumGemeindeCalcRule.class, 2);
 	}
@@ -216,6 +220,6 @@ public class BetreuungsgutscheinConfiguratorTest extends AbstractBGRechnerTest {
 				found++;
 			}
 		}
-		Assert.assertEquals(expectedCount, found);
+		assertEquals(expectedCount, found);
 	}
 }

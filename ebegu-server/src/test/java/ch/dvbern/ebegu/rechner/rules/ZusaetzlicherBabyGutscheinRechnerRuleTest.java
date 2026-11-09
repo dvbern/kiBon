@@ -34,12 +34,14 @@ import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.KITA;
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESSCHULE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 
@@ -67,7 +69,7 @@ public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 			new Gemeinde()
 		);
 
-	@Before
+	@BeforeEach
 	public void init() {
 		BGRechnerParameterGemeindeDTO londonGemeindeDTO =
 			new BGRechnerParameterGemeindeDTO();
@@ -88,25 +90,25 @@ public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 
 	@Test
 	public void isConfigueredForGemeinde() {
-		Assert.assertFalse(rule.isConfigueredForGemeinde(londonDTO));
-		Assert.assertTrue(rule.isConfigueredForGemeinde(parisDTO));
+		assertFalse(rule.isConfigueredForGemeinde(londonDTO));
+		assertTrue(rule.isConfigueredForGemeinde(parisDTO));
 	}
 
 	@Test
 	public void isRelevantForVerfuegungSozialhilfe() {
-		Assert.assertFalse(
+		assertFalse(
 			rule.isRelevantForVerfuegung(
 				prepareInput(false, true, KITA),
 				londonDTO
 			)
 		);
-		Assert.assertFalse(
+		assertFalse(
 			rule.isRelevantForVerfuegung(
 				prepareInput(true, true, KITA),
 				parisDTO
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			rule.isRelevantForVerfuegung(
 				prepareInput(false, true, KITA),
 				parisDTO
@@ -116,7 +118,7 @@ public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 
 	@Test
 	public void isRelevantForVerfuegungUngueltigesAngebot() {
-		Assert.assertFalse(
+		assertFalse(
 			rule.isRelevantForVerfuegung(
 				prepareInput(false, true, TAGESSCHULE),
 				parisDTO
@@ -126,13 +128,13 @@ public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 
 	@Test
 	public void isRelevantForVerfuegungKindalter() {
-		Assert.assertFalse(
+		assertFalse(
 			rule.isRelevantForVerfuegung(
 				prepareInput(false, false, KITA),
 				parisDTO
 			)
 		);
-		Assert.assertTrue(
+		assertTrue(
 			rule.isRelevantForVerfuegung(
 				prepareInput(false, true, KITA),
 				parisDTO
@@ -149,7 +151,7 @@ public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 			londonDTO,
 			result
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.ZERO,
 			result.getZusaetzlicherBabyGutscheinBetrag()
 		);
@@ -159,7 +161,7 @@ public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 			parisDTO,
 			result
 		);
-		Assert.assertEquals(
+		assertEquals(
 			MathUtil.DEFAULT.from(50.00),
 			MathUtil.DEFAULT.from(
 				result.getZusaetzlicherBabyGutscheinBetrag()

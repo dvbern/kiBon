@@ -172,7 +172,7 @@ export class SteuerabfrageResponseHintsComponent implements OnInit, OnChanges {
                 );
             case TSSteuerdatenAnfrageStatus.FAILED_KEINE_NUMMER_GS2:
                 return this.translate.instant(
-                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_KEINE_ZPV_GS2',
+                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_KEIN_STEK_IDENTIFIER_GS2',
                     {gs2: this.getGS2name()}
                 );
             default:

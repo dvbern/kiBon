@@ -25,9 +25,11 @@ import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.TSCalculationResult;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.util.MathUtil;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test fuer TagesschuleTarifRechner
@@ -49,7 +51,7 @@ public class TagesschuleBernRechnerTest {
 	);
 	private BGRechnerParameterDTO parameterDTO;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		parameterDTO = getTagesschuleTarifRechnerParameterDTO();
 	}
@@ -135,8 +137,8 @@ public class TagesschuleBernRechnerTest {
 			tsResult = calculationResult
 				.getTsCalculationResultOhnePaedagogischerBetreuung();
 		}
-		Assert.assertNotNull(tsResult);
-		Assert.assertEquals(
+		assertNotNull(tsResult);
+		assertEquals(
 			MathUtil.DEFAULT.fromNullSafe(expectedTarif),
 			tsResult.getGebuehrProStunde()
 		);

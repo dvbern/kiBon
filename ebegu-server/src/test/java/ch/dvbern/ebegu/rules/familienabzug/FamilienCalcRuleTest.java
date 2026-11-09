@@ -8,10 +8,10 @@ import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.KinderabzugTyp;
 import ch.dvbern.ebegu.util.Constants;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static ch.dvbern.ebegu.rules.familienabzug.FamilienabzugAbschnittRuleTestUtil.getDefaultEinstellungMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FamilienCalcRuleTest {
 
@@ -30,7 +30,7 @@ class FamilienCalcRuleTest {
 		 * die im Haushalt wohnen, beträgt zwei, die anrechenbare Familiengrösse ist 1,5. Es ist damit kein Abzug möglich,
 		 * da 2-Personenhaushalt. Daher Fr. 0.00 in der Berechnung.
 		 */
-		Assertions.assertEquals(
+		assertEquals(
 			0,
 			famabzugCalcRule.calculateAbzugAufgrundFamiliengroesse(1.5, 2)
 				.intValue()
@@ -44,7 +44,7 @@ class FamilienCalcRuleTest {
 		 * 3-Personenhaushalt
 		 * von Fr. 3'800.00 multipliziert; Ergebnis Fr. 7'600.00
 		 */
-		Assertions.assertEquals(
+		assertEquals(
 			7600,
 			famabzugCalcRule.calculateAbzugAufgrundFamiliengroesse(2, 3)
 				.intValue()
@@ -56,7 +56,7 @@ class FamilienCalcRuleTest {
 		 * Die anrechenbare Familiengrösse beträgt 2,5 und dieser Wert wird mit der Pauschale 4-Personenhaushalt von
 		 * Fr. 6'000.00 multipliziert; Ergebnis Fr. 15'000.00.
 		 */
-		Assertions.assertEquals(
+		assertEquals(
 			15000,
 			famabzugCalcRule.calculateAbzugAufgrundFamiliengroesse(2.5, 4)
 				.intValue()
@@ -71,7 +71,7 @@ class FamilienCalcRuleTest {
 		 * Die anrechenbare Familiengrösse beträgt 2,5 und diese Familiengrösse wird mit der
 		 * Pauschale 3-Personenhaushalt von Fr. 3'800.00 multipliziert; Ergebnis Fr. 9'500.00.
 		 */
-		Assertions.assertEquals(
+		assertEquals(
 			9500,
 			famabzugCalcRule.calculateAbzugAufgrundFamiliengroesse(2.5, 3)
 				.intValue()
@@ -84,7 +84,7 @@ class FamilienCalcRuleTest {
 		 * es wird nun der Ansatz von 6 Personenhaushalt von Fr. 7'700.00 genommen. Die anrechenbare Familiengrösse von 4,5
 		 * wird mit der Pauschale 6-Personenhaushalt von Fr. 7'700.00 multipliziert; Ergebnis Fr. 34'650.00.
 		 */
-		Assertions.assertEquals(
+		assertEquals(
 			34650,
 			famabzugCalcRule.calculateAbzugAufgrundFamiliengroesse(4.5, 6)
 				.intValue()
@@ -96,7 +96,7 @@ class FamilienCalcRuleTest {
 		 * die Anzahl der Personen im gleichen Haushalt 4. Damit wird der Pauschalabzug von 4-Personenhaushalt angewendet.
 		 * Die anrechenbare Familiengrösse 4 wird mit 4-Personhaushalt von Fr. 6000.00 multipliziert; Ergebnis Fr. 24000.00.
 		 */
-		Assertions.assertEquals(
+		assertEquals(
 			24000,
 			famabzugCalcRule.calculateAbzugAufgrundFamiliengroesse(4.0, 4)
 				.intValue()
@@ -105,17 +105,17 @@ class FamilienCalcRuleTest {
 
 	@Test
 	void testCalculateAbzugAufgrundFamiliengroesseZero() {
-		Assertions.assertEquals(
+		assertEquals(
 			0,
 			famabzugCalcRule.calculateAbzugAufgrundFamiliengroesse(0, 0)
 				.intValue()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			0,
 			famabzugCalcRule.calculateAbzugAufgrundFamiliengroesse(1, 1)
 				.intValue()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			0,
 			famabzugCalcRule.calculateAbzugAufgrundFamiliengroesse(1.5, 2)
 				.intValue()

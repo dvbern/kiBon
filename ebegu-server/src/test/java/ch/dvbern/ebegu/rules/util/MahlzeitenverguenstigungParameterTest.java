@@ -19,8 +19,9 @@ package ch.dvbern.ebegu.rules.util;
 
 import java.math.BigDecimal;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MahlzeitenverguenstigungParameterTest {
 
@@ -44,7 +45,7 @@ public class MahlzeitenverguenstigungParameterTest {
 				false
 			);
 
-		Assert.assertEquals(verguenstigung, BigDecimal.valueOf(6));
+		assertEquals(verguenstigung, BigDecimal.valueOf(6));
 
 		BigDecimal verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -52,7 +53,7 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(6));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(6));
 
 		verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -60,7 +61,7 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(6));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(6));
 
 		verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -68,7 +69,7 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(5));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(5));
 
 		verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -76,7 +77,7 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(4));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(4));
 
 		verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -84,7 +85,7 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(3));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(3));
 
 		verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -92,7 +93,7 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(2));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(2));
 
 		verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -100,7 +101,7 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(1));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(1));
 
 		verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -108,7 +109,7 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(0));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(0));
 
 		verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -116,7 +117,7 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(0));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(0));
 
 		verguenstigungEffektiv = params.getVerguenstigungEffektiv(
 			verguenstigung,
@@ -124,6 +125,6 @@ public class MahlzeitenverguenstigungParameterTest {
 			params.getMinimalerElternbeitragMahlzeit()
 		);
 
-		Assert.assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(0));
+		assertEquals(verguenstigungEffektiv, BigDecimal.valueOf(0));
 	}
 }

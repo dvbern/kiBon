@@ -74,8 +74,6 @@ import static java.util.Objects.requireNonNull;
 			name = "UK_username_mandant"),
 		@UniqueConstraint(columnNames = "externalUUID",
 			name = "UK_externalUUID"),
-		@UniqueConstraint(columnNames = "zpvNummer",
-			name = "UK_zpv_nummer")
 	},
 	indexes = {
 		@Index(columnList = "username, mandant_id",
@@ -87,7 +85,9 @@ import static java.util.Objects.requireNonNull;
 @Audited
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Benutzer extends AbstractMutableEntity implements HasMandant {
+public class Benutzer extends AbstractMutableEntity implements
+	HasMandant,
+	HasStekIdentifier {
 
 	private static final long serialVersionUID = 6372688971894279665L;
 

@@ -13,8 +13,11 @@ import ch.dvbern.ebegu.entities.TSCalculationResult;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.types.DateRange;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class VeraenderungTagesschuleCalculatorTest {
 
@@ -38,7 +41,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 
 	@Test
 	public void useCorrectImplementation() {
-		Assert.assertTrue(
+		assertTrue(
 			veraenderungCalculator instanceof VeraenderungTagesschuleTarifCalculator
 		);
 	}
@@ -61,7 +64,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(0.5), veranderung);
+		assertEquals(BigDecimal.valueOf(0.5), veranderung);
 	}
 
 	@Test
@@ -82,7 +85,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(0.5), veranderung);
+		assertEquals(BigDecimal.valueOf(0.5), veranderung);
 	}
 
 	@Test
@@ -103,7 +106,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(-3), veranderung);
+		assertEquals(BigDecimal.valueOf(-3), veranderung);
 	}
 
 	@Test
@@ -124,7 +127,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(2.5), veranderung);
+		assertEquals(BigDecimal.valueOf(2.5), veranderung);
 	}
 
 	@Test
@@ -145,7 +148,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(-2.5), veranderung);
+		assertEquals(BigDecimal.valueOf(-2.5), veranderung);
 	}
 
 	@Test
@@ -166,7 +169,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(2.5), veranderung);
+		assertEquals(BigDecimal.valueOf(2.5), veranderung);
 	}
 
 	@Test
@@ -187,7 +190,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(-2.5), veranderung);
+		assertEquals(BigDecimal.valueOf(-2.5), veranderung);
 	}
 
 	@Test
@@ -208,7 +211,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(2.5), veranderung);
+		assertEquals(BigDecimal.valueOf(2.5), veranderung);
 	}
 
 	@Test
@@ -247,7 +250,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(-2.1), veranderung);
+		assertEquals(BigDecimal.valueOf(-2.1), veranderung);
 	}
 
 	@Test
@@ -286,7 +289,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(-2.1), veranderung);
+		assertEquals(BigDecimal.valueOf(-2.1), veranderung);
 	}
 
 	@Test
@@ -325,7 +328,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(2.1), veranderung);
+		assertEquals(BigDecimal.valueOf(2.1), veranderung);
 	}
 
 	@Test
@@ -359,7 +362,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(0.3), veranderung);
+		assertEquals(BigDecimal.valueOf(0.3), veranderung);
 	}
 
 	@Test
@@ -393,7 +396,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(-0.3), veranderung);
+		assertEquals(BigDecimal.valueOf(-0.3), veranderung);
 	}
 
 	@Test
@@ -427,8 +430,8 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(0.3), veranderung);
-		Assert.assertFalse(
+		assertEquals(BigDecimal.valueOf(0.3), veranderung);
+		assertFalse(
 			veraenderungCalculator.calculateIgnorable(
 				zaAktuell,
 				verfuegung,
@@ -473,7 +476,7 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(-1.9), veranderung);
+		assertEquals(BigDecimal.valueOf(-1.9), veranderung);
 	}
 
 	@Test
@@ -512,8 +515,8 @@ public class VeraenderungTagesschuleCalculatorTest {
 			verfuegung
 		);
 
-		Assert.assertEquals(BigDecimal.valueOf(1.9), veranderung);
-		Assert.assertTrue(
+		assertEquals(BigDecimal.valueOf(1.9), veranderung);
+		assertTrue(
 			veraenderungCalculator.calculateIgnorable(
 				zaAktuell,
 				verfuegung,

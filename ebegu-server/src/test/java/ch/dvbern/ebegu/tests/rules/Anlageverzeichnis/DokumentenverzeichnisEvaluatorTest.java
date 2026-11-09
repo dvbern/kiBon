@@ -80,7 +80,6 @@ import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -94,6 +93,10 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests für die Regeln der Benötigten Dokumenten
@@ -373,7 +376,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			null
 		);
 
-		Assertions.assertTrue(
+		assertTrue(
 			kindDokumente.isDokumentNeeded(
 				DokumentTyp.FACHSTELLENBESTAETIGUNG,
 				kind
@@ -381,7 +384,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		);
 
 		final DokumentGrund dokumentGrund = getDokumentGrund(testgesuchBern);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.FACHSTELLENBESTAETIGUNG,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -398,7 +401,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			IntegrationTyp.SOZIALE_INTEGRATION
 		);
 
-		Assertions.assertTrue(
+		assertTrue(
 			luzernKindDokumente.isDokumentNeeded(
 				DokumentTyp.FACHSTELLENBESTAETIGUNG,
 				kind
@@ -406,7 +409,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		);
 
 		final DokumentGrund dokumentGrund = getDokumentGrund(testgesuchLuzern);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.FACHSTELLENBESTAETIGUNG,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -424,7 +427,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		);
 
 		kind.getPensumFachstelle().forEach(pensumFachstelle -> {
-			Assertions.assertFalse(
+			assertFalse(
 				luzernKindDokumente.isDokumentNeeded(
 					DokumentTyp.FACHSTELLENBESTAETIGUNG,
 					kind,
@@ -444,7 +447,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		kind.setKeinPlatzInSchulhort(true);
 		kind.setEinschulungTyp(EinschulungTyp.OBLIGATORISCHER_KINDERGARTEN);
 
-		Assertions.assertTrue(
+		assertTrue(
 			luzernKindDokumente.isDokumentNeeded(
 				DokumentTyp.ABSAGESCHREIBEN_HORTPLATZ,
 				kind
@@ -452,7 +455,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		);
 
 		final DokumentGrund dokumentGrund = getDokumentGrund(testgesuchLuzern);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.ABSAGESCHREIBEN_HORTPLATZ,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -463,17 +466,17 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			gesuch,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(1, calculate.size());
+		assertEquals(1, calculate.size());
 		final DokumentGrund dokumentGrund = calculate.iterator().next();
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentGrundTyp.KINDER,
 			dokumentGrund.getDokumentGrundTyp()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentGrundPersonType.KIND,
 			dokumentGrund.getPersonType()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			Integer.valueOf(-1),
 			dokumentGrund.getPersonNumber()
 		); //-1 is the default value
@@ -488,17 +491,17 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			gesuch,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(1, calculate.size());
+		assertEquals(1, calculate.size());
 		final DokumentGrund dokumentGrund = calculate.iterator().next();
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentGrundTyp.ERWERBSPENSUM,
 			dokumentGrund.getDokumentGrundTyp()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentGrundPersonType.GESUCHSTELLER,
 			dokumentGrund.getPersonType()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			Integer.valueOf(1),
 			dokumentGrund.getPersonNumber()
 		);
@@ -506,7 +509,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			Constants.DEFAULT_LOCALE,
 			gesuch.extractMandant()
 		);
-		Assertions.assertEquals(erwerbspensumName, dokumentGrund.getTag());
+		assertEquals(erwerbspensumName, dokumentGrund.getTag());
 		return dokumentGrund;
 	}
 
@@ -515,17 +518,17 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		@Nonnull String expectedTag,
 		@Nonnull DokumentTyp expectedDokumentTyp
 	) {
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentGrundTyp.ERWERBSPENSUM,
 			dokGrund.getDokumentGrundTyp()
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentGrundPersonType.GESUCHSTELLER,
 			dokGrund.getPersonType()
 		);
-		Assertions.assertEquals(Integer.valueOf(1), dokGrund.getPersonNumber());
-		Assertions.assertEquals(expectedTag, dokGrund.getTag());
-		Assertions.assertEquals(expectedDokumentTyp, dokGrund.getDokumentTyp());
+		assertEquals(Integer.valueOf(1), dokGrund.getPersonNumber());
+		assertEquals(expectedTag, dokGrund.getTag());
+		assertEquals(expectedDokumentTyp, dokGrund.getDokumentTyp());
 	}
 
 	@Nonnull
@@ -556,7 +559,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		);
 
 		// Nachweis EP ist neu immer zwingend
-		Assertions.assertTrue(
+		assertTrue(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
 				erwerbspensum
@@ -564,7 +567,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		);
 
 		erwerbspensum.getGueltigkeit().setGueltigAb(LocalDate.of(2017, 9, 1));
-		Assertions.assertTrue(
+		assertTrue(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
 				erwerbspensum,
@@ -579,7 +582,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		);
 		final DokumentGrund dokumentGrund = calculate.iterator().next();
 
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.NACHWEIS_ERWERBSPENSUM,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -597,7 +600,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 
 		erwerbspensum.getGueltigkeit().setGueltigAb(LocalDate.of(2000, 7, 1));
 		// Nachweis Erwerbspensum wird neu immer benötigt
-		Assertions.assertTrue(
+		assertTrue(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
 				erwerbspensum,
@@ -618,25 +621,25 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			false
 		);
 
-		Assertions.assertTrue(
+		assertTrue(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_AUSBILDUNG,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_RAV,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.BESTAETIGUNG_ARZT,
 				erwerbspensum
@@ -647,7 +650,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(1, dokumentList.size());
+		assertEquals(1, dokumentList.size());
 		DokumentGrund nachweisSelbstaendigkeit = extractDocumentFromList(
 			dokumentList,
 			DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT
@@ -673,25 +676,25 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			false
 		);
 
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 				erwerbspensum
 			)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_AUSBILDUNG,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_RAV,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.BESTAETIGUNG_ARZT,
 				erwerbspensum
@@ -703,7 +706,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern
 		);
 
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.NACHWEIS_AUSBILDUNG,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -719,25 +722,25 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			false
 		);
 
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_AUSBILDUNG,
 				erwerbspensum
 			)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_RAV,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.BESTAETIGUNG_ARZT,
 				erwerbspensum
@@ -749,7 +752,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern
 		);
 
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.NACHWEIS_RAV,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -765,25 +768,25 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			true
 		);
 
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_AUSBILDUNG,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_RAV,
 				erwerbspensum
 			)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			bernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.BESTAETIGUNG_ARZT,
 				erwerbspensum
@@ -795,7 +798,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern
 		);
 
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.BESTAETIGUNG_ARZT,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -811,31 +814,31 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			false
 		);
 
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_AUSBILDUNG,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 				erwerbspensum
@@ -853,31 +856,31 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			false
 		);
 
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
 				erwerbspensum
 			)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_AUSBILDUNG,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 				erwerbspensum
@@ -888,7 +891,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			erwerbspensum,
 			testgesuchLuzern
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -904,31 +907,31 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			false
 		);
 
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
 				erwerbspensum
 			)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_AUSBILDUNG,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 				erwerbspensum
@@ -939,7 +942,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			erwerbspensum,
 			testgesuchLuzern
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.NACHWEIS_AUSBILDUNG,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -955,31 +958,31 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			false
 		);
 
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_AUSBILDUNG,
 				erwerbspensum
 			)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 				erwerbspensum
@@ -990,7 +993,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			erwerbspensum,
 			testgesuchLuzern
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -1006,31 +1009,31 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			false
 		);
 
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_AUSBILDUNG,
 				erwerbspensum
 			)
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
 				erwerbspensum
 			)
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			luzernErwerbspensumDokumente.isDokumentNeeded(
 				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 				erwerbspensum
@@ -1041,7 +1044,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			erwerbspensum,
 			testgesuchLuzern
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
 			dokumentGrund.getDokumentTyp()
 		);
@@ -1205,15 +1208,15 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(6, dokumentGrunds.size());
+		assertEquals(6, dokumentGrunds.size());
 
 		final Set<DokumentGrund> dokumentGrundGS1 = getDokumentGrundsForGS(
 			1,
 			dokumentGrunds
 		);
-		Assertions.assertEquals(3, dokumentGrundGS1.size());
+		assertEquals(3, dokumentGrundGS1.size());
 
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(testgesuchBern.getGesuchsteller1());
 		assertType(
 			dokumentGrundGS1,
 			DokumentTyp.STEUERERKLAERUNG,
@@ -1228,9 +1231,9 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			2,
 			dokumentGrunds
 		);
-		Assertions.assertEquals(3, dokumentGrundGS2.size());
+		assertEquals(3, dokumentGrundGS2.size());
 
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
+		assertNotNull(testgesuchBern.getGesuchsteller2());
 		assertType(
 			dokumentGrundGS2,
 			DokumentTyp.STEUERERKLAERUNG,
@@ -1259,7 +1262,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 				personNumber,
 				year
 			);
-		Assertions.assertEquals(
+		assertEquals(
 			1,
 			dokumentGrundsForType.size(),
 			"No document with dokumentGrundTyp: "
@@ -1290,8 +1293,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 
 		createFinanzielleSituationGS(1, testgesuchBern, "Sämi", false);
 		createFamilienSituation(testgesuchBern, false, false);
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 		);
@@ -1307,13 +1310,13 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(11, dokumentGrunds.size());
+		assertEquals(11, dokumentGrunds.size());
 
 		Set<DokumentGrund> dokumentGrundGS1 = getDokumentGrundsForGS(
 			1,
 			dokumentGrunds
 		);
-		Assertions.assertEquals(11, dokumentGrundGS1.size());
+		assertEquals(11, dokumentGrundGS1.size());
 
 		assertType(
 			dokumentGrundGS1,
@@ -1421,10 +1424,10 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(10, dokumentGrunds.size());
+		assertEquals(10, dokumentGrunds.size());
 
 		dokumentGrundGS1 = getDokumentGrundsForGS(1, dokumentGrunds);
-		Assertions.assertEquals(10, dokumentGrundGS1.size());
+		assertEquals(10, dokumentGrundGS1.size());
 
 		assertType(
 			dokumentGrundGS1,
@@ -1524,8 +1527,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 
 		createFinanzielleSituationGS(1, testgesuchBern, "Sämi", false);
 		createFamilienSituation(testgesuchBern, false, false);
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 		);
@@ -1539,7 +1542,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(11, dokumentGrunds.size());
+		assertEquals(11, dokumentGrunds.size());
 
 		finanzielleSituationJA.setSteuerdatenZugriff(true);
 		finanzielleSituationJA.setSteuerdatenAbfrageStatus(
@@ -1550,7 +1553,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(0, dokumentGrunds.size());
+		assertEquals(0, dokumentGrunds.size());
 
 		finanzielleSituationJA.setSteuerdatenAbfrageStatus(
 			SteuerdatenAnfrageStatus.FAILED
@@ -1560,7 +1563,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(11, dokumentGrunds.size());
+		assertEquals(11, dokumentGrunds.size());
 	}
 
 	@Test
@@ -1582,8 +1585,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchBern);
 		createFamilienSituation(testgesuchBern, true, false);
 
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller1()
 				.getEinkommensverschlechterungContainer()
 		);
@@ -1603,13 +1606,13 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(8, dokumentGrunds.size()); // Vermoegen wird neu immer gefragt (2 GS x 2 EKVs)
+		assertEquals(8, dokumentGrunds.size()); // Vermoegen wird neu immer gefragt (2 GS x 2 EKVs)
 
 		Set<DokumentGrund> dokumentGrundGS1 = getDokumentGrundsForGS(
 			1,
 			dokumentGrunds
 		);
-		Assertions.assertEquals(4, dokumentGrundGS1.size());
+		assertEquals(4, dokumentGrundGS1.size());
 
 		assertType(
 			dokumentGrundGS1,
@@ -1635,9 +1638,9 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			2,
 			dokumentGrunds
 		);
-		Assertions.assertEquals(4, dokumentGrundGS2.size());
+		assertEquals(4, dokumentGrundGS2.size());
 
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
+		assertNotNull(testgesuchBern.getGesuchsteller2());
 		assertType(
 			dokumentGrundGS2,
 			DokumentTyp.JAHRESLOHNAUSWEISE,
@@ -1664,18 +1667,18 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			8,
 			dokumentGrunds.size()
 		); //8 wegen 1 EKV (wird nur von einem Jahr verlangt) x 2 GS x (3 Lohnabrechnungen + 1 Vermögen)
 		dokumentGrundGS1 = getDokumentGrundsForGS(1, dokumentGrunds);
-		Assertions.assertEquals(4, dokumentGrundGS1.size());
+		assertEquals(4, dokumentGrundGS1.size());
 
 		assertTypeForNachweisLohnausweis(dokumentGrundGS1, null, 1);
 		assertTypeForNachweisLohnausweis(dokumentGrundGS1, null, 1);
 
 		dokumentGrundGS2 = getDokumentGrundsForGS(2, dokumentGrunds);
-		Assertions.assertEquals(4, dokumentGrundGS2.size());
+		assertEquals(4, dokumentGrundGS2.size());
 		assertTypeForNachweisLohnausweis(dokumentGrundGS2, null, 2);
 		assertTypeForNachweisLohnausweis(dokumentGrundGS2, null, 2);
 	}
@@ -1685,8 +1688,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		@Nullable String year,
 		int gsNumber
 	) {
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
+		assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(testgesuchBern.getGesuchsteller2());
 		assertType(
 			dokumentGrunds,
 			DokumentTyp.NACHWEIS_LOHNAUSWEIS_1,
@@ -1761,14 +1764,14 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(2, dokumentGruende.size());
+		assertEquals(2, dokumentGruende.size());
 		boolean found = false;
 		for (var grund : dokumentGruende) {
 			if (grund.getDokumentTyp() == DokumentTyp.NACHWEIS_ERWERBSPENSUM) {
 				found = true;
 			}
 		}
-		Assertions.assertFalse(found);
+		assertFalse(found);
 	}
 
 	@Test
@@ -1777,8 +1780,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(1, testgesuchBern, "Sämi", true);
 		createFamilienSituation(testgesuchBern, false, false);
 
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 		);
@@ -1807,7 +1810,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(7, dokumentGruende.size());
+		assertEquals(7, dokumentGruende.size());
 		assertType(
 			dokumentGruende,
 			DokumentTyp.NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR,
@@ -1844,13 +1847,13 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(2, testgesuchBern, "Alex", true);
 		createFamilienSituation(testgesuchBern, false, false);
 
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 		);
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller2());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller2()
 				.getFinanzielleSituationContainer()
 		);
@@ -1879,7 +1882,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			testgesuchBern,
 			Constants.DEFAULT_LOCALE
 		);
-		Assertions.assertEquals(6, dokumentGruende.size());
+		assertEquals(6, dokumentGruende.size());
 		assertType(
 			dokumentGruende,
 			DokumentTyp.NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR,
@@ -1907,13 +1910,13 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(2, testgesuchBern, "Alex", true);
 		createFamilienSituation(testgesuchBern, false, false);
 
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 		);
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller2());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller2()
 				.getFinanzielleSituationContainer()
 		);
@@ -1934,7 +1937,7 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			1,
 			"2016"
 		);
-		Assertions.assertTrue(dokumentGruendeErsatzeinkommen.isEmpty());
+		assertTrue(dokumentGruendeErsatzeinkommen.isEmpty());
 	}
 
 	@Test
@@ -1943,8 +1946,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(1, testgesuchBern, "Sämi", true);
 		createFamilienSituation(testgesuchBern, false, false);
 
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 		);
@@ -1982,8 +1985,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(1, testgesuchBern, "Sämi", false);
 		createFamilienSituation(testgesuchBern, false, false);
 
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(
+		assertNotNull(testgesuchBern.getGesuchsteller1());
+		assertNotNull(
 			testgesuchBern.getGesuchsteller1()
 				.getFinanzielleSituationContainer()
 		);

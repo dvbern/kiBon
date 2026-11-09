@@ -24,8 +24,11 @@ import ch.dvbern.ebegu.api.dtos.finanziellesituation.JaxFinanzielleSituation;
 import ch.dvbern.ebegu.api.dtos.finanziellesituation.JaxFinanzielleSituationContainer;
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
 import ch.dvbern.ebegu.test.TestDataUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JaxFinanzielleSituationConverterOverwriteTest {
 	@Test
@@ -45,20 +48,20 @@ public class JaxFinanzielleSituationConverterOverwriteTest {
 			jaxContainer,
 			container
 		);
-		Assert.assertTrue(
+		assertTrue(
 			container.getFinanzielleSituationJA()
 				.getEinkommenInVereinfachtemVerfahrenAbgerechnet()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.TEN,
 			container.getFinanzielleSituationJA()
 				.getAmountEinkommenInVereinfachtemVerfahrenAbgerechnet()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(1000),
 			container.getFinanzielleSituationJA().getNettoVermoegen()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(100),
 			container.getFinanzielleSituationJA().getNettolohn()
 		);
@@ -86,20 +89,20 @@ public class JaxFinanzielleSituationConverterOverwriteTest {
 			jaxContainer,
 			container
 		);
-		Assert.assertTrue(
+		assertTrue(
 			container.getFinanzielleSituationJA()
 				.getEinkommenInVereinfachtemVerfahrenAbgerechnet()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.TEN,
 			container.getFinanzielleSituationJA()
 				.getAmountEinkommenInVereinfachtemVerfahrenAbgerechnet()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			BigDecimal.valueOf(100000),
 			container.getFinanzielleSituationJA().getNettolohn()
 		);
-		Assert.assertNull(
+		assertNull(
 			container.getFinanzielleSituationJA().getNettoVermoegen()
 		);
 	}

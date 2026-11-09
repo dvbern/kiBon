@@ -24,13 +24,15 @@ import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
 import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
 import ch.dvbern.ebegu.types.DateRange;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FamiliensituationTest {
 
@@ -42,21 +44,21 @@ class FamiliensituationTest {
 
 		//ALLEINERZIEHEND
 		LocalDate referenzDatum = LocalDate.of(2021, 8, 1);
-		Assertions.assertEquals(
+		assertEquals(
 			false,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 
 		//VERHEIRATET
 		familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
-		Assertions.assertEquals(
+		assertEquals(
 			true,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 
 		//KONKUBINAT
 		familiensituation.setFamilienstatus(EnumFamilienstatus.KONKUBINAT);
-		Assertions.assertEquals(
+		assertEquals(
 			true,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
@@ -68,14 +70,14 @@ class FamiliensituationTest {
 		familiensituation.setMinDauerKonkubinat(2);
 		familiensituation.setStartKonkubinat(referenzDatum);
 
-		Assertions.assertEquals(
+		assertEquals(
 			false,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 
 		LocalDate startKonkubinat = LocalDate.of(2019, 7, 1);
 		familiensituation.setStartKonkubinat(startKonkubinat);
-		Assertions.assertEquals(
+		assertEquals(
 			true,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
@@ -92,7 +94,7 @@ class FamiliensituationTest {
 		familiensituation.setGesuchstellerKardinalitaet(
 			EnumGesuchstellerKardinalitaet.ZU_ZWEIT
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			true,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
@@ -100,21 +102,21 @@ class FamiliensituationTest {
 		familiensituation.setGesuchstellerKardinalitaet(
 			EnumGesuchstellerKardinalitaet.ALLEINE
 		);
-		Assertions.assertEquals(
+		assertEquals(
 			false,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 
 		//VERHEIRATET
 		familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
-		Assertions.assertEquals(
+		assertEquals(
 			true,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 
 		//KONKUBINAT
 		familiensituation.setFamilienstatus(EnumFamilienstatus.KONKUBINAT);
-		Assertions.assertEquals(
+		assertEquals(
 			true,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
@@ -126,14 +128,14 @@ class FamiliensituationTest {
 		familiensituation.setMinDauerKonkubinat(2);
 		familiensituation.setStartKonkubinat(referenzDatum);
 
-		Assertions.assertEquals(
+		assertEquals(
 			false,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 
 		LocalDate startKonkubinat = LocalDate.of(2019, 7, 1);
 		familiensituation.setStartKonkubinat(startKonkubinat);
-		Assertions.assertEquals(
+		assertEquals(
 			true,
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
@@ -151,13 +153,13 @@ class FamiliensituationTest {
 		LocalDate referenzDatum = LocalDate.of(2021, 8, 1);
 
 		//GETEILTE OBHUT
-		Assertions.assertFalse(
+		assertFalse(
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 		familiensituation.setGesuchstellerKardinalitaet(
 			EnumGesuchstellerKardinalitaet.ZU_ZWEIT
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 
@@ -167,7 +169,7 @@ class FamiliensituationTest {
 		familiensituation.setUnterhaltsvereinbarung(
 			UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG
 		);
-		Assertions.assertFalse(
+		assertFalse(
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 
@@ -175,7 +177,7 @@ class FamiliensituationTest {
 		familiensituation.setUnterhaltsvereinbarung(
 			UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
 		);
-		Assertions.assertTrue(
+		assertTrue(
 			familiensituation.hasSecondGesuchsteller(referenzDatum)
 		);
 	}

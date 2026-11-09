@@ -50,7 +50,6 @@ xdescribe('finanzielleSituationView', () => {
             scope = $rootScope.$new();
             einstellungRS = $injector.get('EinstellungRS');
             const zusaetzlicheFelderEinkommenEinstellung = new TSEinstellung(
-                null,
                 TSEinstellungKey.ZUSATZLICHE_FELDER_ERSATZEINKOMMEN,
                 'false'
             );

@@ -20,8 +20,10 @@ package ch.dvbern.ebegu.inbox.consumer.betreuung.stornieren.condition;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.util.EasyMockTestSupport;
 import org.easymock.EasyMock;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BetreuungNeuErfasstConditionTest extends EasyMockTestSupport {
 
@@ -39,7 +41,7 @@ class BetreuungNeuErfasstConditionTest extends EasyMockTestSupport {
 		boolean neuErfasst = condition.test(betreuung);
 
 		verifyAll();
-		Assertions.assertTrue(neuErfasst);
+		assertTrue(neuErfasst);
 	}
 
 	@Test
@@ -55,6 +57,6 @@ class BetreuungNeuErfasstConditionTest extends EasyMockTestSupport {
 		boolean neuErfasst = condition.test(betreuung);
 
 		verifyAll();
-		Assertions.assertFalse(neuErfasst);
+		assertFalse(neuErfasst);
 	}
 }

@@ -31,12 +31,15 @@ import ch.dvbern.ebegu.api.util.RestUtil;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.test.TestDataUtil;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.mock;
 import static org.easymock.EasyMock.replay;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test fuer RestUtil
@@ -59,8 +62,8 @@ public class RestUtilTest {
 			new ArrayList<>()
 		);
 
-		Assert.assertNotNull(kinder);
-		Assert.assertEquals(0, kinder.size());
+		assertNotNull(kinder);
+		assertEquals(0, kinder.size());
 	}
 
 	@Test
@@ -75,12 +78,12 @@ public class RestUtilTest {
 			institutionen
 		);
 
-		Assert.assertNotNull(kinder);
-		Assert.assertEquals(1, kinder.size());
-		Assert.assertNotNull(kind.getBetreuungen());
+		assertNotNull(kinder);
+		assertEquals(1, kinder.size());
+		assertNotNull(kind.getBetreuungen());
 		final JaxKindContainer kindContainer = kinder.iterator().next();
-		Assert.assertEquals(1, kindContainer.getBetreuungen().size());
-		Assert.assertEquals(
+		assertEquals(1, kindContainer.getBetreuungen().size());
+		assertEquals(
 			institutionID1,
 			kindContainer.getBetreuungen()
 				.iterator()
@@ -100,8 +103,8 @@ public class RestUtilTest {
 			new ArrayList<>()
 		);
 
-		Assert.assertNotNull(kind.getBetreuungen());
-		Assert.assertEquals(0, kind.getBetreuungen().size());
+		assertNotNull(kind.getBetreuungen());
+		assertEquals(0, kind.getBetreuungen().size());
 
 	}
 
@@ -116,9 +119,9 @@ public class RestUtilTest {
 			institutionen
 		);
 
-		Assert.assertNotNull(kind.getBetreuungen());
-		Assert.assertEquals(1, kind.getBetreuungen().size());
-		Assert.assertEquals(
+		assertNotNull(kind.getBetreuungen());
+		assertEquals(1, kind.getBetreuungen().size());
+		assertEquals(
 			institutionID1,
 			kind.getBetreuungen()
 				.iterator()
@@ -141,18 +144,18 @@ public class RestUtilTest {
 			institutionen
 		);
 
-		Assert.assertNotNull(kind.getBetreuungen());
-		Assert.assertEquals(2, kind.getBetreuungen().size());
+		assertNotNull(kind.getBetreuungen());
+		assertEquals(2, kind.getBetreuungen().size());
 		final Iterator<JaxBetreuung> iterator = kind.getBetreuungen()
 			.iterator();
-		Assert.assertEquals(
+		assertEquals(
 			institutionID2,
 			iterator.next()
 				.getInstitutionStammdaten()
 				.getInstitution()
 				.getId()
 		);
-		Assert.assertEquals(
+		assertEquals(
 			institutionID1,
 			iterator.next()
 				.getInstitutionStammdaten()
@@ -179,20 +182,20 @@ public class RestUtilTest {
 			institutionen
 		);
 
-		Assert.assertNotNull(kind.getBetreuungen());
-		Assert.assertEquals(2, kind.getBetreuungen().size());
+		assertNotNull(kind.getBetreuungen());
+		assertEquals(2, kind.getBetreuungen().size());
 	}
 
 	@Test
 	public void isFileDownloadRequestBlobDownload() {
 		HttpServletRequest request = mockRequest("/blobs/temp/blobdata/");
-		Assert.assertTrue(RestUtil.isFileDownloadRequest(request));
+		assertTrue(RestUtil.isFileDownloadRequest(request));
 	}
 
 	@Test
 	public void isFileDownloadRequestLogoDownload() {
 		HttpServletRequest request = mockRequest("/gemeinde/logo/data/");
-		Assert.assertTrue(RestUtil.isFileDownloadRequest(request));
+		assertTrue(RestUtil.isFileDownloadRequest(request));
 	}
 
 	@Test
@@ -200,13 +203,13 @@ public class RestUtilTest {
 		HttpServletRequest request = mockRequest(
 			"/gemeinde/alternativeLogo/data/"
 		);
-		Assert.assertTrue(RestUtil.isFileDownloadRequest(request));
+		assertTrue(RestUtil.isFileDownloadRequest(request));
 	}
 
 	@Test
 	public void isFileDownloadRequestWrongFilename() {
 		HttpServletRequest request = mockRequest("/test/");
-		Assert.assertFalse(RestUtil.isFileDownloadRequest(request));
+		assertFalse(RestUtil.isFileDownloadRequest(request));
 	}
 
 	private HttpServletRequest mockRequest(String requestUri) {

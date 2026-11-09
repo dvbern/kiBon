@@ -209,6 +209,7 @@ Cypress.Commands.add('login', (user: User) => {
     cy.session(
         'login' + user,
         () => {
+            cy.intercept('GET', '**/locallogin/listUsers').as('listUsers');
             cy.visit('/#/locallogin');
             cy.checkKeycloakUser();
 
@@ -342,17 +343,17 @@ Cypress.Commands.add('visitRootPage', () => {
 });
 
 Cypress.Commands.add('checkKeycloakUser', () => {
-    cy.get('[data-test=ebegu-loaded]').then($el => {
-        //check if Super User button login exists, if yes, keycloak has data
-        // if not, keycloak still needs to create test data user
-        if ($el.find('[data-test="test-user-Super-User"]').length > 0) {
+    // listUsers is only requested once the locallogin page is unlocked, so
+    // waiting for it ensures the create-user button is functional.
+    // if it returns users, keycloak has data, otherwise the test users still need to be created
+    cy.wait('@listUsers').then(({response}) => {
+        if (response?.body?.length > 0) {
             return;
-        } else {
-            cy.waitForRequest('GET', '**/locallogin/createUsers', () => {
-                cy.getByData('create-user').click();
-            });
-            cy.reload(true);
         }
+        cy.waitForRequest('GET', '**/locallogin/createUsers', () => {
+            cy.getByData('create-user').click();
+        });
+        cy.reload(true);
     });
 });
 

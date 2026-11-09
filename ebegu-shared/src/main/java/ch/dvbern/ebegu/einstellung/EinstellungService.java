@@ -31,6 +31,7 @@ import jakarta.persistence.EntityManager;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 
 /**
  * Service zum Verwalten von Einstellungen.
@@ -84,6 +85,30 @@ public interface EinstellungService {
 	 */
 	@Nonnull
 	Collection<Einstellung> getAllEinstellungenBySystem(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
+
+	/**
+	 * <p>
+	 * Retrieves all applicable {@link Einstellung}en for the given Gesuchsperiode that are active
+	 * for the mandant and are applicable by corresponding {@link ApplicationProperty}s. If an
+	 * {@link ApplicationProperty}
+	 * is not set, it is considered not applicable.
+	 * </p>
+	 * <p>
+	 * An {@link Einstellung} is considered applicable if it's key is active for the {@link MandantIdentifier} of the
+	 * {@link Gesuchsperiode} and if no corresponding {@link ApplicationProperty} denies applicability.
+	 * </p>
+	 *
+	 * @see #getAllEinstellungenBySystem getAllEinstellungenBySystem
+	 * @param gesuchsperiode the {@link Gesuchsperiode} object representing the period for which
+	 * the applicable {@link Einstellung}en are to be retrieved. Must not be null.
+	 * @return a collection of {@link Einstellung} that are applicable for the {@link Gesuchsperiode} based on
+	 * {@link ApplicationProperty} and {@link MandantIdentifier}. The collection will not be null but
+	 * may be empty if no applicable {@link Einstellung} is found.
+	 */
+	@Nonnull
+	Collection<Einstellung> getAllEinstellungenBySystemApplicableByApplicationPropertiesAndMandant(
 		@Nonnull Gesuchsperiode gesuchsperiode
 	);
 
@@ -192,4 +217,5 @@ public interface EinstellungService {
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull Gesuchsperiode gesuchsperiode
 	);
+
 }

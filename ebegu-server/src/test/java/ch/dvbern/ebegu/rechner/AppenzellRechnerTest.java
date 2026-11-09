@@ -30,8 +30,9 @@ import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.EinschulungstypBgStundenFaktorDefaultVisitor;
 import ch.dvbern.ebegu.util.TestUtils;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 
@@ -47,7 +48,7 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 		VerfuegungZeitabschnitt verfuegungZeitabschnitt =
 			prepareVerfuegungZeitabschnitt(EinschulungTyp.VORSCHULALTER);
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		Assert.assertEquals(PensumUnits.HOURS, result.getZeiteinheit());
+		assertEquals(PensumUnits.HOURS, result.getZeiteinheit());
 	}
 
 	@Test
@@ -57,8 +58,8 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 		verfuegungZeitabschnitt.getRelevantBgCalculationInput()
 			.setAnspruchspensumProzent(0);
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		Assert.assertEquals(0, result.getAnspruchspensumProzent());
-		Assert.assertEquals(0, result.getAnspruchspensumProzent());
+		assertEquals(0, result.getAnspruchspensumProzent());
+		assertEquals(0, result.getAnspruchspensumProzent());
 	}
 
 	@Test
@@ -68,8 +69,8 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 		verfuegungZeitabschnitt.getRelevantBgCalculationInput()
 			.setAnspruchspensumProzent(100);
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		Assert.assertEquals(100, result.getAnspruchspensumProzent());
-		assertEquals(
+		assertEquals(100, result.getAnspruchspensumProzent());
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(200),
 			result.getAnspruchspensumZeiteinheit()
 		);
@@ -82,8 +83,8 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 		verfuegungZeitabschnitt.getRelevantBgCalculationInput()
 			.setAnspruchspensumProzent(100);
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		Assert.assertEquals(100, result.getAnspruchspensumProzent());
-		assertEquals(
+		assertEquals(100, result.getAnspruchspensumProzent());
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(158.33),
 			result.getAnspruchspensumZeiteinheit()
 		);
@@ -98,8 +99,14 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 		verfuegungZeitabschnitt.getRelevantBgCalculationInput()
 			.setBetreuungspensumProzent(BigDecimal.ZERO);
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.ZERO, result.getBetreuungspensumProzent());
-		assertEquals(BigDecimal.ZERO, result.getBetreuungspensumZeiteinheit());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.ZERO,
+			result.getBetreuungspensumProzent()
+		);
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.ZERO,
+			result.getBetreuungspensumZeiteinheit()
+		);
 	}
 
 	@Test
@@ -109,11 +116,11 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 		verfuegungZeitabschnitt.getRelevantBgCalculationInput()
 			.setBetreuungspensumProzent(BigDecimal.valueOf(50));
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(50),
 			result.getBetreuungspensumProzent()
 		);
-		assertEquals(
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(100),
 			result.getBetreuungspensumZeiteinheit()
 		);
@@ -128,11 +135,11 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 		verfuegungZeitabschnitt.getRelevantBgCalculationInput()
 			.setAnspruchspensumProzent(60);
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(50),
 			result.getBetreuungspensumProzent()
 		);
-		assertEquals(
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(100),
 			result.getBetreuungspensumZeiteinheit()
 		);
@@ -147,22 +154,28 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 		verfuegungZeitabschnitt.getRelevantBgCalculationInput()
 			.setAnspruchspensumProzent(60);
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		Assert.assertEquals(60, result.getAnspruchspensumProzent());
-		assertEquals(
+		assertEquals(60, result.getAnspruchspensumProzent());
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(120),
 			result.getAnspruchspensumZeiteinheit()
 		);
-		assertEquals(
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(40),
 			result.getBetreuungspensumProzent()
 		);
-		assertEquals(
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(80),
 			result.getBetreuungspensumZeiteinheit()
 		);
 
-		assertEquals(BigDecimal.valueOf(80), result.getBgPensumZeiteinheit());
-		assertEquals(BigDecimal.valueOf(40), result.getBgPensumProzent());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(80),
+			result.getBgPensumZeiteinheit()
+		);
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(40),
+			result.getBgPensumProzent()
+		);
 	}
 
 	@Test
@@ -174,22 +187,28 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 		verfuegungZeitabschnitt.getRelevantBgCalculationInput()
 			.setAnspruchspensumProzent(40);
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		Assert.assertEquals(40, result.getAnspruchspensumProzent());
-		assertEquals(
+		assertEquals(40, result.getAnspruchspensumProzent());
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(80),
 			result.getAnspruchspensumZeiteinheit()
 		);
-		assertEquals(
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(60),
 			result.getBetreuungspensumProzent()
 		);
-		assertEquals(
+		stripTrailingZeroAndAssertEquals(
 			BigDecimal.valueOf(120),
 			result.getBetreuungspensumZeiteinheit()
 		);
 
-		assertEquals(BigDecimal.valueOf(80), result.getBgPensumZeiteinheit());
-		assertEquals(BigDecimal.valueOf(40), result.getBgPensumProzent());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(80),
+			result.getBgPensumZeiteinheit()
+		);
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(40),
+			result.getBgPensumProzent()
+		);
 	}
 
 	@Test
@@ -205,7 +224,10 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			.setAnspruchspensumProzent(50);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(2000), result.getVollkosten());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(2000),
+			result.getVollkosten()
+		);
 	}
 
 	@Test
@@ -221,7 +243,10 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			.setAnspruchspensumProzent(40);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(1600), result.getVollkosten());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(1600),
+			result.getVollkosten()
+		);
 	}
 
 	@Test
@@ -241,7 +266,10 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			.setAnspruchspensumProzent(60);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(967.75), result.getVollkosten());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(967.75),
+			result.getVollkosten()
+		);
 	}
 
 	@Test
@@ -261,7 +289,10 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(1720), result.getVerguenstigung());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(1720),
+			result.getVerguenstigung()
+		);
 	}
 
 	@Test
@@ -281,7 +312,10 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(1620), result.getVerguenstigung());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(1620),
+			result.getVerguenstigung()
+		);
 	}
 
 	@Test
@@ -301,7 +335,10 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(0), result.getVerguenstigung());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(0),
+			result.getVerguenstigung()
+		);
 	}
 
 	@Test
@@ -323,7 +360,10 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			.setBabyTarif(true);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(2322), result.getVerguenstigung());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(2322),
+			result.getVerguenstigung()
+		);
 	}
 
 	@Test
@@ -347,7 +387,10 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			.setBabyTarif(true);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(4300), result.getVerguenstigung());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(4300),
+			result.getVerguenstigung()
+		);
 	}
 
 	@Test
@@ -367,7 +410,10 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(1978), result.getVerguenstigung());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(1978),
+			result.getVerguenstigung()
+		);
 	}
 
 	@Test
@@ -389,11 +435,17 @@ public class AppenzellRechnerTest extends AbstractBGRechnerTest {
 			);
 
 		BGCalculationResult result = calculateResult(verfuegungZeitabschnitt);
-		assertEquals(BigDecimal.valueOf(4300), result.getVerguenstigung());
+		stripTrailingZeroAndAssertEquals(
+			BigDecimal.valueOf(4300),
+			result.getVerguenstigung()
+		);
 	}
 
-	private void assertEquals(BigDecimal expected, BigDecimal actual) {
-		Assert.assertEquals(
+	private void stripTrailingZeroAndAssertEquals(
+		BigDecimal expected,
+		BigDecimal actual
+	) {
+		assertEquals(
 			expected.stripTrailingZeros(),
 			actual.stripTrailingZeros()
 		);
