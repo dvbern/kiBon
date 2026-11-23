@@ -424,6 +424,108 @@ class MitteilungServiceBeanCreateMessageTest extends EasyMockSupport {
 		}
 	}
 
+	@Nested
+	class InstitutionSchliessungMessageTest {
+
+		private static final String SCHLIESSUNG_TEXT =
+			"wird per 31.01.2018 beendet. Grund: Die Zulassung der Institution zum Betreuungsgutscheinsystem wird aufgehoben";
+		private static final String AUTOMATISCH_TEXT =
+			"Dies ist eine automatische Mutationsmeldung.";
+
+		@Test
+		void schliessungMitteilungIsMarkedAsAutomatisch() {
+			BetreuungsmitteilungPensum pensum = createPensum();
+			Betreuungsmitteilung mitteilung =
+				createSchliessungBetreuungsmitteilung(pensum);
+			mitteilung.setSchliessungMitteilung(true);
+
+			String result = run(
+				mitteilung,
+				BetreuungspensumAnzeigeTyp.NUR_PROZENT,
+				defaultEinstellungen().build(),
+				pensum
+			);
+
+			assertThat(result, containsString(SCHLIESSUNG_TEXT));
+			assertThat(result, containsString(AUTOMATISCH_TEXT));
+			assertThat(result, not(containsString("Pensum 1")));
+		}
+
+		@Test
+		void manuelleMitteilungNachSchliessungIsNotMarkedAsAutomatisch() {
+			BetreuungsmitteilungPensum pensum = createPensum();
+			Betreuungsmitteilung mitteilung =
+				createSchliessungBetreuungsmitteilung(pensum);
+			mitteilung.setSchliessungMitteilung(false);
+
+			String result = run(
+				mitteilung,
+				BetreuungspensumAnzeigeTyp.NUR_PROZENT,
+				defaultEinstellungen().build(),
+				pensum
+			);
+
+			assertThat(
+				result,
+				stringContainsInOrder(
+					"Pensum 1 von 01.01.2024",
+					SCHLIESSUNG_TEXT
+				)
+			);
+			assertThat(result, not(containsString(AUTOMATISCH_TEXT)));
+		}
+
+		@Test
+		void noSchliessungTextWhenGesuchsperiodeEndsBeforeSchliessung() {
+			BetreuungsmitteilungPensum pensum = createPensum();
+			// Gesuchsperiode 17/18 endet am 31.07.2018, lange vor der Schliessung
+			Betreuungsmitteilung mitteilung =
+				createSchliessungBetreuungsmitteilung(
+					pensum,
+					LocalDate.of(2026, 11, 30)
+				);
+			mitteilung.setSchliessungMitteilung(true);
+
+			String result = run(
+				mitteilung,
+				BetreuungspensumAnzeigeTyp.NUR_PROZENT,
+				defaultEinstellungen().build(),
+				pensum
+			);
+
+			assertThat(
+				result,
+				not(containsString("wird per 30.11.2026 beendet"))
+			);
+			assertThat(result, not(containsString(AUTOMATISCH_TEXT)));
+		}
+
+		@Nonnull
+		private Betreuungsmitteilung createSchliessungBetreuungsmitteilung(
+			@Nonnull BetreuungsmitteilungPensum pensum
+		) {
+			// Institution schliesst vor Ende der Gesuchsperiode 17/18
+			return createSchliessungBetreuungsmitteilung(
+				pensum,
+				LocalDate.of(2018, 1, 31)
+			);
+		}
+
+		@Nonnull
+		private Betreuungsmitteilung createSchliessungBetreuungsmitteilung(
+			@Nonnull BetreuungsmitteilungPensum pensum,
+			@Nonnull LocalDate schliessdatum
+		) {
+			Betreuungsmitteilung mitteilung =
+				createBetreuungsmitteilung(BetreuungsangebotTyp.KITA, pensum);
+			requireNonNull(mitteilung.getBetreuung()).getInstitutionStammdaten()
+				.getGueltigkeit()
+				.setGueltigBis(schliessdatum);
+
+			return mitteilung;
+		}
+	}
+
 	@Nonnull
 	private BetreuungEinstellungen.BetreuungEinstellungenBuilder defaultEinstellungen() {
 		return BetreuungEinstellungen.builder()

@@ -74,6 +74,8 @@ class MitteilungSharedServiceBean {
 
 	private static final String MESSAGE_INSTITUTION_SCHLIESSUNG =
 		"mutationsmeldung_message_institution_schliessung";
+	private static final String MESSAGE_INSTITUTION_SCHLIESSUNG_MANUELL =
+		"mutationsmeldung_message_institution_schliessung_manuell";
 
 	@Inject
 	private BenutzerService benutzerService;
@@ -279,8 +281,13 @@ class MitteilungSharedServiceBean {
 	) {
 		Betreuung betreuung = requireNonNull(mitteilung.getBetreuung());
 		Mandant mandant = betreuung.extractGesuch().extractMandant();
+		// only automated generated mutationsmeldungen is allowed to have "automatische Mutationsmeldung" text
+		// manually created mutationsmeldungen dont have that text
+		String messageKey = mitteilung.isSchliessungMitteilung() ?
+			MESSAGE_INSTITUTION_SCHLIESSUNG :
+			MESSAGE_INSTITUTION_SCHLIESSUNG_MANUELL;
 		return ServerMessageUtil.getMessage(
-			MESSAGE_INSTITUTION_SCHLIESSUNG,
+			messageKey,
 			locale,
 			mandant,
 			betreuung.getReferenzNummer(),
@@ -303,16 +310,12 @@ class MitteilungSharedServiceBean {
 				INSTITUTIONSSCHLIESSUNG_MUTATIONSMELDUNG
 			)
 			&&
-			mitteilung.getBetreuung()
-				.extractGesuchsperiode()
-				.getGueltigkeit()
-				.getGueltigBis()
-				.isAfter(
-					mitteilung.getBetreuung()
-						.getInstitutionStammdaten()
-						.getGueltigkeit()
-						.getGueltigBis()
-				);
+			MitteilungUtil.isGesuchsperiodeVonSchliessungBetroffen(
+				betreuung.extractGesuchsperiode().getGueltigkeit(),
+				betreuung.getInstitutionStammdaten()
+					.getGueltigkeit()
+					.getGueltigBis()
+			);
 	}
 
 	private String createZeitabschnittNachrichtForMutationsmeldung(

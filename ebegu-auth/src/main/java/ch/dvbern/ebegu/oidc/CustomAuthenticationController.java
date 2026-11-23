@@ -237,7 +237,7 @@ public class CustomAuthenticationController
 		}
 
 		MandantIdentifier mandantIdentifier =
-			MandantCookieUtil.getMandantFromCookie(request);
+			getMandantFromRequest(request);
 		var mandant = mandantService.findMandantByIdentifier(mandantIdentifier)
 			.orElseThrow(
 				() -> new EbeguRuntimeException(
@@ -247,6 +247,27 @@ public class CustomAuthenticationController
 			);
 		return applicationPropertyService.getKeycloakIdpHint(mandant)
 			.getIdpAlias();
+	}
+
+	private static MandantIdentifier getMandantFromRequest(
+		HttpServletRequest request
+	) {
+		if (MandantCookieUtil.getMandantCookie(request).isEmpty()) {
+			Optional<MandantIdentifier> byHostname = MandantIdentifier
+				.findByHostname(
+					URI.create(
+						request.getRequestURL()
+							.toString()
+					)
+				);
+			if (byHostname.isEmpty()) {
+				throw new IllegalStateException(
+					"Mandant cannot be determined by cookie or hostname"
+				);
+			}
+			return byHostname.get();
+		}
+		return MandantCookieUtil.getMandantFromCookie(request);
 	}
 
 	private boolean isMandantUnbekannt(HttpServletRequest request) {

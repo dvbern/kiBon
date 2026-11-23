@@ -106,12 +106,8 @@ class MockMandantService {
 
 export const SHARED_MODULE_OVERRIDES = {
     remove: {
-        imports: [TranslateModule],
-        declarations: [
-            LoadingButtonDirective,
-            TooltipDirective,
-            NewUserSelectDirective
-        ],
+        imports: [TranslateModule, LoadingButtonDirective],
+        declarations: [TooltipDirective, NewUserSelectDirective],
         exports: [
             LoadingButtonDirective,
             TooltipDirective,

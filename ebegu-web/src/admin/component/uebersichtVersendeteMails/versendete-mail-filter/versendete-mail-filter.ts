@@ -19,24 +19,18 @@ import {
     ChangeDetectionStrategy,
     Component,
     computed,
-    effect,
-    model,
     signal
 } from '@angular/core';
-import {provideMomentDateAdapter} from '@angular/material-moment-adapter';
-import {MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
-import {MatDatepicker, MatDatepickerToggle} from '@angular/material/datepicker';
-import {MatIcon} from '@angular/material/icon';
-import {MatFormField, MatLabel} from '@angular/material/input';
-import {
-    MAT_TIMEPICKER_CONFIG,
-    MatTimepicker,
-    MatTimepickerInput,
-    MatTimepickerToggle
-} from '@angular/material/timepicker';
-import moment, {Moment} from 'moment';
+import {outputFromObservable, toObservable} from '@angular/core/rxjs-interop';
+import {Moment} from 'moment';
+import {debounceTime, skip} from 'rxjs';
 import {SharedModule} from '../../../../app/shared/shared.module';
-import {debounceSignal} from '../../../../utils/signal-helpers/debounce-signal';
+import {
+    DateRange,
+    KibAdminDateRangeFilter
+} from '../../../shared/kib-admin-date-range-filter/kib-admin-date-range-filter';
+
+const DEBOUNCE_TIME_MS = 1000;
 
 export type VersendeteMailsFilter = {
     subjectOrReceiver: string;
@@ -44,29 +38,8 @@ export type VersendeteMailsFilter = {
     endDate?: Moment;
 };
 
-const VERSENDETE_MAILS_MAT_DATE_FORMAT: MatDateFormats = {
-    parse: {
-        dateInput: 'l',
-        timeInput: 'HH:mm:ss'
-    },
-    display: {
-        dateInput: 'l',
-        timeInput: 'HH:mm:ss',
-        monthYearLabel: 'MMM YYYY',
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY',
-        timeOptionLabel: 'HH:mm:ss'
-    }
-};
-
 /**
  * A component to filter sent emails based on specific criteria such as subject/receiver, start date, and end date.
- * This component uses Angular Material's date pickers, form fields, and custom debouncing mechanism for
- * efficient filtering operations. It provides a seamless integration with the shared module and uses
- * moment.js for date handling.
- *
- * This component does not make use of the existing date-time-picker component because the styling is not compatible
- * with the desired layout of the versendete-mail-uebersicht component.
  *
  * Responsibilities:
  * - Tracks and manages filter parameters using reactive signals.
@@ -76,74 +49,29 @@ const VERSENDETE_MAILS_MAT_DATE_FORMAT: MatDateFormats = {
  */
 @Component({
     selector: 'dv-versendete-mail-filter',
-    imports: [
-        MatDatepicker,
-        MatDatepickerToggle,
-        MatFormField,
-        MatLabel,
-        MatTimepickerInput,
-        SharedModule,
-        MatTimepicker,
-        MatTimepickerToggle,
-        MatIcon
-    ],
-    providers: [
-        {provide: MAT_DATE_FORMATS, useValue: VERSENDETE_MAILS_MAT_DATE_FORMAT},
-        {provide: MAT_TIMEPICKER_CONFIG, useValue: {interval: '1 minute'}},
-        provideMomentDateAdapter(VERSENDETE_MAILS_MAT_DATE_FORMAT)
-    ],
+    imports: [SharedModule, KibAdminDateRangeFilter],
     templateUrl: './versendete-mail-filter.html',
-    styleUrls: ['./versendete-mail-filter.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VersendeteMailFilter {
-    filter = model.required<VersendeteMailsFilter>();
+    protected subjectOrReceiver = signal('');
+    protected dateRange = signal<DateRange>({
+        startDate: null,
+        endDate: null
+    });
 
-    subjectOrReceiver = signal('');
-    startDate = signal<Moment | null>(null);
-    endDate = signal<Moment | null>(null);
-
-    private readonly DEBOUNCE_TIME_MS = 1000;
-    private readonly combined = computed(() => ({
+    private readonly combined = computed<VersendeteMailsFilter>(() => ({
         subjectOrReceiver: this.subjectOrReceiver(),
-        startDate: this.startDate(),
-        endDate: this.endDate()
+        ...this.dateRange()
     }));
 
-    private debouncedFilter = debounceSignal<VersendeteMailsFilter>(
-        this.combined,
-        this.DEBOUNCE_TIME_MS
+    /**
+     * Emits the debounced filter. The initial (empty) value is not emitted, consumers start with an empty filter.
+     */
+    readonly filterChange = outputFromObservable(
+        toObservable(this.combined).pipe(
+            skip(1),
+            debounceTime(DEBOUNCE_TIME_MS)
+        )
     );
-
-    constructor() {
-        effect(() => {
-            this.filter.set(this.debouncedFilter());
-        });
-    }
-
-    setStartDate(update: Moment | null) {
-        if (this.startDate() == null) {
-            this.startDate.set(update);
-            return;
-        }
-        this.startDate.update(current =>
-            moment(current)
-                .date(update.date())
-                .month(update.month())
-                .year(update.year())
-        );
-    }
-
-    setEndDate(update: Moment | null) {
-        if (this.endDate() == null) {
-            this.endDate.set(update);
-            return;
-        }
-        this.endDate.update(current =>
-            moment(current)
-                .date(update.date())
-                .month(update.month())
-                .year(update.year())
-        );
-    }
 }

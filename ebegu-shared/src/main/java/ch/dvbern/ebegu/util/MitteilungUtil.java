@@ -18,6 +18,7 @@
 package ch.dvbern.ebegu.util;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -32,6 +33,7 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.entities.containers.PensumUtil;
 import ch.dvbern.ebegu.enums.MitteilungStatus;
 import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
+import ch.dvbern.ebegu.types.DateRange;
 
 public final class MitteilungUtil {
 
@@ -51,6 +53,22 @@ public final class MitteilungUtil {
 	) {
 		return mitteilung instanceof Betreuungsmitteilung
 			&& ((Betreuungsmitteilung) mitteilung).isSchliessungMitteilung();
+	}
+
+	/**
+	 * Eine Gesuchsperiode ist von der Schliessung einer Institution nur betroffen, wenn die Periode nach dem
+	 * Schliessungsdatum endet. Endet sie am oder vor dem Schliessungsdatum, enden die Betreuungen dieser Periode
+	 * ohnehin regulär mit dem Periodenende und es braucht keine Schliessungs-Mutationsmeldung.
+	 *
+	 * @param gesuchsperiode Gültigkeit der Gesuchsperiode der Betreuung
+	 * @param schliessdatum letzter Tag, an dem die Institution gültig ist (gueltigBis der Institution)
+	 * @return whether the Gesuchsperiode ends after the Schliessungsdatum
+	 */
+	public static boolean isGesuchsperiodeVonSchliessungBetroffen(
+		@Nonnull DateRange gesuchsperiode,
+		@Nonnull LocalDate schliessdatum
+	) {
+		return gesuchsperiode.getGueltigBis().isAfter(schliessdatum);
 	}
 
 	public static void initializeBetreuungsmitteilung(

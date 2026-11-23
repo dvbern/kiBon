@@ -23,15 +23,6 @@ md-input-container {
     padding: 0;
 }
 
-.contrast {
-    /*stylelint-disable*/
-
-    dv-timepicker {
-        /*stylelint-enable*/
-        background: $contrast-light;
-    }
-}
-
 [disabled] md-input-container .md-input {
     @include DisabledInput;
     @include ebeguDisabledPlaceholder;

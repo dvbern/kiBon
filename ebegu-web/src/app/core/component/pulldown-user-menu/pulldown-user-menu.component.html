@@ -47,6 +47,11 @@
     >
     <dv-pulldown-user-menu-button
         [allowedRoles]="getSuperAdminRoles()"
+        [uiSRef]="'admin.batchjobHistory'"
+        >{{ 'MENU_BATCHJOB_HISTORY' | translate }}</dv-pulldown-user-menu-button
+    >
+    <dv-pulldown-user-menu-button
+        [allowedRoles]="getSuperAdminRoles()"
         [uiSRef]="'admin.betreuungMonitoring'"
         >{{
             'MENU_BETREUUNG_MONITORING' | translate

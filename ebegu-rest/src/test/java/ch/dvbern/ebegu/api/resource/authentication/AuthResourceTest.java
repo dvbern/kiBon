@@ -32,7 +32,7 @@ import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
-import ch.dvbern.ebegu.enums.KeycloakIdpHint;
+import ch.dvbern.ebegu.enums.KeycloakExternalIdp;
 import ch.dvbern.ebegu.services.BenutzerService;
 import ch.dvbern.ebegu.services.CreateBenutzerService;
 import ch.dvbern.ebegu.services.MandantService;
@@ -102,7 +102,7 @@ class AuthResourceTest extends EasyMockSupport {
 				.andReturn(MandantIdentifier.LUZERN);
 			expect(principalBean.getMandant()).andReturn(mandant);
 			expect(applicationPropertyService.getKeycloakIdpHint(mandant))
-				.andReturn(KeycloakIdpHint.NO_HINT);
+				.andReturn(KeycloakExternalIdp.NO_EXTERNAL_IDP);
 			Benutzer benutzer = new Benutzer();
 			expect(principalBean.findBenutzer()).andReturn(
 				Optional.of(benutzer)
@@ -162,6 +162,9 @@ class AuthResourceTest extends EasyMockSupport {
 			expect(request.getSession(false)).andReturn(mockSession);
 
 			keycloakApi.logout(benutzer);
+			expect(
+				keycloakApi.supportsBackChannelLogout("bern", "keycloak-oidc")
+			).andReturn(false);
 			expectLastCall();
 
 			expect(request.getRequestURL()).andReturn(
@@ -174,10 +177,10 @@ class AuthResourceTest extends EasyMockSupport {
 			Mandant mandant = createMock(Mandant.class);
 			expect(mandant.getMandantIdentifier()).andReturn(
 				MandantIdentifier.BERN
-			);
+			).times(2);
 			expect(principalBean.getMandant()).andReturn(mandant);
 			expect(applicationPropertyService.getKeycloakIdpHint(mandant))
-				.andReturn(KeycloakIdpHint.BELOGIN_LEGACY);
+				.andReturn(KeycloakExternalIdp.BELOGIN_LEGACY);
 
 			expect(
 				keycloakApi.getIDPLogoutUrl(
@@ -220,7 +223,7 @@ class AuthResourceTest extends EasyMockSupport {
 				.andReturn(MandantIdentifier.LUZERN);
 			expect(principalBean.getMandant()).andReturn(mandant);
 			expect(applicationPropertyService.getKeycloakIdpHint(mandant))
-				.andReturn(KeycloakIdpHint.NO_HINT);
+				.andReturn(KeycloakExternalIdp.NO_EXTERNAL_IDP);
 			expect(principalBean.findBenutzer()).andReturn(Optional.empty());
 			expect(request.getSession(false)).andReturn(null);
 
@@ -265,7 +268,7 @@ class AuthResourceTest extends EasyMockSupport {
 				.andReturn(MandantIdentifier.LUZERN);
 			expect(principalBean.getMandant()).andReturn(mandant);
 			expect(applicationPropertyService.getKeycloakIdpHint(mandant))
-				.andReturn(KeycloakIdpHint.NO_HINT);
+				.andReturn(KeycloakExternalIdp.NO_EXTERNAL_IDP);
 			expect(principalBean.findBenutzer()).andReturn(Optional.empty());
 			expect(request.getSession(false)).andReturn(null);
 
@@ -282,6 +285,57 @@ class AuthResourceTest extends EasyMockSupport {
 			var response = testee.logout(request, "");
 
 			// then
+			assertThat(
+				response.getStatusInfo().getStatusCode(),
+				Is.is(
+					Status.OK.getStatusCode()
+				)
+			);
+			LogoutResponse logoutResponse = (LogoutResponse) response
+				.getEntity();
+
+			assertTrue(
+				logoutResponse.isLogoutSuccess()
+			);
+			assertTrue(
+				logoutResponse.isUseDefaultLogoutRedirect()
+			);
+		}
+
+		@Test
+		void mustLogoutAtKeycloakAndRedirectToFrontendIfBeLoginCiam() {
+			// given
+			Benutzer benutzer = new Benutzer();
+			expect(principalBean.findBenutzer()).andReturn(
+				Optional.of(benutzer)
+			);
+
+			HttpSession mockSession = mock(HttpSession.class);
+			mockSession.invalidate();
+			expectLastCall();
+			expect(request.getSession(false)).andReturn(mockSession);
+
+			keycloakApi.logout(benutzer);
+			expect(
+				keycloakApi.supportsBackChannelLogout("bern", "belogin-ciam")
+			).andReturn(true);
+			expectLastCall();
+
+			Mandant mandant = createMock(Mandant.class);
+			expect(mandant.getMandantIdentifier()).andReturn(
+				MandantIdentifier.BERN
+			);
+			expect(principalBean.getMandant()).andReturn(mandant);
+			expect(applicationPropertyService.getKeycloakIdpHint(mandant))
+				.andReturn(KeycloakExternalIdp.BELOGIN_CIAM);
+
+			replayAll();
+
+			// when
+			var response = testee.logout(request, "");
+
+			// then
+			verifyAll();
 			assertThat(
 				response.getStatusInfo().getStatusCode(),
 				Is.is(

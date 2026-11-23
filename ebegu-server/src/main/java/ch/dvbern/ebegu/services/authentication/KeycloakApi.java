@@ -333,7 +333,46 @@ public class KeycloakApi {
 		}
 	}
 
-	public String getIDPLogoutUrl(String realmName, String idpAlias) {
+	/**
+	 * Determines whether the specified identity provider in the given Keycloak realm supports back-channel logout.
+	 *
+	 * @param realmName the name of the Keycloak realm containing the identity provider
+	 * @param idpAlias the alias of the identity provider whose back-channel logout support should be checked
+	 * @return true if back-channel logout is configured as supported for the identity provider, false otherwise
+	 * @throws EbeguRuntimeException when either not idp with the provided idpAlias is configured or the configName is
+	 * not
+	 * * configured in the ipd
+	 */
+	public boolean supportsBackChannelLogout(String realmName, String idpAlias)
+		throws EbeguRuntimeException {
+		String backchannelSupportedConfig = getIdpConfig(
+			realmName,
+			idpAlias,
+			"backchannelSupported"
+		);
+		return backchannelSupportedConfig.equals("true");
+	}
+
+	/**
+	 * Retrieves the logout URL configured for the specified Keycloak identity provider in the given realm.
+	 *
+	 * @param realmName the name of the Keycloak realm containing the identity provider
+	 * @param idpAlias the alias of the identity provider whose logout URL should be retrieved
+	 * @return the configured logout URL for the specified identity provider
+	 * @throws EbeguRuntimeException when either not idp with the provided idpAlias is configured or the configName is
+	 * not
+	 * configured in the ipd
+	 */
+	public String getIDPLogoutUrl(String realmName, String idpAlias)
+		throws EbeguRuntimeException {
+		return getIdpConfig(realmName, idpAlias, "logoutUrl");
+	}
+
+	private String getIdpConfig(
+		String realmName,
+		String idpAlias,
+		String configName
+	) throws EbeguRuntimeException {
 		IdentityProviderRepresentation idp;
 		try {
 			idp = keycloak
@@ -354,18 +393,19 @@ public class KeycloakApi {
 			);
 		}
 
-		String logoutUrl = idp.getConfig().get("logoutUrl");
-		if (logoutUrl == null) {
+		String config = idp.getConfig().get(configName);
+		if (config == null) {
 			throw new EbeguRuntimeException(
-				"getIDPLogoutUrl",
+				"getIdpConfig",
 				MessageFormat.format(
-					"Beim Keycloak IDP ''{0}'' im Realm ''{1}'' ist keine logoutUrl konfiguriert",
+					"Beim Keycloak IDP ''{0}'' im Realm ''{1}'' ist ''{2}'' nicht konfiguriert",
 					idpAlias,
-					realmName
+					realmName,
+					configName
 				)
 			);
 		}
-		return logoutUrl;
+		return config;
 	}
 
 	private Optional<UserResource> getUserResourceOptional(Benutzer benutzer) {

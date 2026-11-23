@@ -1,0 +1,51 @@
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<div
+    class="tw:flex tw:justify-center tw:items-end tw:gap-4 margin-bottom-20 tw:wrap"
+>
+    <input
+        class="tw:outline! tw:outline-[2px]! tw:min-w-[130px]"
+        matInput
+        type="text"
+        [(ngModel)]="nameOrResult"
+        placeholder="{{ 'BATCHJOB_HISTORY_SUCHE_PLATZHALTER' | translate }}"
+        data-test="SearchBarBatchjobHistory"
+    />
+
+    <mat-form-field floatLabel="always" class="tw:min-w-[180px]!">
+        <mat-label><span translate>STATUS_BATCHJOB_HISTORY</span></mat-label>
+        <mat-select
+            multiple
+            [(ngModel)]="status"
+            [placeholder]="'ALLE' | translate"
+            data-test="StatusFilterBatchjobHistory"
+        >
+            @for (option of STATUSES; track option) {
+                <mat-option [value]="option">{{
+                    'BATCHJOB_STATUS_' + option | translate
+                }}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+
+    <kib-admin-date-range-filter
+        [fromLabel]="'BATCHJOB_HISTORY_STARTZEIT_VON'"
+        [toLabel]="'BATCHJOB_HISTORY_STARTZEIT_BIS'"
+        [(dateRange)]="dateRange"
+    ></kib-admin-date-range-filter>
+</div>

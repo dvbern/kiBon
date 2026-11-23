@@ -55,6 +55,7 @@ import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
+import ch.dvbern.ebegu.enums.KeycloakExternalIdp;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
 import ch.dvbern.ebegu.nesko.StekUtil;
@@ -228,10 +229,15 @@ public class AuthResource {
 		invalidateSession(request);
 
 		Mandant mandant = principalBean.getMandant();
-		Optional<String> idpAlias = applicationPropertyService
-			.getKeycloakIdpHint(mandant)
+		KeycloakExternalIdp externalIdp = applicationPropertyService
+			.getKeycloakIdpHint(mandant);
+		Optional<String> idpAlias = externalIdp
 			.getIdpAlias();
-		if (idpAlias.isPresent()) {
+		if (idpAlias.isPresent()
+			&& !keycloakApi.supportsBackChannelLogout(
+				mandant.getMandantIdentifier().getRealmName(),
+				idpAlias.get()
+			)) {
 			try {
 				return redirectToIdpLogout(mandant, idpAlias.get());
 			} catch (EbeguRuntimeException e) {

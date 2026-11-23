@@ -109,7 +109,8 @@ public class ReportResourceAsync {
 		"Das von-Datum muss vor dem bis-Datum sein.";
 	public static final String URL_PART_EXCEL = "excel/";
 	private static final int EXCEL_LIMITER = 50;
-	public static final String FEHLER_BEIM_ERSTELLEN_REPORT_ZAHLUNGEN = "Fehler beim Erstellen Report Zahlungen";
+	public static final String FEHLER_BEIM_ERSTELLEN_REPORT_ZAHLUNGEN =
+		"Fehler beim Erstellen Report Zahlungen";
 
 	@Inject
 	private PrincipalBean principalBean;

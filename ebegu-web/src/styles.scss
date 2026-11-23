@@ -479,7 +479,6 @@ body {
 }
 
 dv-home-icon,
-dv-countdown,
 dv-downloadmenu {
     align-content: center;
     display: flex;
@@ -498,8 +497,7 @@ dv-downloadmenu {
     background-size: Auto $navbar-height;
 }
 
-.logo-house,
-.dv-countdown-countdown {
+.logo-house {
     height: $navbar-height;
     line-height: $navbar-height;
     padding: 0;
@@ -526,11 +524,6 @@ dv-downloadmenu {
         outline: 2px solid $contrast-darkest !important;
         outline-offset: -1rem;
     }
-}
-
-.dv-countdown-countdown:hover {
-    background-color: transparent;
-    cursor: default;
 }
 
 .logo-text {

@@ -33,6 +33,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.AbstractPlatz_;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Betreuung_;
@@ -43,9 +44,11 @@ import ch.dvbern.ebegu.entities.Betreuungspensum;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer_;
 import ch.dvbern.ebegu.entities.Betreuungspensum_;
+import ch.dvbern.ebegu.entities.Gesuch_;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten_;
+import ch.dvbern.ebegu.entities.KindContainer_;
 import ch.dvbern.ebegu.entities.Mitteilung_;
 import ch.dvbern.ebegu.enums.MitteilungStatus;
 import ch.dvbern.ebegu.persistence.Persistence;
@@ -57,6 +60,7 @@ import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.types.DateRange_;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.EbeguUtil;
+import ch.dvbern.ebegu.util.MitteilungUtil;
 
 import static ch.dvbern.ebegu.enums.DemoFeatureTyp.INSTITUTIONSSCHLIESSUNG_MUTATIONSMELDUNG;
 
@@ -238,15 +242,19 @@ public class MitteilungGueltigkeitServiceBean implements
 				gueltigkeit
 			);
 		//dann schauen wir welche noch keine Mutationsmitteilung haben und erstellen wir eine
-		//fuer die wo die Gesuchsperiode ist nicht vollstaendig in der Institution Gueltigkeit
+		//fuer die, deren Gesuchsperiode erst nach dem Schliessungsdatum endet.
+		//Achtung: nicht pruefen, ob die Gesuchsperiode vollstaendig in der Institution Gueltigkeit liegt,
+		//sonst erhalten Betreuungen aus alten Perioden eine Meldung, wenn die Institution erst waehrend
+		//der Periode eroeffnet wurde (gueltigAb nach Periodenbeginn)
 		betreuungen.forEach(betreuung -> {
 			if (
-				!gueltigkeit.contains(
+				MitteilungUtil.isGesuchsperiodeVonSchliessungBetroffen(
 					betreuung.extractGesuchsperiode()
-						.getGueltigkeit()
+						.getGueltigkeit(),
+					gueltigkeit.getGueltigBis()
 				)
-					&& !offeneMutationsmitteilungenForInstitution.stream()
-						.anyMatch(
+					&& offeneMutationsmitteilungenForInstitution.stream()
+						.noneMatch(
 							betreuungsmitteilung -> betreuung.equals(
 								betreuungsmitteilung.getBetreuung()
 							)
@@ -401,10 +409,26 @@ public class MitteilungGueltigkeitServiceBean implements
 				gueltigkeit.getGueltigBis()
 			);
 
+		// only Betreuungen from Gesuchsperioden that end after the Schliessungsdatum. An empty Bis-Datum in Pensum
+		// is saved as END_OF_TIME (31.12.9999) and it would otherwise retreieve Betreuungen from all old periods
+		Predicate gesuchsperiodeEndetNachStichtag =
+			cb.greaterThan(
+				root.get(Betreuung_.kind)
+					.get(KindContainer_.gesuch)
+					.get(Gesuch_.gesuchsperiode)
+					.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigBis),
+				gueltigkeit.getGueltigBis()
+			);
+
+		// distinct: der Join ueber die Pensen liefert eine Betreuung sonst pro passendem Pensum,
+		// was mehrere Schliessungsmitteilungen fuer dieselbe Betreuung erzeugen wuerde
+		query.distinct(true);
 		query.where(
 			betreuungGueltig,
 			predicateInstitution,
-			pensumAfterStichtag
+			pensumAfterStichtag,
+			gesuchsperiodeEndetNachStichtag
 		);
 		return persistence.getCriteriaResults(query);
 	}

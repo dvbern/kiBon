@@ -1,5 +1,7 @@
 package ch.dvbern.ebegu.util;
 
+import java.time.LocalDate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -12,13 +14,44 @@ import ch.dvbern.ebegu.entities.NeueVeranlagungsMitteilung;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
+import ch.dvbern.ebegu.types.DateRange;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import static shadow.org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class MitteilungUtilTest {
+
+	private static final DateRange PERIODE_20_21 = new DateRange(
+		LocalDate.of(2020, 8, 1),
+		LocalDate.of(2021, 7, 31)
+	);
+
+	@ParameterizedTest(name = "Schliessdatum {0} -> betroffen: {1}")
+	@CsvSource({
+		// Schliessung Jahre nach Periodenende (Fall aus KIBONBE-304): nicht betroffen
+		"2026-11-30, false",
+		// Schliessung genau am Periodenende: Betreuung endet ohnehin regulaer
+		"2021-07-31, false",
+		// Schliessung waehrend der Periode
+		"2021-03-31, true",
+		"2020-08-01, true",
+		// Schliessung vor Periodenbeginn
+		"2020-07-31, true",
+	})
+	void isGesuchsperiodeVonSchliessungBetroffen(
+		LocalDate schliessdatum,
+		boolean expected
+	) {
+		assertThat(
+			MitteilungUtil.isGesuchsperiodeVonSchliessungBetroffen(
+				PERIODE_20_21,
+				schliessdatum
+			)
+		).isEqualTo(expected);
+	}
 
 	@Test
 	void shouldReturnFalse_whenPlainMitteilung() {

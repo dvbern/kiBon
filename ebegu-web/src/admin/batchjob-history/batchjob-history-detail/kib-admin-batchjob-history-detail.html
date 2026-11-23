@@ -1,0 +1,58 @@
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<h2 mat-dialog-title>
+    {{ data.name }}
+</h2>
+
+<mat-dialog-content class="tw:flex! tw:flex-col">
+    <p class="tw:text-gray-500">
+        <span translate>TIMESTAMP_START_BATCHJOB_HISTORY</span>:
+        {{ data.timestampStarted }}
+    </p>
+    <p class="tw:text-gray-500">
+        <span translate>TIMESTAMP_END_BATCHJOB_HISTORY</span>:
+        @if (isRunning) {
+            {{ 'BATCHJOB_STATUS_RUNNING' | translate }}
+        } @else {
+            {{ data.timestampFinished }}
+        }
+    </p>
+    <p class="tw:text-gray-500">
+        <span translate>STATUS_BATCHJOB_HISTORY</span>:
+        {{ 'BATCHJOB_STATUS_' + data.status | translate }}
+    </p>
+    <mat-divider class="tw:my-4!"></mat-divider>
+
+    <div
+        class="tw:flex tw:flex-1 tw:items-center tw:justify-center tw:wrap-break-word tw:text-gray-800"
+    >
+        @if (data.result) {
+            <span class="tw:whitespace-pre-wrap">{{ data.result }}</span>
+        } @else if (isRunning) {
+            {{ 'BATCHJOB_HISTORY_NOCH_IN_AUSFUEHRUNG' | translate }}
+        } @else {
+            -
+        }
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button class="dv-btn cancel-button" mat-dialog-close>
+        {{ 'SCHLIESSEN' | translate }}
+    </button>
+</mat-dialog-actions>

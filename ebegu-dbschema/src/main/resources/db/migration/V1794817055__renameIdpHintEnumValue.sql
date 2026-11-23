@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 DV Bern AG, Switzerland
+ * Copyright (C) 2026 DV Bern AG, Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,14 +15,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSGemeinde} from '../../../models/entity/TSGemeinde';
-
-export function gemeindenToString(input: TSGemeinde[]): string {
-    if (input) {
-        return input
-            .map((gem: TSGemeinde) => gem.name)
-            .sort((a, b) => a.localeCompare(b))
-            .join(', ');
-    }
-    return '';
-}
+UPDATE application_property SET value = 'NO_EXTERNAL_IDP' WHERE value = 'NO_HINT' AND name = 'KEYCLOAK_IDP_HINT';

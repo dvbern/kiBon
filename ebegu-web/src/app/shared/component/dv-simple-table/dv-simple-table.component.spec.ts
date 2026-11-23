@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, SimpleChange} from '@angular/core';
+import {ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -49,13 +49,9 @@ describe('DvSimpleTableComponent', () => {
     });
 
     it('should display 6 rows', () => {
-        component.columns = columnDefinition;
-        component.data = data;
-        component.ngOnChanges({
-            data: new SimpleChange(null, data, false)
-        });
+        fixture.componentRef.setInput('columns', columnDefinition);
+        fixture.componentRef.setInput('data', data);
         fixture.detectChanges();
-        fixture.changeDetectorRef.markForCheck();
         const table = fixture.debugElement.query(By.css('mat-table'));
         expect(table).not.toBeNull();
         const rows = fixture.debugElement.queryAll(By.css('mat-row'));
@@ -63,20 +59,22 @@ describe('DvSimpleTableComponent', () => {
     });
 
     it('should display 5 rows on first page and 1 row on second page', () => {
-        component.columns = columnDefinition;
-        component.data = data;
-        component.config = new DvSimpleTableConfig('a', 'asc', false, 5);
-        component.ngOnChanges({
-            data: new SimpleChange(null, data, false)
-        });
+        fixture.componentRef.setInput('columns', columnDefinition);
+        fixture.componentRef.setInput(
+            'config',
+            new DvSimpleTableConfig('a', 'asc', false, 5)
+        );
+        fixture.componentRef.setInput('data', data);
         fixture.detectChanges();
-        fixture.changeDetectorRef.markForCheck();
         let rows = fixture.debugElement.queryAll(By.css('mat-row'));
         expect(rows.length).toEqual(5);
 
-        component.applyPaginator(1);
+        // navigate like a user would; the click handler marks the OnPush view dirty
+        const pageLinks = fixture.debugElement.queryAll(
+            By.css('.pagination a')
+        );
+        pageLinks[1].nativeElement.click();
         fixture.detectChanges();
-        fixture.changeDetectorRef.markForCheck();
         rows = fixture.debugElement.queryAll(By.css('mat-row'));
         expect(rows.length).toEqual(1);
     });

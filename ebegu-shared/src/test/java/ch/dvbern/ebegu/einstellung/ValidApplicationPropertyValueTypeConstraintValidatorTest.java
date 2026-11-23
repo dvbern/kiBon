@@ -114,7 +114,8 @@ class ValidApplicationPropertyValueTypeConstraintValidatorTest extends
 	class KeycloakIdpHintApplicationProperyTest {
 
 		@ParameterizedTest
-		@ValueSource(strings = { "NO_HINT", "BELOGIN_LEGACY", "BELOGIN_CIAM" })
+		@ValueSource(strings = { "NO_EXTERNAL_IDP", "BELOGIN_LEGACY",
+			"BELOGIN_CIAM" })
 		void enumConstantShouldBeValidKeycloakIdpHint(String value) {
 			ApplicationProperty applicationPropery = new ApplicationProperty(
 				ApplicationPropertyKey.KEYCLOAK_IDP_HINT,

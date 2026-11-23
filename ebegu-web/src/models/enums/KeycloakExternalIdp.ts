@@ -1,5 +1,5 @@
-export enum TSKeycloakIdpHint {
-    NO_HINT = 'NO_HINT',
+export enum KeycloakExternalIdp {
+    NO_EXTERNAL_IDP = 'NO_EXTERNAL_IDP',
     BELOGIN_LEGACY = 'BELOGIN_LEGACY',
     BELOGIN_CIAM = 'BELOGIN_CIAM'
 }

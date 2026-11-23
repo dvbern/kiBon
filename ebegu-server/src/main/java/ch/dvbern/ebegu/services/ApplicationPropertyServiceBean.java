@@ -46,7 +46,7 @@ import ch.dvbern.ebegu.einstellung.ApplicationProperty_;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.DemoFeatureTyp;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
-import ch.dvbern.ebegu.enums.KeycloakIdpHint;
+import ch.dvbern.ebegu.enums.KeycloakExternalIdp;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.persistence.Persistence;
@@ -400,7 +400,7 @@ public class ApplicationPropertyServiceBean extends AbstractBaseService
 
 	@Nonnull
 	@Override
-	public KeycloakIdpHint getKeycloakIdpHint(@Nonnull Mandant mandant) {
+	public KeycloakExternalIdp getKeycloakIdpHint(@Nonnull Mandant mandant) {
 		String value = findApplicationPropertyAsString(
 			ApplicationPropertyKey.KEYCLOAK_IDP_HINT,
 			mandant
@@ -414,6 +414,6 @@ public class ApplicationPropertyServiceBean extends AbstractBaseService
 					+ " nicht konfiguriert"
 			);
 		}
-		return KeycloakIdpHint.valueOf(value);
+		return KeycloakExternalIdp.valueOf(value);
 	}
 }

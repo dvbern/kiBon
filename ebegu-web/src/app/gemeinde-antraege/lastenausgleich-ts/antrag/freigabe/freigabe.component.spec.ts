@@ -32,7 +32,8 @@ import {LastenausgleichTSService} from '../../services/lastenausgleich-ts.servic
 import {FreigabeComponent} from './freigabe.component';
 
 const errorServiceSpy = jasmine.createSpyObj<ErrorService>(ErrorService.name, [
-    'addMesageAsError'
+    'addMesageAsError',
+    'addMesageAsInfo'
 ]);
 const translateServiceSpy = jasmine.createSpyObj<TranslateService>(
     ErrorService.name,

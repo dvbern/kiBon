@@ -15,13 +15,11 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<!-- Unfortunately we have to use a lot of !important. kiBon has a lot of legacy styling issues. Fixing these would lead to
-bigger adjustments which would increase the scope of the task which would make it infeasible-->
 <div
-    class="tw:flex tw:justify-center tw:items-end tw:gap-4 margin-bottom-20 versendete-mail-filter-material-overrides tw:wrap"
+    class="tw:flex tw:justify-center tw:items-end tw:gap-4 margin-bottom-20 tw:wrap"
 >
     <input
-        class="tw:outline! tw:outline-[2px]! tw:min-w-[130px]"
+        class="tw:outline! tw:min-w-32.5"
         matInput
         type="text"
         [(ngModel)]="subjectOrReceiver"
@@ -29,93 +27,7 @@ bigger adjustments which would increase the scope of the task which would make i
         data-test="SearchBarSentMails"
     />
 
-    <div
-        class="tw:flex tw:flex-col tw:gap-1"
-        role="group"
-        aria-labelledby="vonGroupLabel"
-    >
-        <span
-            id="vonGroupLabel"
-            class="tw:text-lg! tw:font-semibold! tw:uppercase! tw:tracking-wide! tw:text-gray-500!"
-            translate
-            >VON</span
-        >
-        <div class="tw:flex tw:gap-2">
-            <mat-form-field floatLabel="always" class="tw:max-w-[130px]!">
-                <mat-label><span translate>DATUM</span></mat-label>
-                <input
-                    matInput
-                    class="tw:outline-hidden! tw:bg-transparent! tw:p-0! tw:text-[1.6rem]!"
-                    [matDatepicker]="datepickerFrom"
-                    [ngModel]="startDate"
-                    (ngModelChange)="setStartDate($event)"
-                />
-                <mat-datepicker #datepickerFrom />
-                <mat-datepicker-toggle
-                    [for]="datepickerFrom"
-                    matSuffix
-                    class="ignore-kibon-legacy"
-                />
-            </mat-form-field>
-
-            <mat-form-field floatLabel="always" class="tw:max-w-[130px]!">
-                <mat-label><span translate>ZEIT</span></mat-label>
-                <input
-                    matInput
-                    class="tw:outline-hidden! tw:bg-transparent! tw:p-0! tw:text-[1.6rem]!"
-                    [matTimepicker]="timepickerFrom"
-                    [(ngModel)]="startDate"
-                    [ngModelOptions]="{updateOn: 'blur'}"
-                />
-                <mat-timepicker #timepickerFrom />
-                <mat-timepicker-toggle [for]="timepickerFrom" matSuffix />
-            </mat-form-field>
-        </div>
-    </div>
-
-    <mat-icon fontIcon="arrow_right_alt" class="tw:shrink-0"></mat-icon>
-
-    <div
-        class="tw:flex tw:flex-col tw:gap-1"
-        role="group"
-        aria-labelledby="bisGroupLabel"
-    >
-        <span
-            id="bisGroupLabel"
-            class="tw:text-lg! tw:font-semibold! tw:uppercase! tw:racking-wide! tw:text-gray-500!"
-            translate
-            >BIS</span
-        >
-        <div class="tw:flex tw:gap-2">
-            <mat-form-field floatLabel="always" class="tw:max-w-[130px]!">
-                <mat-label><span translate>DATUM</span></mat-label>
-                <input
-                    matInput
-                    class="tw:outline-hidden! tw:bg-transparent! tw:text-[1.6rem]!"
-                    [matDatepicker]="datepickerTo"
-                    [ngModel]="endDate"
-                    (ngModelChange)="setEndDate($event)"
-                />
-                <mat-datepicker #datepickerTo />
-                <mat-datepicker-toggle
-                    [for]="datepickerTo"
-                    matSuffix
-                    class="ignore-kibon-legacy"
-                />
-            </mat-form-field>
-
-            <mat-form-field floatLabel="always" class="tw:max-w-[130px]!">
-                <mat-label><span translate>ZEIT</span></mat-label>
-                <input
-                    matInput
-                    class="tw:outline-hidden! tw:bg-transparent! tw:p-0! tw:text-[1.6rem]!"
-                    [matTimepicker]="timepickerTo"
-                    [(ngModel)]="endDate"
-                    [ngModelOptions]="{updateOn: 'blur'}"
-                />
-                <mat-timepicker #timepickerTo />
-                <mat-timepicker-toggle [for]="timepickerTo" matSuffix />
-            </mat-form-field>
-        </div>
-    </div>
+    <kib-admin-date-range-filter
+        [(dateRange)]="dateRange"
+    ></kib-admin-date-range-filter>
 </div>

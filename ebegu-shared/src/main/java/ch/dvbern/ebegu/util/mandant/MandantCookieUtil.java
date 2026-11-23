@@ -19,6 +19,7 @@ package ch.dvbern.ebegu.util.mandant;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import jakarta.servlet.http.Cookie;
@@ -94,6 +95,31 @@ public final class MandantCookieUtil {
 			}
 		}
 		throw new IllegalStateException("mandant cookie is missing");
+	}
+
+	/**
+	 * Retrieves the mandant cookie from the given HTTP servlet request, if present.
+	 *
+	 * @param request the HTTP servlet request whose cookies are searched
+	 * @return an {@link Optional} containing the mandant cookie if found, or an empty {@link Optional} if the request
+	 * has no cookies or no mandant cookie is present
+	 */
+	public static Optional<Cookie> getMandantCookie(
+		HttpServletRequest request
+	) {
+		if (request.getCookies() == null) {
+			return Optional.empty();
+		}
+
+		for (var cookie : request.getCookies()) {
+			if (cookie.getName().equals(MANDANT_COOKIE_NAME)) {
+				return Optional.of(
+					cookie
+				);
+
+			}
+		}
+		return Optional.empty();
 	}
 
 }

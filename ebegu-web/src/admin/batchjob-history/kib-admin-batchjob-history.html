@@ -1,0 +1,134 @@
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<div class="admin-modul" flex="auto">
+    <div class="tw:w-8/12 tw:mx-auto tw:px-[1.5rem]">
+        <h1 class="access-for-all-title" translate>AFA_BATCHJOB_HISTORY</h1>
+        <div class="view-title">
+            <h2 translate>BATCHJOB_HISTORY_TITLE</h2>
+            <hr class="header" />
+        </div>
+        <kib-admin-batchjob-history-filter
+            (filterChange)="onFilterChange($event)"
+        ></kib-admin-batchjob-history-filter>
+        <div class="table-responsive">
+            <mat-table
+                [dataSource]="rows()"
+                matSort
+                matSortDisableClear
+                [matSortActive]="INITIAL_SORT.active"
+                [matSortDirection]="INITIAL_SORT.direction"
+                (matSortChange)="onSortChange($event)"
+                class="dv-table"
+            >
+                <!-- Column name -->
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ 'NAME_BATCHJOB_HISTORY' | translate }}
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let item"
+                        data-test="batchjobHistoryName"
+                    >
+                        <span>{{ item.name }}</span>
+                        <button
+                            type="button"
+                            class="tw:sr-only"
+                            [attr.aria-label]="
+                                'BATCHJOB_HISTORY_DETAILS_ANZEIGEN'
+                                    | translate: {name: item.name}
+                            "
+                            aria-haspopup="dialog"
+                            (click)="$event.stopPropagation(); openDetail(item)"
+                        ></button>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Column timestampStarted -->
+                <ng-container matColumnDef="timestampStarted">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ 'TIMESTAMP_START_BATCHJOB_HISTORY' | translate }}
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let item"
+                        data-test="batchjobHistoryStart"
+                    >
+                        {{ item.timestampStarted }}
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Column timestampFinished -->
+                <ng-container matColumnDef="timestampFinished">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ 'TIMESTAMP_END_BATCHJOB_HISTORY' | translate }}
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let item"
+                        data-test="batchjobHistoryEnd"
+                    >
+                        {{ item.timestampFinished }}
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Column status -->
+                <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ 'STATUS_BATCHJOB_HISTORY' | translate }}
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let item"
+                        data-test="batchjobHistoryStatus"
+                    >
+                        {{ 'BATCHJOB_STATUS_' + item.status | translate }}
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Column result -->
+                <ng-container matColumnDef="result">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ 'RESULT_BATCHJOB_HISTORY' | translate }}
+                    </mat-header-cell>
+                    <mat-cell
+                        *matCellDef="let item"
+                        data-test="batchjobHistoryResult"
+                    >
+                        <span class="tw:truncate">{{ item.result }}</span>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row
+                    *matHeaderRowDef="DISPLAYED_COLUMNS"
+                ></mat-header-row>
+                <mat-row
+                    *matRowDef="let row; columns: DISPLAYED_COLUMNS"
+                    tabindex="0"
+                    class="pointer-cursor tw:focus:bg-gray-100/30"
+                    (click)="openDetail(row)"
+                    (keydown.enter)="openDetail(row)"
+                    (keydown.space)="preventDefaultAndOpenDetail($event, row)"
+                ></mat-row>
+            </mat-table>
+            <mat-paginator
+                [length]="totalResults()"
+                [pageSizeOptions]="PAGE_SIZE_OPTIONS"
+                [pageIndex]="pagination().page"
+                [pageSize]="pagination().size"
+                (page)="onPageChange($event)"
+            ></mat-paginator>
+        </div>
+    </div>
+</div>

@@ -60,8 +60,8 @@ describe('DvBisherXComponent', () => {
     });
 
     it('should display dv-bisher', () => {
-        component.deklaration = 10;
-        component.korrektur = 11;
+        fixture.componentRef.setInput('deklaration', 10);
+        fixture.componentRef.setInput('korrektur', 11);
         fixture.detectChanges();
         expect(
             fixture.debugElement.query(By.css(dvBisherClass))
@@ -69,23 +69,23 @@ describe('DvBisherXComponent', () => {
     });
 
     it('should not display dv-bisher', () => {
-        component.deklaration = 10;
-        component.korrektur = 10;
+        fixture.componentRef.setInput('deklaration', 10);
+        fixture.componentRef.setInput('korrektur', 10);
         fixture.detectChanges();
         expect(fixture.debugElement.query(By.css(dvBisherClass))).toBeNull();
     });
 
     it('should not display dv-bisher because showBisher is false', () => {
-        component.deklaration = 10;
-        component.korrektur = 11;
-        component.showBisher = false;
+        fixture.componentRef.setInput('deklaration', 10);
+        fixture.componentRef.setInput('korrektur', 11);
+        fixture.componentRef.setInput('showBisher', false);
         fixture.detectChanges();
         expect(fixture.debugElement.query(By.css(dvBisherClass))).toBeNull();
     });
 
     it('should display dv-bisher for string and number', () => {
-        component.deklaration = 10;
-        component.korrektur = '11';
+        fixture.componentRef.setInput('deklaration', 10);
+        fixture.componentRef.setInput('korrektur', '11');
         fixture.detectChanges();
         expect(
             fixture.debugElement.query(By.css(dvBisherClass))

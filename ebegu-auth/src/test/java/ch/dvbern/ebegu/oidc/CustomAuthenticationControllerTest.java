@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.UriBuilder;
 
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Mandant;
-import ch.dvbern.ebegu.enums.KeycloakIdpHint;
+import ch.dvbern.ebegu.enums.KeycloakExternalIdp;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.services.MandantService;
 import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
@@ -77,14 +77,14 @@ class CustomAuthenticationControllerTest {
 
 		@Test
 		public void noHintShouldNotSendIdpHint() {
-			givenMandantWithHint(KeycloakIdpHint.NO_HINT);
+			givenMandantWithHint(KeycloakExternalIdp.NO_EXTERNAL_IDP);
 
 			assertThat(testee.findIdpHintAlias(request), is(Optional.empty()));
 		}
 
 		@Test
 		public void beloginLegacyShouldSendKeycloakOidcAlias() {
-			givenMandantWithHint(KeycloakIdpHint.BELOGIN_LEGACY);
+			givenMandantWithHint(KeycloakExternalIdp.BELOGIN_LEGACY);
 
 			assertThat(
 				testee.findIdpHintAlias(request),
@@ -94,7 +94,7 @@ class CustomAuthenticationControllerTest {
 
 		@Test
 		public void beloginCiamShouldSendBeloginCiamAlias() {
-			givenMandantWithHint(KeycloakIdpHint.BELOGIN_CIAM);
+			givenMandantWithHint(KeycloakExternalIdp.BELOGIN_CIAM);
 
 			assertThat(
 				testee.findIdpHintAlias(request),
@@ -126,7 +126,7 @@ class CustomAuthenticationControllerTest {
 			);
 		}
 
-		private void givenMandantWithHint(KeycloakIdpHint hint) {
+		private void givenMandantWithHint(KeycloakExternalIdp hint) {
 			Mandant mandant = givenMandant();
 			when(applicationPropertyService.getKeycloakIdpHint(mandant))
 				.thenReturn(hint);

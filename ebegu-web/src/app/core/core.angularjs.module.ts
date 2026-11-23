@@ -68,7 +68,6 @@ import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '../../uti
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {WizardStepRS} from '../../utils/wizard-step-manager/WizardStepRS.rest';
-import {BenutzerComponent} from '../benutzer/benutzer/benutzer.component';
 import {DvLanguageSelectorComponentConfig} from '../i18n/components/dv-language-selector/dv-language-selector';
 import {HttpI18nInterceptor} from '../i18n/httpInterceptor/http-i18n-Interceptor';
 import {I18nServiceRSRest} from '../i18n/services/i18nServiceRS.rest';
@@ -82,7 +81,6 @@ import {DvAccordionTabComponentConfig} from './component/dv-accordion/dv-accordi
 import {AdresseComponentConfig} from './component/dv-adresse/dv-adresse';
 import {DvBenutzerEntryComponent} from './component/dv-benutzer-entry/dv-benutzer-entry.component';
 import {DvBisherComponentConfig} from './component/dv-bisher/dv-bisher';
-import {DvCountdownComponentConfig} from './component/dv-countdown/dv-countdown';
 import {DVDokumenteListConfig} from './component/dv-dokumente-list/dv-dokumente-list';
 import {DvErrorMessagesComponentConfig} from './component/dv-error-messages/dv-error-messages';
 import {DVErwerbspensumListConfig} from './component/dv-erwerbspensum-list/dv-erwerbspensum-list';
@@ -119,10 +117,8 @@ import {DVLoading} from './directive/dv-loading/dv-loading';
 import {DVMaxLength} from './directive/dv-max-length';
 import {DVNavigation} from './directive/dv-navigation/dv-navigation';
 import {DVShowElement} from './directive/dv-show-element/dv-show-element';
-import {DVSTPersistPendenzen} from './directive/dv-st-persist-quicksearch/d-v-s-t-persist-pendenzen';
 import {DVSTResetSearch} from './directive/dv-st-reset-search/dv-st-reset-search';
 import {DVSuppressFormSubmitOnEnter} from './directive/dv-suppress-form-submit-on-enter/dv-suppress-form-submit-on-enter';
-import {DVTimepicker} from './directive/dv-timepicker/dv-timepicker';
 import {DVTrimEmpty} from './directive/dv-trim-empty/dv-trim-empty';
 import {DvUserSelectConfig} from './directive/dv-userselect/dv-userselect';
 import {DVValueinput} from './directive/dv-valueinput/dv-valueinput';
@@ -131,7 +127,6 @@ import {DvSearchListComponent} from './dv-search-list/dv-search-list.component';
 import {ERRORS_JS_MODULE} from './errors/errors';
 import {ErrorServiceX} from './errors/service/ErrorServiceX';
 import {arrayToString} from './filters/array-to-string.filter';
-import {gemeindenToString} from './filters/gemeinden-to-string.filter';
 import {thousandSeparator} from './filters/thousand-separator.filter';
 import {NewAntragListComponent} from './new-antrag-list/new-antrag-list.component';
 import {AdresseRS} from './service/adresseRS.rest';
@@ -299,12 +294,10 @@ export const CORE_JS_MODULE = angular
     .directive('dvMaxLength', DVMaxLength.factory())
     .directive('dvIsNotQrIban', DvIsNotQrIban.factory())
     .directive('dvIban', DvIbanValidator.factory())
-    .directive('dvTimepicker', DVTimepicker.factory())
     .directive('dvValueinput', DVValueinput.factory())
     .directive('dvVerantwortlicherselect', DvVerantwortlicherselect.factory())
     .component('dvNavigation', new DVNavigation())
     .directive('dvLoading', DVLoading.factory())
-    .directive('dvStPersistPendenzen', DVSTPersistPendenzen.factory())
     .directive('dvStResetSearch', DVSTResetSearch.factory())
     .directive('dvShowElement', DVShowElement.factory())
     .directive('dvDisplayElement', DVDisplayElement.factory())
@@ -346,7 +339,6 @@ export const CORE_JS_MODULE = angular
     )
     .component('dvHomeIcon', new DvHomeIconComponentConfig())
     .component('dvSkiplinks', new DvSkiplinksComponentConfig())
-    .component('dvCountdown', new DvCountdownComponentConfig())
     .component('dvUserselect', new DvUserSelectConfig())
     .component('dvBisher', new DvBisherComponentConfig())
     .component('dvDokumenteList', new DVDokumenteListConfig())
@@ -376,7 +368,6 @@ export const CORE_JS_MODULE = angular
         downgradeComponent({component: DvBenutzerEntryComponent})
     )
     .directive('dvNavbar', downgradeComponent({component: NavbarComponent}))
-    .directive('dvBenutzer', downgradeComponent({component: BenutzerComponent}))
     .directive(
         'dvSearchList',
         downgradeComponent({component: DvSearchListComponent})
@@ -395,5 +386,4 @@ export const CORE_JS_MODULE = angular
     .service('DatabaseMigrationRS', DatabaseMigrationRS)
     .service('SupportRS', SupportRS)
     .filter('arrayToString', () => arrayToString)
-    .filter('gemeindenToString', () => gemeindenToString)
     .filter('thousandSeparator', () => thousandSeparator);

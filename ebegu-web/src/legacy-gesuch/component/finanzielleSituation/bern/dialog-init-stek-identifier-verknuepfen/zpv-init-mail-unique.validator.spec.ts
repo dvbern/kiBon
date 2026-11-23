@@ -2,6 +2,8 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormControl, FormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
+import {SharedModule} from '../../../../../app/shared/shared.module';
+import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
 import {TSGesuch} from '../../../../../models/TSGesuch';
 import {ZpvInitMailUniqueValidator} from './zpv-init-mail-unique.validator';
 
@@ -39,9 +41,15 @@ describe('ZpvInitMailUniqueValidator', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [TestHostComponent, ZpvInitMailUniqueValidator],
-            imports: [FormsModule]
-        }).compileComponents();
+            imports: [
+                FormsModule,
+                TestHostComponent,
+                ZpvInitMailUniqueValidator,
+                SharedModule
+            ]
+        })
+            .overrideModule(SharedModule, SHARED_MODULE_OVERRIDES)
+            .compileComponents();
 
         fixture = TestBed.createComponent(TestHostComponent);
         fixture.detectChanges();
@@ -57,7 +65,9 @@ describe('ZpvInitMailUniqueValidator', () => {
             const result = directive.validate(control);
 
             expect(result).toEqual({
-                benutzerMailForStekIdentifierNotAllowed: {}
+                benutzerMailForStekIdentifierNotAllowed: {
+                    email: BESITZER_MAIL
+                }
             });
         });
 
@@ -86,12 +96,15 @@ describe('ZpvInitMailUniqueValidator', () => {
         });
 
         it('should treat the comparison as case-insensitive', () => {
-            const control = new FormControl('OWNER@example.com');
+            const email = 'OWNER@example.com';
+            const control = new FormControl(email);
 
             const result = directive.validate(control);
 
             expect(result).toEqual({
-                benutzerMailForStekIdentifierNotAllowed: {}
+                benutzerMailForStekIdentifierNotAllowed: {
+                    email
+                }
             });
         });
     });

@@ -44,7 +44,7 @@ const lastenausgleichTSServiceSpy =
         [
             'getLATSAngabenGemeindeContainer',
             'latsDocxErstellen',
-            'getErwarteteBetreuungsstunden'
+            'getErwarteteBetreuungsstundenPrognose'
         ]
     );
 
@@ -73,7 +73,7 @@ describe('LastenausgleichTsBerechnungComponent', () => {
             of(new TSLastenausgleichTagesschuleAngabenGemeindeContainer())
         );
         lastenausgleichTSServiceSpy.latsDocxErstellen.and.returnValue(of(null));
-        lastenausgleichTSServiceSpy.getErwarteteBetreuungsstunden.and.returnValue(
+        lastenausgleichTSServiceSpy.getErwarteteBetreuungsstundenPrognose.and.returnValue(
             of(0)
         );
         authServiceSpy.principal$ = of(new TSBenutzer());

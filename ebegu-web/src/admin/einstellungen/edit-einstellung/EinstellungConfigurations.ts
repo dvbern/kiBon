@@ -14,7 +14,7 @@ import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
 import {TSFachstellenTyp} from '../../../models/enums/TSFachstellenTyp';
 import {TSFinanzielleSituationTyp} from '../../../models/enums/TSFinanzielleSituationTyp';
 import {TSGeschwisterbonusTyp} from '../../../models/enums/TSGeschwisterbonusTyp';
-import {TSKeycloakIdpHint} from '../../../models/enums/TSKeycloakIdpHint';
+import {KeycloakExternalIdp} from '../../../models/enums/KeycloakExternalIdp';
 import {TSKinderabzugTyp} from '../../../models/enums/TSKinderabzugTyp';
 import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
 import {Erklaerable} from '../Erklaerable';
@@ -58,7 +58,7 @@ const configEnums = [
     TSDokumentTyp,
     BetreuungComparator,
     HoehereBeitraegeTyp,
-    TSKeycloakIdpHint
+    KeycloakExternalIdp
 ] as const;
 
 const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
@@ -294,7 +294,7 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
     DOKUMENT_ZU_UEBERNEHMEN_TYPS: createConfiguration(TSDokumentTyp),
     BENACHRICHTIGUNG_GEMEINDE_AKTIV: createConfiguration(Boolean),
     BENUTZENDE_EDIT_NAME_ALLOWED: createConfiguration(Boolean),
-    KEYCLOAK_IDP_HINT: createConfiguration(TSKeycloakIdpHint),
+    KEYCLOAK_IDP_HINT: createConfiguration(KeycloakExternalIdp),
     ABGELOESTE_VIEW_ANTRAGSTELLER: createConfiguration(Boolean),
     ABGELOESTE_VIEW_FAMILIENSITUATION: createConfiguration(Boolean),
     ABGELOESTE_VIEW_KINDER_LIST: createConfiguration(Boolean),

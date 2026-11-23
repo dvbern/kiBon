@@ -18,6 +18,7 @@
 
 package ch.dvbern.ebegu.util.mandant;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import jakarta.servlet.http.Cookie;
@@ -38,6 +39,8 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.mock;
 import static org.easymock.EasyMock.replay;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MandantCookieUtilTest {
@@ -126,5 +129,116 @@ class MandantCookieUtilTest {
 			IllegalStateException.class,
 			() -> MandantCookieUtil.getMandantFromCookie(request)
 		);
+	}
+
+	@Test
+	void getMandantCookieMustReturnMandantCookie() {
+		Cookie mandantCookie = new Cookie(
+			MANDANT_COOKIE_NAME,
+			COOKIE_VALUE_KANTON_BERN
+		);
+		HttpServletRequest request = mockRequestWithCookies(
+			new Cookie[] { mandantCookie }
+		);
+
+		Optional<Cookie> result = MandantCookieUtil.getMandantCookie(request);
+
+		assertThat(result.isPresent(), is(true));
+		assertThat(result.get(), sameInstance(mandantCookie));
+	}
+
+	@Test
+	void getMandantCookieMustFindMandantCookieAmongOtherCookies() {
+		Cookie mandantCookie = new Cookie(
+			MANDANT_COOKIE_NAME,
+			COOKIE_VALUE_KANTON_SOLOTHURN
+		);
+		HttpServletRequest request = mockRequestWithCookies(
+			new Cookie[] {
+				new Cookie("JSESSIONID", "abc"),
+				mandantCookie,
+				new Cookie("XSRF-TOKEN", "xyz")
+			}
+		);
+
+		Optional<Cookie> result = MandantCookieUtil.getMandantCookie(request);
+
+		assertThat(result.isPresent(), is(true));
+		assertThat(result.get(), sameInstance(mandantCookie));
+	}
+
+	@Test
+	void getMandantCookieMustReturnFirstMandantCookieIfMultiplePresent() {
+		Cookie first = new Cookie(
+			MANDANT_COOKIE_NAME,
+			COOKIE_VALUE_KANTON_BERN
+		);
+		Cookie second = new Cookie(
+			MANDANT_COOKIE_NAME,
+			COOKIE_VALUE_STADT_LUZERN
+		);
+		HttpServletRequest request = mockRequestWithCookies(
+			new Cookie[] { first, second }
+		);
+
+		Optional<Cookie> result = MandantCookieUtil.getMandantCookie(request);
+
+		assertThat(result.isPresent(), is(true));
+		assertThat(result.get(), sameInstance(first));
+	}
+
+	@Test
+	void getMandantCookieMustNotDecodeCookieValue() {
+		String encodedValue = "Kanton%20Bern";
+		HttpServletRequest request = mockRequestWithCookies(
+			new Cookie[] { new Cookie(MANDANT_COOKIE_NAME, encodedValue) }
+		);
+
+		Optional<Cookie> result = MandantCookieUtil.getMandantCookie(request);
+
+		assertThat(result.isPresent(), is(true));
+		assertThat(result.get().getValue(), is(encodedValue));
+	}
+
+	@Test
+	void getMandantCookieMustBeEmptyIfNoCookies() {
+		HttpServletRequest request = mockRequestWithCookies(null);
+
+		assertThat(
+			MandantCookieUtil.getMandantCookie(request),
+			is(Optional.empty())
+		);
+	}
+
+	@Test
+	void getMandantCookieMustBeEmptyIfCookieArrayIsEmpty() {
+		HttpServletRequest request = mockRequestWithCookies(new Cookie[] {});
+
+		assertThat(
+			MandantCookieUtil.getMandantCookie(request),
+			is(Optional.empty())
+		);
+	}
+
+	@Test
+	void getMandantCookieMustBeEmptyIfMandantCookieNotSet() {
+		HttpServletRequest request = mockRequestWithCookies(
+			new Cookie[] {
+				new Cookie("JSESSIONID", "abc"),
+				new Cookie("Mandant", COOKIE_VALUE_KANTON_BERN)
+			}
+		);
+
+		assertThat(
+			MandantCookieUtil.getMandantCookie(request),
+			is(Optional.empty())
+		);
+	}
+
+	private static HttpServletRequest mockRequestWithCookies(Cookie[] cookies) {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		expect(request.getCookies()).andReturn(cookies).anyTimes();
+		replay(request);
+		return request;
 	}
 }

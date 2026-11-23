@@ -20,17 +20,19 @@ import javax.annotation.Nonnull;
 
 /**
  * Which Identity Provider (Keycloak IDP-Alias) to be used at login/logout eines Mandanten.
- * {@link #NO_HINT} means that either not IDP is configured or no IDP is pre-selected
+ * {@link #NO_EXTERNAL_IDP} means that either not IDP is configured or no IDP is pre-selected
  */
-public enum KeycloakIdpHint {
+public enum KeycloakExternalIdp {
 
-	NO_HINT(null), BELOGIN_LEGACY("keycloak-oidc"), BELOGIN_CIAM(
+	NO_EXTERNAL_IDP(null), BELOGIN_LEGACY(
+		"keycloak-oidc"
+	), BELOGIN_CIAM(
 		"belogin-ciam"
 	);
 
 	private final String alias;
 
-	KeycloakIdpHint(String alias) {
+	KeycloakExternalIdp(String alias) {
 		this.alias = alias;
 	}
 

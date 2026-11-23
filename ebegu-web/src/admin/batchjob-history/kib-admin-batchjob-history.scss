@@ -1,0 +1,54 @@
+/*
+ * Copyright (C) 2026 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+.mat-column-name {
+    flex: 0 0 20%;
+    width: 20%;
+}
+
+.mat-column-timestampStarted,
+.mat-column-timestampFinished {
+    flex: 0 0 15%;
+    width: 15%;
+}
+
+.mat-column-status {
+    flex: 0 0 10%;
+    width: 10%;
+}
+
+.mat-column-result {
+    flex: 0 0 40%;
+    width: 40%;
+}
+
+// make the focus of the row / sr-only detail button visible on the row
+// (same style as focused rows in .table, see style/molecules/table.scss).
+// A plain outline on mat-row is hidden: the cells are position: relative (.dv-table)
+// with background: inherit (Material), so they are painted on top of it.
+mat-row {
+    position: relative;
+
+    &:focus-within::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        border: 2px solid var(--contrast-darkest);
+        pointer-events: none;
+    }
+}

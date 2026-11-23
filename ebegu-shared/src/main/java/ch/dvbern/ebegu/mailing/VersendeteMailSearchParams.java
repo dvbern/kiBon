@@ -49,7 +49,7 @@ public class VersendeteMailSearchParams {
 	@NotNull
 	@QueryParam("direction")
 	@Pattern(regexp = "asc|desc",
-		message = "versendetemail.sortdirection.invalid")
+		message = "{sortdirection.invalid}")
 	private String sortDirection;
 
 	@NotNull

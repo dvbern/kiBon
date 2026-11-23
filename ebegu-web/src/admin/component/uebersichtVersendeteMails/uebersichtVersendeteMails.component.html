@@ -28,7 +28,7 @@
             ></dv-warning>
         }
         <dv-versendete-mail-filter
-            [(filter)]="filter"
+            (filterChange)="filter.set($event)"
         ></dv-versendete-mail-filter>
         <div class="table-responsive">
             <mat-table
@@ -74,7 +74,8 @@
                         <button
                             class="tw:sr-only"
                             [attr.aria-label]="
-                                'Details anzeigen für ' + item.name
+                                'VERSENDETE_MAILS_DETAILS_ANZEIGEN'
+                                    | translate: {betreff: item.betreff}
                             "
                             aria-haspopup="dialog"
                             (click)="$event.stopPropagation(); openMail(item)"

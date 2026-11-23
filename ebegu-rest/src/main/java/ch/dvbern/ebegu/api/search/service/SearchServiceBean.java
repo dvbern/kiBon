@@ -275,91 +275,17 @@ public class SearchServiceBean extends AbstractBaseService {
 				null;
 
 		// Special role based predicates
-		switch (role) {
-		case SUPER_ADMIN:
-		case ADMIN_GEMEINDE:
-		case SACHBEARBEITER_GEMEINDE:
-			// Diese Rollen haben keine (rollenspezifischen) Einschränkungen!
-			break;
-		case SACHBEARBEITER_BG:
-		case ADMIN_BG:
-		case REVISOR:
-		case JURIST:
-		case ADMIN_MANDANT:
-		case SACHBEARBEITER_MANDANT:
-			if (searchForPendenzen) {
-				Predicate jaOrMischGesuche = createPredicateJAOrMischGesuche(
-					cb,
-					searchServiceContext.getJoinDossier()
-				);
-				if (!internePendenzGesuchIds.isEmpty()) {
-					Predicate gesuchsIds = root.get(AbstractEntity_.id)
-						.in(internePendenzGesuchIds);
-					predicates.add(cb.and(cb.or(jaOrMischGesuche, gesuchsIds)));
-				} else {
-					predicates.add(jaOrMischGesuche);
-				}
-			}
-			break;
-		case STEUERAMT:
-			break;
-		case ADMIN_SOZIALDIENST:
-		case SACHBEARBEITER_SOZIALDIENST:
-			predicates.add(
-				cb.equal(
-					searchServiceContext.getJoinSozialdienstFall()
-						.get(
-							SozialdienstFall_.sozialdienst
-						),
-					user.getSozialdienst()
-				)
-			);
-			break;
-		case ADMIN_TRAEGERSCHAFT:
-		case SACHBEARBEITER_TRAEGERSCHAFT:
-			createPredicateForTraegerschaft(
-				predicates,
-				predicateObjectDto,
+		predicates.add(
+			createRolePredicate(
+				role,
 				cb,
-				searchServiceContext
-			);
-			break;
-		case ADMIN_INSTITUTION:
-		case SACHBEARBEITER_INSTITUTION:
-			createPredicateForInstitution(
-				predicates,
+				root,
+				searchServiceContext,
 				predicateObjectDto,
-				cb,
-				searchServiceContext
-			);
-			break;
-		case SACHBEARBEITER_TS:
-		case ADMIN_TS:
-			if (searchForPendenzen) {
-				Predicate schOrMischGesuche = createPredicateSCHOrMischGesuche(
-					cb,
-					root,
-					searchServiceContext.getJoinDossier()
-				);
-				if (!internePendenzGesuchIds.isEmpty()) {
-					Predicate gesuchsIds = root.get(AbstractEntity_.id)
-						.in(internePendenzGesuchIds);
-					predicates.add(
-						cb.and(cb.or(schOrMischGesuche, gesuchsIds))
-					);
-				} else {
-					predicates.add(schOrMischGesuche);
-				}
-			}
-			break;
-		default:
-			LOG.warn(
-				"antragSearch can not be performed by users in role {}",
-				role
-			);
-			predicates.add(cb.isFalse(cb.literal(Boolean.TRUE))); // impossible predicate
-			break;
-		}
+				searchForPendenzen,
+				internePendenzGesuchIds
+			)
+		);
 
 		if (predicateObjectDto != null) {
 			if (predicateObjectDto.getFallNummer() != null) {
@@ -696,6 +622,101 @@ public class SearchServiceBean extends AbstractBaseService {
 		return result;
 	}
 
+	/**
+	 * Add an additional role-specific predicates to restrict the results to role-relevant data
+	 */
+	@Nonnull
+	private Predicate createRolePredicate(
+		@Nonnull UserRole role,
+		@Nonnull CriteriaBuilder cb,
+		@Nonnull Root<Gesuch> root,
+		@Nonnull SearchServiceContext searchServiceContext,
+		@Nullable AntragPredicateObjectDTO predicateObjectDto,
+		boolean searchForPendenzen,
+		@Nullable List<String> internePendenzGesuchIds
+	) {
+		return switch (role) {
+		// Diese Rollen haben keine (rollenspezifischen) Einschränkungen!
+		case SUPER_ADMIN, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, STEUERAMT ->
+			cb.conjunction();
+		case REVISOR, JURIST, ADMIN_MANDANT,
+			SACHBEARBEITER_MANDANT -> searchForPendenzen ?
+				createPredicateOrInternePendenz(
+					cb,
+					root,
+					createPredicateJAOrMischGesuche(
+						cb,
+						searchServiceContext.getJoinDossier()
+					),
+					internePendenzGesuchIds
+				) :
+				cb.conjunction();
+		case SACHBEARBEITER_BG, ADMIN_BG -> createPredicateOrInternePendenz(
+			cb,
+			root,
+			cb.isNotNull(
+				searchServiceContext.getJoinBetreuungen()
+					.get(AbstractEntity_.id)
+			),
+			internePendenzGesuchIds
+		);
+		case SACHBEARBEITER_TS, ADMIN_TS -> createPredicateOrInternePendenz(
+			cb,
+			root,
+			cb.isNotNull(
+				searchServiceContext.getJoinAnmeldungTagesschule()
+					.get(AbstractEntity_.id)
+			),
+			internePendenzGesuchIds
+		);
+		case ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST -> cb.equal(
+			searchServiceContext.getJoinSozialdienstFall()
+				.get(SozialdienstFall_.sozialdienst),
+			searchServiceContext.getUser().getSozialdienst()
+		);
+		case ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT ->
+			createPredicateForTraegerschaft(
+				predicateObjectDto,
+				cb,
+				searchServiceContext
+			);
+		case ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION ->
+			createPredicateForInstitution(
+				predicateObjectDto,
+				cb,
+				searchServiceContext
+			);
+		case ADMIN_FERIENBETREUUNG, SACHBEARBEITER_FERIENBETREUUNG,
+			GESUCHSTELLER -> {
+			LOG.error(
+				"antragSearch can not be performed by users in role {}",
+				role
+			);
+			yield cb.disjunction();
+		}
+		};
+	}
+
+	/**
+	 * Gesuche mit abgelaufenen internen Pendenzen erscheinen zusaetzlich zum rollenspezifischen Predicate.
+	 */
+	@Nonnull
+	private Predicate createPredicateOrInternePendenz(
+		@Nonnull CriteriaBuilder cb,
+		@Nonnull Root<Gesuch> root,
+		@Nonnull Predicate rolePredicate,
+		@Nullable List<String> internePendenzGesuchIds
+	) {
+		if (internePendenzGesuchIds == null
+			|| internePendenzGesuchIds.isEmpty()) {
+			return rolePredicate;
+		}
+		return cb.or(
+			rolePredicate,
+			root.get(AbstractEntity_.id).in(internePendenzGesuchIds)
+		);
+	}
+
 	private void createPredicateForAngebot(
 		List<Predicate> predicates,
 		@Nonnull String angebote,
@@ -751,12 +772,13 @@ public class SearchServiceBean extends AbstractBaseService {
 
 	}
 
-	private void createPredicateForInstitution(
-		List<Predicate> predicates,
+	@Nonnull
+	private Predicate createPredicateForInstitution(
 		@Nullable AntragPredicateObjectDTO predicateObjectDto,
 		CriteriaBuilder cb,
 		SearchServiceContext searchServiceContext
 	) {
+		List<Predicate> predicates = new ArrayList<>();
 		// es geht hier nicht um die joinInstitution des zugewiesenen benutzers sondern um die joinInstitution des
 		// eingeloggten benutzers
 		if (predicateObjectDto != null
@@ -825,14 +847,16 @@ public class SearchServiceBean extends AbstractBaseService {
 				searchServiceContext.getJoinInstitutionstammdatenFerieninsel()
 			)
 		);
+		return cb.and(predicates.toArray(PredicateHelper.NEW));
 	}
 
-	private void createPredicateForTraegerschaft(
-		List<Predicate> predicates,
+	@Nonnull
+	private Predicate createPredicateForTraegerschaft(
 		@Nullable AntragPredicateObjectDTO predicateObjectDto,
 		CriteriaBuilder cb,
 		SearchServiceContext searchServiceContext
 	) {
+		List<Predicate> predicates = new ArrayList<>();
 		if (predicateObjectDto != null
 			&& predicateObjectDto.getAngebote() != null) {
 			switch (BetreuungsangebotTyp.valueOf(
@@ -917,6 +941,7 @@ public class SearchServiceBean extends AbstractBaseService {
 				searchServiceContext.getJoinInstitutionstammdatenFerieninsel()
 			)
 		);
+		return cb.and(predicates.toArray(PredicateHelper.NEW));
 	}
 
 	private void setGemeindeFilterForCurrentUser(
@@ -1001,41 +1026,6 @@ public class SearchServiceBean extends AbstractBaseService {
 			dossier.get(Dossier_.verantwortlicherBG)
 		);
 		return predicateIsVerantwortlicherBG;
-	}
-
-	/**
-	 * Ob es ein BG- TS- oder Mischgesuch ist, wird anhand der Verantwortliche berechnet. TS- oder Mischgesuche sind
-	 * alle, die
-	 * VerantwortlicherTS gesetzt haben, VerantwortlicherBG interessiert nicht. Fuer TS sind sie nur so lange in der
-	 * Pendenzenliste, wie das FinSit-Flag nicht gesetzt ist
-	 */
-	private Predicate createPredicateSCHOrMischGesuche(
-		CriteriaBuilder cb,
-		Root<Gesuch> root,
-		Join<Gesuch, Dossier> dossier
-	) {
-		// Grundsaetzlich gilt: Wenn ein Verantwortlicher TS gesetzt ist, ist es sichtbar bis die FinSit ausgefuellt
-		// wurde
-		final Predicate predicateIsVerantwortlicherTS = cb.isNotNull(
-			dossier.get(Dossier_.verantwortlicherTS)
-		);
-		final Predicate predicateIsFlagFinSitNotSet = cb.isNull(
-			root.get(Gesuch_.finSitStatus)
-		);
-		final Predicate predicateISVerTSAndFinSitNotSet = cb.and(
-			predicateIsVerantwortlicherTS,
-			predicateIsFlagFinSitNotSet
-		);
-		// Aber: Falls KEIN Verantwortlicher BG gesetzt ist, muss es u.U. laenger sichtbar sein
-		final Predicate predicateIsNoVerantwortlicherBG = cb.isNull(
-			dossier.get(Dossier_.verantwortlicherBG)
-		);
-		final Predicate predicateISVerTSAndNoBG =
-			cb.and(
-				predicateIsVerantwortlicherTS,
-				predicateIsNoVerantwortlicherBG
-			);
-		return cb.or(predicateISVerTSAndFinSitNotSet, predicateISVerTSAndNoBG);
 	}
 
 	/**

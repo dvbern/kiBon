@@ -39,6 +39,7 @@ import {
     MeldungsfensterDetailComponent,
     MeldungsfensterEditComponent
 } from './meldungsfenster';
+import {KibAdminBatchjobHistory} from './batchjob-history/kib-admin-batchjob-history';
 
 const applicationPropertiesResolver = [
     'ApplicationPropertyRsService',
@@ -175,6 +176,14 @@ const states: Ng2StateDeclaration[] = [
         name: 'admin.meldungfenster-detail',
         url: `/meldungsfenster/:id`,
         component: MeldungsfensterDetailComponent,
+        data: {
+            roles: TSRoleUtil.getSuperAdminRoles()
+        }
+    },
+    {
+        name: 'admin.batchjobHistory',
+        url: '/batchjobHistory',
+        component: KibAdminBatchjobHistory,
         data: {
             roles: TSRoleUtil.getSuperAdminRoles()
         }

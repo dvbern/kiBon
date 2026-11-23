@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.DemoFeatureTyp;
-import ch.dvbern.ebegu.enums.KeycloakIdpHint;
+import ch.dvbern.ebegu.enums.KeycloakExternalIdp;
 
 /**
  * Service zum Verwalten von Application Properties
@@ -181,5 +181,5 @@ public interface ApplicationPropertyService {
 	 * Mandant
 	 */
 	@Nonnull
-	KeycloakIdpHint getKeycloakIdpHint(@Nonnull Mandant mandant);
+	KeycloakExternalIdp getKeycloakIdpHint(@Nonnull Mandant mandant);
 }

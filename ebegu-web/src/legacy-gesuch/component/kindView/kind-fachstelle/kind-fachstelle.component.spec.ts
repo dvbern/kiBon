@@ -1,6 +1,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import moment from 'moment';
 import {of} from 'rxjs';
+import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
+import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
+import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {SharedModule} from '../../../../app/shared/shared.module';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
@@ -8,6 +11,7 @@ import {TSDateRange} from '../../../../models/entity/TSDateRange';
 import {TSFachstelle} from '../../../../models/entity/TSFachstelle';
 import {TSGesuchsperiode} from '../../../../models/entity/TSGesuchsperiode';
 import {TSPensumFachstelle} from '../../../../models/entity/TSPensumFachstelle';
+import {TSFachstellenTyp} from '../../../../models/enums/TSFachstellenTyp';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
 import {KindFachstelleComponent} from './kind-fachstelle.component';
 
@@ -28,6 +32,18 @@ describe('KindFachstelleComponent', () => {
         ['principal$', 'isOneOfRoles']
     );
     authServiceSpy.isOneOfRoles.and.returnValue(true);
+    const einstellungRSSpy = jasmine.createSpyObj<EinstellungRS>(
+        EinstellungRS.name,
+        ['getAllEinstellungenBySystemCached']
+    );
+    einstellungRSSpy.getAllEinstellungenBySystemCached.and.returnValue(
+        of([
+            new TSEinstellung(
+                TSEinstellungKey.FACHSTELLEN_TYP,
+                TSFachstellenTyp.BERN
+            )
+        ])
+    );
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -41,6 +57,10 @@ describe('KindFachstelleComponent', () => {
                 {
                     provide: AuthServiceRS,
                     useValue: authServiceSpy
+                },
+                {
+                    provide: EinstellungRS,
+                    useValue: einstellungRSSpy
                 }
             ]
         })

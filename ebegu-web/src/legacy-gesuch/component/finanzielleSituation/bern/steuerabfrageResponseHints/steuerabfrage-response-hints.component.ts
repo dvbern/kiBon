@@ -166,15 +166,25 @@ export class SteuerabfrageResponseHintsComponent implements OnInit, OnChanges {
                     'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_UNREGELMAESSIGKEIT'
                 );
             case TSSteuerdatenAnfrageStatus.FAILED_KEINE_NUMMER:
-                return this.translate.instant(
-                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_KEINE_ZPV',
-                    {email: this.getEmailBesitzende()}
-                );
+                return `${this.translate.instant(
+                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_KEINE_STEK',
+                    {gs: this.getEmailBesitzende()}
+                )}
+                <br>
+                ${this.translate.instant(
+                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_STEK_STEUP_HINT'
+                )}
+                `;
             case TSSteuerdatenAnfrageStatus.FAILED_KEINE_NUMMER_GS2:
-                return this.translate.instant(
-                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_KEIN_STEK_IDENTIFIER_GS2',
-                    {gs2: this.getGS2name()}
-                );
+                return `${this.translate.instant(
+                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_KEINE_STEK',
+                    {gs: this.getGS2name()}
+                )}
+                <br>
+                ${this.translate.instant(
+                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_STEK_STEUP_HINT'
+                )}
+                `;
             default:
                 return '';
         }
